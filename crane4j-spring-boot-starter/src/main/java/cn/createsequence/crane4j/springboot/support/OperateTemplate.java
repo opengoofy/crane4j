@@ -49,7 +49,7 @@ public class OperateTemplate {
     }
 
     /**
-     * 若操作属于{@code groups}中的任意分组，则执行操作
+     * 若操作不属于{@code groups}中的任意分组，则执行操作
      *
      * @param target 待处理的对象
      * @param groups 组别
@@ -68,6 +68,18 @@ public class OperateTemplate {
      */
     public void executeIfMatchAllGroups(Object target, String... groups) {
         execute(target, Grouped.allMatch(groups));
+    }
+
+    /**
+     * 执行操作
+     *
+     * @param target 待处理的对象
+     */
+    public void execute(Object target) {
+        execute(
+            CollectionUtils.adaptObjectToCollection(target),
+            resolveType(target), defaultParser, defaultExecutor, Grouped.alwaysMatch()
+        );
     }
 
     /**
