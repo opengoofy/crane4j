@@ -39,9 +39,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.expression.BeanFactoryResolver;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.Ordered;
+import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.core.annotation.Order;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 
@@ -55,6 +57,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author huangchengxing
  */
+@EnableAspectJAutoProxy
 @RequiredArgsConstructor
 @EnableConfigurationProperties(Crane4jProperties.class)
 public class Crane4jAutoConfiguration {
@@ -165,10 +168,16 @@ public class Crane4jAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
+    public ParameterNameDiscoverer parameterNameDiscoverer() {
+        return new DefaultParameterNameDiscoverer();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
     public MethodBaseExpressionEvaluator methodBaseExpressionEvaluator(
-        ApplicationContext applicationContext, ExpressionEvaluator expressionEvaluator) {
+        ApplicationContext applicationContext, ExpressionEvaluator expressionEvaluator, ParameterNameDiscoverer parameterNameDiscoverer) {
         return new MethodBaseExpressionEvaluator(
-            new DefaultParameterNameDiscoverer(), expressionEvaluator,
+            parameterNameDiscoverer, expressionEvaluator,
             method -> {
                 SpelExpressionContext context = new SpelExpressionContext();
                 context.setBeanResolver(new BeanFactoryResolver(applicationContext));
@@ -197,8 +206,8 @@ public class Crane4jAutoConfiguration {
         havingValue = "true", matchIfMissing = true
     )
     public MethodArgumentAutoOperateAspect methodArgumentAutoOperateAspect(
-        ApplicationContext applicationContext, MethodBaseExpressionEvaluator methodBaseExpressionEvaluator) {
-        return new MethodArgumentAutoOperateAspect(applicationContext, methodBaseExpressionEvaluator);
+        ApplicationContext applicationContext, MethodBaseExpressionEvaluator methodBaseExpressionEvaluator, ParameterNameDiscoverer parameterNameDiscoverer) {
+        return new MethodArgumentAutoOperateAspect(applicationContext, methodBaseExpressionEvaluator, parameterNameDiscoverer);
     }
 
     @Bean
