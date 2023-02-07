@@ -104,14 +104,14 @@ public abstract class AbstractAnnotatedMethodPostProcessor<T extends Annotation>
      * @return 与注解对应的方法，若不存在则为{@code null}
      */
     @Nullable
-    protected Method findMethodForAnnotation(Class<?> beanType, T classLevelAnnotation) {
-        return null;
-    }
+    protected abstract Method findMethodForAnnotation(Class<?> beanType, T classLevelAnnotation);
 
     private void resolveMethodLevelAnnotations(Class<?> beanType, Multimap<Method, T> collectedMethods) {
         Map<Method, Set<T>> methodLevelAnnotations = MethodIntrospector.selectMethods(
-            beanType, (MethodIntrospector.MetadataLookup<Set<T>>) method ->
-            AnnotatedElementUtils.findAllMergedAnnotations(method, annotationType)
+            beanType, (MethodIntrospector.MetadataLookup<Set<T>>) method -> {
+                Set<T> annotations = AnnotatedElementUtils.findMergedRepeatableAnnotations(method, annotationType);
+                return annotations.isEmpty() ? null : annotations;
+            }
         );
         if (CollUtil.isNotEmpty(methodLevelAnnotations)) {
             methodLevelAnnotations.forEach(collectedMethods::putAll);
@@ -120,7 +120,7 @@ public abstract class AbstractAnnotatedMethodPostProcessor<T extends Annotation>
 
     private void resolveClassLevelAnnotations(
         Class<?> beanType, Multimap<Method, T> collectedMethods) {
-        Set<T> classLevelAnnotations = AnnotatedElementUtils.findAllMergedAnnotations(beanType, annotationType);
+        Set<T> classLevelAnnotations = AnnotatedElementUtils.findMergedRepeatableAnnotations(beanType, annotationType);
         classLevelAnnotations.forEach(annotation -> {
             Method method = findMethodForAnnotation(beanType, annotation);
             if (Objects.nonNull(method)) {
