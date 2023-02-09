@@ -23,6 +23,18 @@ import java.util.Map;
  *     </li>
  * </ul>
  *
+ * <p>比如，下述例子描述了如何将<i>requestFoo</i>方法适配为一个数据源容器，：
+ * <pre type="code">{@code
+ * // 返回响应体的方法
+ * @ContainerMethod(
+ *     namespace = "foo",
+ *     resultType = Foo.class, resultKey = "id"
+ * )
+ * public List<Foo> requestFoo(Set<Integer> ids) { // do something }
+ * }</pre>
+ * 该容器命名空间为<i>foo</i>，当执行时会使用对应的id集合从该方法中获得<i>Foo</i>对象集合，
+ * 然后将其按<i>foo.id</i>分组后进行字段映射。
+ *
  * @author huangchengxing
  */
 @Repeatable(ContainerMethod.List.class)
@@ -60,9 +72,39 @@ public @interface ContainerMethod {
     Class<?> resultType();
 
     /**
+     * 仅当方法注解在类上时使用，用于绑定类中对应的方法
+     *
+     * @return 要查找的方法
+     */
+    Bound bind() default @Bound("");
+
+    /**
+     * 当{@link ContainerMethod}注解在类上时，通过当前注解指定要绑定的方法
+     */
+    @Documented
+    @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface Bound {
+
+        /**
+         * 方法名称
+         *
+         * @return 方法名称
+         */
+        String value();
+
+        /**
+         * 方法参数类型
+         *
+         * @return 方法参数类型
+         */
+        Class<?>[] paramTypes() default {};
+    }
+
+    /**
      * 批量操作
      *
-     * @author huangchengxing 
+     * @author huangchengxing
      */
     @Documented
     @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD, ElementType.TYPE})

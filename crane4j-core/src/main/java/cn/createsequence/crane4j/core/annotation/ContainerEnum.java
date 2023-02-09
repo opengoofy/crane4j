@@ -1,7 +1,6 @@
 package cn.createsequence.crane4j.core.annotation;
 
 import cn.createsequence.crane4j.core.container.ConstantContainer;
-import cn.createsequence.crane4j.core.container.Container;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -13,8 +12,7 @@ import java.lang.annotation.Target;
  * 表示注解的枚举可以被转为指定类型的枚举容器
  *
  * @author huangchengxing
- * @see Container
- * @see ConstantContainer
+ * @see ConstantContainer#forAnnotatedEnum
  */
 @Documented
 @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})

@@ -61,7 +61,10 @@ public class DefaultMethodContainerFactory implements MethodContainerFactory {
             MethodInvoker keyGetter = findKeyGetter(annotation);
             keyExtractor = keyGetter::invoke;
         }
-        return new MethodInvokerContainer(annotation.namespace(), methodInvoker, source, keyExtractor, annotation.type());
+        return new MethodInvokerContainer(
+            CharSequenceUtil.emptyToDefault(annotation.namespace(), method.getName()),
+            methodInvoker, source, keyExtractor, annotation.type()
+        );
     }
 
     private MethodInvoker findKeyGetter(ContainerMethod annotation) {

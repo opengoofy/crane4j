@@ -81,8 +81,7 @@ public class ConstantContainer<K> implements Container<K> {
         }
 
         // 若命名空间为空，则默认为类名称本身
-        String namespace = CharSequenceUtil.isEmpty(annotation.namespace()) ?
-            enumType.getSimpleName() : annotation.namespace();
+        String namespace = CharSequenceUtil.emptyToDefault(annotation.namespace(), enumType.getSimpleName());
         // 若key字段为空，则默认为枚举名称
         Function<? super T, ? extends K> keyMapper = CharSequenceUtil.isEmpty(annotation.key()) ?
             e -> (K)e.name() : e ->(K)ReflectUtil.getFieldValue(e, annotation.key());
