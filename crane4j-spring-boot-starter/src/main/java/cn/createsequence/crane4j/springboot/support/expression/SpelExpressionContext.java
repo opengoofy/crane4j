@@ -36,7 +36,7 @@ public class SpelExpressionContext extends StandardEvaluationContext implements 
      */
     public SpelExpressionContext(ExpressionContext expressionContext) {
         this(expressionContext.getRoot());
-        expressionContext.getVariables().forEach(this::registerVariables);
+        expressionContext.getVariables().forEach(this::registerVariable);
     }
 
     /**
@@ -66,7 +66,7 @@ public class SpelExpressionContext extends StandardEvaluationContext implements 
      * @param value 变量值
      */
     @Override
-    public void registerVariables(String name, Object value) {
+    public void registerVariable(String name, Object value) {
         super.setVariable(name, value);
     }
 

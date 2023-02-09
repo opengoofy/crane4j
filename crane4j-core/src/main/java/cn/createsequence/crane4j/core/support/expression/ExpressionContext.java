@@ -30,7 +30,7 @@ public interface ExpressionContext {
      * @param name 变量名
      * @param value 变量值
      */
-    void registerVariables(String name, Object value);
+    void registerVariable(String name, Object value);
 
     /**
      * 获取变量
