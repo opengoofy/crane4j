@@ -16,6 +16,34 @@ import java.util.stream.Stream;
 public class GroupedTest {
 
     @Test
+    public void allMatch() {
+        Assert.assertTrue(Grouped.allMatch().test(new Foo()));
+        Assert.assertTrue(Grouped.allMatch().test(new Foo("1", "2")));
+        Assert.assertTrue(Grouped.allMatch("1").test(new Foo("1")));
+        Assert.assertTrue(Grouped.allMatch("1").test(new Foo("1", "2")));
+        Assert.assertTrue(Grouped.allMatch("1", "2").test(new Foo("1", "2")));
+        Assert.assertFalse(Grouped.allMatch("1", "2").test(new Foo("3")));
+    }
+
+    @Test
+    public void noneMatch() {
+        Assert.assertTrue(Grouped.noneMatch().test(new Foo()));
+        Assert.assertTrue(Grouped.noneMatch().test(new Foo("1", "2")));
+        Assert.assertFalse(Grouped.noneMatch("1", "2").test(new Foo("1", "2")));
+        Assert.assertFalse(Grouped.noneMatch("1", "2").test(new Foo("1")));
+        Assert.assertTrue(Grouped.noneMatch("1", "2").test(new Foo("3")));
+    }
+
+    @Test
+    public void anyMatch() {
+        Assert.assertFalse(Grouped.anyMatch().test(new Foo()));
+        Assert.assertFalse(Grouped.anyMatch().test(new Foo("1", "2")));
+        Assert.assertTrue(Grouped.anyMatch("1", "2").test(new Foo("1", "2")));
+        Assert.assertTrue(Grouped.anyMatch("1", "2").test(new Foo("1")));
+        Assert.assertFalse(Grouped.anyMatch("1", "2").test(new Foo("3")));
+    }
+
+    @Test
     public void getGroups() {
         Assert.assertTrue(new Empty().getGroups().isEmpty());
 
