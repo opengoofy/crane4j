@@ -112,13 +112,6 @@
       </dependency>
 
       <dependency>
-        <groupId>ognl</groupId>
-        <artifactId>ognl</artifactId>
-        <version>${ognl.version}</version>
-        <optional>true</optional>
-      </dependency>
-
-      <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-dependencies</artifactId>
         <version>${springboot.version}</version>
