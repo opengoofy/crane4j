@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
@@ -25,6 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author huangchengxing
  */
+@Slf4j
 @RequiredArgsConstructor
 public abstract class AbstractAnnotatedMethodPostProcessor<T extends Annotation>
     implements BeanPostProcessor, DisposableBean {
@@ -79,6 +81,7 @@ public abstract class AbstractAnnotatedMethodPostProcessor<T extends Annotation>
             nonAnnotatedClasses.add(beanType);
             return bean;
         }
+        log.debug("process [{}] annotated methods for bean [{}]", annotatedMethods.size(), beanName);
         processAnnotatedMethods(bean, beanType, annotatedMethods);
         return bean;
     }

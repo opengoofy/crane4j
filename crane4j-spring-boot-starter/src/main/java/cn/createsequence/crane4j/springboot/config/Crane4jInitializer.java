@@ -42,6 +42,7 @@ public class Crane4jInitializer implements ApplicationRunner {
     @SneakyThrows
     @Override
     public void run(ApplicationArguments args) {
+        log.info("start initializing component cache......");
         // 加载枚举并将其注册为容器
         loadContainerEnum();
         // 预解析类操作配置

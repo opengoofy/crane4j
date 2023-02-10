@@ -9,9 +9,11 @@ import cn.createsequence.crane4j.core.support.reflect.PropertyOperator;
 import cn.createsequence.crane4j.core.util.CollectionUtils;
 import cn.createsequence.crane4j.springboot.annotation.AutoOperate;
 import cn.createsequence.crane4j.springboot.support.aop.MethodArgumentAutoOperateAspect;
+import cn.createsequence.crane4j.springboot.support.aop.MethodResultAutoOperateAspect;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ArrayUtil;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
 
@@ -30,6 +32,7 @@ import java.util.stream.Stream;
  * @see AutoOperate
  * @see MethodBaseExpressionEvaluator
  * @see MethodArgumentAutoOperateAspect
+ * @see MethodResultAutoOperateAspect
  */
 @RequiredArgsConstructor
 public class MethodAnnotatedElementAutoOperateSupport {
@@ -74,7 +77,7 @@ public class MethodAnnotatedElementAutoOperateSupport {
         // 检查组别
         Set<String> groups = resolveGroups(annotation);
         Assert.notEmpty(groups, "operation for [{}] does not belong to any executable group", element);
-        return new ResolvedElement(extractor, groups, beanOperations, executor);
+        return new ResolvedElement(element, extractor, groups, beanOperations, executor);
     }
 
     private MethodInvoker resolveExtractor(AutoOperate annotation) {
@@ -103,6 +106,8 @@ public class MethodAnnotatedElementAutoOperateSupport {
      */
     @RequiredArgsConstructor
     protected static class ResolvedElement {
+        @Getter
+        private final AnnotatedElement element;
         private final MethodInvoker extractor;
         private final Set<String> groups;
         private final BeanOperations beanOperations;

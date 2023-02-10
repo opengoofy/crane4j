@@ -4,7 +4,9 @@ import cn.createsequence.crane4j.core.util.CollectionUtils;
 import cn.createsequence.crane4j.springboot.annotation.AutoOperate;
 import cn.createsequence.crane4j.springboot.support.MethodAnnotatedElementAutoOperateSupport;
 import cn.createsequence.crane4j.springboot.support.MethodBaseExpressionEvaluator;
+import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.map.MapUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
@@ -23,6 +25,7 @@ import java.util.Objects;
  * @author huangchengxing
  * @see AutoOperate
  */
+@Slf4j
 @Aspect
 public class MethodResultAutoOperateAspect
     extends MethodAnnotatedElementAutoOperateSupport implements DisposableBean {
@@ -32,6 +35,7 @@ public class MethodResultAutoOperateAspect
     public MethodResultAutoOperateAspect(
         ApplicationContext applicationContext, MethodBaseExpressionEvaluator methodBaseExpressionEvaluator) {
         super(applicationContext, methodBaseExpressionEvaluator);
+        log.info("enable automatic filling of method result");
     }
 
     @AfterReturning(returning = "result", pointcut = "@annotation(cn.createsequence.crane4j.springboot.annotation.AutoOperate)")
@@ -52,8 +56,13 @@ public class MethodResultAutoOperateAspect
             return;
         }
         // 获取/构建方法缓存并执行操作
-        MapUtil.computeIfAbsent(methodCaches, method.getName(), m -> resolveElement(method, annotation))
-            .execute(result);
+        log.debug("process result for [{}]", method.getName());
+        ResolvedElement element = MapUtil.computeIfAbsent(methodCaches, method.getName(), m -> resolveElement(method, annotation));
+        try {
+            element.execute(result);
+        } catch (Exception e) {
+            log.warn("cannot process result for [{}]: [{}]", method.getName(), ExceptionUtil.getRootCause(e).getMessage());
+        }
     }
 
     /**

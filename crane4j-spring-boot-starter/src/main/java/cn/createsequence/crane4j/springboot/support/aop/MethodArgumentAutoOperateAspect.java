@@ -5,8 +5,10 @@ import cn.createsequence.crane4j.springboot.annotation.ArgAutoOperate;
 import cn.createsequence.crane4j.springboot.annotation.AutoOperate;
 import cn.createsequence.crane4j.springboot.support.MethodAnnotatedElementAutoOperateSupport;
 import cn.createsequence.crane4j.springboot.support.MethodBaseExpressionEvaluator;
+import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ArrayUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -31,6 +33,7 @@ import java.util.stream.Stream;
  * @see ArgAutoOperate
  * @see AutoOperate
  */
+@Slf4j
 @Aspect
 public class MethodArgumentAutoOperateAspect extends MethodAnnotatedElementAutoOperateSupport implements DisposableBean {
 
@@ -40,6 +43,7 @@ public class MethodArgumentAutoOperateAspect extends MethodAnnotatedElementAutoO
     public MethodArgumentAutoOperateAspect(
         ApplicationContext applicationContext, MethodBaseExpressionEvaluator methodBaseExpressionEvaluator) {
         super(applicationContext, methodBaseExpressionEvaluator);
+        log.info("enable automatic filling of method argument");
     }
 
     @Before("@annotation(cn.createsequence.crane4j.springboot.annotation.ArgAutoOperate)")
@@ -61,14 +65,23 @@ public class MethodArgumentAutoOperateAspect extends MethodAnnotatedElementAutoO
             return;
         }
         // 根据配置缓存填充方法参数
-        processArguments(args, elements);
+        log.debug("process arguments for [{}]", method.getName());
+        processArguments(method, args, elements);
     }
 
-    private void processArguments(Object[] args, ResolvedElement[] resolvedElements) {
+    private void processArguments(Method method, Object[] args, ResolvedElement[] resolvedElements) {
         for (int i = 0; i < args.length; i++) {
             Object arg = args[i];
             ResolvedElement element = resolvedElements[i];
-            element.execute(arg);
+            try {
+                element.execute(arg);
+            } catch (Exception e) {
+                log.warn(
+                    "cannot process argument [{}] for [{}]: [{}]",
+                    method.getName(), ((Parameter)element.getElement()).getName(),
+                    ExceptionUtil.getRootCause(e).getMessage()
+                );
+            }
         }
     }
 
@@ -121,7 +134,7 @@ public class MethodArgumentAutoOperateAspect extends MethodAnnotatedElementAutoO
     protected static class EmptyElement extends ResolvedElement {
         protected static final ResolvedElement INSTANCE = new EmptyElement();
         public EmptyElement() {
-            super(null, null, null, null);
+            super(null, null, null, null, null);
         }
         @Override
         public void execute(Object result) {
