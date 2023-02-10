@@ -9,6 +9,7 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 
@@ -23,7 +24,8 @@ import java.util.Objects;
  * @see AutoOperate
  */
 @Aspect
-public class MethodResultAutoOperateAspect extends MethodAnnotatedElementAutoOperateSupport {
+public class MethodResultAutoOperateAspect
+    extends MethodAnnotatedElementAutoOperateSupport implements DisposableBean {
 
     private final Map<String, ResolvedElement> methodCaches = CollectionUtils.newWeakConcurrentMap();
 
@@ -52,5 +54,13 @@ public class MethodResultAutoOperateAspect extends MethodAnnotatedElementAutoOpe
         // 获取/构建方法缓存并执行操作
         MapUtil.computeIfAbsent(methodCaches, method.getName(), m -> resolveElement(method, annotation))
             .execute(result);
+    }
+
+    /**
+     * 销毁Bean时释放资源
+     */
+    @Override
+    public void destroy() {
+        methodCaches.clear();
     }
 }

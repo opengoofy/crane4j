@@ -6,6 +6,7 @@ import com.google.common.collect.Multimap;
 import lombok.RequiredArgsConstructor;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.MethodIntrospector;
 import org.springframework.core.annotation.AnnotatedElementUtils;
@@ -25,7 +26,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author huangchengxing
  */
 @RequiredArgsConstructor
-public abstract class AbstractAnnotatedMethodPostProcessor<T extends Annotation> implements BeanPostProcessor {
+public abstract class AbstractAnnotatedMethodPostProcessor<T extends Annotation>
+    implements BeanPostProcessor, DisposableBean {
 
     /**
      * 无需处理的类型
@@ -36,6 +38,14 @@ public abstract class AbstractAnnotatedMethodPostProcessor<T extends Annotation>
      * 要处理的注解类型
      */
     protected final Class<T> annotationType;
+
+    /**
+     * 销毁Bean时清空资源
+     */
+    @Override
+    public void destroy() {
+        nonAnnotatedClasses.clear();
+    }
 
     /**
      * 不做任何操作

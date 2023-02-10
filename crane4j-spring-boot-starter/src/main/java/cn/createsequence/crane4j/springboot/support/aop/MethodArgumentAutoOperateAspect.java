@@ -11,11 +11,13 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
@@ -30,7 +32,7 @@ import java.util.stream.Stream;
  * @see AutoOperate
  */
 @Aspect
-public class MethodArgumentAutoOperateAspect extends MethodAnnotatedElementAutoOperateSupport {
+public class MethodArgumentAutoOperateAspect extends MethodAnnotatedElementAutoOperateSupport implements DisposableBean {
 
     private static final ResolvedElement[] EMPTY_ELEMENTS = new ResolvedElement[0];
     private final Map<String, ResolvedElement[]> methodParameterCaches = CollectionUtils.newWeakConcurrentMap();
@@ -100,6 +102,17 @@ public class MethodArgumentAutoOperateAspect extends MethodAnnotatedElementAutoO
             }
         }
         return annotations;
+    }
+
+    /**
+     * 销毁Bean时释放资源
+     */
+    @Override
+    public void destroy() {
+        for (ResolvedElement[] elements : methodParameterCaches.values()) {
+            Arrays.fill(elements, null);
+        }
+        methodParameterCaches.clear();
     }
 
     /**

@@ -5,6 +5,7 @@ import cn.createsequence.crane4j.core.support.expression.ExpressionEvaluator;
 import cn.createsequence.crane4j.core.util.CollectionUtils;
 import cn.hutool.core.map.MapUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
@@ -17,7 +18,7 @@ import java.util.Map;
  * @author huangchengxing
  */
 @RequiredArgsConstructor
-public class SpelExpressionEvaluator implements ExpressionEvaluator {
+public class SpelExpressionEvaluator implements ExpressionEvaluator, DisposableBean {
 
     private final Map<String, Expression> expressionCaches = CollectionUtils.newWeakConcurrentMap();
     private final ExpressionParser expressionParser;
@@ -36,6 +37,14 @@ public class SpelExpressionEvaluator implements ExpressionEvaluator {
         EvaluationContext evaluationContext = (context instanceof SpelExpressionContext) ?
             (EvaluationContext)context : new SpelExpressionContext(context);
         return parseExpression(expression).getValue(evaluationContext, resultType);
+    }
+
+    /**
+     * 销毁Bean时释放资源
+     */
+    @Override
+    public void destroy() {
+        expressionCaches.clear();
     }
 
     private Expression parseExpression(String expression) {
