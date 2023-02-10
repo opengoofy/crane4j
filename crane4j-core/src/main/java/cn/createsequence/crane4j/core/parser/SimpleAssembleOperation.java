@@ -1,7 +1,7 @@
 package cn.createsequence.crane4j.core.parser;
 
 import cn.createsequence.crane4j.core.container.Container;
-import cn.createsequence.crane4j.core.executor.AssembleOperationHandler;
+import cn.createsequence.crane4j.core.executor.handler.AssembleOperationHandler;
 import lombok.Getter;
 
 import java.util.Set;

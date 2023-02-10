@@ -1,6 +1,8 @@
-package cn.createsequence.crane4j.core.executor;
+package cn.createsequence.crane4j.core.executor.handler;
 
 import cn.createsequence.crane4j.core.container.Container;
+import cn.createsequence.crane4j.core.executor.AssembleExecution;
+import cn.createsequence.crane4j.core.executor.SimpleAssembleExecution;
 import cn.createsequence.crane4j.core.parser.AssembleOperation;
 import cn.createsequence.crane4j.core.parser.BeanOperations;
 import cn.createsequence.crane4j.core.parser.SimpleAssembleOperation;
