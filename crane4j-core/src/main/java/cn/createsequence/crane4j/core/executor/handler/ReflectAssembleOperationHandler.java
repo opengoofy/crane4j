@@ -4,6 +4,7 @@ import cn.createsequence.crane4j.core.container.Container;
 import cn.createsequence.crane4j.core.container.EmptyContainer;
 import cn.createsequence.crane4j.core.executor.AssembleExecution;
 import cn.createsequence.crane4j.core.parser.PropertyMapping;
+import cn.createsequence.crane4j.core.support.MethodInvoker;
 import cn.createsequence.crane4j.core.support.reflect.PropertyOperator;
 import cn.hutool.core.collection.CollUtil;
 import com.google.common.collect.ArrayListMultimap;
@@ -21,7 +22,6 @@ import java.util.Set;
  *
  * @author huangchengxing
  */
-// TODO 重写Mapping方法，使其支持各种表达式
 @RequiredArgsConstructor
 public class ReflectAssembleOperationHandler implements AssembleOperationHandler {
 
@@ -67,8 +67,9 @@ public class ReflectAssembleOperationHandler implements AssembleOperationHandler
         for (AssembleExecution execution : executions) {
             Class<?> targetType = execution.getTargetType();
             String key = execution.getOperation().getKey();
+            MethodInvoker getter = propertyOperator.findGetter(targetType, key);
             for (Object target : execution.getTargets()) {
-                Object keyValue = propertyOperator.readProperty(targetType, target, key);
+                Object keyValue = getter.invoke(target);
                 entities.put(keyValue, new Entity(execution, target));
             }
         }
