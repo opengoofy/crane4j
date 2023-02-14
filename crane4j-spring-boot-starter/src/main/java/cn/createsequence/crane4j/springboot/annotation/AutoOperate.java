@@ -4,6 +4,7 @@ import cn.createsequence.crane4j.core.executor.BeanOperationExecutor;
 import cn.createsequence.crane4j.core.executor.DisorderedBeanOperationExecutor;
 import cn.createsequence.crane4j.core.parser.AnnotationAwareBeanOperationParser;
 import cn.createsequence.crane4j.core.parser.BeanOperationParser;
+import cn.createsequence.crane4j.springboot.support.MethodBaseExpressionEvaluator;
 import cn.createsequence.crane4j.springboot.support.aop.MethodArgumentAutoOperateAspect;
 import cn.createsequence.crane4j.springboot.support.aop.MethodResultAutoOperateAspect;
 
@@ -15,16 +16,14 @@ import java.lang.annotation.Target;
 import java.util.Collection;
 
 /**
- * <p>声明方法的返回值或者参数(若方法被{@link ArgAutoOperate}注解)需要自动进行填充处理，
- * 注解的方法将会根据配置，在切面中对返回值进行拆卸和装配操作。<br />
- * 该功能支持处理{@link Collection}集合、数组以及单个对象。
+ * <p>声明方法的返回值或者参数(若方法被{@link ArgAutoOperate}注解)，支持处理{@link Collection}集合、数组以及单个对象。
  *
  * @author huangchengxing
  * @see ArgAutoOperate
  * @see MethodResultAutoOperateAspect
  * @see MethodArgumentAutoOperateAspect
  */
-@Target(ElementType.METHOD)
+@Target({ElementType.METHOD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface AutoOperate {
@@ -32,7 +31,7 @@ public @interface AutoOperate {
     /**
      * 当用于{@link ArgAutoOperate}中时，用于绑定对应的参数名
      *
-     * @return java.lang.String
+     * @return 参数名
      */
     String value() default "";
 
@@ -103,7 +102,8 @@ public @interface AutoOperate {
      *     <li>通过{@code #参数名}的方式引用方法入参；</li>
      *     <li>通过{@code #result}的方式引用方法返回值；</li>
      * </ul>
-     * 可以在{@link MethodResultAutoOperateAspect 切面}的构造函数中指定上下文工厂以便支持更多功能。
+     * 表达式执行默认基于{@link MethodBaseExpressionEvaluator}实现，
+     * 若有必要，可以在容器中替换该实现可以以便支持更多自定义功能。
      *
      * @return 应用条件
      * @see MethodResultAutoOperateAspect#methodBaseExpressionEvaluator
