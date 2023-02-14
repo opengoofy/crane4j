@@ -150,8 +150,8 @@ public class AnnotationAwareBeanOperationParser implements BeanOperationParser {
      * @param beanType 正在解析的类
      * @return {@link Operations}
      */
-    protected Collection<Operations> parseOperationsAnnotations(Class<?> beanType) {
-        return annotationFinder.findAllAnnotations(beanType, Operations.class);
+    protected Operations parseOperationsAnnotation(Class<?> beanType) {
+        return annotationFinder.findAnnotation(beanType, Operations.class);
     }
 
     private void doParse(Class<?> beanType, BeanOperations beanOperations) {
@@ -163,9 +163,6 @@ public class AnnotationAwareBeanOperationParser implements BeanOperationParser {
         List<DisassembleOperation> disassembleOperations = new ArrayList<>();
         while (!typeQueue.isEmpty()) {
             Class<?> type = typeQueue.removeFirst();
-            if (Objects.equals(Object.class, type) || accessed.contains(type)) {
-                continue;
-            }
             accessed.add(type);
 
             // 已有元数据缓存？
@@ -175,7 +172,10 @@ public class AnnotationAwareBeanOperationParser implements BeanOperationParser {
             cache.append(assembleOperations, disassembleOperations);
 
             // 接着查找其父类和接口
-            typeQueue.add(type.getSuperclass());
+            Class<?> superclass = type.getSuperclass();
+            if (Objects.nonNull(superclass) && !Objects.equals(superclass, Object.class) && !accessed.contains(type)) {
+                typeQueue.add(superclass);
+            }
             CollUtil.addAll(typeQueue, type.getInterfaces());
         }
 
@@ -270,11 +270,11 @@ public class AnnotationAwareBeanOperationParser implements BeanOperationParser {
         // 解析类中的注解配置
         Collection<Assemble> assembles = parseAssembleAnnotations(type);
         Collection<Disassemble> disassembles = parseDisassembleAnnotations(type);
-        Collection<Operations> operations = parseOperationsAnnotations(type);
-        operations.forEach(op -> {
-            CollUtil.addAll(assembles, op.assembles());
-            CollUtil.addAll(disassembles, op.disassembles());
-        });
+        Operations operations = parseOperationsAnnotation(type);
+        if (Objects.nonNull(operations)) {
+            CollUtil.addAll(assembles, operations.assembles());
+            CollUtil.addAll(disassembles, operations.disassembles());
+        }
         // 将装配/拆卸配置添加到操作配置中
         List<AssembleOperation> assembleOperations = assembles.stream()
             .map(this::parseAssembleOperation)
