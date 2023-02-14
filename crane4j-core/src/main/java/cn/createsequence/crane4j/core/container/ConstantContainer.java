@@ -50,7 +50,7 @@ public class ConstantContainer<K> implements Container<K> {
      * @return 数据源容器
      */
     @Nonnull
-    public static <K, T extends Enum<?>> Container<K> forEnum(
+    public static <K, T extends Enum<?>> ConstantContainer<K> forEnum(
         String namespace, Class<T> enumType, Function<? super T, ? extends K> keyGetter) {
         Objects.requireNonNull(enumType);
         Objects.requireNonNull(keyGetter);
@@ -70,14 +70,14 @@ public class ConstantContainer<K> implements Container<K> {
      * @see ContainerEnum
      */
     @SuppressWarnings("unchecked")
-    public static <K, T extends Enum<?>> Container<K> forAnnotatedEnum(
+    public static <K, T extends Enum<?>> ConstantContainer<K> forAnnotatedEnum(
         Class<T> enumType, AnnotationFinder annotationFinder) {
         Objects.requireNonNull(enumType);
         Objects.requireNonNull(annotationFinder);
         // 枚举未被注解
         ContainerEnum annotation = annotationFinder.findAnnotation(enumType, ContainerEnum.class);
         if (Objects.isNull(annotation)) {
-            return (Container<K>)forEnum(enumType.getSimpleName(), enumType, Enum::name);
+            return (ConstantContainer<K>)forEnum(enumType.getSimpleName(), enumType, Enum::name);
         }
 
         // 若命名空间为空，则默认为类名称本身
@@ -100,7 +100,7 @@ public class ConstantContainer<K> implements Container<K> {
      * @param <K> key类型
      * @return 数据源容器
      */
-    public static <K> Container<K> forMap(String namespace, Map<K, ?> data) {
+    public static <K> ConstantContainer<K> forMap(String namespace, Map<K, ?> data) {
         Objects.requireNonNull(namespace);
         Assert.notEmpty(data, "data must not empty");
         return new ConstantContainer<>(namespace, data);

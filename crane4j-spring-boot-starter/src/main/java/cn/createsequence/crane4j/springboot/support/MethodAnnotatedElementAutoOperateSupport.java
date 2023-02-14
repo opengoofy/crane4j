@@ -53,9 +53,7 @@ public class MethodAnnotatedElementAutoOperateSupport {
         if (CharSequenceUtil.isEmpty(condition)) {
             return true;
         }
-        MethodBaseExpressionEvaluator.MethodExecution methodContext = new MethodBaseExpressionEvaluator.MethodExecution(
-            args, method, result, condition
-        );
+        MethodBaseExpressionEvaluator.MethodExecution methodContext = new MethodBaseExpressionEvaluator.MethodExecution(args, method, result);
         Boolean support = methodBaseExpressionEvaluator.execute(condition, Boolean.class, methodContext);
         return Objects.equals(Boolean.TRUE, support);
     }

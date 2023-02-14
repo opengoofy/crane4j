@@ -29,7 +29,7 @@ public class LambdaContainer<K> implements Container<K> {
      * @param <K> key类型
      * @return 数据源容器
      */
-    public static <K> Container<K> forLambda(String namespace, Function<Collection<K>, Map<K, ?>> lambda) {
+    public static <K> LambdaContainer<K> forLambda(String namespace, Function<Collection<K>, Map<K, ?>> lambda) {
         Objects.requireNonNull(namespace);
         Objects.requireNonNull(lambda);
         return new LambdaContainer<>(namespace, lambda);

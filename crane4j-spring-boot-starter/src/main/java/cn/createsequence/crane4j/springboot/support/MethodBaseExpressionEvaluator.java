@@ -99,6 +99,5 @@ public class MethodBaseExpressionEvaluator {
         private final Object[] args;
         private final Method method;
         private final Object result;
-        private final String condition;
     }
 }
