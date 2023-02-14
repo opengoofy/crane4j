@@ -11,6 +11,7 @@
     <artifactId>crane4j-core</artifactId>
     <packaging>jar</packaging>
     <name>crane4j-core</name>
+    <version>${revision}</version>
 
     <dependencies>
         <dependency>
