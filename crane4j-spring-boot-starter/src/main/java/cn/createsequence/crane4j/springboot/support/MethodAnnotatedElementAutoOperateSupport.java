@@ -49,7 +49,7 @@ public class MethodAnnotatedElementAutoOperateSupport {
      * @param condition 应用条件表达式
      * @return 是否要应用该操作
      */
-    protected boolean checkSupport(Object[] args, Object result, Method method, String condition) {
+    public boolean checkSupport(Object[] args, Object result, Method method, String condition) {
         if (CharSequenceUtil.isEmpty(condition)) {
             return true;
         }
@@ -65,7 +65,7 @@ public class MethodAnnotatedElementAutoOperateSupport {
      * @param annotation 注解
      * @return {@link ResolvedElement}
      */
-    protected ResolvedElement resolveElement(AnnotatedElement element, AutoOperate annotation) {
+    public ResolvedElement resolveElement(AnnotatedElement element, AutoOperate annotation) {
         // 获取待执行对象
         MethodInvoker extractor = resolveExtractor(annotation);
         // 根据注解配置获取相关组件
@@ -102,9 +102,9 @@ public class MethodAnnotatedElementAutoOperateSupport {
     /**
      * 被解析的注解元素
      */
+    @Getter
     @RequiredArgsConstructor
-    protected static class ResolvedElement {
-        @Getter
+    public static class ResolvedElement {
         private final AnnotatedElement element;
         private final MethodInvoker extractor;
         private final Set<String> groups;

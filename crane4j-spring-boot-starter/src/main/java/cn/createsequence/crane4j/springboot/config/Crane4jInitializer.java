@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
@@ -20,7 +21,6 @@ import org.springframework.core.type.classreading.MetadataReaderFactory;
 import java.util.Collection;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 /**
  * 默认的初始化器，用于应用启动后，针对一些缓存或组件进行初始化处理
@@ -78,8 +78,10 @@ public class Crane4jInitializer implements ApplicationRunner {
 
     @SneakyThrows
     private void readMetadata(String path, Consumer<MetadataReader> consumer) {
-        Stream.of(resolver.getResources(path))
-            .map(readerFactory::getMetadataReader)
-            .forEach(consumer);
+        Resource[] resources = resolver.getResources(path);
+        for (Resource resource : resources) {
+            MetadataReader reader = readerFactory.getMetadataReader(resource);
+            consumer.accept(reader);
+        }
     }
 }

@@ -53,7 +53,7 @@ public class Crane4jAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public Crane4jGlobalConfiguration craneGlobalConfiguration(ApplicationContext applicationContext) {
+    public Crane4jApplicationContext crane4jApplicationContext(ApplicationContext applicationContext) {
         return new Crane4jApplicationContext(applicationContext);
     }
 
