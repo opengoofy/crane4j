@@ -64,6 +64,7 @@ public class AnnotationAwareBeanOperationParserTest {
         BeanOperations beanOperations = parser.parse(Bean.class);
 
         // assemble : key -> value
+        Assert.assertEquals(2, beanOperations.getAssembleOperations().size());
         Collection<AssembleOperation> assembles = beanOperations.getAssembleOperations();
         AssembleOperation keyValue = CollUtil.get(assembles, 0);
         checkAssembleOperation(keyValue, "key", SUB_SORT);
@@ -92,6 +93,7 @@ public class AnnotationAwareBeanOperationParserTest {
     private void checkNestedBean(BeanOperations nestedBeanOperations, BeanOperations beanOperations) {
         Assert.assertNotNull(nestedBeanOperations);
         Collection<AssembleOperation> assembles = nestedBeanOperations.getAssembleOperations();
+        Assert.assertEquals(2, beanOperations.getAssembleOperations().size());
 
         // assemble : key -> value
         AssembleOperation keyValue = CollUtil.get(assembles, 0);

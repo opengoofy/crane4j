@@ -4,7 +4,6 @@ import cn.createsequence.crane4j.core.container.ConstantContainer;
 import cn.createsequence.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.createsequence.crane4j.core.executor.handler.DisassembleOperationHandler;
 import cn.createsequence.crane4j.core.parser.BeanOperationParser;
-import cn.createsequence.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.createsequence.crane4j.springboot.config.Crane4jAutoConfiguration;
 import cn.hutool.core.map.MapUtil;
 import org.junit.Assert;
@@ -25,7 +24,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class Crane4jApplicationContextTest {
 
     @Autowired
-    private Crane4jGlobalConfiguration context;
+    private Crane4jApplicationContext context;
 
     @Test
     public void test() {
@@ -35,6 +34,10 @@ public class Crane4jApplicationContextTest {
         Assert.assertNotNull(context.getDisassembleOperationHandler(DisassembleOperationHandler.class));
         Assert.assertNotNull(context.getContainer("test"));
         Assert.assertNotNull(context.getContainer("testBean"));
+
+        Assert.assertFalse(context.getRegisteredContainers().isEmpty());
+        context.destroy();
+        Assert.assertTrue(context.getRegisteredContainers().isEmpty());
     }
 
     protected static class TestConfig {

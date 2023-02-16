@@ -52,6 +52,11 @@ public class MethodAnnotatedElementAutoOperateSupportTest {
 
     @Test
     public void resolveElement() {
+        Method noneMethod = ReflectionUtils.findMethod(getClass(), "compute");
+        Assert.assertNotNull(noneMethod);
+        AutoOperate noneAnnotation = noneMethod.getAnnotation(AutoOperate.class);
+        Assert.assertThrows(NullPointerException.class, () -> support.resolveElement(noneMethod, noneAnnotation));
+
         Method method = getMethod();
         AutoOperate annotation = method.getAnnotation(AutoOperate.class);
         MethodAnnotatedElementAutoOperateSupport.ResolvedElement element = support.resolveElement(method, annotation);
@@ -73,6 +78,10 @@ public class MethodAnnotatedElementAutoOperateSupportTest {
     @AutoOperate(type = Foo.class, includes = {"a", "b"}, excludes = {"b", "c"}, condition = "'true'", on = "total")
     private Foo compute(Integer a, Integer b) {
         return new Foo(a + b);
+    }
+    @AutoOperate(type = Foo.class, includes = {"a", "b"}, excludes = {"b", "c"}, condition = "'true'", on = "none")
+    private Foo compute() {
+        return new Foo(0);
     }
 
     @Getter
