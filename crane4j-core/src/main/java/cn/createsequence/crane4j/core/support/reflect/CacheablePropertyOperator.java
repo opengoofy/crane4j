@@ -58,8 +58,8 @@ public abstract class CacheablePropertyOperator implements PropertyOperator {
     @Nullable
     @Override
     public MethodInvoker findGetter(Class<?> targetType, String propertyName) {
-        if (Objects.equals(targetType, Map.class)) {
-            return (t, args) -> ((Map<String, Object>)t).put(propertyName, args[0]);
+        if (Map.class.isAssignableFrom(targetType)) {
+            return (t, args) -> ((Map<String, Object>)t).get(propertyName);
         }
         return getCachedInvoker(
             targetType, GETTER_PREFIX, propertyName,
@@ -96,8 +96,8 @@ public abstract class CacheablePropertyOperator implements PropertyOperator {
     @Nullable
     @Override
     public MethodInvoker findSetter(Class<?> targetType, String propertyName) {
-        if (Objects.equals(targetType, Map.class)) {
-            return (t, args) -> ((Map<String, Object>)t).get(propertyName);
+        if (Map.class.isAssignableFrom(targetType)) {
+            return (t, args) -> ((Map<String, Object>)t).put(propertyName, args[0]);
         }
         return getCachedInvoker(
             targetType, SETTER_PREFIX, propertyName,
