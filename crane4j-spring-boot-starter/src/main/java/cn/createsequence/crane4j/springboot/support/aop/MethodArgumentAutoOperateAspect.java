@@ -1,6 +1,7 @@
 package cn.createsequence.crane4j.springboot.support.aop;
 
 import cn.createsequence.crane4j.core.util.CollectionUtils;
+import cn.createsequence.crane4j.springboot.MethodUtils;
 import cn.createsequence.crane4j.springboot.annotation.ArgAutoOperate;
 import cn.createsequence.crane4j.springboot.annotation.AutoOperate;
 import cn.createsequence.crane4j.springboot.support.MethodAnnotatedElementAutoOperateSupport;
@@ -15,6 +16,7 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 
 import java.lang.reflect.Method;
@@ -22,6 +24,7 @@ import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -39,10 +42,13 @@ public class MethodArgumentAutoOperateAspect extends MethodAnnotatedElementAutoO
 
     private static final ResolvedElement[] EMPTY_ELEMENTS = new ResolvedElement[0];
     private final Map<String, ResolvedElement[]> methodParameterCaches = CollectionUtils.newWeakConcurrentMap();
+    private final ParameterNameDiscoverer parameterNameDiscoverer;
 
     public MethodArgumentAutoOperateAspect(
-        ApplicationContext applicationContext, MethodBaseExpressionEvaluator methodBaseExpressionEvaluator) {
+        ApplicationContext applicationContext, MethodBaseExpressionEvaluator methodBaseExpressionEvaluator,
+        ParameterNameDiscoverer parameterNameDiscoverer) {
         super(applicationContext, methodBaseExpressionEvaluator);
+        this.parameterNameDiscoverer = parameterNameDiscoverer;
         log.info("enable automatic filling of method argument");
     }
 
@@ -86,35 +92,25 @@ public class MethodArgumentAutoOperateAspect extends MethodAnnotatedElementAutoO
     }
 
     private ResolvedElement[] resolveParameters(ArgAutoOperate argAutoOperate, Method method) {
-        Parameter[] parameters = method.getParameters();
-        if (parameters.length == 0) {
-            return EMPTY_ELEMENTS;
-        }
-        Map<String, AutoOperate> annotations = resolvedAnnotations(argAutoOperate, parameters);
-        // 解析注解，生成缓存对象
-        ResolvedElement[] results = new ResolvedElement[parameters.length];
-        for (int i = 0; i < parameters.length; i++) {
-            Parameter parameter = parameters[i];
-            AutoOperate annotation = annotations.get(parameter.getName());
+        Map<String, Parameter> parameterMap = MethodUtils.resolveParameterNames(parameterNameDiscoverer, method);
+        Map<String, AutoOperate> methodLevelAnnotations = Stream.of(argAutoOperate.value())
+            .collect(Collectors.toMap(AutoOperate::value, Function.identity()));
+
+        ResolvedElement[] results = new ResolvedElement[parameterMap.size()];
+        int index = 0;
+        for (Map.Entry<String, Parameter> entry : parameterMap.entrySet()) {
+            // 先优先从参数上获取，没有再从方法上获取
+            String paramName = entry.getKey();
+            Parameter param = entry.getValue();
+            AutoOperate annotation = Optional
+                .ofNullable(AnnotatedElementUtils.findMergedAnnotation(param, AutoOperate.class))
+                .orElse(methodLevelAnnotations.get(paramName));
+            // 解析注解，生成缓存对象
             ResolvedElement element = Objects.isNull(annotation) ?
-                EmptyElement.INSTANCE : resolveElement(parameter, annotation);
-            results[i] = element;
+                EmptyElement.INSTANCE : resolveElement(param, annotation);
+            results[index++] = element;
         }
         return results;
-    }
-
-    private static Map<String, AutoOperate> resolvedAnnotations(ArgAutoOperate argAutoOperate, Parameter[] parameters) {
-        // 类上的注解
-        Map<String, AutoOperate> annotations = Stream.of(argAutoOperate.value())
-            .collect(Collectors.toMap(AutoOperate::value, Function.identity()));
-        // 方法参数上的注解
-        for (Parameter parameter : parameters) {
-            AutoOperate annotation = AnnotatedElementUtils.findMergedAnnotation(parameter, AutoOperate.class);
-            if (Objects.nonNull(annotation)) {
-                annotations.put(parameter.getName(), annotation);
-            }
-        }
-        return annotations;
     }
 
     /**
