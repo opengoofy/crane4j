@@ -1,5 +1,9 @@
 package cn.createsequence.crane4j.springboot.config;
 
+import cn.createsequence.crane4j.core.cache.CacheManager;
+import cn.createsequence.crane4j.core.cache.ConcurrentMapCache;
+import cn.createsequence.crane4j.core.cache.SimpleCacheManager;
+import cn.createsequence.crane4j.core.container.CacheableMethodContainerFactory;
 import cn.createsequence.crane4j.core.container.DefaultMethodContainerFactory;
 import cn.createsequence.crane4j.core.container.MethodContainerFactory;
 import cn.createsequence.crane4j.core.executor.DisorderedBeanOperationExecutor;
@@ -26,7 +30,10 @@ import cn.createsequence.crane4j.springboot.support.aop.MethodArgumentAutoOperat
 import cn.createsequence.crane4j.springboot.support.aop.MethodResultAutoOperateAspect;
 import cn.createsequence.crane4j.springboot.support.expression.SpelExpressionContext;
 import cn.createsequence.crane4j.springboot.support.expression.SpelExpressionEvaluator;
+import com.esotericsoftware.reflectasm.MethodAccess;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -34,10 +41,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.expression.BeanFactoryResolver;
 import org.springframework.core.DefaultParameterNameDiscoverer;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * <p>crane的自动配置类。将当前配置类注入Spring容器，或者直接通过{@link EnableCrane4j}使其生效，
@@ -50,6 +60,15 @@ import java.util.Comparator;
 public class Crane4jAutoConfiguration {
 
     // ============== 基础组件 ==============
+
+    @Bean
+    @ConditionalOnMissingBean
+    public CacheManager cacheManager() {
+        return new SimpleCacheManager(
+            new ConcurrentHashMap<>(8),
+            cacheName -> new ConcurrentMapCache<>(new ConcurrentHashMap<>(16))
+        );
+    }
 
     @Bean
     @ConditionalOnMissingBean
@@ -105,6 +124,7 @@ public class Crane4jAutoConfiguration {
         return new OrderedBeanOperationExecutor(Comparator.comparing(AssembleOperation::getSort));
     }
 
+    @Order
     @Bean
     @ConditionalOnMissingBean
     public DefaultMethodContainerFactory defaultMethodContainerFactory(
@@ -112,8 +132,18 @@ public class Crane4jAutoConfiguration {
         return new DefaultMethodContainerFactory(propertyOperator, annotationFinder);
     }
 
+    @Order(Ordered.LOWEST_PRECEDENCE - 1)
     @Bean
     @ConditionalOnMissingBean
+    @ConditionalOnBean(CacheManager.class)
+    public CacheableMethodContainerFactory cacheableMethodContainerFactory(
+        CacheManager cacheManager, PropertyOperator propertyOperator, AnnotationFinder annotationFinder) {
+        return new CacheableMethodContainerFactory(propertyOperator, annotationFinder, cacheManager);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    @ConditionalOnClass(MethodAccess.class)
     public ReflectAssembleOperationHandler reflectAssembleOperationHandler(PropertyOperator propertyOperator) {
         return new ReflectAssembleOperationHandler(propertyOperator);
     }

@@ -13,6 +13,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -79,4 +80,10 @@ public class Crane4jProperties {
      * @see AnnotationMethodContainerProcessor
      */
     private boolean enableMethodContainer = true;
+    
+    /**
+     * 声明哪些数据源需要包装为缓存，
+     * 格式为{@code 缓存名称: 容器的命名空间}
+     */
+    private Map<String, Set<String>> cacheContainers;
 }

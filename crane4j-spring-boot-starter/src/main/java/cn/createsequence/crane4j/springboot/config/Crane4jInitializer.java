@@ -1,6 +1,9 @@
 package cn.createsequence.crane4j.springboot.config;
 
 import cn.createsequence.crane4j.core.annotation.ContainerEnum;
+import cn.createsequence.crane4j.core.cache.Cache;
+import cn.createsequence.crane4j.core.cache.CacheManager;
+import cn.createsequence.crane4j.core.container.CacheableContainer;
 import cn.createsequence.crane4j.core.container.ConstantContainer;
 import cn.createsequence.crane4j.core.container.Container;
 import cn.createsequence.crane4j.core.parser.BeanOperationParser;
@@ -19,6 +22,7 @@ import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -34,6 +38,7 @@ public class Crane4jInitializer implements ApplicationRunner {
     private final MetadataReaderFactory readerFactory;
     private final ResourcePatternResolver resolver;
 
+    private final CacheManager cacheManager;
     private final Crane4jProperties crane4jProperties;
     private final AnnotationFinder annotationFinder;
     private final Crane4jApplicationContext configuration;
@@ -47,6 +52,24 @@ public class Crane4jInitializer implements ApplicationRunner {
         loadContainerEnum();
         // 预解析类操作配置
         loadOperateEntity();
+        // 包装需要换成的数据源容器
+        wrapCacheableContainer();
+    }
+
+    private void wrapCacheableContainer() {
+        Map<String, Container<?>> containerMap = configuration.getRegisteredContainers();
+        crane4jProperties.getCacheContainers().forEach((cacheName, namespacea) -> {
+            Cache<Object> cache = cacheManager.getCache(cacheName);
+            wrapContainers(containerMap, namespacea, cache);
+        });
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void wrapContainers(
+        Map<String, Container<?>> containerMap, Set<String> namespacea, Cache<Object> cache) {
+        namespacea.forEach(space -> containerMap.computeIfPresent(
+            space, (n, container) -> new CacheableContainer<>((Container<Object>)container, cache)
+        ));
     }
 
     private void loadContainerEnum() {

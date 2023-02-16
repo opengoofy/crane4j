@@ -8,6 +8,7 @@ import cn.createsequence.crane4j.core.parser.BeanOperationParser;
 import cn.createsequence.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.createsequence.crane4j.core.support.TypeResolver;
 import cn.hutool.core.lang.Assert;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.DisposableBean;
@@ -38,6 +39,7 @@ public class Crane4jApplicationContext
     /**
      * 注册的数据源容器
      */
+    @Getter
     private final Map<String, Container<?>> registeredContainers = new ConcurrentHashMap<>();
 
     /**
@@ -125,7 +127,7 @@ public class Crane4jApplicationContext
      */
     @Override
     public void destroy() {
-        log.info("Crane4jGlobalConfiguration has been destroyed.");
+        log.info("global configuration has been destroyed.");
         registeredContainers.clear();
     }
 }
