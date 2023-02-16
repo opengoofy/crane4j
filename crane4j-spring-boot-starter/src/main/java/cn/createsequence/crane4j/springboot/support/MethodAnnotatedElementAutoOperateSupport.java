@@ -10,7 +10,6 @@ import cn.createsequence.crane4j.core.util.CollectionUtils;
 import cn.createsequence.crane4j.springboot.annotation.AutoOperate;
 import cn.createsequence.crane4j.springboot.support.aop.MethodArgumentAutoOperateAspect;
 import cn.createsequence.crane4j.springboot.support.aop.MethodResultAutoOperateAspect;
-import cn.hutool.core.lang.Assert;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ArrayUtil;
 import lombok.Getter;
@@ -19,6 +18,7 @@ import org.springframework.context.ApplicationContext;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -67,28 +67,38 @@ public class MethodAnnotatedElementAutoOperateSupport {
      */
     public ResolvedElement resolveElement(AnnotatedElement element, AutoOperate annotation) {
         // 获取待执行对象
-        MethodInvoker extractor = resolveExtractor(annotation);
+        MethodInvoker extractor = resolveExtractor(element, annotation);
         // 根据注解配置获取相关组件
         BeanOperationParser parser = applicationContext.getBean(annotation.parser());
         BeanOperations beanOperations = parser.parse(annotation.type());
         BeanOperationExecutor executor = applicationContext.getBean(annotation.executor());
         // 检查组别
         Set<String> groups = resolveGroups(annotation);
-        Assert.notEmpty(groups, "operation for [{}] does not belong to any executable group", element);
         return new ResolvedElement(element, extractor, groups, beanOperations, executor);
     }
 
-    private MethodInvoker resolveExtractor(AutoOperate annotation) {
+    private MethodInvoker resolveExtractor(AnnotatedElement element, AutoOperate annotation) {
+        Class<?> type = resolveTypeForExtractor(element);
         String on = annotation.on();
         MethodInvoker extractor = (t, args) -> t;
         if (CharSequenceUtil.isNotEmpty(on)) {
             PropertyOperator propertyOperator = applicationContext.getBean(PropertyOperator.class);
-            extractor = propertyOperator.findGetter(annotation.type(), on);
+            extractor = propertyOperator.findGetter(type, on);
             Objects.requireNonNull(extractor, () -> CharSequenceUtil.format(
                 "cannot find getter for [{}] on [{}]", on, annotation.type()
             ));
         }
         return extractor;
+    }
+
+    private static Class<?> resolveTypeForExtractor(AnnotatedElement element) {
+        if (element instanceof Method) {
+            return ((Method)element).getReturnType();
+        } else if (element instanceof Parameter) {
+            return ((Parameter)element).getType();
+        } else {
+            throw new IllegalArgumentException("element must be a method or parameter");
+        }
     }
 
     protected static Set<String> resolveGroups(AutoOperate annotation) {
