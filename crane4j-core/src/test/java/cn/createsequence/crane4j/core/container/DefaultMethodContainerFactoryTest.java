@@ -55,6 +55,11 @@ public class DefaultMethodContainerFactoryTest {
     }
 
     @Test
+    public void getSort() {
+        Assert.assertEquals(DefaultMethodContainerFactory.ORDER, factory.getSort());
+    }
+
+    @Test
     public void support() {
         Assert.assertFalse(factory.support(service, noneResultMethod));
         Assert.assertTrue(factory.support(service, mappedMethod));

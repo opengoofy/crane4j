@@ -1,5 +1,6 @@
 package cn.createsequence.crane4j.core.container;
 
+import cn.createsequence.crane4j.core.cache.Cache;
 import cn.createsequence.crane4j.core.cache.ConcurrentMapCache;
 import org.junit.Assert;
 import org.junit.Before;
@@ -19,6 +20,7 @@ public class CacheableContainerTest {
 
     private Container<String> container;
     private CacheableContainer<String> cacheableContainer;
+    private Cache<String> cache;
 
     @Before
     public void init() {
@@ -27,9 +29,18 @@ public class CacheableContainerTest {
             keys.forEach(key -> map.put(key, new Object()));
             return map;
         });
-        cacheableContainer = new CacheableContainer<>(
-            container, new ConcurrentMapCache<>(new ConcurrentHashMap<>(2))
-        );
+        cache = new ConcurrentMapCache<>(new ConcurrentHashMap<>(2));
+        cacheableContainer = new CacheableContainer<>(container, cache);
+    }
+
+    @Test
+    public void getContainer() {
+        Assert.assertSame(container, cacheableContainer.getContainer());
+    }
+
+    @Test
+    public void getCache() {
+        Assert.assertSame(cache, cacheableContainer.getCache());
     }
 
     @Test

@@ -1,6 +1,8 @@
-package cn.createsequence.crane4j.springboot;
+package cn.createsequence.crane4j.springboot.util;
 
 import cn.hutool.core.util.ArrayUtil;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.springframework.core.ParameterNameDiscoverer;
 
 import java.lang.reflect.Method;
@@ -10,8 +12,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
+ * 方法工具类
+ *
  * @author huangchengxing
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MethodUtils {
 
     /**
