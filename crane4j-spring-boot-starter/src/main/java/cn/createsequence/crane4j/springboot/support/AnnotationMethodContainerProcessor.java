@@ -5,25 +5,20 @@ import cn.createsequence.crane4j.core.annotation.ContainerMethod;
 import cn.createsequence.crane4j.core.container.Container;
 import cn.createsequence.crane4j.core.container.MethodContainerFactory;
 import cn.createsequence.crane4j.core.container.MethodInvokerContainer;
+import cn.createsequence.crane4j.core.util.ReflectUtils;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.text.CharSequenceUtil;
-import cn.hutool.core.util.ReflectUtil;
 import com.google.common.collect.Multimap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.util.ReflectionUtils;
 
 import javax.annotation.Nullable;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -89,23 +84,8 @@ public class AnnotationMethodContainerProcessor extends AbstractAnnotatedMethodP
         Method method = ReflectionUtils.findMethod(beanType, methodName, paramTypes);
         Assert.notNull(method, "method cannot be bind to annotation: [{}]", bind);
         // 将注解绑定到方法上
-        bindAnnotationsToMethod(classLevelAnnotation, method);
+        ReflectUtils.putAnnotation(classLevelAnnotation, method);
         return method;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static void bindAnnotationsToMethod(ContainerMethod classLevelAnnotation, Method method) {
-        if (Objects.nonNull(method)) {
-            // 调用方法触发初始化
-            Objects.requireNonNull(method.getAnnotations());
-            Optional.ofNullable(ReflectUtil.getFieldValue(method, "declaredAnnotations"))
-                .map(map -> (Map<Class<? extends Annotation >, Annotation>)map)
-                .map(LinkedHashMap::new)
-                .ifPresent(map -> {
-                    map.put(ContainerMethod.class, classLevelAnnotation);
-                    ReflectUtil.setFieldValue(method, "declaredAnnotations", Collections.unmodifiableMap(map));
-                });
-        }
     }
 
     private Collection<Container<Object>> createMethodContainer(Object bean, Method method) {

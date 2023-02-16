@@ -14,7 +14,6 @@ import cn.createsequence.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.createsequence.crane4j.core.support.Sorted;
 import cn.createsequence.crane4j.core.util.CollectionUtils;
 import cn.createsequence.crane4j.core.util.ReflectUtils;
-import cn.hutool.core.annotation.AnnotationUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.map.MapUtil;
@@ -259,7 +258,7 @@ public class AnnotationAwareBeanOperationParser implements BeanOperationParser {
             }
             for (T t : annotation) {
                 // 如果注解在属性上，则强制将value设置为被注解的属性名称
-                AnnotationUtil.setValue(t, ANNOTATION_KEY_ATTRIBUTE, field.getName());
+                ReflectUtils.setAttributeValue(t, ANNOTATION_KEY_ATTRIBUTE, field.getName());
                 results.add(t);
             }
         }
