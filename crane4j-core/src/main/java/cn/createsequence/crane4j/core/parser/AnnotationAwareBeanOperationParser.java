@@ -173,7 +173,7 @@ public class AnnotationAwareBeanOperationParser implements BeanOperationParser {
 
             // 接着查找其父类和接口
             Class<?> superclass = type.getSuperclass();
-            if (Objects.nonNull(superclass) && !Objects.equals(superclass, Object.class) && !accessed.contains(type)) {
+            if (Objects.nonNull(superclass) && !Objects.equals(superclass, Object.class) && !accessed.contains(superclass)) {
                 typeQueue.add(superclass);
             }
             CollUtil.addAll(typeQueue, type.getInterfaces());
