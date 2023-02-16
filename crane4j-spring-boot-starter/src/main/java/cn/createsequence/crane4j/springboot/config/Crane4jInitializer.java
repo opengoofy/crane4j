@@ -1,5 +1,6 @@
 package cn.createsequence.crane4j.springboot.config;
 
+import cn.createsequence.crane4j.core.annotation.ContainerConstant;
 import cn.createsequence.crane4j.core.annotation.ContainerEnum;
 import cn.createsequence.crane4j.core.cache.Cache;
 import cn.createsequence.crane4j.core.cache.CacheManager;
@@ -51,55 +52,58 @@ public class Crane4jInitializer implements ApplicationRunner {
         log.info("start initializing component cache......");
         // 加载枚举并将其注册为容器
         loadContainerEnum();
+        // 加载常量类并将其注册为容器
+        loadConstantClass();
         // 预解析类操作配置
         loadOperateEntity();
         // 包装需要换成的数据源容器
         wrapCacheableContainer();
     }
 
+    private void loadConstantClass() {
+        Set<String> constantPackages = crane4jProperties.getContainerConstantPackages();
+        constantPackages.forEach(path -> readMetadata(path, reader -> {
+            Class<?> targetType = ClassUtil.loadClass(reader.getClassMetadata().getClassName());
+            if (AnnotatedElementUtils.isAnnotated(targetType, ContainerConstant.class)) {
+                Container<String> container = ConstantContainer.forConstantClass(targetType, annotationFinder);
+                configuration.registerContainer(container);
+            }
+        }));
+    }
+
+    @SuppressWarnings("unchecked")
     private void wrapCacheableContainer() {
         Map<String, Container<?>> containerMap = configuration.getRegisteredContainers();
         crane4jProperties.getCacheContainers().forEach((cacheName, namespaces) -> {
             Cache<Object> cache = cacheManager.getCache(cacheName);
             for (String namespace : namespaces) {
-                wrapContainers(containerMap, namespace, cache);
+                containerMap.computeIfPresent(
+                    namespace, (n, container) -> new CacheableContainer<>((Container<Object>)container, cache)
+                );
             }
         });
     }
-
     @SuppressWarnings("unchecked")
-    private static void wrapContainers(
-        Map<String, Container<?>> containerMap, String namespace, Cache<Object> cache) {
-        containerMap.computeIfPresent(
-            namespace, (n, container) -> new CacheableContainer<>((Container<Object>)container, cache)
-        );
-    }
-
     private void loadContainerEnum() {
         Set<String> enumPackages = crane4jProperties.getContainerEnumPackages();
-        enumPackages.forEach(path -> readMetadata(path, this::loadEnum));
-    }
-
-    @SuppressWarnings("unchecked")
-    private void loadEnum(MetadataReader reader) {
-        Class<?> targetType = ClassUtil.loadClass(reader.getClassMetadata().getClassName());
-        boolean supported = targetType.isEnum()
-            && (!crane4jProperties.isOnlyLoadAnnotatedEnum() || AnnotatedElementUtils.isAnnotated(targetType, ContainerEnum.class));
-        if (supported) {
-            Container<Enum<?>> container = ConstantContainer.forAnnotatedEnum((Class<Enum<?>>)targetType, annotationFinder);
-            configuration.registerContainer(container);
-        }
+        enumPackages.forEach(path -> readMetadata(path, reader -> {
+            Class<?> targetType = ClassUtil.loadClass(reader.getClassMetadata().getClassName());
+            boolean supported = targetType.isEnum()
+                && (!crane4jProperties.isOnlyLoadAnnotatedEnum() || AnnotatedElementUtils.isAnnotated(targetType, ContainerEnum.class));
+            if (supported) {
+                Container<Enum<?>> container = ConstantContainer.forEnum((Class<Enum<?>>)targetType, annotationFinder);
+                configuration.registerContainer(container);
+            }
+        }));
     }
 
     private void loadOperateEntity() {
         Set<String> entityPackages = crane4jProperties.getOperateEntityPackages();
-        entityPackages.forEach(path -> readMetadata(path, this::loadEntity));
-    }
-
-    private void loadEntity(MetadataReader reader) {
-        Class<?> targetType = ClassUtil.loadClass(reader.getClassMetadata()
-            .getClassName());
-        parsers.forEach(parser -> parser.parse(targetType));
+        entityPackages.forEach(path -> readMetadata(path, reader -> {
+            Class<?> targetType = ClassUtil.loadClass(reader.getClassMetadata()
+                .getClassName());
+            parsers.forEach(parser -> parser.parse(targetType));
+        }));
     }
 
     @SneakyThrows

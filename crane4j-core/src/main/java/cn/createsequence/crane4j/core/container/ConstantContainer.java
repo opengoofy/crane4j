@@ -1,16 +1,21 @@
 package cn.createsequence.crane4j.core.container;
 
+import cn.createsequence.crane4j.core.annotation.ContainerConstant;
 import cn.createsequence.crane4j.core.annotation.ContainerEnum;
 import cn.createsequence.crane4j.core.support.AnnotationFinder;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ReflectUtil;
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import javax.annotation.Nonnull;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
@@ -25,6 +30,7 @@ import java.util.stream.Stream;
  * @author huangchengxing
  * @see ContainerEnum
  */
+@EqualsAndHashCode
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class ConstantContainer<K> implements Container<K> {
 
@@ -70,7 +76,7 @@ public class ConstantContainer<K> implements Container<K> {
      * @see ContainerEnum
      */
     @SuppressWarnings("unchecked")
-    public static <K, T extends Enum<?>> ConstantContainer<K> forAnnotatedEnum(
+    public static <K, T extends Enum<?>> ConstantContainer<K> forEnum(
         Class<T> enumType, AnnotationFinder annotationFinder) {
         Objects.requireNonNull(enumType);
         Objects.requireNonNull(annotationFinder);
@@ -104,6 +110,39 @@ public class ConstantContainer<K> implements Container<K> {
         Objects.requireNonNull(namespace);
         Assert.notEmpty(data, "data must not empty");
         return new ConstantContainer<>(namespace, data);
+    }
+
+    /**
+     * 将指定的常量类中的公共静态常量转为容器
+     *
+     * @param constantClass 常量类
+     * @return 数据源容器
+     * @see ContainerConstant
+     */
+    public static ConstantContainer<String> forConstantClass(
+        Class<?> constantClass, AnnotationFinder annotationFinder) {
+        Objects.requireNonNull(constantClass);
+        ContainerConstant annotation = annotationFinder.findAnnotation(constantClass, ContainerConstant.class);
+        Assert.notNull(annotation, "cannot find @ContainerConstant from [{}]", constantClass);
+        boolean onlyPublic = annotation.onlyPublic();
+        boolean onlyExplicitlyIncluded = annotation.onlyExplicitlyIncluded();
+        // 获取属性
+        Field[] fields = ReflectUtil.getFields(constantClass);
+        Map<String, Object> data = new LinkedHashMap<>();
+        Stream.of(fields)
+            .filter(field -> Modifier.isStatic(field.getModifiers()))
+            .filter(field -> !onlyPublic || Modifier.isPublic(field.getModifiers()))
+            .filter(field -> !onlyExplicitlyIncluded || annotationFinder.hasAnnotation(field, ContainerConstant.Include.class))
+            .filter(field -> !annotationFinder.hasAnnotation(field, ContainerConstant.Exclude.class))
+            .forEach(field -> {
+                Object value = ReflectUtil.getStaticFieldValue(field);
+                ContainerConstant.Name name = annotationFinder.findAnnotation(field, ContainerConstant.Name.class);
+                String key = Objects.isNull(name) ? field.getName() : name.value();
+                data.put(key, value);
+            });
+        // 构建容器
+        String namespace = CharSequenceUtil.emptyToDefault(annotation.namespace(), constantClass.getSimpleName());
+        return forMap(namespace, data);
     }
 
     /**

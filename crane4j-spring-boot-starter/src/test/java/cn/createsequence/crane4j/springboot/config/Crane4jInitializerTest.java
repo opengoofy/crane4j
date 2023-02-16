@@ -67,6 +67,18 @@ public class Crane4jInitializerTest {
             ((CacheableContainer<?>)container).getCache()
         );
 
+        // 注册常量类容器
+        Assert.assertEquals(
+            Collections.singleton("cn.createsequence.crane4j.springboot.config.*"),
+            crane4jProperties.getContainerConstantPackages()
+        );
+        Container<?> constant = context.getRegisteredContainers().get("constant");
+        Assert.assertTrue(constant instanceof ConstantContainer);
+        Map<?, ?> constantData = constant.get(null);
+        Assert.assertEquals("one", constantData.get("one"));
+        Assert.assertEquals("two", constantData.get("two"));
+        Assert.assertFalse(constantData.containsKey("THREE"));
+
         // 预加载实体类操作配置
         Assert.assertEquals(
             Collections.singleton("cn.createsequence.crane4j.springboot.config.*"),

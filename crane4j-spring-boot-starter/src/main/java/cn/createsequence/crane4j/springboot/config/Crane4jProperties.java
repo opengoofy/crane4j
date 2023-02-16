@@ -1,5 +1,6 @@
 package cn.createsequence.crane4j.springboot.config;
 
+import cn.createsequence.crane4j.core.annotation.ContainerConstant;
 import cn.createsequence.crane4j.core.annotation.ContainerEnum;
 import cn.createsequence.crane4j.core.annotation.ContainerMethod;
 import cn.createsequence.crane4j.core.container.ConstantContainer;
@@ -39,12 +40,12 @@ public class Crane4jProperties {
     private boolean enableAsmReflect = false;
 
     /**
-     * <p>扫描指定包路径，将该路径下被注解的枚举适配并注册为数据源容器，
+     * <p>扫描指定包路径，将该路径下的枚举适配并注册为数据源容器，
      * 若只需扫描被{@link ContainerEnum}注解的枚举，则一同配置{@link #onlyLoadAnnotatedEnum}。<br />
      * 比如：{@code com.example.constant.enum.*}
      *
      * @see ContainerEnum
-     * @see ConstantContainer#forAnnotatedEnum
+     * @see ConstantContainer#forEnum
      */
     private Set<String> containerEnumPackages;
 
@@ -52,6 +53,15 @@ public class Crane4jProperties {
      * 是否只加载被{@link ContainerEnum}注解的枚举
      */
     private boolean onlyLoadAnnotatedEnum = false;
+
+    /**
+     * <p>扫描指定包路径，将该路径下被{@link ContainerConstant}注解的常量类适配并注册为数据源容器。
+     * 比如：{@code com.example.constant.enum.*}
+     *
+     * @see ContainerConstant
+     * @see ConstantContainer#forConstantClass
+     */
+    private Set<String> containerConstantPackages;
 
     /**
      * <p>扫描指定包路径下的所有类，使用容器中的配置解析器对其进行预解析。

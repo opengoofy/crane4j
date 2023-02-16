@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
  * 表示注解的枚举可以被转为指定类型的枚举容器
  *
  * @author huangchengxing
- * @see ConstantContainer#forAnnotatedEnum
+ * @see ConstantContainer#forEnum
  */
 @Documented
 @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})

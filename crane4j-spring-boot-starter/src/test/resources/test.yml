@@ -5,6 +5,8 @@ crane4j:
   container-enum-packages: cn.createsequence.crane4j.springboot.config.*
   # 是否只加载被ContainerEnum注解的枚举
   only-load-annotated-enum: true
+  # 扫描指定包路径，将该路径下被注解的常量适配并注册为数据源容器
+  container-constant-packages: cn.createsequence.crane4j.springboot.config.*
   # 扫描指定包路径下的所有类，使用容器中的配置解析器对其进行预解析
   operate-entity-packages: cn.createsequence.crane4j.springboot.config.*
   # 声明哪些数据源需要包装为缓存，
