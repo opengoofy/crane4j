@@ -28,13 +28,10 @@ import java.util.stream.Stream;
  */
 public class DefaultMethodContainerFactoryTest {
 
-    private static final DefaultMethodContainerFactory FACTORY = new DefaultMethodContainerFactory(
-        new ReflectPropertyOperator(), new SimpleAnnotationFinder()
-    );
-    private static final Service SERVICE = new Service();
-    private static final Foo foo1 = new Foo("1", "foo");
-    private static final Foo foo2 = new Foo("2", "foo");
-
+    private DefaultMethodContainerFactory factory;
+    private Service service;
+    private final Foo foo1 = new Foo("1", "foo");
+    private final Foo foo2 = new Foo("2", "foo");
 
     private Method noneResultMethod;
     private Method mappedMethod;
@@ -43,6 +40,10 @@ public class DefaultMethodContainerFactoryTest {
 
     @Before
     public void initMethod() {
+        factory = new DefaultMethodContainerFactory(
+            new ReflectPropertyOperator(), new SimpleAnnotationFinder()
+        );
+        service = new Service();
         noneResultMethod = ReflectUtil.getMethod(Service.class, "noneResultMethod");
         Assert.assertNotNull(noneResultMethod);
         mappedMethod = ReflectUtil.getMethod(Service.class, "mappedMethod", List.class);
@@ -55,15 +56,15 @@ public class DefaultMethodContainerFactoryTest {
 
     @Test
     public void support() {
-        Assert.assertFalse(FACTORY.support(SERVICE, noneResultMethod));
-        Assert.assertTrue(FACTORY.support(SERVICE, mappedMethod));
-        Assert.assertTrue(FACTORY.support(SERVICE, onoToOneMethod));
-        Assert.assertTrue(FACTORY.support(SERVICE, oneToManyMethod));
+        Assert.assertFalse(factory.support(service, noneResultMethod));
+        Assert.assertTrue(factory.support(service, mappedMethod));
+        Assert.assertTrue(factory.support(service, onoToOneMethod));
+        Assert.assertTrue(factory.support(service, oneToManyMethod));
     }
 
     @Test
     public void getWhenMappedMethod() {
-        List<MethodInvokerContainer> containers = FACTORY.get(SERVICE, mappedMethod);
+        List<Container<Object>> containers = factory.get(service, mappedMethod);
         Assert.assertEquals(1, containers.size());
         Container<Object> container = containers.get(0);
         Assert.assertNotNull(container);
@@ -76,7 +77,7 @@ public class DefaultMethodContainerFactoryTest {
 
     @Test
     public void getWhenOnoToOneMethod() {
-        List<MethodInvokerContainer> containers = FACTORY.get(SERVICE, onoToOneMethod);
+        List<Container<Object>> containers = factory.get(service, onoToOneMethod);
         Assert.assertEquals(1, containers.size());
         Container<Object> container = containers.get(0);
         Assert.assertNotNull(container);
@@ -89,7 +90,7 @@ public class DefaultMethodContainerFactoryTest {
 
     @Test
     public void getWhenOneToManyMethod() {
-        List<MethodInvokerContainer> containers = FACTORY.get(SERVICE, oneToManyMethod);
+        List<Container<Object>> containers = factory.get(service, oneToManyMethod);
         Assert.assertEquals(1, containers.size());
         Container<Object> container = containers.get(0);
         Assert.assertNotNull(container);
@@ -99,7 +100,7 @@ public class DefaultMethodContainerFactoryTest {
         Assert.assertEquals(Arrays.asList(foo1, foo2), data.get(foo1.name));
     }
 
-    private static class Service {
+    private class Service {
         @ContainerMethod(namespace = "noneResultMethod", type = MappingType.MAPPED, resultType = Foo.class)
         public void noneResultMethod() { }
 

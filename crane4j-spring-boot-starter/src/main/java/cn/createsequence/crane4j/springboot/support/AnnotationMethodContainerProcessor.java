@@ -15,7 +15,6 @@ import org.springframework.util.ReflectionUtils;
 import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 import java.util.Collection;
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -52,7 +51,7 @@ public class AnnotationMethodContainerProcessor extends AbstractAnnotatedMethodP
     @Override
     protected void processAnnotatedMethods(
         Object bean, Class<?> beanType, Multimap<Method, ContainerMethod> annotatedMethods) {
-        List<MethodInvokerContainer> containers = annotatedMethods.keys().stream()
+        Collection<Container<Object>> containers = annotatedMethods.keys().stream()
             .map(method -> createMethodContainer(bean, method))
             .filter(CollUtil::isNotEmpty)
             .flatMap(Collection::stream)
@@ -80,7 +79,7 @@ public class AnnotationMethodContainerProcessor extends AbstractAnnotatedMethodP
         return method;
     }
 
-    private Collection<MethodInvokerContainer> createMethodContainer(Object bean, Method method) {
+    private Collection<Container<Object>> createMethodContainer(Object bean, Method method) {
         return factories.stream()
             .filter(factory -> factory.support(bean, method))
             .map(factory -> factory.get(bean, method))

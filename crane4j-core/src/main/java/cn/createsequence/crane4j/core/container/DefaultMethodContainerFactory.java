@@ -24,8 +24,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class DefaultMethodContainerFactory implements MethodContainerFactory {
 
-    private final PropertyOperator propertyOperator;
-    private final AnnotationFinder annotationFinder;
+    protected final PropertyOperator propertyOperator;
+    protected final AnnotationFinder annotationFinder;
 
     /**
      * 是否支持处理该方法
@@ -47,7 +47,7 @@ public class DefaultMethodContainerFactory implements MethodContainerFactory {
      * @return 方法数据源容器
      */
     @Override
-    public List<MethodInvokerContainer> get(Object source, Method method) {
+    public List<Container<Object>> get(Object source, Method method) {
         return annotationFinder.findAllAnnotations(method, ContainerMethod.class).stream()
             .map(annotation -> createContainer(source, method, annotation))
             .collect(Collectors.toList());

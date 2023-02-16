@@ -10,6 +10,7 @@ import java.util.List;
  *
  * @author huangchengxing
  * @see DefaultMethodContainerFactory
+ * @see CacheableMethodContainerFactory
  */
 public interface MethodContainerFactory extends Sorted {
 
@@ -29,5 +30,5 @@ public interface MethodContainerFactory extends Sorted {
      * @param method 方法
      * @return 方法数据源容器
      */
-    List<MethodInvokerContainer> get(Object source, Method method);
+    List<Container<Object>> get(Object source, Method method);
 }
