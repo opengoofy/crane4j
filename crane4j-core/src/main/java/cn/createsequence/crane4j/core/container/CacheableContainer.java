@@ -1,6 +1,7 @@
 package cn.createsequence.crane4j.core.container;
 
 import cn.createsequence.crane4j.core.cache.Cache;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import java.util.Objects;
  * @author huangchengxing
  * @see Cache
  */
+@Getter
 @RequiredArgsConstructor
 public class CacheableContainer<K> implements Container<K> {
 

@@ -39,8 +39,9 @@ public class Crane4jProperties {
     private boolean enableAsmReflect = false;
 
     /**
-     * 扫描指定包路径，将该路径下被注解的枚举适配并注册为数据源容器，
-     * 若只需扫描被{@link ContainerEnum}注解的枚举，则一同配置{@link #onlyLoadAnnotatedEnum}
+     * <p>扫描指定包路径，将该路径下被注解的枚举适配并注册为数据源容器，
+     * 若只需扫描被{@link ContainerEnum}注解的枚举，则一同配置{@link #onlyLoadAnnotatedEnum}。<br />
+     * 比如：{@code com.example.constant.enum.*}
      *
      * @see ContainerEnum
      * @see ConstantContainer#forAnnotatedEnum
@@ -53,8 +54,9 @@ public class Crane4jProperties {
     private boolean onlyLoadAnnotatedEnum = false;
 
     /**
-     * 扫描指定包路径下的所有类，使用容器中的配置解析器对其进行预解析。
-     * 该配置有利于提高某些具备缓存功能的配置解析器的效率。
+     * <p>扫描指定包路径下的所有类，使用容器中的配置解析器对其进行预解析。
+     * 该配置有利于提高某些具备缓存功能的配置解析器的效率。<br />
+     * 比如：{@code com.example.entity.*}
      *
      * @see BeanOperationParser
      */

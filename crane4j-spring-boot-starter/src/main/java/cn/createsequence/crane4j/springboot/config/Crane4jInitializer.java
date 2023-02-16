@@ -9,6 +9,7 @@ import cn.createsequence.crane4j.core.container.Container;
 import cn.createsequence.crane4j.core.parser.BeanOperationParser;
 import cn.createsequence.crane4j.core.support.AnnotationFinder;
 import cn.createsequence.crane4j.springboot.support.Crane4jApplicationContext;
+import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ClassUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -58,18 +59,20 @@ public class Crane4jInitializer implements ApplicationRunner {
 
     private void wrapCacheableContainer() {
         Map<String, Container<?>> containerMap = configuration.getRegisteredContainers();
-        crane4jProperties.getCacheContainers().forEach((cacheName, namespacea) -> {
+        crane4jProperties.getCacheContainers().forEach((cacheName, namespaces) -> {
             Cache<Object> cache = cacheManager.getCache(cacheName);
-            wrapContainers(containerMap, namespacea, cache);
+            for (String namespace : namespaces) {
+                wrapContainers(containerMap, namespace, cache);
+            }
         });
     }
 
     @SuppressWarnings("unchecked")
     private static void wrapContainers(
-        Map<String, Container<?>> containerMap, Set<String> namespacea, Cache<Object> cache) {
-        namespacea.forEach(space -> containerMap.computeIfPresent(
-            space, (n, container) -> new CacheableContainer<>((Container<Object>)container, cache)
-        ));
+        Map<String, Container<?>> containerMap, String namespace, Cache<Object> cache) {
+        containerMap.computeIfPresent(
+            namespace, (n, container) -> new CacheableContainer<>((Container<Object>)container, cache)
+        );
     }
 
     private void loadContainerEnum() {
@@ -101,7 +104,9 @@ public class Crane4jInitializer implements ApplicationRunner {
 
     @SneakyThrows
     private void readMetadata(String path, Consumer<MetadataReader> consumer) {
-        Resource[] resources = resolver.getResources(path);
+        String actualPath = CharSequenceUtil.replace(path, ".", "/");
+
+        Resource[] resources = resolver.getResources(actualPath);
         for (Resource resource : resources) {
             MetadataReader reader = readerFactory.getMetadataReader(resource);
             consumer.accept(reader);
