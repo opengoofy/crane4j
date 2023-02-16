@@ -23,12 +23,23 @@ import java.util.stream.Collectors;
  */
 public class CacheableMethodContainerFactory extends DefaultMethodContainerFactory {
 
+    public static final int ORDER = DefaultMethodContainerFactory.ORDER - 1;
     private final CacheManager cacheManager;
 
     public CacheableMethodContainerFactory(
         PropertyOperator propertyOperator, AnnotationFinder annotationFinder, CacheManager cacheManager) {
         super(propertyOperator, annotationFinder);
         this.cacheManager = cacheManager;
+    }
+
+    /**
+     * 获取排序值，越小越优先执行
+     *
+     * @return 排序值
+     */
+    @Override
+    public int getSort() {
+        return ORDER;
     }
 
     /**

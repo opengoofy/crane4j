@@ -24,8 +24,19 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class DefaultMethodContainerFactory implements MethodContainerFactory {
 
+    public static final int ORDER = Integer.MAX_VALUE;
     protected final PropertyOperator propertyOperator;
     protected final AnnotationFinder annotationFinder;
+
+    /**
+     * 获取排序值，越小越优先执行
+     *
+     * @return 排序值
+     */
+    @Override
+    public int getSort() {
+        return ORDER;
+    }
 
     /**
      * 是否支持处理该方法

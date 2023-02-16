@@ -15,6 +15,7 @@ import org.springframework.util.ReflectionUtils;
 import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.stream.Collectors;
 
 /**
@@ -37,7 +38,9 @@ public class AnnotationMethodContainerProcessor extends AbstractAnnotatedMethodP
     public AnnotationMethodContainerProcessor(
         Collection<MethodContainerFactory> factories, Crane4jApplicationContext configuration) {
         super(ContainerMethod.class);
-        this.factories = factories;
+        this.factories = factories.stream()
+            .sorted(Comparator.comparing(MethodContainerFactory::getSort))
+            .collect(Collectors.toList());
         this.configuration = configuration;
     }
 
