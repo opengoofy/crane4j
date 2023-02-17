@@ -1,7 +1,7 @@
 package cn.crane4j.springboot.config;
 
-import cn.crane4j.core.annotation.ContainerConstant;
-import cn.crane4j.core.annotation.ContainerEnum;
+import cn.crane4j.annotation.ContainerConstant;
+import cn.crane4j.annotation.ContainerEnum;
 import cn.crane4j.core.cache.Cache;
 import cn.crane4j.core.cache.CacheManager;
 import cn.crane4j.core.container.CacheableContainer;

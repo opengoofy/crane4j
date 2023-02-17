@@ -1,6 +1,6 @@
 package cn.crane4j.core.executor.handler;
 
-import cn.crane4j.core.exception.CraneException;
+import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.parser.DisassembleOperation;
 import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.support.reflect.PropertyOperator;
@@ -40,7 +40,7 @@ public class ReflectDisassembleOperationHandler implements DisassembleOperationH
             return Collections.emptyList();
         }
         MethodInvoker getter = propertyOperator.findGetter(operation.getSourceType(), operation.getKey());
-        Assert.notNull(getter, () -> new CraneException(
+        Assert.notNull(getter, () -> new Crane4jException(
             "cannot find getter for [{}] on [{}]", operation.getKey(), operation.getSourceType()
         ));
         Deque<Object> deque = targets.stream()

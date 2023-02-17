@@ -15,6 +15,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>cn.crane4j</groupId>
+            <artifactId>crane4j-annotation</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>com.esotericsoftware</groupId>
             <artifactId>reflectasm</artifactId>
         </dependency>

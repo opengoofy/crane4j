@@ -1,12 +1,14 @@
 package cn.crane4j.springboot.support;
 
 import cn.crane4j.core.container.Container;
-import cn.crane4j.core.exception.CraneException;
+import cn.crane4j.core.exception.Crane4jException;
+import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.TypeResolver;
+import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.hutool.core.lang.Assert;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +45,16 @@ public class Crane4jApplicationContext
     private final Map<String, Container<?>> registeredContainers = new ConcurrentHashMap<>();
 
     /**
+     * 获取属性操作器
+     *
+     * @return 类型解析器
+     */
+    @Override
+    public PropertyOperator getPropertyOperator() {
+        return applicationContext.getBean(PropertyOperator.class);
+    }
+
+    /**
      * 获取类型解析器
      *
      * @return 类型解析器
@@ -68,6 +80,28 @@ public class Crane4jApplicationContext
     }
 
     /**
+     * 获取操作执行器
+     *
+     * @param executorType 执行器类型
+     * @return cn.crane4j.core.executor.BeanOperationExecutor
+     */
+    @Override
+    public BeanOperationExecutor getBeanOperationExecutor(Class<? extends BeanOperationExecutor> executorType) {
+        return applicationContext.getBean(executorType);
+    }
+
+    /**
+     * 获取操作执行器
+     *
+     * @param executorName 执行器名称
+     * @return cn.crane4j.core.executor.BeanOperationExecutor
+     */
+    @Override
+    public BeanOperationExecutor getBeanOperationExecutor(String executorName) {
+        return applicationContext.getBean(executorName, BeanOperationExecutor.class);
+    }
+
+    /**
      * 获取配置解析器
      *
      * @param parserType 配置解析器类型
@@ -76,6 +110,17 @@ public class Crane4jApplicationContext
     @Override
     public BeanOperationParser getBeanOperationsParser(Class<? extends BeanOperationParser> parserType) {
         return applicationContext.getBean(parserType);
+    }
+
+    /**
+     * 获取配置解析器
+     *
+     * @param parserName 配置解析器名称
+     * @return 配置解析器
+     */
+    @Override
+    public BeanOperationParser getBeanOperationsParser(String parserName) {
+        return applicationContext.getBean(parserName, BeanOperationParser.class);
     }
 
     /**
@@ -90,6 +135,17 @@ public class Crane4jApplicationContext
     }
 
     /**
+     * 获取装配操作处理器
+     *
+     * @param handlerName 处理器器名称
+     * @return 装配操作处理器
+     */
+    @Override
+    public AssembleOperationHandler getAssembleOperationHandler(String handlerName) {
+        return applicationContext.getBean(handlerName, AssembleOperationHandler.class);
+    }
+
+    /**
      * 获取拆卸操作处理器
      *
      * @param handlerType 处理器类型
@@ -101,15 +157,26 @@ public class Crane4jApplicationContext
     }
 
     /**
+     * 获取拆卸操作处理器
+     *
+     * @param handlerName 处理器名称
+     * @return 拆卸操作处理器
+     */
+    @Override
+    public DisassembleOperationHandler getDisassembleOperationHandler(String handlerName) {
+        return applicationContext.getBean(handlerName, DisassembleOperationHandler.class);
+    }
+
+    /**
      * 注册数据源容器
      *
      * @param container 要注册的容器
-     * @throws CraneException 当该容器的命名空间已被注册时抛出
+     * @throws Crane4jException 当该容器的命名空间已被注册时抛出
      */
     public void registerContainer(Container<?> container) {
         String namespace = container.getNamespace();
         Container<?> old = registeredContainers.put(namespace, container);
-        Assert.isNull(old, () -> new CraneException("the container [{}] has been registered", namespace));
+        Assert.isNull(old, () -> new Crane4jException("the container [{}] has been registered", namespace));
         log.info("register data source container [{}]", container.getNamespace());
     }
 

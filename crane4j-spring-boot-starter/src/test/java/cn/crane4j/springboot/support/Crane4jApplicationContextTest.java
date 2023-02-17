@@ -1,6 +1,7 @@
 package cn.crane4j.springboot.support;
 
 import cn.crane4j.core.container.ConstantContainer;
+import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
 import cn.crane4j.core.parser.BeanOperationParser;
@@ -29,9 +30,15 @@ public class Crane4jApplicationContextTest {
     @Test
     public void test() {
         Assert.assertNotNull(context.getTypeResolver());
+        Assert.assertNotNull(context.getPropertyOperator());
         Assert.assertNotNull(context.getBeanOperationsParser(BeanOperationParser.class));
+        Assert.assertNotNull(context.getBeanOperationsParser("annotationAwareBeanOperationParser"));
+        Assert.assertNotNull(context.getBeanOperationExecutor(BeanOperationExecutor.class));
+        Assert.assertNotNull(context.getBeanOperationExecutor("disorderedBeanOperationExecutor"));
         Assert.assertNotNull(context.getAssembleOperationHandler(AssembleOperationHandler.class));
+        Assert.assertNotNull(context.getAssembleOperationHandler("reflectAssembleOperationHandler"));
         Assert.assertNotNull(context.getDisassembleOperationHandler(DisassembleOperationHandler.class));
+        Assert.assertNotNull(context.getDisassembleOperationHandler("reflectDisassembleOperationHandler"));
         Assert.assertNotNull(context.getContainer("test"));
         Assert.assertNotNull(context.getContainer("testBean"));
 

@@ -1,8 +1,8 @@
 package cn.crane4j.core.executor;
 
-import cn.crane4j.core.annotation.Assemble;
-import cn.crane4j.core.annotation.Disassemble;
-import cn.crane4j.core.annotation.Mapping;
+import cn.crane4j.annotation.Assemble;
+import cn.crane4j.annotation.Disassemble;
+import cn.crane4j.annotation.Mapping;
 import cn.crane4j.core.container.ConstantContainer;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.parser.BeanOperations;

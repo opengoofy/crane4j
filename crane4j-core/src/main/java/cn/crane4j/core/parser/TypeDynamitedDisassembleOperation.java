@@ -1,6 +1,6 @@
 package cn.crane4j.core.parser;
 
-import cn.crane4j.core.exception.CraneException;
+import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
 import cn.crane4j.core.support.TypeResolver;
 import cn.hutool.core.lang.Assert;
@@ -50,7 +50,7 @@ public class TypeDynamitedDisassembleOperation extends SimpleKeyTriggerOperation
     @Override
     public BeanOperations getInternalBeanOperations(Object internalBean) {
         Class<?> internalType = typeResolver.resolve(internalBean);
-        Assert.notNull(internalType, () -> new CraneException("cannot resolve type for object: [{}]", internalBean));
+        Assert.notNull(internalType, () -> new Crane4jException("cannot resolve type for object: [{}]", internalBean));
         return beanOperationParser.parse(internalType);
     }
 }

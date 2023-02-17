@@ -1,6 +1,6 @@
 package cn.crane4j.core.executor;
 
-import cn.crane4j.core.exception.CraneException;
+import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
 import cn.crane4j.core.parser.AssembleOperation;
 import cn.crane4j.core.parser.BeanOperations;
@@ -41,7 +41,7 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
         if (CollUtil.isEmpty(targets) || Objects.isNull(operations)) {
             return;
         }
-        Assert.isTrue(operations.isActive(), () -> new CraneException(
+        Assert.isTrue(operations.isActive(), () -> new Crane4jException(
             "bean operation of [{}] is not activated", operations.getTargetType()
         ));
         // 若有必要，则先完成拆卸操作

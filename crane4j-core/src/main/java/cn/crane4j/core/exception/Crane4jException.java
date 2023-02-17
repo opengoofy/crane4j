@@ -7,7 +7,7 @@ import cn.hutool.core.text.CharSequenceUtil;
  *
  * @author huangchengxing
  */
-public class CraneException extends RuntimeException {
+public class Crane4jException extends RuntimeException {
 
     /**
      * Constructs a new runtime exception with the specified detail message.
@@ -18,7 +18,7 @@ public class CraneException extends RuntimeException {
      *                later retrieval by the {@link #getMessage()} method.
      * @param args args of message template
      */
-    public CraneException(String messageTemplate, Object... args) {
+    public Crane4jException(String messageTemplate, Object... args) {
         super(CharSequenceUtil.format(messageTemplate, args));
     }
 }

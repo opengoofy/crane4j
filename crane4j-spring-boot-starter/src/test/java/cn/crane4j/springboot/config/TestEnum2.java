@@ -1,6 +1,6 @@
 package cn.crane4j.springboot.config;
 
-import cn.crane4j.core.annotation.ContainerEnum;
+import cn.crane4j.annotation.ContainerEnum;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

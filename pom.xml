@@ -8,11 +8,12 @@
   <packaging>pom</packaging>
 
   <name>crane4j</name>
-  <url>http://cran4j.cn</url>
+  <url>https://cran4j.cn</url>
 
   <modules>
     <module>crane4j-core</module>
     <module>crane4j-spring-boot-starter</module>
+    <module>crane4j-annotation</module>
   </modules>
 
   <licenses>
@@ -58,12 +59,17 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>cn.createsequence.crane4j</groupId>
+        <groupId>cn.crane4j</groupId>
+        <artifactId>crane4j-annotation</artifactId>
+        <version>${revision}</version>
+      </dependency>
+      <dependency>
+        <groupId>cn.crane4j</groupId>
         <artifactId>crane4j-core</artifactId>
         <version>${revision}</version>
       </dependency>
       <dependency>
-        <groupId>cn.createsequence.crane4j</groupId>
+        <groupId>cn.crane4j</groupId>
         <artifactId>crane4j-spring-boot-starter</artifactId>
         <version>${revision}</version>
       </dependency>

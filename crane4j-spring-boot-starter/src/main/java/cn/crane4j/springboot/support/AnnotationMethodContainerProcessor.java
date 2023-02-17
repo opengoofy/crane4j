@@ -1,7 +1,7 @@
 package cn.crane4j.springboot.support;
 
-import cn.crane4j.core.annotation.Bind;
-import cn.crane4j.core.annotation.ContainerMethod;
+import cn.crane4j.annotation.Bind;
+import cn.crane4j.annotation.ContainerMethod;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.MethodContainerFactory;
 import cn.crane4j.core.container.MethodInvokerContainer;

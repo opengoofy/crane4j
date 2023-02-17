@@ -1,20 +1,21 @@
 package cn.crane4j.springboot.support;
 
+import cn.crane4j.annotation.AutoOperate;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.KeyTriggerOperation;
+import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.util.CollectionUtils;
-import cn.crane4j.springboot.annotation.AutoOperate;
+import cn.crane4j.core.util.ConfigurationUtil;
 import cn.crane4j.springboot.support.aop.MethodArgumentAutoOperateAspect;
 import cn.crane4j.springboot.support.aop.MethodResultAutoOperateAspect;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ArrayUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationContext;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
@@ -37,7 +38,7 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class MethodAnnotatedElementAutoOperateSupport {
 
-    private final ApplicationContext applicationContext;
+    private final Crane4jGlobalConfiguration configuration;
     private final MethodBaseExpressionEvaluator methodBaseExpressionEvaluator;
 
     /**
@@ -69,9 +70,9 @@ public class MethodAnnotatedElementAutoOperateSupport {
         // 获取待执行对象
         MethodInvoker extractor = resolveExtractor(element, annotation);
         // 根据注解配置获取相关组件
-        BeanOperationParser parser = applicationContext.getBean(annotation.parser());
+        BeanOperationParser parser = ConfigurationUtil.getParser(configuration, annotation.parserName(), annotation.parser());
         BeanOperations beanOperations = parser.parse(annotation.type());
-        BeanOperationExecutor executor = applicationContext.getBean(annotation.executor());
+        BeanOperationExecutor executor = ConfigurationUtil.getOperationExecutor(configuration, annotation.executorName(), annotation.executor());
         // 检查组别
         Set<String> groups = resolveGroups(annotation);
         return new ResolvedElement(element, extractor, groups, beanOperations, executor);
@@ -82,7 +83,7 @@ public class MethodAnnotatedElementAutoOperateSupport {
         String on = annotation.on();
         MethodInvoker extractor = (t, args) -> t;
         if (CharSequenceUtil.isNotEmpty(on)) {
-            PropertyOperator propertyOperator = applicationContext.getBean(PropertyOperator.class);
+            PropertyOperator propertyOperator = configuration.getPropertyOperator();
             extractor = propertyOperator.findGetter(type, on);
             Objects.requireNonNull(extractor, () -> CharSequenceUtil.format(
                 "cannot find getter for [{}] on [{}]", on, annotation.type()

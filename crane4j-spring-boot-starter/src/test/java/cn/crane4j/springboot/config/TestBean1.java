@@ -1,8 +1,8 @@
 package cn.crane4j.springboot.config;
 
-import cn.crane4j.core.annotation.Assemble;
-import cn.crane4j.core.annotation.Disassemble;
-import cn.crane4j.core.annotation.Mapping;
+import cn.crane4j.annotation.Assemble;
+import cn.crane4j.annotation.Disassemble;
+import cn.crane4j.annotation.Mapping;
 import lombok.Data;
 
 import java.util.List;

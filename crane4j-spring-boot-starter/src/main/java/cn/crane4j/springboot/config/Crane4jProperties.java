@@ -1,8 +1,8 @@
 package cn.crane4j.springboot.config;
 
-import cn.crane4j.core.annotation.ContainerConstant;
-import cn.crane4j.core.annotation.ContainerEnum;
-import cn.crane4j.core.annotation.ContainerMethod;
+import cn.crane4j.annotation.ContainerConstant;
+import cn.crane4j.annotation.ContainerEnum;
+import cn.crane4j.annotation.ContainerMethod;
 import cn.crane4j.core.container.ConstantContainer;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.support.reflect.AsmReflectPropertyOperator;

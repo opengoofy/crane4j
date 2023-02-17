@@ -1,7 +1,8 @@
 package cn.crane4j.springboot.support;
 
+import cn.crane4j.annotation.AutoOperate;
 import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
-import cn.crane4j.springboot.annotation.AutoOperate;
+import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.springboot.config.Crane4jAutoConfiguration;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +12,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.ReflectionUtils;
 
@@ -28,7 +28,7 @@ import java.util.function.Predicate;
 public class MethodAnnotatedElementAutoOperateSupportTest {
 
     @Autowired
-    private ApplicationContext applicationContext;
+    private Crane4jGlobalConfiguration applicationContext;
     @Autowired
     private MethodBaseExpressionEvaluator methodBaseExpressionEvaluator;
 

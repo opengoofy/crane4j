@@ -1,7 +1,4 @@
-package cn.crane4j.core.annotation;
-
-import cn.crane4j.core.container.CacheableMethodContainerFactory;
-import cn.crane4j.core.container.Container;
+package cn.crane4j.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -15,7 +12,7 @@ import java.lang.annotation.Target;
  *
  * @author huangchengxing
  * @see ContainerMethod
- * @see CacheableMethodContainerFactory
+ * @see cn.crane4j.core.container.CacheableMethodContainerFactory
  */
 @Documented
 @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
@@ -23,7 +20,7 @@ import java.lang.annotation.Target;
 public @interface ContainerCache {
 
     /**
-     * 缓存名，为空时默认为{@link Container#getNamespace()}
+     * 缓存名，为空时默认为标记的方法的{@link ContainerMethod#namespace()}
      *
      * @return 缓存的命名空间
      */

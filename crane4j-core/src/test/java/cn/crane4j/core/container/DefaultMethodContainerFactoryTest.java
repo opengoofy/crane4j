@@ -1,7 +1,7 @@
 package cn.crane4j.core.container;
 
-import cn.crane4j.core.annotation.ContainerMethod;
-import cn.crane4j.core.annotation.MappingType;
+import cn.crane4j.annotation.ContainerMethod;
+import cn.crane4j.annotation.MappingType;
 import cn.crane4j.core.support.SimpleAnnotationFinder;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
 import cn.hutool.core.util.ReflectUtil;

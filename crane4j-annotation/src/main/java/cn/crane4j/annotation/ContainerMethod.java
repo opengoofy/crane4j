@@ -1,4 +1,4 @@
-package cn.crane4j.core.annotation;
+package cn.crane4j.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -23,7 +23,7 @@ import java.util.Map;
  *     </li>
  * </ul>
  *
- * <p>比如，下述例子描述了如何将<i>requestFoo</i>方法适配为一个数据源容器：
+ * <p>比如，下述例子描述了如何将<i>requestFoo</i>方法适配为一个数据源容器：<br />
  * 可以直接在方法上添加注解：
  * <pre type="code">{@code
  * // 返回响应体的方法
@@ -33,7 +33,7 @@ import java.util.Map;
  * )
  * public List<Foo> requestFoo(Set<Integer> ids) { // do something }
  * }</pre>
- * 或者，将注解注解在类上，再指向需要绑定的类中方法：
+ * 或者，将注解注解在类上，再通过{@link Bind}指向需要绑定的类中方法：
  * <pre type="code">{@code
  * // 返回响应体的方法
  * @ContainerMethod(
@@ -45,9 +45,11 @@ import java.util.Map;
  * }
  * }</pre>
  * 该容器命名空间为<i>foo</i>，当执行时会使用对应的id集合从该方法中获得<i>Foo</i>对象集合，
- * 然后将其按<i>foo.id</i>分组后进行字段映射。
+ * 然后将其按<i>id</i>分组后进行字段映射。
  *
  * @author huangchengxing
+ * @see cn.crane4j.core.container.MethodInvokerContainer
+ * @see cn.crane4j.core.container.MethodContainerFactory
  */
 @Repeatable(ContainerMethod.List.class)
 @Documented

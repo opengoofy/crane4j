@@ -1,6 +1,4 @@
-package cn.crane4j.core.annotation;
-
-import cn.crane4j.core.container.ConstantContainer;
+package cn.crane4j.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -12,7 +10,7 @@ import java.lang.annotation.Target;
  * 表示注解的枚举可以被转为指定类型的枚举容器
  *
  * @author huangchengxing
- * @see ConstantContainer#forEnum
+ * @see cn.crane4j.core.container.ConstantContainer#forEnum
  */
 @Documented
 @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})

@@ -17,6 +17,7 @@ import java.util.Collection;
  *
  * @author huangchengxing
  * @see ReflectAssembleOperationHandler
+ * @see MultiKeyAssembleOperationHandler
  */
 public interface AssembleOperationHandler {
 

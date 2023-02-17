@@ -1,7 +1,7 @@
 package cn.crane4j.core.executor.handler;
 
-import cn.crane4j.core.annotation.Assemble;
-import cn.crane4j.core.annotation.Mapping;
+import cn.crane4j.annotation.Assemble;
+import cn.crane4j.annotation.Mapping;
 import cn.crane4j.core.container.ConstantContainer;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.executor.BaseExecutorTest;
@@ -37,7 +37,7 @@ public class MultiKeyAssembleOperationHandlerTest extends BaseExecutorTest {
     public void init() {
         PropertyOperator operator = new ReflectPropertyOperator();
         MultiKeyAssembleOperationHandler handler = new MultiKeyAssembleOperationHandler(",", operator);
-        configuration.getAssembleOperationHandlerMap().put(handler.getClass(), handler);
+        configuration.getAssembleOperationHandlerMap().put(handler.getClass().getName(), handler);
 
         executor = new DisorderedBeanOperationExecutor();
 

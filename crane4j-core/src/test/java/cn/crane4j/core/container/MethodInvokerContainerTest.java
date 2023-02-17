@@ -1,6 +1,6 @@
 package cn.crane4j.core.container;
 
-import cn.crane4j.core.annotation.MappingType;
+import cn.crane4j.annotation.MappingType;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package cn.crane4j.core.annotation;
+package cn.crane4j.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -10,6 +10,7 @@ import java.lang.annotation.Target;
  * 表明一个类中的成员变量可作为容器
  *
  * @author huangchengxing
+ * @see cn.crane4j.core.container.ConstantContainer#forConstantClass
  */
 @Documented
 @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})

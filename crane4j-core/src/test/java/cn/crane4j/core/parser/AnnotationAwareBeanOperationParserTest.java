@@ -1,10 +1,10 @@
 package cn.crane4j.core.parser;
 
-import cn.crane4j.core.annotation.Assemble;
-import cn.crane4j.core.annotation.Disassemble;
-import cn.crane4j.core.annotation.Mapping;
-import cn.crane4j.core.annotation.MappingTemplate;
-import cn.crane4j.core.annotation.Operations;
+import cn.crane4j.annotation.Assemble;
+import cn.crane4j.annotation.Disassemble;
+import cn.crane4j.annotation.Mapping;
+import cn.crane4j.annotation.MappingTemplate;
+import cn.crane4j.annotation.Operations;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.LambdaContainer;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
@@ -54,9 +54,15 @@ public class AnnotationAwareBeanOperationParserTest {
         );
         configuration.setTypeResolver(new SimpleTypeResolver());
         configuration.getContainerMap().put(CONTAINER.getNamespace(), CONTAINER);
-        configuration.getBeanOperationParserMap().put(parser.getClass(), parser);
-        configuration.getAssembleOperationHandlerMap().put(ASSEMBLE_OPERATION_HANDLER.getClass(), ASSEMBLE_OPERATION_HANDLER);
-        configuration.getDisassembleOperationHandlerMap().put(DISASSEMBLE_OPERATION_HANDLER.getClass(), DISASSEMBLE_OPERATION_HANDLER);
+
+        configuration.getBeanOperationParserMap().put(parser.getClass().getName(), parser);
+        configuration.getBeanOperationParserMap().put(BeanOperationParser.class.getName(), parser);
+
+        configuration.getAssembleOperationHandlerMap().put(ASSEMBLE_OPERATION_HANDLER.getClass().getName(), ASSEMBLE_OPERATION_HANDLER);
+        configuration.getAssembleOperationHandlerMap().put(AssembleOperationHandler.class.getName(), ASSEMBLE_OPERATION_HANDLER);
+
+        configuration.getDisassembleOperationHandlerMap().put(DISASSEMBLE_OPERATION_HANDLER.getClass().getName(), DISASSEMBLE_OPERATION_HANDLER);
+        configuration.getDisassembleOperationHandlerMap().put(DisassembleOperationHandler.class.getName(), DISASSEMBLE_OPERATION_HANDLER);
     }
 
     @Test

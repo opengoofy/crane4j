@@ -1,12 +1,12 @@
 package cn.crane4j.springboot.support.aop;
 
-import cn.crane4j.core.annotation.Assemble;
-import cn.crane4j.core.annotation.ContainerMethod;
-import cn.crane4j.core.annotation.Disassemble;
-import cn.crane4j.core.annotation.Mapping;
-import cn.crane4j.core.annotation.MappingType;
-import cn.crane4j.springboot.annotation.ArgAutoOperate;
-import cn.crane4j.springboot.annotation.AutoOperate;
+import cn.crane4j.annotation.ArgAutoOperate;
+import cn.crane4j.annotation.Assemble;
+import cn.crane4j.annotation.AutoOperate;
+import cn.crane4j.annotation.ContainerMethod;
+import cn.crane4j.annotation.Disassemble;
+import cn.crane4j.annotation.Mapping;
+import cn.crane4j.annotation.MappingType;
 import cn.crane4j.springboot.config.Crane4jAutoConfiguration;
 import cn.hutool.core.collection.CollUtil;
 import lombok.AllArgsConstructor;

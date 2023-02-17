@@ -1,9 +1,4 @@
-package cn.crane4j.core.annotation;
-
-import cn.crane4j.core.executor.handler.AssembleOperationHandler;
-import cn.crane4j.core.executor.handler.ReflectAssembleOperationHandler;
-import cn.crane4j.core.parser.AnnotationAwareBeanOperationParser;
-import cn.crane4j.core.parser.AssembleOperation;
+package cn.crane4j.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -13,7 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * <p>声明一个装配操作，等同于一个{@link AssembleOperation}。<br />
+ * <p>声明一个装配操作。<br />
  * 指定当前对象的特定属性作为key，当操作被执行时，将提取key值并从指定的数据源容器获得的数据源对象，
  * 并根据配置将数据元对象中指定的属性值映射到当前对象的相应属性。<br />
  * 这里给一个简单的例子：
@@ -71,9 +66,9 @@ import java.lang.annotation.Target;
  * 当解析后，声明在{@link MappingTemplate}中的配置等同于直接在{@link #props}中声明。
  *
  * @author huangchengxing
- * @see AssembleOperation
- * @see AssembleOperationHandler
- * @see AnnotationAwareBeanOperationParser
+ * @see cn.crane4j.core.executor.handler.AssembleOperationHandler;
+ * @see cn.crane4j.core.parser.AnnotationAwareBeanOperationParser;
+ * @see cn.crane4j.core.parser.AssembleOperation;
  */
 @Repeatable(value = Assemble.List.class)
 @Documented
@@ -106,11 +101,18 @@ public @interface Assemble {
     String namespace() default "";
 
     /**
+     * 处理器名称
+     *
+     * @return 处理器名称
+     */
+    String handlerName() default "";
+
+    /**
      * 用于完成当前操作的装配操作处理器
      *
      * @return 装配操作处理器类型
      */
-    Class<? extends AssembleOperationHandler> handler() default ReflectAssembleOperationHandler.class;
+    Class<?> handler() default Object.class;
 
     /**
      * <p>需要在数据源对象与当前对象之间映射的属性值。<br />

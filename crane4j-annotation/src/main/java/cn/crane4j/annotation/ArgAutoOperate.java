@@ -1,6 +1,4 @@
-package cn.crane4j.springboot.annotation;
-
-import cn.crane4j.springboot.support.aop.MethodArgumentAutoOperateAspect;
+package cn.crane4j.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -28,11 +26,11 @@ import java.lang.annotation.Target;
  *     // do something
  * }
  * </pre>
- * 参数上的注解配置优先级大于方法上的注解配置。
+ * 参数上的注解配置<strong>优先于</strong>方法上的注解配置。
  *
  * @author huangchengxing
  * @see AutoOperate
- * @see MethodArgumentAutoOperateAspect
+ * @see cn.crane4j.springboot.support.aop.MethodArgumentAutoOperateAspect
  */
 @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)

@@ -1,12 +1,4 @@
-package cn.crane4j.springboot.annotation;
-
-import cn.crane4j.core.executor.BeanOperationExecutor;
-import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
-import cn.crane4j.core.parser.AnnotationAwareBeanOperationParser;
-import cn.crane4j.core.parser.BeanOperationParser;
-import cn.crane4j.springboot.support.MethodBaseExpressionEvaluator;
-import cn.crane4j.springboot.support.aop.MethodArgumentAutoOperateAspect;
-import cn.crane4j.springboot.support.aop.MethodResultAutoOperateAspect;
+package cn.crane4j.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -20,8 +12,8 @@ import java.util.Collection;
  *
  * @author huangchengxing
  * @see ArgAutoOperate
- * @see MethodResultAutoOperateAspect
- * @see MethodArgumentAutoOperateAspect
+ * @see cn.crane4j.springboot.support.aop.MethodResultAutoOperateAspect
+ * @see cn.crane4j.springboot.support.aop.MethodArgumentAutoOperateAspect
  */
 @Target({ElementType.METHOD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
@@ -70,14 +62,28 @@ public @interface AutoOperate {
      *
      * @return 执行器类型
      */
-    Class<? extends BeanOperationExecutor> executor() default DisorderedBeanOperationExecutor.class;
+    Class<?> executor() default Object.class;
+
+    /**
+     * 用于完成操作的执行器
+     *
+     * @return 执行器类型
+     */
+    String executorName() default "";
 
     /**
      * 用于解析返回对象类型的操作解析器
      *
      * @return 解析器类型
      */
-    Class<? extends BeanOperationParser> parser() default AnnotationAwareBeanOperationParser.class;
+    Class<?> parser() default Object.class;
+
+    /**
+     * 用于解析返回对象类型的操作解析器
+     *
+     * @return 解析器名称
+     */
+    String parserName() default "";
 
     /**
      * 待执行操作的组别，为空时默认全部执行
@@ -102,11 +108,9 @@ public @interface AutoOperate {
      *     <li>通过{@code #参数名}的方式引用方法入参；</li>
      *     <li>通过{@code #result}的方式引用方法返回值；</li>
      * </ul>
-     * 表达式执行默认基于{@link MethodBaseExpressionEvaluator}实现，
-     * 若有必要，可以在容器中替换该实现可以以便支持更多自定义功能。
      *
      * @return 应用条件
-     * @see MethodResultAutoOperateAspect#methodBaseExpressionEvaluator
+     * @see cn.crane4j.springboot.support.aop.MethodResultAutoOperateAspect#methodBaseExpressionEvaluator
      */
     String condition() default "";
 }

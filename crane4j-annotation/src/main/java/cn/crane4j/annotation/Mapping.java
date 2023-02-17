@@ -1,6 +1,4 @@
-package cn.crane4j.core.annotation;
-
-import cn.crane4j.core.parser.PropertyMapping;
+package cn.crane4j.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -14,7 +12,6 @@ import java.lang.annotation.Target;
  * @author huangchengxing
  * @see Assemble#props()
  * @see MappingTemplate
- * @see PropertyMapping
  */
 @Documented
 @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})

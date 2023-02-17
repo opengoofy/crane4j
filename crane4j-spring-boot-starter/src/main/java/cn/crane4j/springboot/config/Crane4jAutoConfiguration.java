@@ -40,6 +40,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.expression.BeanFactoryResolver;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.Ordered;
@@ -106,6 +107,7 @@ public class Crane4jAutoConfiguration {
 
     // ============== 操作解析器 ==============
 
+    @Primary
     @Bean
     @ConditionalOnMissingBean
     public AnnotationAwareBeanOperationParser annotationAwareBeanOperationParser(
@@ -115,6 +117,7 @@ public class Crane4jAutoConfiguration {
 
     // ============== 操作执行器 ==============
 
+    @Primary
     @Bean
     @ConditionalOnMissingBean
     public DisorderedBeanOperationExecutor disorderedBeanOperationExecutor() {
@@ -144,6 +147,7 @@ public class Crane4jAutoConfiguration {
         return new CacheableMethodContainerFactory(propertyOperator, annotationFinder, cacheManager);
     }
 
+    @Primary
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnClass(MethodAccess.class)
@@ -151,6 +155,7 @@ public class Crane4jAutoConfiguration {
         return new ReflectAssembleOperationHandler(propertyOperator);
     }
 
+    @Primary
     @Bean
     @ConditionalOnMissingBean
     public ReflectDisassembleOperationHandler reflectDisassembleOperationHandler(PropertyOperator propertyOperator) {
@@ -194,8 +199,8 @@ public class Crane4jAutoConfiguration {
         havingValue = "true", matchIfMissing = true
     )
     public MethodResultAutoOperateAspect methodResultAutoOperateAspect(
-        ApplicationContext applicationContext, MethodBaseExpressionEvaluator methodBaseExpressionEvaluator) {
-        return new MethodResultAutoOperateAspect(applicationContext, methodBaseExpressionEvaluator);
+        Crane4jGlobalConfiguration configuration, MethodBaseExpressionEvaluator methodBaseExpressionEvaluator) {
+        return new MethodResultAutoOperateAspect(configuration, methodBaseExpressionEvaluator);
     }
 
     @Bean
@@ -206,8 +211,8 @@ public class Crane4jAutoConfiguration {
         havingValue = "true", matchIfMissing = true
     )
     public MethodArgumentAutoOperateAspect methodArgumentAutoOperateAspect(
-        ApplicationContext applicationContext, MethodBaseExpressionEvaluator methodBaseExpressionEvaluator, ParameterNameDiscoverer parameterNameDiscoverer) {
-        return new MethodArgumentAutoOperateAspect(applicationContext, methodBaseExpressionEvaluator, parameterNameDiscoverer);
+        Crane4jGlobalConfiguration configuration, MethodBaseExpressionEvaluator methodBaseExpressionEvaluator, ParameterNameDiscoverer parameterNameDiscoverer) {
+        return new MethodArgumentAutoOperateAspect(configuration, methodBaseExpressionEvaluator, parameterNameDiscoverer);
     }
 
     @Bean

@@ -1,8 +1,8 @@
 package cn.crane4j.core.executor;
 
-import cn.crane4j.core.annotation.Assemble;
-import cn.crane4j.core.annotation.Disassemble;
-import cn.crane4j.core.exception.CraneException;
+import cn.crane4j.annotation.Assemble;
+import cn.crane4j.annotation.Disassemble;
+import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.parser.AssembleOperation;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.KeyTriggerOperation;
@@ -61,7 +61,7 @@ public class AbstractBeanOperationExecutorTest extends BaseExecutorTest {
     public void executeWhenBeanOperationsNotActive() {
         BeanOperations operations = new SimpleBeanOperations(Void.TYPE);
         Runnable runnable = () -> executor.execute(Collections.singleton(new Object()), operations);
-        Assert.assertThrows(CraneException.class, runnable::run);
+        Assert.assertThrows(Crane4jException.class, runnable::run);
     }
 
     private static void checkAssembleOperation(

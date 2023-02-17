@@ -1,6 +1,4 @@
-package cn.crane4j.core.annotation;
-
-import cn.crane4j.core.container.MethodInvokerContainer;
+package cn.crane4j.annotation;
 
 import java.util.Map;
 
@@ -8,7 +6,7 @@ import java.util.Map;
  * 方法类型
  *
  * @author huangchengxing
- * @see MethodInvokerContainer
+ * @see cn.crane4j.core.container.MethodInvokerContainer;
  */
 public enum MappingType {
 

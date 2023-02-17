@@ -1,11 +1,11 @@
 package cn.crane4j.core.parser;
 
-import cn.crane4j.core.annotation.Assemble;
-import cn.crane4j.core.annotation.Disassemble;
-import cn.crane4j.core.annotation.MappingTemplate;
-import cn.crane4j.core.annotation.Operations;
+import cn.crane4j.annotation.Assemble;
+import cn.crane4j.annotation.Disassemble;
+import cn.crane4j.annotation.MappingTemplate;
+import cn.crane4j.annotation.Operations;
 import cn.crane4j.core.container.Container;
-import cn.crane4j.core.exception.CraneException;
+import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
@@ -13,6 +13,7 @@ import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.Sorted;
 import cn.crane4j.core.util.CollectionUtils;
+import cn.crane4j.core.util.ConfigurationUtil;
 import cn.crane4j.core.util.ReflectUtils;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Assert;
@@ -191,12 +192,17 @@ public class AnnotationAwareBeanOperationParser implements BeanOperationParser {
         Container<?> container = CharSequenceUtil.isNotEmpty(annotation.namespace()) ?
             globalConfiguration.getContainer(annotation.namespace()) : Container.empty();
         Assert.notNull(container, throwException("container [{}] not found", annotation.namespace()));
-        AssembleOperationHandler assembleOperationHandler = globalConfiguration.getAssembleOperationHandler(annotation.handler());
-        Assert.notNull(assembleOperationHandler, throwException("assemble operation handler [{}] not found", annotation.handler()));
+
+        // 获取操作处理器
+        AssembleOperationHandler assembleOperationHandler = ConfigurationUtil.getAssembleOperationHandler(
+            globalConfiguration, annotation.handlerName(), annotation.handler()
+        );
+        Assert.notNull(assembleOperationHandler, throwException("assemble operation handler [{}]({}) not found", annotation.handlerName(), annotation.handler()));
+
+        // 解析映射配置模板
         Set<PropertyMapping> propertyMappings = Stream.of(annotation.props())
             .map(m -> new SimplePropertyMapping(m.src(), CharSequenceUtil.isEmpty(m.ref()) ? annotation.key() : m.ref()))
             .collect(Collectors.toSet());
-        // 解析映射配置模板
         List<PropertyMapping> templateMappings = parsePropTemplate(annotation);
         if (CollUtil.isNotEmpty(templateMappings)) {
             propertyMappings.addAll(templateMappings);
@@ -220,12 +226,17 @@ public class AnnotationAwareBeanOperationParser implements BeanOperationParser {
     }
 
     private DisassembleOperation parseDisassembleOperation(Class<?> sourceType, Disassemble annotation) {
-        // 获取配置解析器与操作处理器
+        // 获取配置解析器
         Assert.isTrue(CharSequenceUtil.isNotBlank(annotation.key()), throwException("the key of disassemble operation must not blank"));
-        BeanOperationParser parser = globalConfiguration.getBeanOperationsParser(annotation.parser());
-        Assert.notNull(parser, throwException("bean operations parser [{}] not found", annotation.parser()));
-        DisassembleOperationHandler disassembleOperationHandler = globalConfiguration.getDisassembleOperationHandler(annotation.handler());
-        Assert.notNull(disassembleOperationHandler, throwException("disassemble handler [{}] not found", annotation.handler()));
+        BeanOperationParser parser = ConfigurationUtil.getParser(globalConfiguration, annotation.parserName(), annotation.parser());
+        Assert.notNull(parser, throwException("bean operations parser [{}]({}) not found", annotation.parserName(), annotation.parser()));
+
+        // 获取操作处理器
+        DisassembleOperationHandler disassembleOperationHandler = ConfigurationUtil.getDisassembleOperationHandler(
+            globalConfiguration, annotation.handlerName(), annotation.handler()
+        );
+        Assert.notNull(disassembleOperationHandler, throwException("disassemble handler [{}]({}) not found", annotation.handlerName(), annotation.parser()));
+
         // 若未在注解中指定嵌套对象的类型，则等到实际处理数据时再动态解析其类型
         DisassembleOperation operation;
         if (Objects.equals(Object.class, annotation.type()) || Objects.equals(Void.TYPE, annotation.type())) {
@@ -286,8 +297,8 @@ public class AnnotationAwareBeanOperationParser implements BeanOperationParser {
         return new MetaDataCache(assembleOperations, disassembleOperations);
     }
 
-    private static Supplier<CraneException> throwException(String errTemp, Object... args) {
-        return () -> new CraneException(errTemp, args);
+    private static Supplier<Crane4jException> throwException(String errTemp, Object... args) {
+        return () -> new Crane4jException(errTemp, args);
     }
 
     /**

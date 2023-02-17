@@ -1,6 +1,6 @@
 package cn.crane4j.springboot.config;
 
-import cn.crane4j.core.annotation.ContainerConstant;
+import cn.crane4j.annotation.ContainerConstant;
 
 /**
  * @author huangchengxing

@@ -1,7 +1,8 @@
 package cn.crane4j.springboot.support.aop;
 
+import cn.crane4j.annotation.AutoOperate;
+import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.util.CollectionUtils;
-import cn.crane4j.springboot.annotation.AutoOperate;
 import cn.crane4j.springboot.support.MethodAnnotatedElementAutoOperateSupport;
 import cn.crane4j.springboot.support.MethodBaseExpressionEvaluator;
 import cn.hutool.core.exceptions.ExceptionUtil;
@@ -12,7 +13,6 @@ import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 
 import java.lang.reflect.Method;
@@ -33,12 +33,12 @@ public class MethodResultAutoOperateAspect
     private final Map<String, ResolvedElement> methodCaches = CollectionUtils.newWeakConcurrentMap();
 
     public MethodResultAutoOperateAspect(
-        ApplicationContext applicationContext, MethodBaseExpressionEvaluator methodBaseExpressionEvaluator) {
-        super(applicationContext, methodBaseExpressionEvaluator);
+        Crane4jGlobalConfiguration configuration, MethodBaseExpressionEvaluator methodBaseExpressionEvaluator) {
+        super(configuration, methodBaseExpressionEvaluator);
         log.info("enable automatic filling of method result");
     }
 
-    @AfterReturning(returning = "result", pointcut = "@annotation(cn.crane4j.springboot.annotation.AutoOperate)")
+    @AfterReturning(returning = "result", pointcut = "@annotation(cn.crane4j.annotation.AutoOperate)")
     public void afterReturning(JoinPoint joinPoint, Object result) {
         if (Objects.isNull(result)) {
             return;

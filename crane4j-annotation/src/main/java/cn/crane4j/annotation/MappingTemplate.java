@@ -1,4 +1,4 @@
-package cn.crane4j.core.annotation;
+package cn.crane4j.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

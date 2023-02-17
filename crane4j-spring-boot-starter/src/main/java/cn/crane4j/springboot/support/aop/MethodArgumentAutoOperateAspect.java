@@ -1,8 +1,9 @@
 package cn.crane4j.springboot.support.aop;
 
+import cn.crane4j.annotation.ArgAutoOperate;
+import cn.crane4j.annotation.AutoOperate;
+import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.util.CollectionUtils;
-import cn.crane4j.springboot.annotation.ArgAutoOperate;
-import cn.crane4j.springboot.annotation.AutoOperate;
 import cn.crane4j.springboot.support.MethodAnnotatedElementAutoOperateSupport;
 import cn.crane4j.springboot.support.MethodBaseExpressionEvaluator;
 import cn.crane4j.springboot.util.MethodUtils;
@@ -15,7 +16,6 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.context.ApplicationContext;
 import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 
@@ -45,14 +45,14 @@ public class MethodArgumentAutoOperateAspect extends MethodAnnotatedElementAutoO
     private final ParameterNameDiscoverer parameterNameDiscoverer;
 
     public MethodArgumentAutoOperateAspect(
-        ApplicationContext applicationContext, MethodBaseExpressionEvaluator methodBaseExpressionEvaluator,
+        Crane4jGlobalConfiguration configuration, MethodBaseExpressionEvaluator methodBaseExpressionEvaluator,
         ParameterNameDiscoverer parameterNameDiscoverer) {
-        super(applicationContext, methodBaseExpressionEvaluator);
+        super(configuration, methodBaseExpressionEvaluator);
         this.parameterNameDiscoverer = parameterNameDiscoverer;
         log.info("enable automatic filling of method argument");
     }
 
-    @Before("@annotation(cn.crane4j.springboot.annotation.ArgAutoOperate)")
+    @Before("@annotation(cn.crane4j.annotation.ArgAutoOperate)")
     public void before(JoinPoint joinPoint) {
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
         Method method = methodSignature.getMethod();

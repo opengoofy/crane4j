@@ -1,6 +1,4 @@
-package cn.crane4j.core.annotation;
-
-import cn.crane4j.core.parser.AnnotationAwareBeanOperationParser;
+package cn.crane4j.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -14,7 +12,6 @@ import java.lang.annotation.Target;
  * 比如在子类中声明基于父类属性的操作。
  *
  * @author huangchengxing
- * @see AnnotationAwareBeanOperationParser
  */
 @Documented
 @Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})

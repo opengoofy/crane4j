@@ -1,7 +1,7 @@
 package cn.crane4j.core.executor.handler;
 
-import cn.crane4j.core.annotation.Disassemble;
-import cn.crane4j.core.exception.CraneException;
+import cn.crane4j.annotation.Disassemble;
+import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.executor.BaseExecutorTest;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.DisassembleOperation;
@@ -81,7 +81,7 @@ public class ReflectDisassembleOperationHandlerTest extends BaseExecutorTest {
 
         // 没有getter方法
         Runnable runnable = () -> handler.process(operation, Collections.singleton(new Bean()));
-        Assert.assertThrows(CraneException.class, runnable::run);
+        Assert.assertThrows(Crane4jException.class, runnable::run);
     }
 
     @Accessors(chain = true)

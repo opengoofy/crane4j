@@ -1,12 +1,4 @@
-package cn.crane4j.core.annotation;
-
-import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
-import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
-import cn.crane4j.core.parser.AnnotationAwareBeanOperationParser;
-import cn.crane4j.core.parser.BeanOperationParser;
-import cn.crane4j.core.parser.DisassembleOperation;
-import cn.crane4j.core.parser.TypeDynamitedDisassembleOperation;
-import cn.crane4j.core.support.TypeResolver;
+package cn.crane4j.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -16,7 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * <p>声明一个拆卸的操作，等同于一个{@link DisassembleOperation}。<br />
+ * <p>声明一个拆卸的操作。<br />
  * 指定当前对象的特定属性作为需要拆卸的嵌套对象。在装配操作开始之前，
  * 会优先执行类中声明的拆卸操作，此时会提取并摊平嵌套对象。
  *
@@ -44,13 +36,12 @@ import java.lang.annotation.Target;
  *     private List<T> fooList;
  * }
  * }</pre>
- * 当后续处理时，将会动态推断对象实际类型(此处参见{@link TypeResolver 类型解析器}与{@link TypeDynamitedDisassembleOperation 动态拆卸})，
- * 不过相对固定类型会有额外的性能消耗。
+ * 当后续处理时，将会动态推断对象实际类型，不过相对固定类型会有额外的性能消耗。
  *
  * @author huangchengxing
- * @see DisassembleOperation
- * @see DisassembleOperationHandler
- * @see AnnotationAwareBeanOperationParser
+ * @see cn.crane4j.core.executor.handler.DisassembleOperationHandler;
+ * @see cn.crane4j.core.parser.AnnotationAwareBeanOperationParser;
+ * @see cn.crane4j.core.parser.DisassembleOperation;
  */
 @Repeatable(value = Disassemble.List.class)
 @Documented
@@ -86,14 +77,28 @@ public @interface Disassemble {
      *
      * @return 拆卸操作处理器类型
      */
-    Class<? extends DisassembleOperationHandler> handler() default ReflectDisassembleOperationHandler.class;
+    Class<?> handler() default Object.class;
+
+    /**
+     * 用于完成当前操作的拆卸操作处理器名称
+     *
+     * @return 用于完成当前操作的拆卸操作处理器名称
+     */
+    String handlerName() default "";
 
     /**
      * 用于解析嵌套对象操作配置的解析器类型
      *
      * @return 类型
      */
-    Class<? extends BeanOperationParser> parser() default AnnotationAwareBeanOperationParser.class;
+    Class<?> parser() default Object.class;
+
+    /**
+     * 用于解析嵌套对象操作配置的解析器类型
+     *
+     * @return 类型
+     */
+    String parserName() default "";
 
     /**
      * 当前操作所属的组别
