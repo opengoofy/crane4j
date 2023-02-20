@@ -1,4 +1,4 @@
-![CRANE](https://img.xiajibagao.top/CRANE.png)
+<img src="https://img.xiajibagao.top/image-20230220150040070.png" alt="image-20230220150040070" style="zoom: 33%;" />
 
 基于注解的字典项、关联表与枚举值处理框架。
 
