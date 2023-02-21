@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 表示注解的枚举可以被转为指定类型的枚举容器
+ * The enumeration representing the annotation can be converted to an enumeration container of the specified type.
  *
  * @author huangchengxing
  * @see cn.crane4j.core.container.ConstantContainer#forEnum
@@ -18,23 +18,24 @@ import java.lang.annotation.Target;
 public @interface ContainerEnum {
 
     /**
-     * 数据源容器对应的命名空间，若为空则默认为该类的{@link Class#getSimpleName()}
+     * The namespace corresponding to the data source container, {@link Class#getSimpleName()} if empty.
      *
-     * @return 命名空间
+     * @return namespace
      */
     String namespace() default "";
 
     /**
-     * 枚举的key字段，若不指定则默认为枚举{@link Enum#name()}
+     * Key of item, {@link Enum#name()} if empty.
      *
-     * @return 枚举的key字段
+     * @return key field name
      */
     String key() default "";
 
     /**
-     * 跟key值对应的value值，若不填则默认为枚举项本身
+     * The value corresponding to the key value.
+     * If it is not filled in, it defaults to the enumeration item itself
      *
-     * @return value值
+     * @return value field name
      */
     String value() default "";
 }

@@ -10,32 +10,29 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * <p>表示注解或被注解指向的方法可以被转为指定类型的枚举容器。
+ * <p>Indicates that the annotation or the method pointed to by the annotation
+ * can be converted to a method container of the specified type.
+ * The annotated method needs to meet the following requirements：
  * <ul>
- *     <li>方法可以为实例方法或静态方法；</li>
- *     <li>方法可以是无参方法或有参数方法；</li>
+ *     <li>method must have a return value;</li>
+ *     <li>If {@link #type()} is {@link MappingType#MAPPED}, the return value type must be {@link Map};</li>
  *     <li>
- *         方法必须有返回值，且：
- *         <ol>
- *             <li>若{@link #type()}为{@link MappingType#MAPPED}，则返回值必须为{@link Map}；</li>
- *             <li>若{@link #type()}不为{@link MappingType#MAPPED}，则返回值可以是单个对象、数组或{@link Collection}集合；</li>
- *         </ol>
+ *         If {@link #type()} is not {@link MappingType#MAPPED},
+ *         the return value can be a single object, array or {@link Collection};
  *     </li>
  * </ul>
  *
- * <p>比如，下述例子描述了如何将<i>requestFoo</i>方法适配为一个数据源容器：<br />
- * 可以直接在方法上添加注解：
+ * <p>For example, the following example describes how to adapt the <i>requestFoo()</i> method to a data source container：<br />
+ * The first way is to add annotations directly on the method：
  * <pre type="code">{@code
- * // 返回响应体的方法
  * @ContainerMethod(
  *     namespace = "foo",
  *     resultType = Foo.class, resultKey = "id"
  * )
  * public List<Foo> requestFoo(Set<Integer> ids) { // do something }
  * }</pre>
- * 或者，将注解注解在类上，再通过{@link Bind}指向需要绑定的类中方法：
+ * The second way is to annotate the annotation on the class, and then bind the method through {@link Bind}：
  * <pre type="code">{@code
- * // 返回响应体的方法
  * @ContainerMethod(
  *     namespace = "foo", resultType = Foo.class,
  *     bind = @Bind(value = "requestFoo", paramTypes = Set.class)
@@ -44,8 +41,8 @@ import java.util.Map;
  *     public List<Foo> requestFoo(Set<Integer> ids) { // do something }
  * }
  * }</pre>
- * 该容器命名空间为<i>foo</i>，当执行时会使用对应的id集合从该方法中获得<i>Foo</i>对象集合，
- * 然后将其按<i>id</i>分组后进行字段映射。
+ * The generated container namespace is <i>"foo"</i>.
+ * When the id set is entered into the container, the Foo set grouped by <i>"id"</i> will be returned.
  *
  * @author huangchengxing
  * @see cn.crane4j.core.container.MethodInvokerContainer
@@ -58,42 +55,43 @@ import java.util.Map;
 public @interface ContainerMethod {
 
     /**
-     * 数据源容器的命名空间，若为空则为方法的名称
+     * Namespace of the data source container, use method name when empty.
      *
-     * @return java.lang.String
+     * @return namespace
      */
     String namespace() default "";
 
     /**
-     * 指定方法返回值类型
+     * The mapping relationship between the object returned by the method and the target object.
      *
-     * @return 返回值类型
+     * @return mapping relationship
      */
     MappingType type() default MappingType.ONE_TO_ONE;
 
     /**
-     * 方法返回的数据源对象的key字段
+     * The key field of the data source object returned by the method.
      *
-     * @return 方法返回的数据源对象的key字段
+     * @return key field name
      */
     String resultKey() default "id";
 
     /**
-     * 方法返回的数据源对象类型
+     * Data source object type returned by method.
      *
-     * @return 方法返回的数据源对象类型
+     * @return type
      */
     Class<?> resultType();
 
     /**
-     * 仅当方法注解在类上时使用，用于绑定类中对应的方法
+     * When annotations are used on a class,
+     * they are used to bind the corresponding methods in the class.
      *
      * @return 要查找的方法
      */
     Bind bind() default @Bind("");
 
     /**
-     * 批量操作
+     * Batch operation.
      *
      * @author huangchengxing
      */

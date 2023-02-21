@@ -7,9 +7,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 当{@link ContainerMethod}注解在类上时，通过当前注解指定要绑定的方法
+ * When {@link ContainerMethod} annotation is on the class,
+ * specify the method to bind through the current annotation.
  *
  * @author huangchengxing
+ * @see ContainerMethod#bind()
  */
 @Documented
 @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
@@ -17,16 +19,16 @@ import java.lang.annotation.Target;
 public @interface Bind {
 
     /**
-     * 方法名称
+     * Method name
      *
-     * @return 方法名称
+     * @return method name
      */
     String value();
 
     /**
-     * 方法参数类型
+     * Method parameter types
      *
-     * @return 方法参数类型
+     * @return parameter types
      */
     Class<?>[] paramTypes() default {};
 }

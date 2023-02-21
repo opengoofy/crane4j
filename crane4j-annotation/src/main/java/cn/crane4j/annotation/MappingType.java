@@ -3,25 +3,31 @@ package cn.crane4j.annotation;
 import java.util.Map;
 
 /**
- * 方法类型
+ * The mapping relationship between the object returned by the method and the target object.
  *
  * @author huangchengxing
  * @see cn.crane4j.core.container.MethodInvokerContainer;
+ * @see ContainerMethod#type()
  */
 public enum MappingType {
 
     /**
-     * 方法的返回值已经是按key值分组的{@link Map}集合，无需根据key值再进行转换
+     * The return value of the method is already a {@link Map} set grouped by the key value.
+     * No further conversion is required according to the key value.
      */
     MAPPED,
 
     /**
-     * 一个key对应一个数据源对象，即返回的数据源对象集合中，多个数据源对象对应同一个key值
+     * One key corresponds to one data source object, that is,
+     * in the returned data source object collection,
+     * multiple data source objects correspond to the same key value.
      */
     ONE_TO_ONE,
 
     /**
-     * 一个key对应多个数据源对象，即返回的数据源对象集合中，一个数据源对象仅对应同一个key值
+     * One key corresponds to multiple data source objects,
+     * that is, one data source object only corresponds
+     * to the same key value in the returned data source object collection.
      */
     ONE_TO_MANY;
 }

@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 表明一个类中的成员变量可作为容器
+ * Indicates that member variables in a class can be used as containers.
  *
  * @author huangchengxing
  * @see cn.crane4j.core.container.ConstantContainer#forConstantClass
@@ -18,28 +18,29 @@ import java.lang.annotation.Target;
 public @interface ContainerConstant {
 
     /**
-     * 是否仅处理公共的属性
+     * whether to process only public attributes.
      *
-     * @return 是否
+     * @return boolean
      */
     boolean onlyPublic() default true;
 
     /**
-     * 仅处理被{@link ContainerConstant.Include}注解的属性
+     * Whether to process only attributes annotated by {@link ContainerConstant.Include}.
      *
-     * @return 是否
+     * @return boolean
      */
     boolean onlyExplicitlyIncluded() default false;
 
     /**
-     * 数据源容器对应的命名空间，若为空则默认为所属类{@link Class#getSimpleName()}。
+     * The namespace corresponding to the data source container.
+     * defaults {@link Class#getSimpleName()} if empty.
      *
      * @return 命名空间
      */
     String namespace() default "";
 
     /**
-     * 为属性指定key名称
+     * Specify the key name for the attribute.
      */
     @Documented
     @Target({ElementType.ANNOTATION_TYPE, ElementType.FIELD})
@@ -49,7 +50,7 @@ public @interface ContainerConstant {
     }
 
     /**
-     * 包含特定属性
+     * Include specific properties.
      */
     @Documented
     @Target({ElementType.ANNOTATION_TYPE, ElementType.FIELD})
@@ -57,7 +58,7 @@ public @interface ContainerConstant {
     @interface Include {}
 
     /**
-     * 包含特定属性
+     * Does not contain specific properties.
      */
     @Documented
     @Target({ElementType.ANNOTATION_TYPE, ElementType.FIELD})

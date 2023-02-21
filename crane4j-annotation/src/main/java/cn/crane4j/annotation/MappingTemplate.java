@@ -7,10 +7,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * <p>注解在类上用于声明一组字段映射配置，
- * 在{@link Assemble#propTemplates()}通过指定被注解的类引入。<br />
- * 该注解适用于一次装配涉及的字段过多的场景，避免单个{@link Assemble}过于膨胀。
- * 推荐在常量接口/抽象类中以内部类的形式统一的管理。
+ * <p>Annotations are used to declare a set of field mapping configurations on the class,
+ * and are introduced in {@link Assemble#propTemplates()} by specifying the annotated class.<br />
+ * This annotation is applicable to the scene where there are too many fields involved
+ * in a single assembly to avoid too large a single {@link Assemble} configuration.
  *
  * @author huangchengxing
  * @see Assemble#propTemplates()
@@ -21,9 +21,9 @@ import java.lang.annotation.Target;
 public @interface MappingTemplate {
 
     /**
-     * 需要映射字段
+     * Mapping field required.
      *
-     * @return 字段映射配置
+     * @return mapping
      */
     Mapping[] value() default {};
 }

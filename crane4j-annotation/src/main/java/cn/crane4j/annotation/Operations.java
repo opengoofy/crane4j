@@ -7,10 +7,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * <p>用于在类上集中配置一组装配和拆卸操作。<br />
- * 一般用于不便直接在属性上添加{@link Assemble}和{@link Disassemble}时使用，
- * 比如在子类中声明基于父类属性的操作。
+ * <p>Used to centrally configure a group of operations of assemble and disassemble on a class.<br />
+ * It is generally used when it is inconvenient to
+ * add {@link Assemble} and {@link Disassemble} directly on the attribute,
+ * such as declaring operations based on the parent attribute in the subclass.
  *
+ * @see Assemble
+ * @see Disassemble
  * @author huangchengxing
  */
 @Documented
@@ -19,14 +22,14 @@ import java.lang.annotation.Target;
 public @interface Operations {
 
     /**
-     * 装配操作
+     * Operations of assemble.
      *
      * @return 装配操作
      */
     Assemble[] assembles() default {};
 
     /**
-     * 拆卸操作
+     * Operations of disassemble.
      *
      * @return 拆卸操作
      */

@@ -8,35 +8,38 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * <p>声明一个拆卸的操作。<br />
- * 指定当前对象的特定属性作为需要拆卸的嵌套对象。在装配操作开始之前，
- * 会优先执行类中声明的拆卸操作，此时会提取并摊平嵌套对象。
+ * <p>Declare a disassembly operation.<br />
+ * Specify the specific properties of the current object as the nested object to be disassembled.
+ * Before the assembly operation starts, the disassembly operation declared in the class
+ * will be performed first, and the nested objects will be extracted and flattened at this time.
  *
- * <p>比如，我们在下例的类中声明了一个装配操作和一个拆卸操作：
+ * <p>For example, we declare an assembly operation and a disassembly operation in the class of the following example：
  * <pre class="code">{@code
  * public class Foo {
- *     // 装配操作
+ *     // operation of assemble
  *     @Assemble(namespace = "test", props = @Mapping(src = "name"))
  *     private Integer id;
  *
- *     // 拆卸操作
+ *     // operation of disassemble
  *     @Dissassemble(type = Foo.class)
  *     private List<Foo> fooList;
  * }
  * }</pre>
- * 当对对象进行处理时，将会先将该对象中的"fooList"展开并平铺，
- * 然后将"fooList"集合中的嵌套对象按照"Foo.class"的配置进行装配。
+ * When processing an object, the "foo List" in the object will be expanded and tiled first,
+ * and then the nested objects in the <i>fooList</i> collection
+ * will be assembled according to the configuration of Foo.class.
  *
- * <p>该注解可以支持处理集合、数组或单个对象。<br />
- * 此外，当待拆卸的字段无法确定类型——比如该字段类型为泛型——时，可以不指定类型，比如：
+ * <p>This annotation can support the processing of collections, arrays, or individual objects.<br />
+ * When the type of the field to be disassembled cannot be determined,
+ * the type no need to specify, for example, the type is generic or {@link Object}：
  * <pre class="code">{@code
  * public class Foo<T> {
- *     // 拆卸操作
  *     @Dissassemble
  *     private List<T> fooList;
  * }
  * }</pre>
- * 当后续处理时，将会动态推断对象实际类型，不过相对固定类型会有额外的性能消耗。
+ * During the subsequent processing, the actual type of the object will be dynamically inferred,
+ * but there will be additional performance consumption for the fixed type.
  *
  * @author huangchengxing
  * @see cn.crane4j.core.executor.handler.DisassembleOperationHandler;

@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * <p>声明需要对对方法入参进行自动处理，比如：
+ * <p>Declaration requires automatic processing of method input parameters, for example：
  * <pre class="code">
  * &#64;ArgAutoOperate({
  *     &#64;AutoOperate(value = "list", type = A.class),
@@ -17,7 +17,7 @@ import java.lang.annotation.Target;
  *     // do something
  * }
  * </pre>
- * 或者：
+ * or：
  * <pre class="code">
  * &#64;ArgAutoOperate
  * public void doSomething(
@@ -26,7 +26,8 @@ import java.lang.annotation.Target;
  *     // do something
  * }
  * </pre>
- * 参数上的注解配置<strong>优先于</strong>方法上的注解配置。
+ * <p>NOTE：The annotation configuration on the parameter
+ * takes precedence over the annotation configuration on the method.
  *
  * @author huangchengxing
  * @see AutoOperate
@@ -38,7 +39,7 @@ import java.lang.annotation.Target;
 public @interface ArgAutoOperate {
 
     /**
-     * 参数的操作配置
+     * Operation configuration of parameters.
      *
      * @return 参数的操作配置
      */

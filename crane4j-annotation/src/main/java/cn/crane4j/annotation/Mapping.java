@@ -7,7 +7,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 字段映射配置，描述将哪个数据对象的属性映射到哪个目标对象的属性中
+ * Field mapping configuration,
+ * which describes which data object attributes are mapped to which target object attributes.
  *
  * @author huangchengxing
  * @see Assemble#props()
@@ -19,16 +20,17 @@ import java.lang.annotation.Target;
 public @interface Mapping {
 
     /**
-     * 要获取的数据源对象属性
+     * Data source object properties to get.
      *
-     * @return 数据源对象属性
+     * @return field name
      */
     String src() default "";
 
     /**
-     * 要设置的目标对象属性，如果为空则默认为key字段
+     * The target object attribute to be set.
+     * If it is empty, it defaults to the key field.
      *
-     * @return 目标对象属性
+     * @return field name
      */
     String ref() default "";
 }

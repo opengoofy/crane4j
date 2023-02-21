@@ -7,8 +7,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 若一个方法已经被{@link ContainerMethod}注解，
- * 则在该方法上添加本注解可将其升级为带缓存功能的容器。
+ * If a method has been annotated by {@link ContainerMethod},
+ * upgrade it to a cacheable container.
  *
  * @author huangchengxing
  * @see ContainerMethod
@@ -20,9 +20,9 @@ import java.lang.annotation.Target;
 public @interface ContainerCache {
 
     /**
-     * 缓存名，为空时默认为标记的方法的{@link ContainerMethod#namespace()}
+     * The cache name, when empty, defaults to {@link ContainerMethod#namespace()} of the marked method.
      *
-     * @return 缓存的命名空间
+     * @return cache name
      */
     String value() default "";
 }
