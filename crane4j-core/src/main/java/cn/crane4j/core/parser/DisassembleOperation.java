@@ -5,7 +5,10 @@ import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
 import javax.annotation.Nonnull;
 
 /**
- * 根据指定的key触发的拆卸操作，表示根据指定key值获取目标对象属性中的嵌套对象的一套流程配置信息。
+ * <p>The disassembly operation triggered by the specified key,
+ * it's means that a set of process configuration information of
+ * the nested object in the target object attribute is obtained
+ * according to the specified key value.
  *
  * @author huangchengxing
  * @see TypeFixedDisassembleOperation
@@ -14,25 +17,25 @@ import javax.annotation.Nonnull;
 public interface DisassembleOperation extends KeyTriggerOperation {
 
     /**
-     * 获取当前待处理的嵌套对象所在的源对象的类型
+     * Gets the type of the source object where the currently pending nested object is located.
      *
-     * @return 操作所属的源对象的类型
+     * @return type
      */
     Class<?> getSourceType();
 
     /**
-     * 获取嵌套对象的操作配置
+     * Get the operation configuration of nested object.
      *
-     * @param internalBean 带解析的嵌套对象
-     * @return 嵌套对象的操作配置
+     * @param internalBean internal bean
+     * @return operation
      */
     @Nonnull
     BeanOperations getInternalBeanOperations(Object internalBean);
 
     /**
-     * 获取当前拆卸操作的处理器
+     * Get the handler of the current disassembly operation.
      *
-     * @return 拆卸处理器
+     * @return handler
      */
     DisassembleOperationHandler getDisassembleOperationHandler();
 }

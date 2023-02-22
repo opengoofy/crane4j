@@ -17,11 +17,12 @@ import java.util.Set;
 public class MergedAnnotationFinder implements AnnotationFinder {
 
     /**
-     * 从元素上获得指定注解
+     * Get the specified annotation from the element.
      *
-     * @param element        要查找的元素
-     * @param annotationType 注解类型
-     * @return 注解对象
+     * @param element element
+     * @param annotationType annotation type
+     * @param <A> annotation type
+     * @return annotation
      */
     @Override
     public <A extends Annotation> A findAnnotation(@NonNull AnnotatedElement element, Class<A> annotationType) {
@@ -29,11 +30,12 @@ public class MergedAnnotationFinder implements AnnotationFinder {
     }
 
     /**
-     * 从元素上获得所有指定注解
+     * Get all specified annotations from the element.
      *
-     * @param element        要查找的元素
-     * @param annotationType 注解类型
-     * @return 注解对象
+     * @param element element
+     * @param annotationType annotation type
+     * @param <A> annotation type
+     * @return annotations
      */
     @Override
     public <A extends Annotation> Set<A> findAllAnnotations(@NonNull AnnotatedElement element, Class<A> annotationType) {

@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * {@link BeanOperations}的简单实现
+ * Simple implementation of {@link BeanOperations}.
  *
  * @author huangchengxing
  * @see SimpleBeanOperations
@@ -25,9 +25,10 @@ public class SimpleBeanOperations implements BeanOperations {
     private final List<DisassembleOperation> disassembleOperations = new ArrayList<>();
 
     /**
-     * 添加装配操作，若该操作已被添加，则会将其删除后再添加
+     * Add assembly operation. <br />
+     * If the operation has been added, it will be deleted before adding.
      *
-     * @param operation 装配操作
+     * @param operation operation
      */
     @Override
     public void putAssembleOperations(AssembleOperation operation) {
@@ -37,9 +38,10 @@ public class SimpleBeanOperations implements BeanOperations {
     }
 
     /**
-     * 添加拆卸操作，若该操作已被添加，则会将其删除后再添加
+     * Add disassembly operation. <br />
+     * If the operation has been added, it will be deleted before adding.
      *
-     * @param operation 拆卸操作
+     * @param operation operation
      */
     @Override
     public void putDisassembleOperations(DisassembleOperation operation) {

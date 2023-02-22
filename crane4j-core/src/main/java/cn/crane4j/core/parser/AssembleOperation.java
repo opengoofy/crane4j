@@ -6,15 +6,23 @@ import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import java.util.Set;
 
 /**
- * <p>根据指定的key触发的装配操作，表示根据指定key值获取数据源，
- * 并根据配置将数据源属性映射到目标对象属性上的一套流程配置信息。
- *
- * <p>该对象用于记录一次装配操作的需要四项配置：
+ * <p>The assembly operation triggered by the specified key.<br />
+ * An example is usually used to describe one of the following processes:
  * <ol>
- *     <li>{@link #getKey()}: 目标对象的哪个字段是key字段；</li>
- *     <li>{@link #getContainer()}: 通过key字段值去哪个数据源获得对应的数据源对象；</li>
- *     <li>{@link #getPropertyMappings()}: 拿到数据源对象以后，要把里面的哪些属性塞到目标对象的哪些属性中；</li>
- *     <li>{@link #getAssembleOperationHandler()}: 要怎么塞这些属性值；</li>
+ *     <li>extract a key field value of the target object;</li>
+ *     <li>convert the key value to the corresponding data source object through the specified data source container;</li>
+ *     <li>map the specific attribute values of the data source object to the attributes of the target object;</li>
+ * </ol>
+ *
+ * <p>The necessary components for completing the above operations can be obtained through the instance:
+ * <ol>
+ *     <li>{@link #getKey()}: which field of the target object is the key field;</li>
+ *     <li>{@link #getContainer()}: which container to get the corresponding data source object through the key field value;</li>
+ *     <li>
+ *         {@link #getPropertyMappings()}: after getting the data source object, which attributes
+ *         should be stuffed into which attributes of the target object;
+ *     </li>
+ *     <li>{@link #getAssembleOperationHandler()}: how to plug these attribute values;</li>
  * </ol>
  *
  * @author huangchengxing
@@ -26,24 +34,23 @@ import java.util.Set;
 public interface AssembleOperation extends KeyTriggerOperation {
 
     /**
-     * 获取属性映射
+     * Get property mapping.
      *
-     * @return 属性映射
+     * @return mapping
      */
     Set<PropertyMapping> getPropertyMappings();
 
     /**
-     * 获取数据源容器
+     * Get data source container.
      *
-     * @return 数据源容器
+     * @return container
      */
     Container<?> getContainer();
 
     /**
-     * 获取操作处理器
+     * Get operation handler.
      *
-     * @return 操作处理器
+     * @return handler
      */
     AssembleOperationHandler getAssembleOperationHandler();
-    
 }

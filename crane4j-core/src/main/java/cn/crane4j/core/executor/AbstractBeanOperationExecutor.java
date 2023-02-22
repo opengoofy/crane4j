@@ -19,7 +19,7 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 /**
- * {@link BeanOperationExecutor}的基本实现
+ * Basic implementation of {@link BeanOperationExecutor}.
  *
  * @author huangchengxing
  * @see AsyncBeanOperationExecutor
@@ -30,11 +30,11 @@ import java.util.function.Predicate;
 public abstract class AbstractBeanOperationExecutor implements BeanOperationExecutor {
 
     /**
-     * 根据指定的{@link BeanOperations}完成对{@code targets}中所有对象的操作
+     * Complete operations on all objects in {@code targets} according to the specified {@link BeanOperations}
      *
-     * @param targets 目标对象
-     * @param operations 待执行的操作
-     * @param filter 操作过滤器
+     * @param targets targets
+     * @param operations operations to be performed
+     * @param filter operation filter, which can filter some operations based on operation key, group and other attributes
      */
     @Override
     public void execute(Collection<?> targets, BeanOperations operations, Predicate<? super KeyTriggerOperation> filter) {
@@ -44,12 +44,12 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
         Assert.isTrue(operations.isActive(), () -> new Crane4jException(
             "bean operation of [{}] is not activated", operations.getTargetType()
         ));
-        // 若有必要，则先完成拆卸操作
+        // complete the disassembly first if necessary
         Multimap<BeanOperations, Object> collector = LinkedListMultimap.create();
         collector.putAll(operations, targets);
         disassembleIfNecessary(targets, operations, filter, collector);
 
-        // 平摊后的对象，按装配操作分组并封装为装配执行对象
+        // flattened objects are grouped according to assembly operations, then encapsulated as execution objects
         List<AssembleExecution> executions = new ArrayList<>();
         collector.asMap().forEach((op, ts) -> op.getAssembleOperations()
             .stream()
@@ -58,17 +58,17 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
             .forEach(executions::add)
         );
 
-        // 完成装配操作
+        // complete assembly operation
         executeOperations(executions);
     }
 
     /**
-     * 创建一个{@link AssembleExecution}。
+     * Create a {@link AssembleExecution}.
      *
-     * @param beanOperations 操作配置
-     * @param operation 装配操作
-     * @param targets 待处理的对象
-     * @return {@link AssembleExecution}实例
+     * @param beanOperations bean operations
+     * @param operation operation
+     * @param targets targets
+     * @return {@link AssembleExecution}
      */
     protected AssembleExecution createAssembleExecution(
         BeanOperations beanOperations, AssembleOperation operation, Collection<Object> targets) {
@@ -76,16 +76,20 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
     }
     
     /**
-     * <p>完成装配操作。<br />
-     * 入参的全部操作都保证他们在同一类中的有序性，比如：
-     * 在{@code A.class}中存在有序操作<i>a</i>和<i>b</i>，
-     * 则在获得对应的{@link AssembleExecution}时，依然保证<i>a</i>和<i>b</i>的顺序。
+     * <p>Complete the assembly operation.<br />
+     * All operations of input parameters ensure their orderliness in the same class.
+     * For example, if there are ordered operations <i>a<i> and <i>b<i> in {@code A.class},
+     * the order of <i>a<i> and <i>b<i> is still guaranteed when
+     * the corresponding {@link AssembleExecution} is obtained.
      *
-     * @param executions 待完成的装配操作
+     * @param executions assembly operations to be completed
      * @implNote
      * <ul>
-     *     <li>若有必要，需要在此处保证{@link AssembleExecution}的执行顺序；</li>
-     *     <li>若获取数据源时需要进行网络请求等长耗时操作，则需要尽可能的减少对数据源的请求次数；</li>
+     *     <li>If necessary, you need to ensure the execution order of {@link AssembleExecution};</li>
+     *     <li>
+     *         If the network request and other time-consuming operations are required to obtain the data source,
+     *         the number of requests for the data source should be reduced as much as possible;
+     *     </li>
      * </ul>
      */
     protected abstract void executeOperations(List<AssembleExecution> executions);
@@ -111,14 +115,15 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
         }
         BeanOperations internalOperations = disassembleOperation.getInternalBeanOperations(internalTargets);
         collector.putAll(internalOperations, internalTargets);
-        // 如果嵌套对象内部仍然还有嵌套对象，则递归该拆卸过程
+        // recurse process if still have nested objects
         disassembleIfNecessary(internalTargets, internalOperations, filter, collector);
     }
 
     /**
-     * 尝试执行操作，若有必要，抛出异常时输出日志
+     * <p>Try to execute the operation.<br />
+     * If necessary, output the log when throwing an exception.
      *
-     * @param execute 待执行的操作
+     * @param execute execute
      */
     protected static void tryExecute(Runnable execute) {
         try {

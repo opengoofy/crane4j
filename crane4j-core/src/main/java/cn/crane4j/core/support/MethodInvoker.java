@@ -1,17 +1,19 @@
 package cn.crane4j.core.support;
 
 /**
+ * Represents a method that can be called.
+ *
  * @author huangchengxing
  */
 @FunctionalInterface
 public interface MethodInvoker {
 
     /**
-     * 调用方法
+     * Invoke method.
      *
-     * @param target 对象
-     * @param args 参数
-     * @return 调用结果
+     * @param target target
+     * @param args args
+     * @return result of invoke
      */
     Object invoke(Object target, Object... args);
 }

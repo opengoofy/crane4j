@@ -9,9 +9,9 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * <p>{@link BeanOperationExecutor}的同步实现。<br />
- * 执行时，会保证{@link AssembleOperation}的执行顺序，
- * 但是无法保证一次执行中{@link Container}只被调用最少次。
+ * <p>Synchronization implementation of {@link BeanOperationExecutor}.<br />
+ * During execution, the execution order of {@link AssembleOperation} will be guaranteed,
+ * but it cannot be guaranteed that {@link Container} will only be called at least once.
  *
  * @author huangchengxing
  */
@@ -19,14 +19,14 @@ import java.util.List;
 public class OrderedBeanOperationExecutor extends AbstractBeanOperationExecutor {
 
     /**
-     * 比较器
+     * comparator
      */
     private final Comparator<AssembleOperation> comparator;
 
     /**
-     * 完成装配操作
+     * Complete assembly operation.
      *
-     * @param executions 待完成的装配操作
+     * @param executions executions
      */
     @Override
     protected void executeOperations(List<AssembleExecution> executions) {

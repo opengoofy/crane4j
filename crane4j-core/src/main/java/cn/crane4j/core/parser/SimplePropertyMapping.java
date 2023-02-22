@@ -4,7 +4,7 @@ import cn.hutool.core.text.CharSequenceUtil;
 import lombok.Getter;
 
 /**
- * {@link PropertyMapping}的简单实现
+ * Simple implementation of {@link PropertyMapping}.
  *
  * @author huangchengxing
  */
@@ -17,10 +17,10 @@ public class SimplePropertyMapping implements PropertyMapping {
     private final String reference;
 
     /**
-     * 创建一个字段映射配置
+     * Create a property mapping configuration.
      *
-     * @param source 数据源对象中的字段
-     * @param reference 目标对象中要引用数据源对象中字段的字段
+     * @param source fields in the data source object
+     * @param reference field in the target object to reference the field in the data source object
      */
     public SimplePropertyMapping(String source, String reference) {
         this.source = source;
@@ -29,13 +29,12 @@ public class SimplePropertyMapping implements PropertyMapping {
     }
 
     /**
-     * {@link #getSource()}是否为空
+     * Whether {@link #getSource()} is empty.
      *
-     * @return 是否
+     * @return boolean
      */
     @Override
     public boolean hasSource() {
         return hasSource;
     }
-
 }

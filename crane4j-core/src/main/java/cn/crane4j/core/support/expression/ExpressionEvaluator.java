@@ -1,7 +1,7 @@
 package cn.crane4j.core.support.expression;
 
 /**
- * 表达式执行器
+ * Expression executor.
  *
  * @author huangchengxing
  */
@@ -9,13 +9,13 @@ package cn.crane4j.core.support.expression;
 public interface ExpressionEvaluator {
 
     /**
-     * 在指定上文中执行表达式，并返回执行结果
+     * Execute the expression in the specified above and return the execution result.
      *
-     * @param expression 表达式
-     * @param resultType 返回值类型
-     * @param context 上下文
-     * @param <T> 返回值类型
-     * @return 执行结果，若无结果则返回{@code null}
+     * @param expression expression
+     * @param resultType result type
+     * @param context context
+     * @param <T> return type
+     * @return result of execution, {@code null} otherwise
      */
     <T> T execute(String expression, Class<T> resultType, ExpressionContext context);
 }

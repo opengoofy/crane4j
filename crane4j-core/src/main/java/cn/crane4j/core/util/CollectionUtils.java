@@ -20,16 +20,16 @@ public class CollectionUtils {
     }
 
     /**
-     * 创建一个线程安全的弱引用集合
+     * Create a thread-safe weak reference collection.
      *
-     * @return java.util.concurrent.ConcurrentMap<K,V>
+     * @return {@link ConcurrentMap}
      */
     public static <K, V> ConcurrentMap<K, V> newWeakConcurrentMap() {
         return new MapMaker().weakKeys().weakValues().makeMap();
     }
 
     /**
-     * 将一个{@link Object}对象适配为{@link Collection}对象
+     * Adapt a {@link Object} object to {@link Collection}.
      *
      * @param obj obj
      * @return collection
@@ -49,5 +49,4 @@ public class CollectionUtils {
         }
         return Collections.singletonList(obj);
     }
-
 }

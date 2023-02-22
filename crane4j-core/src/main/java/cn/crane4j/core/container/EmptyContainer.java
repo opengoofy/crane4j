@@ -5,8 +5,10 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * <p>一个用于占位的空数据源容器，本身不提供任何数据，也不提供数据的注册功能。
- * 当一个装配操作指定使用该数据源容器时，实际上表示将使用操作对象本身作为数据源对象。
+ * <p>An empty data source container for placeholders,
+ * it does not provide any data and data registration function itself.<br />
+ * When an assembly operation specifies to use the data source container,
+ * it actually means that the operation object itself will be used as the data source object.
  *
  * @author huangchengxing
  */
@@ -16,9 +18,10 @@ public class EmptyContainer implements Container<Object> {
     public static final String NAMESPACE = "";
 
     /**
-     * 获取数据源容器的命名空间，该值总是默认为空字符串
+     * Gets the namespace of the data source container,
+     * The value always defaults to an empty string
      *
-     * @return 命名空间
+     * @return namespace
      */
     @Override
     public String getNamespace() {
@@ -26,10 +29,11 @@ public class EmptyContainer implements Container<Object> {
     }
 
     /**
-     * 获取数据源，返回值总是默认为空集合
+     * <p>Enter a batch of key values to return data source objects grouped by key values.
+     * always return an empty collection.
      *
      * @param keys keys
-     * @return 按key值分组的数据源对象
+     * @return data source objects grouped by key value
      */
     @Override
     public Map<Object, ?> get(Collection<Object> keys) {

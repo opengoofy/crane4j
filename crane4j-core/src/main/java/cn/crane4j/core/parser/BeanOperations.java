@@ -6,18 +6,20 @@ import cn.crane4j.core.support.Sorted;
 import java.util.Collection;
 
 /**
- * <p>对象操作配置，用于描述一个对象需要完成的装配/拆卸全部操作。<br />
- * 一般通过一个{@link Class}被{@link BeanOperationParser}解析得到，
- * 使用时与对应类型的对象集合一并通过{@link BeanOperationExecutor}完成全部操作的执行。
+ * <p>Object operation configuration is used to describe all assembly and disassembly operations of an object.<br />
+ * Generally, a {@link Class} is parsed by {@link BeanOperationParser}, and when used,
+ * all operations are performed through {@link BeanOperationExecutor} with the corresponding type of object collection.
  *
- * <p>通过{@link #getAssembleOperations()}或{@link #getDisassembleOperations()}
- * 得到的操作配置一般是有序的，顺序遵循{@link Sorted#getSort()}定义。<br />
- * 但是实际执行顺序有{@link BeanOperationExecutor}保证，
- * 因此不同的执行器可能会导致实际上不同的执行顺序。
+ * <p>Through {@link #getAssembleOperations()} or {@link #getDisassembleOperations()} obtained operation configuration
+ * is generally orderly, and the order follows the definition of {@link Sorted#getSort()}.<br />
+ * However, the actual execution order needs to be guaranteed by {@link BeanOperationExecutor},
+ * so different executors may lead to different execution orders.
  *
- * <p>由于配置可能是嵌套的，比如一个对象中某个需要拆卸的属性类型为另一对象，
- * 因此当得到对象操作配置实例时可能仍然还在递归解析中，
- * 所以在使用前，需要通过{@link #isActive()}确保该配置对象已经完成解析。
+ * <p>Because the configuration may be nested, for example,
+ * an attribute type that needs to be disassembled in an object is another object,
+ * so when the object operation configuration instance is obtained, it may still be in recursive resolution,
+ * so before use, you need to ensure that the configuration object
+ * has completed resolution through {@link #isActive()}.
  *
  * @author huangchengxing
  * @see AssembleOperation
@@ -28,51 +30,53 @@ import java.util.Collection;
 public interface BeanOperations {
 
     /**
-     * 获取当前操作对应的对象类型
+     * Get the object type corresponding to the current operation.
      *
-     * @return 对象类型
+     * @return type
      */
     Class<?> getTargetType();
 
     /**
-     * 获取装配操作
+     * Get assembly operations.
      *
-     * @return 装配操作
+     * @return operations
      */
     Collection<AssembleOperation> getAssembleOperations();
 
     /**
-     * 添加装配操作，若该操作已被添加，则会将其删除后再添加
+     * Add assembly operation. <br />
+     * If the operation has been added, it will be deleted before adding.
      *
-     * @param operation 装配操作
+     * @param operation operation
      */
     void putAssembleOperations(AssembleOperation operation);
 
     /**
-     * 获取拆卸操作
+     * Get disassembly operations.
      *
-     * @return 拆卸操作
+     * @return operations
      */
     Collection<DisassembleOperation> getDisassembleOperations();
 
     /**
-     * 添加拆卸操作，若该操作已被添加，则会将其删除后再添加
+     * Add disassembly operation. <br />
+     * If the operation has been added, it will be deleted before adding.
      *
-     * @param operation 拆卸操作
+     * @param operation operation
      */
     void putDisassembleOperations(DisassembleOperation operation);
 
     /**
-     * 当前操作配置是否已经就绪
+     * Whether the current operation configuration is active.
      *
-     * @return 是否
+     * @return true if configuration is active, false otherwise
      */
     boolean isActive();
 
     /**
-     * 设置当前操作配置就绪状态
+     * Set the current operation configuration active state.
      *
-     * @param active 是否
+     * @param active active state
      */
     void setActive(boolean active);
 }

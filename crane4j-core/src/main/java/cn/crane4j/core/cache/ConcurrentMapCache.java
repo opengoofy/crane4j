@@ -1,11 +1,15 @@
 package cn.crane4j.core.cache;
 
+import cn.crane4j.core.container.CacheableContainer;
 import lombok.RequiredArgsConstructor;
 
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * 基于{@link ConcurrentMap}实现的简单缓存
+ * <p>The simple implementation of {@link Cache},
+ * based on the local cache by {@link ConcurrentMap}.
+ * Used to cooperate with {@link CacheableContainer}
+ * to cache the data source in the container.
  *
  * @author huangchengxing
  */
@@ -13,15 +17,15 @@ import java.util.concurrent.ConcurrentMap;
 public class ConcurrentMapCache<K> implements Cache<K> {
 
     /**
-     * 缓存集合
+     * cache map
      */
     private final ConcurrentMap<K, Object> cacheMap;
 
     /**
-     * 根据key值获取缓存
+     * Get the cache according to the key value.
      *
      * @param key key
-     * @return 缓存值
+     * @return cache value
      */
     @Override
     public Object get(K key) {
@@ -29,11 +33,11 @@ public class ConcurrentMapCache<K> implements Cache<K> {
     }
 
     /**
-     * 添加缓存值
+     * Add cache value.
      *
-     * @param key   key
+     * @param key key
      * @param value value
-     * @return 若已有缓存值则添加
+     * @return old value
      */
     @Override
     public Object put(K key, Object value) {
@@ -41,10 +45,10 @@ public class ConcurrentMapCache<K> implements Cache<K> {
     }
 
     /**
-     * 若不存在则添加缓存值
+     * Add cache value if it does not exist.
      *
      * @param key        key
-     * @param cacheValue 缓存值
+     * @param cacheValue cache value
      */
     @Override
     public void putIfAbsent(K key, Object cacheValue) {

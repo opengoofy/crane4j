@@ -10,9 +10,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
 /**
- * <p>{@link BeanOperationExecutor}的异步实现，
- * 当提交任务时，将以数据源容器分组异步的支持操作。<br />
- * 无法保证操作按顺序执行，仅可以保证按操作顺序向线程池提交任务。
+ * <p>The asynchronous implementation of {@link BeanOperationExecutor}
+ * It will group the operations to be executed according to the data source container,
+ * then submit them to the executor in turn, and finally complete them asynchronously.
+ *
+ * <p>It is not possible to ensure that the operations are executed in order,
+ * but only to submit tasks to the thread pool in the order of operations.
  *
  * @author huangchengxing
  */
@@ -21,14 +24,14 @@ import java.util.concurrent.ExecutorService;
 public class AsyncBeanOperationExecutor extends AbstractBeanOperationExecutor {
 
     /**
-     * 用于执行操作的线程池
+     * thread pool used to perform operations.
      */
     private final ExecutorService executorService;
 
     /**
-     * 完成装配操作
+     * Complete assembly operation.
      *
-     * @param executions 待完成的装配操作
+     * @param executions executions
      */
     @SuppressWarnings("unchecked")
     @Override

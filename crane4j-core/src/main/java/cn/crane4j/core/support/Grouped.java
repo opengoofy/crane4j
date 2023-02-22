@@ -8,25 +8,25 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
- * 表示具有组别的对象
+ * Represents objects that can be grouped by a specific name.
  *
  * @author huangchengxing
  */
 public interface Grouped {
 
     /**
-     * <p>对象同时属于{@code groups}中的所有分组，比如：
+     * <p>The object belongs to all the groups in {@code groups}, for example:
      * <table>
-     *     <tr><td>输入  </td><td>检验   </td><td>结果 </td></tr>
-     *     <tr><td>[ ]   </td><td>any   </td><td>true </td></tr>
-     *     <tr><td>[a]   </td><td>[a]   </td><td>true </td></tr>
-     *     <tr><td>[a]   </td><td>[a, b]</td><td>false</td></tr>
-     *     <tr><td>[a, b]</td><td>[a, b]</td><td>true </td></tr>
-     *     <tr><td>[a, b]</td><td>[b]   </td><td>false</td></tr>
+     *     <tr><td>input  </td><td>test  </td><td>result</td></tr>
+     *     <tr><td>[ ]    </td><td>any   </td><td>true  </td></tr>
+     *     <tr><td>[a]    </td><td>[a]   </td><td>true  </td></tr>
+     *     <tr><td>[a]    </td><td>[a, b]</td><td>false </td></tr>
+     *     <tr><td>[a, b] </td><td>[a, b]</td><td>true  </td></tr>
+     *     <tr><td>[a, b] </td><td>[b]   </td><td>false </td></tr>
      * </table>
      *
-     * @param groups 分组
-     * @return cn.net.nova.component.chain.group.TagFilter
+     * @param groups groups
+     * @return predicate
      */
     static Predicate<Grouped> allMatch(String... groups) {
         return ArrayUtil.isEmpty(groups) ?
@@ -34,17 +34,17 @@ public interface Grouped {
     }
 
     /**
-     * <p>对象不属于{@code groups}中的任意分组，比如：
+     * <p>The object does not belong to any group in {@code groups}, for example:
      * <table>
-     *     <tr><td>输入  </td><td>检验   </td><td>结果 </td></tr>
-     *     <tr><td>[ ]   </td><td>any   </td><td>true </td></tr>
-     *     <tr><td>[a, b]</td><td>[a, b]</td><td>false</td></tr>
-     *     <tr><td>[a, b]</td><td>[a]   </td><td>false</td></tr>
-     *     <tr><td>[a, b]</td><td>[c]   </td><td>true </td></tr>
+     *     <tr><td>input  </td><td>test  </td><td>result</td></tr>
+     *     <tr><td>[ ]    </td><td>any   </td><td>true  </td></tr>
+     *     <tr><td>[a, b] </td><td>[a, b]</td><td>false </td></tr>
+     *     <tr><td>[a, b] </td><td>[a]   </td><td>false </td></tr>
+     *     <tr><td>[a, b] </td><td>[c]   </td><td>true  </td></tr>
      * </table>
      *
      * @param groups 分组
-     * @return cn.net.nova.component.chain.group.TagFilter
+     * @return predicate
      */
     static Predicate<Grouped> noneMatch(String... groups) {
         return ArrayUtil.isEmpty(groups) ?
@@ -52,17 +52,17 @@ public interface Grouped {
     }
 
     /**
-     * <p>对象属于{@code groups}中的任意分组，比如：
+     * <p>The object belongs to any group in {@code groups}, for example:
      * <table>
-     *     <tr><td>输入  </td><td>检验   </td><td>结果 </td></tr>
-     *     <tr><td>[ ]   </td><td>any   </td><td>false</td></tr>
-     *     <tr><td>[a, b]</td><td>[a, b]</td><td>true </td></tr>
-     *     <tr><td>[a, b]</td><td>[a]   </td><td>true </td></tr>
-     *     <tr><td>[a, b]</td><td>[c]   </td><td>false</td></tr>
+     *     <tr><td>input  </td><td>test  </td><td>result</td></tr>
+     *     <tr><td>[ ]    </td><td>any   </td><td>false </td></tr>
+     *     <tr><td>[a, b] </td><td>[a, b]</td><td>true  </td></tr>
+     *     <tr><td>[a, b] </td><td>[a]   </td><td>true  </td></tr>
+     *     <tr><td>[a, b] </td><td>[c]   </td><td>false </td></tr>
      * </table>
      *
-     * @param groups 分组
-     * @return cn.net.nova.component.chain.group.TagFilter
+     * @param groups groups
+     * @return predicate
      */
     static Predicate<Grouped> anyMatch(String... groups) {
         return ArrayUtil.isEmpty(groups) ?
@@ -70,37 +70,37 @@ public interface Grouped {
     }
 
     /**
-     * 对象总是属于任何分组
+     * Objects always belong to any group.
      *
-     * @return cn.net.nova.component.chain.group.TagFilter
+     * @return predicate
      */
     static Predicate<Grouped> alwaysMatch() {
         return grouped -> true;
     }
 
     /**
-     * 对象总是不属于任何分组
+     * The object always does not belong to any group.
      *
-     * @return cn.net.nova.component.chain.group.TagFilter
+     * @return predicate
      */
     static Predicate<Grouped> alwaysNoneMatch() {
         return grouped -> false;
     }
 
     /**
-     * 获取所属的组别
+     * Get group names.
      *
-     * @return 组别
+     * @return group names
      */
     default Set<String> getGroups() {
         return Collections.emptySet();
     }
 
     /**
-     * 当前对象是否属于指定组别
+     * Whether the current object belongs to the specified group.
      *
-     * @param group 组别
-     * @return 是否
+     * @param group group
+     * @return boolean
      */
     default boolean isBelong(String group) {
         return getGroups().contains(group);

@@ -20,7 +20,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * 支持多key值字段的装配处理器
+ * Implementation of {@link AssembleOperationHandler} supporting multiple key value fields.
  *
  * @author huangchengxing
  */
@@ -31,15 +31,17 @@ public class MultiKeyAssembleOperationHandler implements AssembleOperationHandle
     private final PropertyOperator propertyOperator;
 
     /**
-     * 执行装配操作
+     * Perform assembly operation.
      *
-     * @param container  数据源容器
-     * @param executions 待执行的装配操作
+     * @param container container
+     * @param executions operations to be performed
      */
     @Override
     public void process(Container<?> container, Collection<AssembleExecution> executions) {
+        // extract and split key for target object
         List<Entity> entities = parseExecutionsToEntities(executions);
         Map<Object, ?> sources = resolveKeys(container, entities);
+        // perform attribute mapping between data source object and target object
         for (Entity entity : entities) {
             AssembleOperation operation = entity.getExecution().getOperation();
             List<Object> source = entity.getKeys().stream()
@@ -54,6 +56,8 @@ public class MultiKeyAssembleOperationHandler implements AssembleOperationHandle
         Class<?> targetType, AssembleOperation operation, List<Object> source, Object target) {
         Set<PropertyMapping> mappings = operation.getPropertyMappings();
         for (PropertyMapping mapping : mappings) {
+            // there are always multiple source values,
+            // so we need to merge the source objects after operation
             List<Object> sourceValues = mapping.hasSource() ?
                 source.stream().map(s -> propertyOperator.readProperty(s.getClass(), s, mapping.getSource()))
                     .collect(Collectors.toList()) : source;
@@ -78,6 +82,7 @@ public class MultiKeyAssembleOperationHandler implements AssembleOperationHandle
             MethodInvoker getter = propertyOperator.findGetter(targetType, key);
             for (Object target : execution.getTargets()) {
                 Object keyValue = getter.invoke(target);
+                // split key
                 Collection<Object> multiKeys = splitMultiKeys(keyValue);
                 if (!multiKeys.isEmpty()) {
                     entities.add(new Entity(execution, target, multiKeys));
@@ -88,10 +93,10 @@ public class MultiKeyAssembleOperationHandler implements AssembleOperationHandle
     }
 
     /**
-     * key字段值
+     * Split keys from value of key field.
      *
-     * @param keys 字段值
-     * @return key字段集合
+     * @param keys keys
+     * @return keys
      */
     @SuppressWarnings("unchecked")
     protected Collection<Object> splitMultiKeys(Object keys) {

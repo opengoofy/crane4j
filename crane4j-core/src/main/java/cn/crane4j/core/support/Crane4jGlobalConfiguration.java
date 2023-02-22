@@ -8,95 +8,95 @@ import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 
 /**
- * 框架全局配置类
+ * Framework global configuration.
  *
  * @author huangchengxing
  */
 public interface Crane4jGlobalConfiguration {
 
     /**
-     * 获取属性操作器
+     * Get property operator.
      *
-     * @return 类型解析器
+     * @return property operator
      */
     PropertyOperator getPropertyOperator();
 
     /**
-     * 获取类型解析器
+     * Get type resolver.
      *
-     * @return 类型解析器
+     * @return type resolver
      */
     TypeResolver getTypeResolver();
     
     /**
-     * 获取数据源容器
+     * Get data source container.
      *
-     * @param namespace 命名空间
-     * @return {@link Container}
+     * @param namespace namespace
+     * @return container
      */
     Container<?> getContainer(String namespace);
 
     /**
-     * 获取操作执行器
+     * Get bean operation executor.
      *
-     * @param executorType 执行器类型
-     * @return cn.crane4j.core.executor.BeanOperationExecutor
+     * @param executorType executor type
+     * @return executor
      */
     BeanOperationExecutor getBeanOperationExecutor(Class<? extends BeanOperationExecutor> executorType);
 
     /**
-     * 获取操作执行器
+     * Get bean operation executor.
      *
-     * @param executorName 执行器名称
-     * @return cn.crane4j.core.executor.BeanOperationExecutor
+     * @param executorName executor name
+     * @return executor
      */
     BeanOperationExecutor getBeanOperationExecutor(String executorName);
 
     /**
-     * 获取配置解析器
+     * Get bean operation parser.
      *
-     * @param parserType 配置解析器类型
-     * @return 配置解析器
+     * @param parserType parser type
+     * @return parser
      */
     BeanOperationParser getBeanOperationsParser(Class<? extends BeanOperationParser> parserType);
 
     /**
-     * 获取配置解析器
+     * Get bean operation parser.
      *
-     * @param parserName 配置解析器名称
-     * @return 配置解析器
+     * @param parserName parser name
+     * @return parser
      */
     BeanOperationParser getBeanOperationsParser(String parserName);
     
     /**
-     * 获取装配操作处理器
+     * Get assemble operation handler.
      *
-     * @param handlerType 处理器类型
-     * @return 装配操作处理器
+     * @param handlerType handler type
+     * @return handler
      */
     AssembleOperationHandler getAssembleOperationHandler(Class<? extends AssembleOperationHandler> handlerType);
 
     /**
-     * 获取装配操作处理器
+     * Get assemble operation handler.
      *
-     * @param  handlerName 处理器器名称
-     * @return 装配操作处理器
+     * @param  handlerName handler name
+     * @return handler
      */
     AssembleOperationHandler getAssembleOperationHandler(String handlerName);
 
     /**
-     * 获取拆卸操作处理器
+     * Get disassemble operation handler.
      *
-     * @param handlerType 处理器类型
-     * @return 拆卸操作处理器
+     * @param handlerType handler type
+     * @return handler
      */
     DisassembleOperationHandler getDisassembleOperationHandler(Class<? extends DisassembleOperationHandler> handlerType);
 
     /**
-     * 获取拆卸操作处理器
+     * Get disassemble operation handler.
      *
-     * @param handlerName 处理器名称
-     * @return 拆卸操作处理器
+     * @param handlerName handler name
+     * @return handler
      */
     DisassembleOperationHandler getDisassembleOperationHandler(String handlerName);
 }

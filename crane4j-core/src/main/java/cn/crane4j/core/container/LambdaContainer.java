@@ -10,7 +10,9 @@ import java.util.Objects;
 import java.util.function.Function;
 
 /**
- * 基于输入key值集合返回按key分组的数据源对象的lambda表达式实现的数据源容器
+ * <p>A data source container implemented by lambda expression
+ * that returns data source objects grouped by key
+ * based on the set of input key values.
  *
  * @author huangchengxing
  */
@@ -22,12 +24,13 @@ public class LambdaContainer<K> implements Container<K> {
     private final Function<Collection<K>, Map<K, ?>> dataSource;
 
     /**
-     * 基于一个输入key集合，返回按key分组的数据源的表达式构建数据源容器
+     * Build a data source container based on an input key set
+     * and an expression that returns data sources grouped by key.
      *
-     * @param namespace 命名空间
-     * @param lambda 表达式
-     * @param <K> key类型
-     * @return 数据源容器
+     * @param namespace namespace
+     * @param lambda lambda expression
+     * @param <K> key type
+     * @return container
      */
     public static <K> LambdaContainer<K> forLambda(String namespace, Function<Collection<K>, Map<K, ?>> lambda) {
         Objects.requireNonNull(namespace);
@@ -36,10 +39,10 @@ public class LambdaContainer<K> implements Container<K> {
     }
 
     /**
-     * 输入一批key值，返回按key值分组的数据源对象
+     * Enter a batch of key values to return data source objects grouped by key values.
      *
      * @param keys keys
-     * @return 按key值分组的数据源对象
+     * @return data source objects grouped by key value
      */
     @Override
     public Map<K, ?> get(Collection<K> keys) {

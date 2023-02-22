@@ -19,7 +19,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * 基于{@link PropertyOperator}实现的拆卸操作处理器
+ * A basic {@link DisassembleOperationHandler} implementation based on {@link PropertyOperator}.
  *
  * @author huangchengxing
  */
@@ -29,10 +29,10 @@ public class ReflectDisassembleOperationHandler implements DisassembleOperationH
     private final PropertyOperator propertyOperator;
 
     /**
-     * 根据拆卸配置，提取出对象属性中的嵌套对象
+     * Extract nested objects in object attributes according to disassembly configuration.
      *
-     * @param operation 要执行的拆卸操作
-     * @param targets 待处理的目标对象，类型应当与{@code targetType}一致
+     * @param operation disassembly operation to be performed
+     * @param targets The target object to be processed should be the same type as {@code targetType}
      */
     @Override
     public Collection<?> process(DisassembleOperation operation, Collection<?> targets) {
@@ -54,7 +54,7 @@ public class ReflectDisassembleOperationHandler implements DisassembleOperationH
             if (Objects.isNull(item)) {
                 continue;
             }
-            // 若依然是集合，则继续拆卸
+            // still is collection, continue
             if (item instanceof Collection || item.getClass().isArray()) {
                 deque.addAll(CollectionUtils.adaptObjectToCollection(item));
             } else {

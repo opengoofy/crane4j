@@ -12,8 +12,11 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * 具备缓存功能的数据源容器包装类。当根据key集合获取数据源时，将会优先尝试从缓存中获取，
- * 若有部分key集合在缓存中不存在，则会再从原始容器中获取，并为这批key添加缓存。
+ * <p>Data source container wrapper class with cache function.<br />
+ * When the data source is obtained from the key set,
+ * it will first try to obtain it from the cache.<br />
+ * If some key sets do not exist in the cache,
+ * it will be obtained from the original container and added to the cache for this batch of keys.
  *
  * @author huangchengxing
  * @see Cache
@@ -26,9 +29,10 @@ public class CacheableContainer<K> implements Container<K> {
     private final Cache<K> cache;
 
     /**
-     * 获取数据源容器的命名空间，该值应当全局唯一
+     * Gets the namespace of the data source container,
+     * always return the namespace of the wrapped original container.
      *
-     * @return 命名空间
+     * @return namespace
      */
     @Override
     public String getNamespace() {
@@ -36,10 +40,12 @@ public class CacheableContainer<K> implements Container<K> {
     }
 
     /**
-     * 输入一批key值，返回按key值分组的数据源对象
+     * <p>Enter a batch of key values to return data source objects grouped by key values.
+     * If part of the key value entered has been cached,
+     * the data corresponding to that part of the key value will be obtained from the cache first.
      *
      * @param keys keys
-     * @return 按key值分组的数据源对象
+     * @return data source objects grouped by key value
      */
     @SuppressWarnings("unchecked")
     @Override

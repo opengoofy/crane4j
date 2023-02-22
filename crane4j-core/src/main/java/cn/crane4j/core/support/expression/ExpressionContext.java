@@ -3,8 +3,10 @@ package cn.crane4j.core.support.expression;
 import java.util.Map;
 
 /**
- * 表达式上下文抽象，该接口用于保证无论表达式功能基于哪些引擎实现，
- * 表达式都能在保证基本的变量和根对象设置的功能上正常执行。
+ * <p>A top expression context abstract.<br />
+ * This interface is used to ensure that the expression can be executed normally on
+ * the basis of the basic variable and root object settings,
+ * regardless of the engine implementation of the expression function.
  *
  * @author huangchengxing
  */

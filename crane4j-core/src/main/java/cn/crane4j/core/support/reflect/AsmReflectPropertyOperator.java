@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 基于ASM实现的反射工具类
+ * A {@link PropertyOperator} implementation based on {@link com.esotericsoftware.reflectasm}.
  *
  * @author huangchengxing
  */
@@ -23,12 +23,12 @@ public class AsmReflectPropertyOperator extends CacheablePropertyOperator {
     private final Map<Class<?>, MethodAccess> methodAccessCaches = new ConcurrentHashMap<>();
 
     /**
-     * 根据指定方法创建调用器
+     * Create {@link MethodInvoker} according to the specified method
      *
-     * @param targetType   目标类型
-     * @param propertyName 属性名称
-     * @param method       属性的getter或setter方法
-     * @return 调用器
+     * @param targetType target type
+     * @param propertyName property name
+     * @param method getter method or setter method
+     * @return {@link MethodInvoker}
      */
     @Override
     protected MethodInvoker createInvoker(Class<?> targetType, String propertyName, Method method) {
@@ -38,7 +38,7 @@ public class AsmReflectPropertyOperator extends CacheablePropertyOperator {
     }
 
     /**
-     * 基于{@link MethodAccess}实现的方法调用
+     * {@link MethodInvoker} implementation based on {@link MethodAccess}
      *
      * @author huangchengxing
      */
@@ -49,11 +49,11 @@ public class AsmReflectPropertyOperator extends CacheablePropertyOperator {
         private final MethodAccess methodAccess;
 
         /**
-         * 调用方法
+         * Invoke method.
          *
-         * @param target 对象
-         * @param args 参数
-         * @return 调用结果
+         * @param target target
+         * @param args args
+         * @return result of invoke
          */
         @Override
         public Object invoke(@Nullable Object target, @Nullable Object... args) {

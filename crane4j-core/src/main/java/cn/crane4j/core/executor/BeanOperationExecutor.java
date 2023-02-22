@@ -1,5 +1,6 @@
 package cn.crane4j.core.executor;
 
+import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.KeyTriggerOperation;
 
@@ -7,31 +8,33 @@ import java.util.Collection;
 import java.util.function.Predicate;
 
 /**
- * 对象操作执行器，给定一组对象及其对应的操作配置，
- * 执行器将根据操作配置完成对全部对象的装配操作。
+ * <p>Bean operation executor, used to perform disassembly operations,
+ * encapsulate the assembly operations to be performed and target objects into {@link AssembleExecution},
+ * and then distribute them to {@link AssembleOperationHandler} for execution.
  *
  * @author huangchengxing
  * @see AbstractBeanOperationExecutor
  * @see AsyncBeanOperationExecutor
  * @see DisorderedBeanOperationExecutor
  * @see OrderedBeanOperationExecutor
+ * @see AssembleExecution
  */
 public interface BeanOperationExecutor {
 
     /**
-     * 根据指定的{@link BeanOperations}完成对{@code targets}中所有对象的操作
+     * Complete operations on all objects in {@code targets} according to the specified {@link BeanOperations}
      *
-     * @param targets 目标对象
-     * @param operations 待执行的操作
-     * @param filter 操作过滤器，可以基于操作key、组别等属性过滤一些操作
+     * @param targets targets
+     * @param operations operations to be performed
+     * @param filter operation filter, which can filter some operations based on operation key, group and other attributes
      */
     void execute(Collection<?> targets, BeanOperations operations, Predicate<? super KeyTriggerOperation> filter);
 
     /**
-     * 根据指定的{@link BeanOperations}完成对{@code targets}中所有对象的操作
+     * Complete operations on all objects in {@code targets} according to the specified {@link BeanOperations}
      *
-     * @param targets 目标对象
-     * @param operations 待执行的操作
+     * @param targets targets
+     * @param operations operations to be performed
      */
     default void execute(Collection<?> targets, BeanOperations operations) {
         execute(targets, operations, t -> true);

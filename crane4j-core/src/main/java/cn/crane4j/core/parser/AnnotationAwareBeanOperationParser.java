@@ -42,14 +42,16 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * <p>基于注解的{@link BeanOperationParser}实现。
- * 支持通过解析类和属性上的基于{@link Assemble}和{@link Disassemble}
- * 以及{@link Operations}注解来构建操作配置。<br />
- * 除了支持解析直接存在的与类及其字段上注释，还支持解析父类或接口、以及父类属性上的注解。
+ * <p>Annotation-based {@link BeanOperationParser} implementation.<br />
+ * Support the construction of operation configuration
+ * by resolving annotations based on {@link Assemble}, {@link Disassemble}
+ * and {@link Operations} on classes and attributes.<br />
  *
- * <p>解析器将会按配置的排序值保证得到的{@link BeanOperations}中装配和拆卸操作之间的排序，
- * 该顺序可以通过在构造器调用时指定比较器来改变。<br />
- * 需要注意的是，该顺序不代表最终操作被执行的顺序，该顺序由执行器{@link BeanOperationExecutor}保证。
+ * <p>The parser will ensure the sorting between assembly and disassembly operations
+ * in {@link BeanOperations} according to the configured sorting value,
+ * which can be changed by specifying a comparator when the constructor calls.<br />
+ * It should be noted that this order does not represent the order in which the final operation will be executed.
+ * This order is guaranteed by the executor {@link BeanOperationExecutor}.
  *
  * @author huangchengxing
  * @see Assemble
@@ -62,17 +64,17 @@ public class AnnotationAwareBeanOperationParser implements BeanOperationParser {
     private static final String ANNOTATION_KEY_ATTRIBUTE = "key";
     private static final Map<Class<?>, MetaDataCache> META_DATA_CACHES = CollectionUtils.newWeakConcurrentMap();
 
-    private final AnnotationFinder annotationFinder;
-    private final Crane4jGlobalConfiguration globalConfiguration;
+    protected final AnnotationFinder annotationFinder;
+    protected final Crane4jGlobalConfiguration globalConfiguration;
     private final Comparator<KeyTriggerOperation> operationComparator;
     private final Map<Class<?>, BeanOperations> parsedBeanOperations = new ConcurrentHashMap<>(32);
 
     /**
-     * 创建一个支持注解配置的操作解析器
+     * Create an operation parser that supports annotation configuration.
      *
-     * @param annotationFinder 注解查找器
-     * @param globalConfiguration 全局配置
-     * @param operationComparator 操作排序比较器
+     * @param annotationFinder annotation finder
+     * @param globalConfiguration global configuration
+     * @param operationComparator operation comparator
      */
     public AnnotationAwareBeanOperationParser(
         AnnotationFinder annotationFinder,
@@ -84,10 +86,11 @@ public class AnnotationAwareBeanOperationParser implements BeanOperationParser {
     }
 
     /**
-     * 创建一个支持注解配置的操作解析器，操作配置之间的顺序按{@link Sorted#getSort}由小到大
+     * <p>Create an operation parser that supports annotation configuration.<br />
+     * The order of operation configurations is {@link Sorted#getSort} from small to large.
      *
-     * @param annotationFinder 注解查找器
-     * @param globalConfiguration 全局配置
+     * @param annotationFinder annotation finder
+     * @param globalConfiguration global configuration
      */
     public AnnotationAwareBeanOperationParser(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration globalConfiguration) {
@@ -95,10 +98,12 @@ public class AnnotationAwareBeanOperationParser implements BeanOperationParser {
     }
 
     /**
-     * 解析类及类属性信息，生成对应的{@link BeanOperations}实例
+     * <p>Parse the class and class attribute information,
+     * and generate the corresponding {@link BeanOperations} instance.<br />
+     * If there is a cache, it will be obtained from the cache first.
      *
-     * @param beanType 类
-     * @return {@link BeanOperations}实例，该实例可能存在缓存
+     * @param beanType bean type
+     * @return {@link BeanOperations}
      */
     @NonNull
     @Override
@@ -115,9 +120,9 @@ public class AnnotationAwareBeanOperationParser implements BeanOperationParser {
     }
 
     /**
-     * 创建操作配置实例
+     * Create {@link BeanOperations} instance
      *
-     * @param beanType 正在解析的类
+     * @param beanType bean type
      * @return {@link BeanOperations}
      */
     protected BeanOperations createBeanOperations(Class<?> beanType) {
@@ -125,9 +130,9 @@ public class AnnotationAwareBeanOperationParser implements BeanOperationParser {
     }
 
     /**
-     * 解析类中的{@link Assemble}注解
+     * Parse {@link Assemble} annotations for class.
      *
-     * @param beanType 正在解析的类
+     * @param beanType bean type
      * @return {@link Assemble}
      */
     protected List<Assemble> parseAssembleAnnotations(Class<?> beanType) {
@@ -135,9 +140,9 @@ public class AnnotationAwareBeanOperationParser implements BeanOperationParser {
     }
 
     /**
-     * 解析类中的{@link Disassemble}注解
+     * Parse {@link Disassemble} annotations for class.
      *
-     * @param beanType 正在解析的类
+     * @param beanType bean type
      * @return {@link Disassemble}
      */
     protected List<Disassemble> parseDisassembleAnnotations(Class<?> beanType) {
@@ -145,9 +150,9 @@ public class AnnotationAwareBeanOperationParser implements BeanOperationParser {
     }
 
     /**
-     * 解析类上的{@link Operations}
+     * Parse {@link Operations} annotations for class.
      *
-     * @param beanType 正在解析的类
+     * @param beanType bean type
      * @return {@link Operations}
      */
     protected Operations parseOperationsAnnotation(Class<?> beanType) {
@@ -165,13 +170,13 @@ public class AnnotationAwareBeanOperationParser implements BeanOperationParser {
             Class<?> type = typeQueue.removeFirst();
             accessed.add(type);
 
-            // 已有元数据缓存？
+            // Existing metadata cache?
             MetaDataCache cache = MapUtil.computeIfAbsent(
                 META_DATA_CACHES, type, this::createMetaDataCache
             );
             cache.append(assembleOperations, disassembleOperations);
 
-            // 接着查找其父类和接口
+            // Then find superclass and interfaces
             Class<?> superclass = type.getSuperclass();
             if (Objects.nonNull(superclass) && !Objects.equals(superclass, Object.class) && !accessed.contains(superclass)) {
                 typeQueue.add(superclass);
@@ -179,27 +184,34 @@ public class AnnotationAwareBeanOperationParser implements BeanOperationParser {
             CollUtil.addAll(typeQueue, type.getInterfaces());
         }
 
-        // 在注册操作前，先根据排序值对其进行排序
+        // before registering an operation, sort it according to the sort value
         assembleOperations.sort(operationComparator);
         assembleOperations.forEach(beanOperations::putAssembleOperations);
         disassembleOperations.sort(operationComparator);
         disassembleOperations.forEach(beanOperations::putDisassembleOperations);
     }
 
-    private AssembleOperation parseAssembleOperation(Assemble annotation) {
-        // 根据注解构建操作配置
+    /**
+     * Create {@link AssembleOperation} instance from annotation.
+     *
+     * @param type type
+     * @param annotation annotation
+     * @return {@link AssembleOperation}
+     */
+    protected AssembleOperation parseAssembleOperation(Class<?> type, Assemble annotation) {
+        // get data source container
         Assert.isTrue(CharSequenceUtil.isNotBlank(annotation.key()), throwException("the key of assemble operation must not blank"));
         Container<?> container = CharSequenceUtil.isNotEmpty(annotation.namespace()) ?
             globalConfiguration.getContainer(annotation.namespace()) : Container.empty();
         Assert.notNull(container, throwException("container [{}] not found", annotation.namespace()));
 
-        // 获取操作处理器
+        // get operation handler
         AssembleOperationHandler assembleOperationHandler = ConfigurationUtil.getAssembleOperationHandler(
             globalConfiguration, annotation.handlerName(), annotation.handler()
         );
         Assert.notNull(assembleOperationHandler, throwException("assemble operation handler [{}]({}) not found", annotation.handlerName(), annotation.handler()));
 
-        // 解析映射配置模板
+        // resolved property mapping from annotation and template
         Set<PropertyMapping> propertyMappings = Stream.of(annotation.props())
             .map(m -> new SimplePropertyMapping(m.src(), CharSequenceUtil.isEmpty(m.ref()) ? annotation.key() : m.ref()))
             .collect(Collectors.toSet());
@@ -207,6 +219,8 @@ public class AnnotationAwareBeanOperationParser implements BeanOperationParser {
         if (CollUtil.isNotEmpty(templateMappings)) {
             propertyMappings.addAll(templateMappings);
         }
+
+        // create operation
         AssembleOperation operation = new SimpleAssembleOperation(
             annotation.key(), annotation.sort(),
             propertyMappings, container, assembleOperationHandler
@@ -225,36 +239,44 @@ public class AnnotationAwareBeanOperationParser implements BeanOperationParser {
             .collect(Collectors.toList());
     }
 
-    private DisassembleOperation parseDisassembleOperation(Class<?> sourceType, Disassemble annotation) {
-        // 获取配置解析器
+    /**
+     * Create {@link DisassembleOperation} instance from annotation.
+     *
+     * @param type type
+     * @param annotation annotation
+     * @return {@link DisassembleOperation}
+     */
+    protected DisassembleOperation parseDisassembleOperation(Class<?> type, Disassemble annotation) {
+        // get parser
         Assert.isTrue(CharSequenceUtil.isNotBlank(annotation.key()), throwException("the key of disassemble operation must not blank"));
         BeanOperationParser parser = ConfigurationUtil.getParser(globalConfiguration, annotation.parserName(), annotation.parser());
         Assert.notNull(parser, throwException("bean operations parser [{}]({}) not found", annotation.parserName(), annotation.parser()));
 
-        // 获取操作处理器
+        // get handler
         DisassembleOperationHandler disassembleOperationHandler = ConfigurationUtil.getDisassembleOperationHandler(
             globalConfiguration, annotation.handlerName(), annotation.handler()
         );
         Assert.notNull(disassembleOperationHandler, throwException("disassemble handler [{}]({}) not found", annotation.handlerName(), annotation.parser()));
 
-        // 若未在注解中指定嵌套对象的类型，则等到实际处理数据时再动态解析其类型
+        // wait until runtime to dynamically determine the actual type if no type is specified
         DisassembleOperation operation;
         if (Objects.equals(Object.class, annotation.type()) || Objects.equals(Void.TYPE, annotation.type())) {
             operation = new TypeDynamitedDisassembleOperation(
                 annotation.key(), annotation.sort(),
-                sourceType, disassembleOperationHandler, parser,
+                type, disassembleOperationHandler, parser,
                 globalConfiguration.getTypeResolver()
             );
         }
-        // 已经在注解中指定了嵌套对象的属性，则照顾完成操作配置的解析
+        // complete the parsing now if the type has been specified in the annotation
         else {
             BeanOperations operations = parser.parse(annotation.type());
             operation = new TypeFixedDisassembleOperation(
                 annotation.key(), annotation.sort(),
-                sourceType, operations, disassembleOperationHandler
+                type, operations, disassembleOperationHandler
             );
         }
-        // 设置组别
+
+        // set group
         operation.getGroups().addAll(Arrays.asList(annotation.groups()));
         return operation;
     }
@@ -268,7 +290,7 @@ public class AnnotationAwareBeanOperationParser implements BeanOperationParser {
                 continue;
             }
             for (T t : annotation) {
-                // 如果注解在属性上，则强制将value设置为被注解的属性名称
+                // force value to be set to the annotated attribute name
                 ReflectUtils.setAttributeValue(t, ANNOTATION_KEY_ATTRIBUTE, field.getName());
                 results.add(t);
             }
@@ -277,7 +299,6 @@ public class AnnotationAwareBeanOperationParser implements BeanOperationParser {
     }
 
     private MetaDataCache createMetaDataCache(Class<?> type) {
-        // 解析类中的注解配置
         Collection<Assemble> assembles = parseAssembleAnnotations(type);
         Collection<Disassemble> disassembles = parseDisassembleAnnotations(type);
         Operations operations = parseOperationsAnnotation(type);
@@ -285,9 +306,8 @@ public class AnnotationAwareBeanOperationParser implements BeanOperationParser {
             CollUtil.addAll(assembles, operations.assembles());
             CollUtil.addAll(disassembles, operations.disassembles());
         }
-        // 将装配/拆卸配置添加到操作配置中
         List<AssembleOperation> assembleOperations = assembles.stream()
-            .map(this::parseAssembleOperation)
+            .map(annotation -> parseAssembleOperation(type, annotation))
             .sorted(operationComparator)
             .collect(Collectors.toList());
         List<DisassembleOperation> disassembleOperations = disassembles.stream()
@@ -302,7 +322,7 @@ public class AnnotationAwareBeanOperationParser implements BeanOperationParser {
     }
 
     /**
-     * 类上的注解元数据缓存
+     * Annotation metadata cache on class.
      */
     @RequiredArgsConstructor
     private static class MetaDataCache {

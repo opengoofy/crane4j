@@ -59,11 +59,11 @@ public class ConfigurationUtil {
         Crane4jGlobalConfiguration configuration, Class<T> pluginType,
         BiFunction<Crane4jGlobalConfiguration, Class<T>, T> getByType, Class<?> type,
         BiFunction<Crane4jGlobalConfiguration, String, T> getByName, String name) {
-        // 按名称查找
+        // find by name
         if (CharSequenceUtil.isNotEmpty(name)) {
             return pluginType.cast(getByName.apply(configuration, name));
         }
-        // 按类型查找
+        // find by type
         Class<?> targetType = (Objects.equals(Object.class, type) || !pluginType.isAssignableFrom(type)) ? pluginType : type;
         return pluginType.cast(getByType.apply(configuration, (Class<T>)targetType));
     }

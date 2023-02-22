@@ -14,9 +14,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * {@link DefaultMethodContainerFactory}的扩展实现，
- * 在前者的基础上，若方法上存在{@link ContainerCache}注解，
- * 则将得到的方法容器包装为{@link CacheableContainer}。
+ * <p>The extension implementation of {@link DefaultMethodContainerFactory}.<br />
+ * On the basis of the former, if {@link ContainerCache} annotation exists on the method,
+ * the obtained method container will be wrapped as {@link CacheableContainer}.
  *
  * @author huangchengxing
  * @see ContainerCache
@@ -33,9 +33,10 @@ public class CacheableMethodContainerFactory extends DefaultMethodContainerFacto
     }
 
     /**
-     * 获取排序值，越小越优先执行
+     * <p>Gets the sorting value.<br />
+     * The smaller the value, the higher the priority of the object.
      *
-     * @return 排序值
+     * @return sorting value
      */
     @Override
     public int getSort() {
@@ -43,11 +44,11 @@ public class CacheableMethodContainerFactory extends DefaultMethodContainerFacto
     }
 
     /**
-     * 是否支持处理该方法
+     * Whether the method is supported.
      *
-     * @param source 方法的调用对象
-     * @param method 方法
-     * @return 是否
+     * @param source method's calling object
+     * @param method method
+     * @return true if supported, false otherwise
      */
     @Override
     public boolean support(Object source, Method method) {
@@ -56,16 +57,16 @@ public class CacheableMethodContainerFactory extends DefaultMethodContainerFacto
     }
 
     /**
-     * 获取方法数据源
+     * Adapt methods to data source containers.
      *
-     * @param source 方法的调用对象
-     * @param method 方法
-     * @return 方法数据源容器
+     * @param source method's calling object
+     * @param method method
+     * @return data source containers
      */
     @Override
     public List<Container<Object>> get(Object source, Method method) {
         ContainerCache annotation = annotationFinder.findAnnotation(method, ContainerCache.class);
-        // 若未指定cacheName，则默认取容器的namespace
+        // if cache name is not specified, the namespace of the container is taken by default
         Function<Container<Object>, Cache<Object>> containerFactory = CharSequenceUtil.isEmpty(annotation.value()) ?
             container -> cacheManager.getCache(annotation.value()) : container -> cacheManager.getCache(container.getNamespace());
         return super.get(source, method).stream()

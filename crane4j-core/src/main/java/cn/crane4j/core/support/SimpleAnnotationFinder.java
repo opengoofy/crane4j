@@ -8,19 +8,19 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * {@link AnnotationFinder}的简单实现。
+ * Simple implementation of {@link AnnotationFinder}.
  *
  * @author huangchengxing
  */
 public class SimpleAnnotationFinder implements AnnotationFinder {
 
     /**
-     * 从元素上获得指定注解
+     * Get the specified annotation from the element.
      *
-     * @param element 要查找的元素
-     * @param annotationType 注解类型
-     * @param <A> 注解类型
-     * @return 注解对象
+     * @param element element
+     * @param annotationType annotation type
+     * @param <A> annotation type
+     * @return annotation
      */
     @Override
     public <A extends Annotation> A findAnnotation(@Nonnull AnnotatedElement element, Class<A> annotationType) {
@@ -28,12 +28,12 @@ public class SimpleAnnotationFinder implements AnnotationFinder {
     }
 
     /**
-     * 从元素上获得所有指定注解
+     * Get all specified annotations from the element.
      *
-     * @param element 要查找的元素
-     * @param annotationType 注解类型
-     * @param <A> 注解类型
-     * @return 注解对象
+     * @param element element
+     * @param annotationType annotation type
+     * @param <A> annotation type
+     * @return annotations
      */
     @Override
     public <A extends Annotation> Set<A> findAllAnnotations(@Nonnull AnnotatedElement element, Class<A> annotationType) {

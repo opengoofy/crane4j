@@ -3,7 +3,7 @@ package cn.crane4j.core.support;
 import javax.annotation.Nullable;
 
 /**
- * 推断一个{@link Object}实例的实际类型
+ * A resolver for Infer the actual type of {@link Object} instance.
  *
  * @author huangchengxing
  * @see SimpleTypeResolver
@@ -11,10 +11,10 @@ import javax.annotation.Nullable;
 public interface TypeResolver {
 
     /**
-     * 推断类型
+     * Inference type.
      *
-     * @param target 对象
-     * @return 推断的类型，若对象为{@code null}，则返回{@code null}
+     * @param target target
+     * @return Inferred type. If the object is {@code null}, return {@code null}
      */
     @Nullable
     Class<?> resolve(Object target);

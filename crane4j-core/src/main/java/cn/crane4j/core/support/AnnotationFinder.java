@@ -7,7 +7,7 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * 注解查找器
+ * Annotation finder.
  *
  * @author huangchengxing
  * @see SimpleAnnotationFinder
@@ -15,39 +15,38 @@ import java.util.Set;
 public interface AnnotationFinder {
 
     /**
-     * 默认的注解属性值
+     * default value name
      */
     String VALUE = "value";
 
     /**
-     * 从元素上获得指定注解
+     * Get the specified annotation from the element.
      *
-     * @param element 要查找的元素
-     * @param annotationType 注解类型
-     * @param <A> 注解类型
-     * @return 注解对象
+     * @param element element
+     * @param annotationType annotation type
+     * @param <A> annotation type
+     * @return annotation
      */
     <A extends Annotation> A findAnnotation(@Nonnull AnnotatedElement element, Class<A> annotationType);
 
     /**
-     * 元素上是否存在指定注解
+     * Whether the specified annotation exists on the element.
      *
-     * @param element 要查找的元素
-     * @param annotationType 注解类型
-     * @return 是否
+     * @param element element
+     * @param annotationType annotation type
+     * @return true if exists, false otherwise
      */
     default boolean hasAnnotation(@Nonnull AnnotatedElement element, Class<? extends Annotation> annotationType) {
         return Objects.nonNull(findAnnotation(element, annotationType));
     }
-    
+
     /**
-     * 从元素上获得所有指定注解
+     * Get all specified annotations from the element.
      *
-     * @param element 要查找的元素
-     * @param annotationType 注解类型
-     * @param <A> 注解类型
-     * @return 注解对象
+     * @param element element
+     * @param annotationType annotation type
+     * @param <A> annotation type
+     * @return annotations
      */
     <A extends Annotation> Set<A> findAllAnnotations(@Nonnull AnnotatedElement element, Class<A> annotationType);
-
 }

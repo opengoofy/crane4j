@@ -7,7 +7,7 @@ import lombok.Getter;
 import java.util.Set;
 
 /**
- * {@link AssembleOperation}的基本实现
+ * Basic implementation of {@link AssembleOperation}.
  *
  * @author huangchengxing
  */

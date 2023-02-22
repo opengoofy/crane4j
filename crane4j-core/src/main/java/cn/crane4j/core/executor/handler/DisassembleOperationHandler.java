@@ -5,7 +5,8 @@ import cn.crane4j.core.parser.DisassembleOperation;
 import java.util.Collection;
 
 /**
- * 拆卸操作处理器
+ * <p>Handler of disassembly operation.
+ * Used to extract nested pending objects from a pending target object.
  *
  * @author huangchengxing
  * @see ReflectAssembleOperationHandler
@@ -13,10 +14,10 @@ import java.util.Collection;
 public interface DisassembleOperationHandler {
 
     /**
-     * 根据拆卸配置，提取出对象属性中的嵌套对象
+     * Extract nested objects in object attributes according to disassembly configuration.
      *
-     * @param operation 要执行的拆卸操作
-     * @param targets 待处理的目标对象，类型应当与{@code targetType}一致
+     * @param operation disassembly operation to be performed
+     * @param targets The target object to be processed should be the same type as {@code targetType}
      */
     Collection<?> process(DisassembleOperation operation, Collection<?> targets);
 }

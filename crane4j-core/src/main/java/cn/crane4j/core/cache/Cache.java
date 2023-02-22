@@ -2,11 +2,8 @@ package cn.crane4j.core.cache;
 
 import cn.crane4j.core.container.CacheableContainer;
 
-import java.util.concurrent.ConcurrentMap;
-
 /**
- * {@link Cache}接口的简单实现，基于{@link ConcurrentMap}实现的本地缓存。
- * 一般用于配合{@link CacheableContainer}实现对容器中数据源的缓存。
+ * Cache object, represents a cache container isolated by name in {@link CacheManager}.
  *
  * @author huangchengxing
  * @see CacheManager
@@ -16,27 +13,27 @@ import java.util.concurrent.ConcurrentMap;
 public interface Cache<K> {
 
     /**
-     * 根据key值获取缓存
+     * Get the cache according to the key value.
      *
      * @param key key
-     * @return 缓存值
+     * @return cache value
      */
     Object get(K key);
 
     /**
-     * 添加缓存值
+     * Add cache value.
      *
      * @param key key
      * @param value value
-     * @return 若已有缓存值则添加
+     * @return old value
      */
     Object put(K key, Object value);
 
     /**
-     * 若不存在则添加缓存值
+     * Add cache value if it does not exist.
      *
      * @param key        key
-     * @param cacheValue 缓存值
+     * @param cacheValue cache value
      */
     void putIfAbsent(K key, Object cacheValue);
 }

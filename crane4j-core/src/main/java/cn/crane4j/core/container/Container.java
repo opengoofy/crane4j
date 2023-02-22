@@ -4,21 +4,26 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * 用于存放/提供数据对象的源容器，即代表可用于完成装配操作的数据源。
- * 任何可以接受key值集合并返回按key值分组的Map集合对象/方法都可以作为数据源。
+ * <p>The source container used to store the provided data objects.<br />
+ * The data source that can be used to complete the assembly operation.
+ * Any Map set object method that can accept the key value set
+ * and return grouping by key value can be used as a data source.
  *
  * @author huangchengxing
  * @see ConstantContainer
  * @see LambdaContainer
  * @see MethodInvokerContainer
+ * @see EmptyContainer
+ * @see CacheableContainer
  */
 public interface Container<K> {
 
     /**
-     * 获取一个空的数据源容器，当一个装配操作指定使用该数据源容器时，
-     * 将使用操作对象本身作为数据源对象。
+     * <p>Get an empty data source container.<br />
+     * When an assembly operation specifies to use the data source container,
+     * the operation object itself will be used as the data source object.
      *
-     * @return 数据源容器
+     * @return container
      * @see EmptyContainer
      */
     @SuppressWarnings("unchecked")
@@ -27,18 +32,18 @@ public interface Container<K> {
     }
 
     /**
-     * 获取数据源容器的命名空间，该值应当全局唯一
+     * Gets the namespace of the data source container,
+     * which should be globally unique.
      *
-     * @return 命名空间
+     * @return namespace
      */
     String getNamespace();
 
     /**
-     * 输入一批key值，返回按key值分组的数据源对象
+     * Enter a batch of key values to return data source objects grouped by key values.
      *
      * @param keys keys
-     * @return 按key值分组的数据源对象
+     * @return data source objects grouped by key value
      */
     Map<K, ?> get(Collection<K> keys);
-
 }

@@ -1,16 +1,17 @@
 package cn.crane4j.core.support;
 
 /**
- * 表示允许根据排序值从小到大排序的对象
+ * Represents an object that allows sorting from small to large according to the sorting value.
  *
  * @author huangchengxing
  */
 public interface Sorted {
 
     /**
-     * 获取排序值，越小越优先执行
+     * <p>Gets the sorting value.<br />
+     * The smaller the value, the higher the priority of the object.
      *
-     * @return 排序值
+     * @return sorting value
      */
     default int getSort() {
         return Integer.MAX_VALUE;

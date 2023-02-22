@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Collection;
 
 /**
- * {@link AssembleExecution}的简单实现
+ * Simple implementation of {@link AssembleExecution}.
  *
  * @author huangchengxing
  */

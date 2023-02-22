@@ -9,19 +9,19 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 
 /**
- * 基于原生反射实现的反射工具类
+ * A {@link PropertyOperator} implementation based on JDK reflection.
  *
  * @author huangchengxing
  */
 public class ReflectPropertyOperator extends CacheablePropertyOperator {
 
     /**
-     * 根据指定方法创建调用器
+     * Create {@link MethodInvoker} according to the specified method
      *
-     * @param targetType   目标类型
-     * @param propertyName 属性名称
-     * @param method       属性的getter或setter方法
-     * @return 调用器
+     * @param targetType target type
+     * @param propertyName property name
+     * @param method getter method or setter method
+     * @return {@link MethodInvoker}
      */
     @Override
     protected MethodInvoker createInvoker(Class<?> targetType, String propertyName, Method method) {
@@ -29,7 +29,7 @@ public class ReflectPropertyOperator extends CacheablePropertyOperator {
     }
 
     /**
-     * 基于原生反射实现的方法调用
+     * {@link MethodInvoker} implementation based on JDK reflection
      *
      * @author huangchengxing
      */
@@ -37,17 +37,17 @@ public class ReflectPropertyOperator extends CacheablePropertyOperator {
     public static class ReflectMethodInvoker implements MethodInvoker {
 
         /**
-         * 要调用的方法
+         * method
          */
         @NonNull
         private final Method method;
 
         /**
-         * 调用方法
+         * Invoke method.
          *
-         * @param target 对象
-         * @param args 参数
-         * @return 调用结果
+         * @param target target
+         * @param args args
+         * @return result of invoke
          */
         @Override
         public Object invoke(@Nullable Object target, @Nullable Object... args) {

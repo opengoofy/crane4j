@@ -7,7 +7,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
- * {@link KeyTriggerOperation}的基本实现
+ * Basic implementation of {@link KeyTriggerOperation}.
  *
  * @author huangchengxing
  * @see SimpleAssembleOperation
@@ -23,18 +23,18 @@ public class SimpleKeyTriggerOperation implements KeyTriggerOperation {
     private final int sort;
 
     /**
-     * 添加组别
+     * Add group.
      *
-     * @param group 组别
+     * @param group group
      */
     public void putGroup(String group) {
         groups.add(group);
     }
 
     /**
-     * 添加组别
+     * Add group.
      *
-     * @param group 组别
+     * @param group group
      */
     public void removeGroup(String group) {
         groups.remove(group);

@@ -4,8 +4,9 @@ import cn.crane4j.core.support.Grouped;
 import cn.crane4j.core.support.Sorted;
 
 /**
- * 由特定key触发的操作，操作之间支持按{@link #getSort()}大小排序从而改变执行顺序，
- * 并支持通过{@link #getGroups()}获得操作所属的组别。
+ * <p>For operations triggered by a specific key. <br />
+ * operations can be sorted according to the size of {@link #getSort()} to change the execution order,
+ * and the group to which the operation belongs can be obtained through {@link #getGroups()}.
  *
  * @author huangchengxing
  * @see SimpleKeyTriggerOperation
@@ -13,9 +14,9 @@ import cn.crane4j.core.support.Sorted;
 public interface KeyTriggerOperation extends Grouped, Sorted {
 
     /**
-     * 获取Key值
+     * Get key field name.
      *
-     * @return key值
+     * @return key field name
      */
     String getKey();
 }

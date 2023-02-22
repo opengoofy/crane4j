@@ -8,59 +8,65 @@ import cn.crane4j.core.parser.BeanOperations;
 import java.util.Collection;
 
 /**
- * <p>表示某个装配操作一次执行，包含全部需要执行此操作的对象，以及用于执行的处理器。<br />
- * 该对象通常是一次性的，在{@link BeanOperationExecutor}的一次执行时创建，并在该次执行后销毁。
+ * <p>Indicates that an assembly operation is executed at one time,
+ * including all objects that need to perform this operation,
+ * and the processor used for execution.
+ *
+ * <p>This object is usually one-time.
+ * It is created at one execution of {@link BeanOperationExecutor}
+ * and destroyed after that execution.
  *
  * @author huangchengxing
+ * @see BeanOperationExecutor
  * @see AssembleOperationHandler
  */
 public interface AssembleExecution {
 
     /**
-     * 获取操作对象对应的操作配置
+     * Get the operation configuration corresponding to the operation object.
      *
-     * @return 操作配置
+     * @return bean operations
      */
     BeanOperations getBeanOperations();
 
     /**
-     * 获取待操作对象的类型
+     * Get the type of the object to be operated on.
      *
-     * @return 类型
+     * @return type
      */
     default Class<?> getTargetType() {
         return getBeanOperations().getTargetType();
     }
 
     /**
-     * 获取待执行的装配操作
+     * Get the assembly operation to be performed.
      *
-     * @return 待执行的装配操作
+     * @return operations to be performed.
      */
     AssembleOperation getOperation();
 
     /**
-     * 获取装配操作的数据源容器
+     * Get the data source container of the assembly operation.
      *
-     * @return 数据源容器
+     * @return container
      */
     default Container<?> getContainer() {
         return getOperation().getContainer();
     }
 
     /**
-     * 获取用于执行装配操作的处理器
+     * Gets the handler used to perform the assembly operation.
      *
-     * @return 装配操作处理器
+     * @return handler
      */
     default AssembleOperationHandler getHandler() {
         return getOperation().getAssembleOperationHandler();
     }
 
     /**
-     * 获取待处理的目标对象
+     * get the target object to be processed.
      *
-     * @return 目标对象
+     * @return target
      */
     Collection<Object> getTargets();
 }

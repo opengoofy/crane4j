@@ -15,8 +15,8 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * {@link MethodContainerFactory}的基本实现，
- * 用于根据被{@link ContainerMethod}注解的方法构建方法数据源
+ * <p>The basic implementation of {@link MethodContainerFactory},
+ * build the method data source according to the method annotated by {@link ContainerMethod}.
  *
  * @author huangchengxing
  * @see ContainerMethod
@@ -29,9 +29,10 @@ public class DefaultMethodContainerFactory implements MethodContainerFactory {
     protected final AnnotationFinder annotationFinder;
 
     /**
-     * 获取排序值，越小越优先执行
+     * <p>Gets the sorting value.<br />
+     * The smaller the value, the higher the priority of the object.
      *
-     * @return 排序值
+     * @return sorting value
      */
     @Override
     public int getSort() {
@@ -39,11 +40,11 @@ public class DefaultMethodContainerFactory implements MethodContainerFactory {
     }
 
     /**
-     * 是否支持处理该方法
+     * Whether the method is supported.
      *
-     * @param source 方法的调用对象
-     * @param method 方法
-     * @return 是否
+     * @param source method's calling object
+     * @param method method
+     * @return true if supported, false otherwise
      */
     @Override
     public boolean support(Object source, Method method) {
@@ -51,11 +52,11 @@ public class DefaultMethodContainerFactory implements MethodContainerFactory {
     }
 
     /**
-     * 获取方法数据源
+     * Adapt methods to data source containers.
      *
-     * @param source 方法的调用对象
-     * @param method 方法
-     * @return 方法数据源容器
+     * @param source method's calling object
+     * @param method method
+     * @return data source containers
      */
     @Override
     public List<Container<Object>> get(Object source, Method method) {
@@ -67,7 +68,7 @@ public class DefaultMethodContainerFactory implements MethodContainerFactory {
     private MethodInvokerContainer createContainer(Object source, Method method, ContainerMethod annotation) {
         MethodInvoker methodInvoker = (t, args) -> ReflectUtil.invoke(t, method, args);
         MethodInvokerContainer.KeyExtractor keyExtractor = null;
-        // 若有必要，指定从返回的数据源对象提取key的男方法
+        // if necessary, specify the method to extract the key from the returned data source object
         if (annotation.type() != MappingType.MAPPED) {
             MethodInvoker keyGetter = findKeyGetter(annotation);
             keyExtractor = keyGetter::invoke;

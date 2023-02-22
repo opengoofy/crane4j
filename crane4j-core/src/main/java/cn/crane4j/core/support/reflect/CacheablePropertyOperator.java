@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 /**
- * 具备基本缓存功能的{@link PropertyOperator}抽象实现类
+ * A {@link PropertyOperator} abstract implementation class with basic caching function.
  *
  * @author huangchengxing
  * @see AsmReflectPropertyOperator
@@ -28,17 +28,17 @@ public abstract class CacheablePropertyOperator implements PropertyOperator {
     private static final Object NULL = new Object();
 
     /**
-     * 方法缓存
+     * method cache
      */
     private final Map<Class<?>, Map<String, Object>> methodCaches = CollectionUtils.newWeakConcurrentMap();
 
     /**
-     * 获取指定属性
+     * Get the specified property value.
      *
-     * @param targetType   目标类型
-     * @param target       对象
-     * @param propertyName 属性名称
-     * @return 属性值
+     * @param target target
+     * @param targetType target type
+     * @param propertyName property name
+     * @return property value
      */
     @Nullable
     @Override
@@ -48,11 +48,11 @@ public abstract class CacheablePropertyOperator implements PropertyOperator {
     }
 
     /**
-     * 获取Getter方法
+     * Get getter method.
      *
-     * @param targetType   目标类型
-     * @param propertyName 方法名称
-     * @return 找到的方法，若没找到则返回{@code null}
+     * @param targetType target type
+     * @param propertyName property name
+     * @return getter method
      */
     @SuppressWarnings("unchecked")
     @Nullable
@@ -70,12 +70,12 @@ public abstract class CacheablePropertyOperator implements PropertyOperator {
     }
 
     /**
-     * 将值写入指定属性
+     * Set the specified property value.
      *
-     * @param targetType   目标类型
-     * @param target       对象
-     * @param propertyName 属性名称
-     * @param value        属性值
+     * @param target target
+     * @param targetType target type
+     * @param propertyName property name
+     * @param value property value
      */
     @Override
     public void writeProperty(Class<?> targetType, Object target, String propertyName, Object value) {
@@ -86,11 +86,11 @@ public abstract class CacheablePropertyOperator implements PropertyOperator {
     }
 
     /**
-     * 获取Setter方法
+     * Get setter method.
      *
-     * @param targetType   目标类型
-     * @param propertyName 方法名称
-     * @return 找到的方法，若没找到则返回{@code null}
+     * @param targetType target type
+     * @param propertyName property name
+     * @return setter method
      */
     @SuppressWarnings("unchecked")
     @Nullable
@@ -114,12 +114,12 @@ public abstract class CacheablePropertyOperator implements PropertyOperator {
     }
 
     /**
-     * 根据指定方法创建调用器
+     * Create {@link MethodInvoker} according to the specified method
      *
-     * @param targetType 目标类型
-     * @param propertyName 属性名称
-     * @param method 属性的getter或setter方法
-     * @return 调用器
+     * @param targetType target type
+     * @param propertyName property name
+     * @param method getter method or setter method
+     * @return {@link MethodInvoker}
      */
     protected abstract MethodInvoker createInvoker(Class<?> targetType, String propertyName, Method method);
 

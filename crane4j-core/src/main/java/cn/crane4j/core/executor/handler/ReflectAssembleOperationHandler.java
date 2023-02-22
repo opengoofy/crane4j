@@ -18,7 +18,7 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * 基于{@link PropertyOperator}实现的装配操作处理器
+ * A basic {@link AssembleOperationHandler} implementation based on {@link PropertyOperator}.
  *
  * @author huangchengxing
  */
@@ -26,34 +26,32 @@ import java.util.Set;
 public class ReflectAssembleOperationHandler implements AssembleOperationHandler {
 
     /**
-     * 反射工具类
+     * property operator
      */
     private final PropertyOperator propertyOperator;
 
     /**
-     * 执行操作
+     * Perform assembly operation.
      *
-     * @param container  数据源容器
-     * @param executions 待执行的装配操作
+     * @param container container
+     * @param executions operations to be performed
      */
     @SuppressWarnings("unchecked")
     @Override
     public void process(Container<?> container, Collection<AssembleExecution> executions) {
-        // 提取目标对象的key值，并按target分组
+        // extract the key value of the target object and group it by target
         Multimap<Object, Entity> entities = mapToEntity(executions);
-
-        // 如果没有指定数据源容器，则实际上数据源对象就是它自己
+        // if no data source container is specified, the data source object is actually itself
         if (container instanceof EmptyContainer) {
             entities.forEach((k, e) -> mapProperties(e, e.getTarget()));
             return;
         }
-
-        // 获取数据源
+        // get data source
         Map<Object, ?> sources = ((Container<Object>)container).get(entities.keys());
         if (CollUtil.isEmpty(sources)) {
             return;
         }
-        // 进行数据源对象与目标对象间的属性映射
+        // perform attribute mapping between data source object and target object
         entities.forEach((k, e) -> {
             Object source = sources.get(k);
             if (Objects.nonNull(source)) {
@@ -77,10 +75,10 @@ public class ReflectAssembleOperationHandler implements AssembleOperationHandler
     }
 
     /**
-     * 将数据源中的指定字段映射到目标对象的指定字段中
+     * Map the specified fields in the data source to the specified fields in the target object.
      *
-     * @param entity 目标对象
-     * @param source 数据源对象
+     * @param entity entity
+     * @param source source
      */
     protected void mapProperties(Entity entity, Object source) {
         AssembleExecution execution = entity.getExecution();
@@ -92,7 +90,7 @@ public class ReflectAssembleOperationHandler implements AssembleOperationHandler
     }
 
     private void mapProperty(Entity entity, Object source, Class<?> targetType, PropertyMapping mapping) {
-        // TODO 优化读写效率，避免每次读写都需要根据类型进行一次查找
+        // TODO optimize the efficiency of reading and writing
         Object sourceValue = mapping.hasSource() ?
             propertyOperator.readProperty(source.getClass(), source, mapping.getSource()) : source;
         if (Objects.nonNull(sourceValue)) {

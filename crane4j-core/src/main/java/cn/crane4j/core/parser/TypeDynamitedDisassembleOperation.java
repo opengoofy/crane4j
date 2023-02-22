@@ -8,7 +8,9 @@ import lombok.Getter;
 import lombok.NonNull;
 
 /**
- * {@link DisassembleOperation}的简单实现，用于不确定类型的嵌套对象拆卸配置，比如需要拆卸的字段类型为泛型
+ * <p>The simple implementation of {@link DisassembleOperation}.<br />
+ * It's used for the disassembly configuration of nested objects
+ * of uncertain types, such as the field type to be disassembled is generic.
  *
  * @author huangchengxing
  * @see TypeResolver
@@ -41,10 +43,11 @@ public class TypeDynamitedDisassembleOperation extends SimpleKeyTriggerOperation
     }
 
     /**
-     * 获取嵌套对象的操作配置，使用{@link #typeResolver}动态的推断类型
+     * <p>Get the operation configuration of the nested object,
+     * and use {@link #typeResolver} to dynamically infer the type.
      *
-     * @param internalBean 带解析的嵌套对象
-     * @return 嵌套对象的操作配置
+     * @param internalBean internal bean
+     * @return operation
      */
     @NonNull
     @Override

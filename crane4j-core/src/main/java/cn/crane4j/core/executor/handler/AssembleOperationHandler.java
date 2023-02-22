@@ -6,14 +6,16 @@ import cn.crane4j.core.executor.AssembleExecution;
 import java.util.Collection;
 
 /**
- * <p>装配操作处理器。<br />
- * 输入装配操作，与对应类型的待处理对象，执行器将根据配置完成如下操作：
- * <ul>
- *     <li>提取key值；</li>
- *     <li>将key值转换为对应的数据源对象；</li>
- *     <li>完成数据源对象属性与待处理对象属性建的映射；</li>
- * </ul>
- * 出于性能考虑，实现类需要尽可能减少对Bean的读写以及对数据源容器的请求。
+ * <p>Handler of assembly operation.<br />
+ * Enter the assembly operation and the corresponding type of object to be processed.
+ * then it will complete the following operations according to the configuration：
+ * <ol>
+ *     <li>extract key value from target objects；</li>
+ *     <li>convert the key value to the corresponding data source object through the data source container；</li>
+ *     <li>complete the mapping of data source object attributes and pending object attributes；</li>
+ * </ol>
+ * For performance reasons, the implementation class needs to minimize
+ * the reading and writing of beans and the requests for data source containers.
  *
  * @author huangchengxing
  * @see ReflectAssembleOperationHandler
@@ -22,10 +24,10 @@ import java.util.Collection;
 public interface AssembleOperationHandler {
 
     /**
-     * 执行装配操作
+     * Perform assembly operation.
      *
-     * @param container 数据源容器
-     * @param executions 待执行的装配操作
+     * @param container container
+     * @param executions operations to be performed
      */
     void process(Container<?> container, Collection<AssembleExecution> executions);
 }

@@ -5,7 +5,7 @@ import cn.crane4j.core.support.MethodInvoker;
 import javax.annotation.Nullable;
 
 /**
- * 对象属性值操作者，用于读写对象属性
+ * Property operator, used to read and write object attributes.
  *
  * @author huangchengxing
  * @see AsmReflectPropertyOperator
@@ -14,42 +14,42 @@ import javax.annotation.Nullable;
 public interface PropertyOperator {
 
     /**
-     * 获取指定属性
+     * Get the specified property value.
      *
-     * @param target 对象
-     * @param targetType 目标类型
-     * @param propertyName 属性名称
-     * @return 属性值
+     * @param target target
+     * @param targetType target type
+     * @param propertyName property name
+     * @return property value
      */
     @Nullable
     Object readProperty(Class<?> targetType, Object target, String propertyName);
 
     /**
-     * 获取Getter方法
+     * Get getter method.
      *
-     * @param targetType 目标类型
-     * @param propertyName 方法名称
-     * @return 找到的方法，若没找到则返回{@code null}
+     * @param targetType target type
+     * @param propertyName property name
+     * @return getter method
      */
     @Nullable
     MethodInvoker findGetter(Class<?> targetType, String propertyName);
 
     /**
-     * 将值写入指定属性
+     * Set the specified property value.
      *
-     * @param target 对象
-     * @param targetType 目标类型
-     * @param propertyName 属性名称
-     * @param value 属性值
+     * @param target target
+     * @param targetType target type
+     * @param propertyName property name
+     * @param value property value
      */
     void writeProperty(Class<?> targetType, Object target, String propertyName, Object value);
 
     /**
-     * 获取Setter方法
+     * Get setter method.
      *
-     * @param targetType 目标类型
-     * @param propertyName 方法名称
-     * @return 找到的方法，若没找到则返回{@code null}
+     * @param targetType target type
+     * @param propertyName property name
+     * @return setter method
      */
     @Nullable
     MethodInvoker findSetter(Class<?> targetType, String propertyName);

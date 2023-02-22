@@ -1,7 +1,7 @@
 package cn.crane4j.core.cache;
 
 /**
- * 缓存管理器
+ * Cache manager.
  *
  * @author huangchengxing
  * @see Cache
@@ -10,10 +10,10 @@ package cn.crane4j.core.cache;
 public interface CacheManager {
 
     /**
-     * 获取缓存，若不存在则创建缓存
+     * Get cache, if it does not exist create it first.
      *
-     * @param cacheName 缓存名
-     * @return 缓存对象
+     * @param cacheName cache name
+     * @return cache object
      */
     <K> Cache<K> getCache(String cacheName);
 }

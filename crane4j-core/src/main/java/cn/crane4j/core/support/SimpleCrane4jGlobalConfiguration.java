@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * {@link Crane4jGlobalConfiguration}的基本实现
+ * Basic implementation of {@link Crane4jGlobalConfiguration}.
  *
  * @author huangchengxing
  */
@@ -33,10 +33,10 @@ public class SimpleCrane4jGlobalConfiguration implements Crane4jGlobalConfigurat
     private final Map<String, BeanOperationExecutor> beanOperationExecutorMap = new HashMap<>(4);
 
     /**
-     * 获取数据源容器
+     * Get data source container.
      *
-     * @param namespace 命名空间
-     * @return {@link Container}
+     * @param namespace namespace
+     * @return container
      */
     @Override
     public Container<?> getContainer(String namespace) {
@@ -44,10 +44,10 @@ public class SimpleCrane4jGlobalConfiguration implements Crane4jGlobalConfigurat
     }
 
     /**
-     * 获取操作执行器
+     * Get bean operation executor.
      *
-     * @param executorType 执行器类型
-     * @return cn.crane4j.core.executor.BeanOperationExecutor
+     * @param executorType executor type
+     * @return executor
      */
     @Override
     public BeanOperationExecutor getBeanOperationExecutor(Class<? extends BeanOperationExecutor> executorType) {
@@ -55,10 +55,10 @@ public class SimpleCrane4jGlobalConfiguration implements Crane4jGlobalConfigurat
     }
 
     /**
-     * 获取操作执行器
+     * Get bean operation executor.
      *
-     * @param executorName 执行器名称
-     * @return cn.crane4j.core.executor.BeanOperationExecutor
+     * @param executorName executor name
+     * @return executor
      */
     @Override
     public BeanOperationExecutor getBeanOperationExecutor(String executorName) {
@@ -68,10 +68,10 @@ public class SimpleCrane4jGlobalConfiguration implements Crane4jGlobalConfigurat
     }
 
     /**
-     * 获取配置解析器
+     * Get bean operation parser.
      *
-     * @param parserType 配置解析器类型
-     * @return 配置解析器
+     * @param parserType parser type
+     * @return parser
      */
     @Override
     public BeanOperationParser getBeanOperationsParser(Class<? extends BeanOperationParser> parserType) {
@@ -79,10 +79,10 @@ public class SimpleCrane4jGlobalConfiguration implements Crane4jGlobalConfigurat
     }
 
     /**
-     * 获取配置解析器
+     * Get bean operation parser.
      *
-     * @param parserName 配置解析器名称
-     * @return 配置解析器
+     * @param parserName parser name
+     * @return parser
      */
     @Override
     public BeanOperationParser getBeanOperationsParser(String parserName) {
@@ -92,10 +92,10 @@ public class SimpleCrane4jGlobalConfiguration implements Crane4jGlobalConfigurat
     }
 
     /**
-     * 获取装配操作处理器
+     * Get assemble operation handler.
      *
-     * @param handlerType 处理器类型
-     * @return 装配操作处理器
+     * @param handlerType handler type
+     * @return handler
      */
     @Override
     public AssembleOperationHandler getAssembleOperationHandler(Class<? extends AssembleOperationHandler> handlerType) {
@@ -103,10 +103,10 @@ public class SimpleCrane4jGlobalConfiguration implements Crane4jGlobalConfigurat
     }
 
     /**
-     * 获取装配操作处理器
+     * Get assemble operation handler.
      *
-     * @param handlerName 处理器器名称
-     * @return 装配操作处理器
+     * @param  handlerName handler name
+     * @return handler
      */
     @Override
     public AssembleOperationHandler getAssembleOperationHandler(String handlerName) {
@@ -116,10 +116,10 @@ public class SimpleCrane4jGlobalConfiguration implements Crane4jGlobalConfigurat
     }
 
     /**
-     * 获取拆卸操作处理器
+     * Get disassemble operation handler.
      *
-     * @param handlerType 处理器类型
-     * @return 拆卸操作处理器
+     * @param handlerType handler type
+     * @return handler
      */
     @Override
     public DisassembleOperationHandler getDisassembleOperationHandler(Class<? extends DisassembleOperationHandler> handlerType) {
@@ -127,10 +127,10 @@ public class SimpleCrane4jGlobalConfiguration implements Crane4jGlobalConfigurat
     }
 
     /**
-     * 获取拆卸操作处理器
+     * Get disassemble operation handler.
      *
-     * @param handlerName 处理器名称
-     * @return 拆卸操作处理器
+     * @param handlerName handler name
+     * @return handler
      */
     @Override
     public DisassembleOperationHandler getDisassembleOperationHandler(String handlerName) {

@@ -33,14 +33,14 @@ public class ConstantContainerTest {
 
     @Test
     public void forAnnotatedEnum() {
-        // 有注解
+        // annotated
         Container<String> container = ConstantContainer.forEnum(AnnotatedEnum.class, new SimpleAnnotationFinder());
         Assert.assertEquals(AnnotatedEnum.class.getSimpleName(), container.getNamespace());
         Map<?, ?> data = container.get(null);
         Assert.assertEquals(AnnotatedEnum.ONE.getValue(), data.get(AnnotatedEnum.ONE.getKey()));
         Assert.assertEquals(AnnotatedEnum.TWO.getValue(), data.get(AnnotatedEnum.TWO.getKey()));
 
-        // 没注解
+        // no annotated
         container = ConstantContainer.forEnum(FooEnum.class, new SimpleAnnotationFinder());
         Assert.assertEquals(FooEnum.class.getSimpleName(), container.getNamespace());
         data = container.get(null);

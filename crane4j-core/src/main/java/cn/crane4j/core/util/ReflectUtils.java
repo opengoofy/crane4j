@@ -38,16 +38,16 @@ public class ReflectUtils {
     private static final Map<Class<?>, Field[]> DECLARED_FIELD_CACHE = CollectionUtils.newWeakConcurrentMap();
 
     /**
-     * 设置注解属性值
+     * Set annotation attribute value.
      *
-     * @param annotation 注解
-     * @param attributeName 属性名
-     * @param attributeValue 属性值
+     * @param annotation annotation
+     * @param attributeName attribute name
+     * @param attributeValue attribute value
      */
     @SuppressWarnings("unchecked")
     public static void setAttributeValue(Annotation annotation, String attributeName, Object attributeValue) {
         InvocationHandler invocationHandler = Proxy.getInvocationHandler(annotation);
-        // 由于Spring合成注解使用的代理不同，此处作出区分
+        // adapt to Spring
         String memberAttributeName = JDK_MEMBER_ATTRIBUTE;
         if (CharSequenceUtil.contains(invocationHandler.getClass().getName(), SPRING_INVOCATION_HANDLER)) {
             memberAttributeName = SPRING_MEMBER_ATTRIBUTE;
@@ -57,7 +57,7 @@ public class ReflectUtils {
     }
 
     /**
-     * 向方法添加注解
+     * Add annotation to method.
      *
      * @param annotation 注解
      * @param method 方法

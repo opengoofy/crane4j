@@ -5,7 +5,8 @@ import lombok.Getter;
 import lombok.NonNull;
 
 /**
- * {@link DisassembleOperation}的简单实现，用于固定类型的嵌套对象拆卸配置
+ * <p>The simple implementation of {@link DisassembleOperation}.<br />
+ * It's used for the disassembly configuration of nested objects of fixed types.
  *
  * @author huangchengxing
  */
@@ -35,10 +36,11 @@ public class TypeFixedDisassembleOperation extends SimpleKeyTriggerOperation imp
     }
 
     /**
-     * 获取嵌套对象的操作配置
+     * <p>Get the operation configuration of nested object.<br />
+     * Always return a fixed type.
      *
-     * @param internalBean 带解析的嵌套对象
-     * @return 嵌套对象的操作配置
+     * @param internalBean internal bean
+     * @return operation
      */
     @NonNull
     @Override

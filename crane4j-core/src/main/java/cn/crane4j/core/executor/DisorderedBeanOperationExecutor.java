@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * <p>{@link BeanOperationExecutor}的同步实现。<br />
- * 执行时，会尽可能的保证减少{@link Container}的调用次数，
- * 但是无法保证操作执行顺序。
+ * <p>Synchronization implementation of {@link BeanOperationExecutor}.<br />
+ * During execution, the number of calls to {@link Container} will be reduced as much as possible,
+ * but the order of operation execution cannot be guaranteed.
  *
  * @author huangchengxing
  */
@@ -17,9 +17,9 @@ import java.util.stream.Collectors;
 public class DisorderedBeanOperationExecutor extends AbstractBeanOperationExecutor {
 
     /**
-     * 完成装配操作
+     * Complete assembly operation.
      *
-     * @param executions 待完成的装配操作
+     * @param executions executions
      */
     @Override
     protected void executeOperations(List<AssembleExecution> executions) {

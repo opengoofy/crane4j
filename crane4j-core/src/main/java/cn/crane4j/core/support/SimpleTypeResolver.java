@@ -5,19 +5,21 @@ import cn.crane4j.core.util.CollectionUtils;
 import java.util.Objects;
 
 /**
- * <p>{@link TypeResolver}的基本实现。<br />
- * 将输入对象适配为集合，然后获取集合中第一个非{@code null}元素，并返回该元素的类型，
- * 若输入对象为{@code null}，或者集合中的所有元素都为{@code null}，则返回{@code null}。
+ * <p>The basic implementation of {@link TypeResolver}.<br />
+ * Adapt the input object to a collection, then get
+ * the first non-null element in the collection, and return the type of the element.<br />
+ * If the input object is {@code null},
+ * or all elements in the collection are {@code null}, {@code null} is returned.
  *
  * @author huangchengxing
  */
 public class SimpleTypeResolver implements TypeResolver {
 
     /**
-     * 推断类型
+     * Inference type.
      *
-     * @param target 对象
-     * @return 推断的类型
+     * @param target target
+     * @return Inferred type. If the object is {@code null}, return {@code null}
      */
     @Override
     public Class<?> resolve(Object target) {

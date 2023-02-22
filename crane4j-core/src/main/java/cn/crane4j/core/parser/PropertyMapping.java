@@ -1,33 +1,36 @@
 package cn.crane4j.core.parser;
 
 /**
- * 数据源对象与目标对象之间一对关联属性的映射关系
+ * Mapping relationship of a pair of associated attributes between data source object and target object.
  *
  * @author huangchengxing
  */
 public interface PropertyMapping {
 
     /**
-     * 数据源对象中的字段，在操作执行后，
-     * 该字段将会被映射到{@link #getReference}所对应的目标对象中的字段。
+     * The field in the data source object will be mapped to
+     * the field in the target object corresponding to
+     * {@link #getReference} after the operation is executed.
      *
-     * @return 数据源对象字段
+     * @return field name
      */
     String getSource();
 
     /**
-     * {@link #getSource()}是否为空
+     * Whether {@link #getSource()} is empty.
      *
-     * @return 是否
+     * @return boolean
      */
     boolean hasSource();
 
     /**
-     * <p>目标对象中要引用数据源对象中字段的字段，在操作执行后，
-     * 该字段将会获得数据源中{@link #getSource}所对应的数据源字段的值。<br />
-     * 该字段不允许为空/空字符串，当不指定时应当指向key字段。
+     * <p>The field in the target object to reference the field
+     * in the data source object will obtain the value of
+     * the data source field corresponding to {@link #getSource}
+     * in the data source after the operation is executed.<br />
+     * This field cannot be an empty string. If it is not specified, it should point to the key field.
      *
-     * @return 引用字段
+     * @return field name
      */
     String getReference();
 }
