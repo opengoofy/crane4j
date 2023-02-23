@@ -132,7 +132,7 @@ public @interface Assemble {
      * @return attributes
      * @see #propTemplates()
      */
-    Mapping[] props() default {};
+    Mapping[] props() default { @Mapping };
 
     /**
      * <p>Mapping template classes.
