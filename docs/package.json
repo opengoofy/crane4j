@@ -1,16 +1,21 @@
 {
-  "name": "vuepress-starter",
-  "version": "1.0.0",
-  "description": "",
+  "name": "crane4j-doc",
+  "version": "0.0.1-alpha",
+  "description": "crane4j文档项目",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "vuepress dev docs",
-    "build": "vuepress build docs"
+    "build": "vuepress build docs",
+    "postinstall": "patch-package"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "patch-package": "^6.5.1",
     "vuepress": "^1.9.8"
+  },
+  "dependencies": {
+    "markdown-it-disable-url-encode": "^1.0.1"
   }
 }
