@@ -1,0 +1,1 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[22],{302:function(t,s,n){"use strict";n.r(s);var e=n(14),o=Object(e.a)({},(function(){var t=this._self._c;return t("ContentSlotsDistributor",{attrs:{"slot-key":this.$parent.slotKey}},[t("p",[this._v("如果在使用中遇到了问题、发现了 bug ，又或者是有什么好点子，欢迎提出 issue 或 pr，也可以加入 QQ 群：540919540 反馈！")])])}),[],!1,null,null,null);s.default=o.exports}}]);
