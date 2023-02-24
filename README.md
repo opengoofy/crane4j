@@ -1,4 +1,5 @@
-<img src="https://img.xiajibagao.top/image-20230220150040070.png" alt="image-20230220150040070" style="zoom: 33%;" />
+<img src="https://user-images.githubusercontent.com/49221670/221162632-95465432-f2df-4286-a53a-af59d70b1958.png" alt="image-20230220150040070" style="zoom: 80%;" />
+
 # crane4j
 
 基于注解的字典项、关联表与枚举值处理框架。
