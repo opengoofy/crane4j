@@ -35,4 +35,4 @@ logs
 /src/test/
 
 ### npm ###
-/node_modules
+**/node_modules
