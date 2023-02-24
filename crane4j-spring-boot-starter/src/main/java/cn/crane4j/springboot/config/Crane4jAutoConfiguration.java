@@ -21,6 +21,7 @@ import cn.crane4j.core.support.reflect.AsmReflectPropertyOperator;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
 import cn.crane4j.springboot.annotation.EnableCrane4j;
+import cn.crane4j.springboot.parser.SpringAnnotationAwareBeanOperationParser;
 import cn.crane4j.springboot.support.AnnotationMethodContainerProcessor;
 import cn.crane4j.springboot.support.Crane4jApplicationContext;
 import cn.crane4j.springboot.support.MergedAnnotationFinder;
@@ -110,9 +111,9 @@ public class Crane4jAutoConfiguration {
     @Primary
     @Bean
     @ConditionalOnMissingBean
-    public AnnotationAwareBeanOperationParser annotationAwareBeanOperationParser(
+    public SpringAnnotationAwareBeanOperationParser springAnnotationAwareBeanOperationParser(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration) {
-        return new AnnotationAwareBeanOperationParser(annotationFinder, configuration);
+        return new SpringAnnotationAwareBeanOperationParser(annotationFinder, configuration);
     }
 
     // ============== 操作执行器 ==============

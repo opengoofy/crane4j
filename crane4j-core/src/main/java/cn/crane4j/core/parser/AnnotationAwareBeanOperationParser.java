@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -61,7 +62,7 @@ import java.util.stream.Stream;
 @Slf4j
 public class AnnotationAwareBeanOperationParser implements BeanOperationParser {
 
-    private static final String ANNOTATION_KEY_ATTRIBUTE = "key";
+    protected static final String ANNOTATION_KEY_ATTRIBUTE = "key";
     private static final Map<Class<?>, MetaDataCache> META_DATA_CACHES = CollectionUtils.newWeakConcurrentMap();
 
     protected final AnnotationFinder annotationFinder;
@@ -94,7 +95,7 @@ public class AnnotationAwareBeanOperationParser implements BeanOperationParser {
      */
     public AnnotationAwareBeanOperationParser(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration globalConfiguration) {
-        this(annotationFinder, globalConfiguration, Comparator.comparing(KeyTriggerOperation::getSort));
+        this(annotationFinder, globalConfiguration, Sorted.comparator());
     }
 
     /**
@@ -134,9 +135,14 @@ public class AnnotationAwareBeanOperationParser implements BeanOperationParser {
      *
      * @param beanType bean type
      * @return {@link Assemble}
+     * @see #parseAnnotationForDeclaredFields
      */
     protected List<Assemble> parseAssembleAnnotations(Class<?> beanType) {
-        return parseAnnotationForDeclaredFields(beanType, Assemble.class);
+        return parseAnnotationForDeclaredFields(beanType, Assemble.class, (a, f) -> {
+            // force value to be set to the annotated attribute name
+            ReflectUtils.setAttributeValue(a, ANNOTATION_KEY_ATTRIBUTE, f.getName());
+            return a;
+        });
     }
 
     /**
@@ -144,9 +150,14 @@ public class AnnotationAwareBeanOperationParser implements BeanOperationParser {
      *
      * @param beanType bean type
      * @return {@link Disassemble}
+     * @see #parseAnnotationForDeclaredFields
      */
     protected List<Disassemble> parseDisassembleAnnotations(Class<?> beanType) {
-        return parseAnnotationForDeclaredFields(beanType, Disassemble.class);
+        return parseAnnotationForDeclaredFields(beanType, Disassemble.class, (a, f) -> {
+            // force value to be set to the annotated attribute name
+            ReflectUtils.setAttributeValue(a, ANNOTATION_KEY_ATTRIBUTE, f.getName());
+            return a;
+        });
     }
 
     /**
@@ -281,7 +292,16 @@ public class AnnotationAwareBeanOperationParser implements BeanOperationParser {
         return operation;
     }
 
-    private <T extends Annotation> List<T> parseAnnotationForDeclaredFields(Class<?> beanType, Class<T> annotationType) {
+    /**
+     * Parse annotations for declared fields of {@code beanType}.
+     *
+     * @param beanType bean type
+     * @param annotationType annotation type
+     * @param mapper mapper for annotation and field
+     * @return annotations
+     */
+    protected final <T extends Annotation> List<T> parseAnnotationForDeclaredFields(
+        Class<?> beanType, Class<T> annotationType, BiFunction<T, Field, T> mapper) {
         Field[] fields = ReflectUtils.getDeclaredFields(beanType);
         List<T> results = new ArrayList<>(fields.length);
         for (Field field : fields) {
@@ -290,8 +310,7 @@ public class AnnotationAwareBeanOperationParser implements BeanOperationParser {
                 continue;
             }
             for (T t : annotation) {
-                // force value to be set to the annotated attribute name
-                ReflectUtils.setAttributeValue(t, ANNOTATION_KEY_ATTRIBUTE, field.getName());
+                t = mapper.apply(t, field);
                 results.add(t);
             }
         }
