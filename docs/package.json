@@ -7,11 +7,13 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "vuepress dev docs",
     "build": "vuepress build docs",
-    "postinstall": "patch-package"
+    "deploy": "gh-pages -d docs/.vuepress/dist",
+    "deploy:build": "npm run build && npm run deploy"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "gh-pages": "^5.0.0",
     "patch-package": "^6.5.1",
     "vuepress": "^1.9.8"
   },
