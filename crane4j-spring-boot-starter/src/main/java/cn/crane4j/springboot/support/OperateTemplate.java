@@ -15,7 +15,7 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 /**
- * 参照Spring提供的XXXTemplate，用于简化填充操作
+ * Refer to the XXXTemplate provided by Spring as an auxiliary class to simplify the filling operation.
  *
  * @author huangchengxing
  */
@@ -23,25 +23,25 @@ import java.util.function.Predicate;
 public class OperateTemplate {
 
     /**
-     * 默认的配置解析器，当未指定解析器时将使用该解析器
+     * Default configuration parser will be used when no parser is specified.
      */
     private final BeanOperationParser defaultParser;
 
     /**
-     * 默认的操作执行器，当未指定执行器时将使用该执行器
+     * Default operation actuator, which will be used when no actuator is specified.
      */
     private final BeanOperationExecutor defaultExecutor;
 
     /**
-     * 类型解析器，未指定待操作对象类型时通过解析器获得类型
+     * Type parser. if the type of object to be operated is not specified, obtain the type through the parser.
      */
     private final TypeResolver typeResolver;
 
     /**
-     * 若操作属于{@code groups}中的任意分组，则执行操作
+     * If the operation belongs to any group in {@code groups}, execute the operation.
      *
-     * @param target 待处理的对象
-     * @param groups 组别
+     * @param target target
+     * @param groups groups
      * @see Grouped#anyMatch
      */
     public void executeIfMatchAnyGroups(Object target, String... groups) {
@@ -49,10 +49,10 @@ public class OperateTemplate {
     }
 
     /**
-     * 若操作不属于{@code groups}中的任意分组，则执行操作
+     * If the operation does not belong to any group in {@code groups}, execute the operation.
      *
-     * @param target 待处理的对象
-     * @param groups 组别
+     * @param target target
+     * @param groups groups
      * @see Grouped#anyMatch 
      */
     public void executeIfNoneMatchAnyGroups(Object target, String... groups) {
@@ -60,10 +60,10 @@ public class OperateTemplate {
     }
 
     /**
-     * 若操作同时属于{@code groups}中的所有分组，则执行操作
+     * If the operation belongs to all groups in {@code groups}, execute the operation.
      *
-     * @param target 待处理的对象
-     * @param groups 组别
+     * @param target target
+     * @param groups groups
      * @see Grouped#allMatch 
      */
     public void executeIfMatchAllGroups(Object target, String... groups) {
@@ -71,9 +71,9 @@ public class OperateTemplate {
     }
 
     /**
-     * 执行操作
+     * Execute the fill operation.
      *
-     * @param target 待处理的对象
+     * @param target target
      */
     public void execute(Object target) {
         execute(
@@ -83,10 +83,10 @@ public class OperateTemplate {
     }
 
     /**
-     * 执行操作
+     * Execute the fill operation.
      *
-     * @param target 待处理的对象
-     * @param filter 操作过滤器
+     * @param target target
+     * @param filter filter
      */
     public void execute(Object target, Predicate<? super KeyTriggerOperation> filter) {
         execute(
@@ -96,11 +96,11 @@ public class OperateTemplate {
     }
 
     /**
-     * 执行操作
+     * Execute the fill operation.
      *
-     * @param target 待处理的对象
-     * @param executor 操作执行器
-     * @param filter 操作过滤器
+     * @param target target
+     * @param executor executor
+     * @param filter filter
      */
     public void execute(
         Object target, BeanOperationExecutor executor, Predicate<? super KeyTriggerOperation> filter) {
@@ -111,14 +111,14 @@ public class OperateTemplate {
     }
 
     /**
-     * 执行操作
+     * Execute the fill operation.
      *
-     * @param targets 待处理的对象
-     * @param targetType 待处理的对象类型
-     * @param parser 配置解析器
-     * @param executor 操作执行器
-     * @param filter 操作过滤器
-     * @param <T> 对象类型
+     * @param targets targets
+     * @param targetType target type
+     * @param parser parser
+     * @param executor executor
+     * @param filter filter
+     * @param <T> target type
      */
     public <T> void execute(
         Collection<T> targets, Class<T> targetType, BeanOperationParser parser,

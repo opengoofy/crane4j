@@ -4,7 +4,6 @@ import cn.crane4j.annotation.Bind;
 import cn.crane4j.annotation.ContainerMethod;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.MethodContainerFactory;
-import cn.crane4j.core.container.MethodInvokerContainer;
 import cn.crane4j.core.util.ReflectUtils;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Assert;
@@ -22,12 +21,14 @@ import java.util.Comparator;
 import java.util.stream.Collectors;
 
 /**
- * <p>对Bean进行后置处理，扫描bean中带有{@link ContainerMethod}注解的方法，
- * 以及类上{@link ContainerMethod}所指向的方法，
- * 根据注册到Spring容器中的{@link MethodContainerFactory}将其适配为{@link Container}实例。
+ * <p>Post process the bean, scan the method with
+ * {@link ContainerMethod} annotation in the class or method of class,
+ * and adapt it to {@link Container} instance
+ * according to {@link MethodContainerFactory} registered in the Spring context.
  *
- * <p>注意：为了便于后续处理，根据类上注解查找类中方法时，
- * 将会把对应的注解通过反射加入{@link Method#declaredAnnotations}里。
+ * <p><b>NOTE</b>：In order to facilitate subsequent processing,
+ * when looking up the method in the class according to the annotation on the class,
+ * the corresponding annotation will be added to {@link Method#declaredAnnotations} through reflection.
  *
  * @author huangchengxing
  * @see ContainerMethod
@@ -51,11 +52,11 @@ public class AnnotationMethodContainerProcessor extends AbstractAnnotatedMethodP
     }
 
     /**
-     * 将被注解的方法适配为{@link MethodInvokerContainer}，并注册的全局配置类中
+     * Adapt the annotated method to {@link Container} and register it in the global configuration.
      *
-     * @param bean 目标对象
-     * @param beanType 目标类型
-     * @param annotatedMethods 被注解的方法
+     * @param bean bean
+     * @param beanType bean type
+     * @param annotatedMethods annotated methods
      */
     @Override
     protected void processAnnotatedMethods(
@@ -69,11 +70,12 @@ public class AnnotationMethodContainerProcessor extends AbstractAnnotatedMethodP
     }
 
     /**
-     * 根据类上注解中的{@link Bind}注解，从类中寻找对应的方法
+     * Find the corresponding method from the class
+     * according to the {@link Bind} annotation in the annotation on the class.
      *
-     * @param beanType 目标类型
-     * @param classLevelAnnotation 类上的注解
-     * @return 与注解对应的方法，若不存在则为{@code null}
+     * @param beanType bean type
+     * @param classLevelAnnotation class level annotation
+     * @return method corresponding to the annotation
      */
     @Nullable
     @Override
@@ -83,7 +85,7 @@ public class AnnotationMethodContainerProcessor extends AbstractAnnotatedMethodP
         Class<?>[] paramTypes = bind.paramTypes();
         Method method = ReflectionUtils.findMethod(beanType, methodName, paramTypes);
         Assert.notNull(method, "method cannot be bind to annotation: [{}]", bind);
-        // 将注解绑定到方法上
+        // bind annotation to method
         ReflectUtils.putAnnotation(classLevelAnnotation, method);
         return method;
     }

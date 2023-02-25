@@ -7,7 +7,7 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
 import java.util.Map;
 
 /**
- * 基于{@link StandardEvaluationContext}的表达式上下文实现
+ * Expression context implementation based on {@link StandardEvaluationContext}.
  *
  * @author huangchengxing
  * @see SpelExpressionEvaluator
@@ -15,24 +15,24 @@ import java.util.Map;
 public class SpelExpressionContext extends StandardEvaluationContext implements ExpressionContext {
 
     /**
-     * 创建一个表达式上下文对象
+     * Create {@link SpelExpressionContext}
      */
     public SpelExpressionContext() {
     }
 
     /**
-     * 创建表达式上下文
+     * Create {@link SpelExpressionContext}
      *
-     * @param rootObject 根对象
+     * @param rootObject root object
      */
     public SpelExpressionContext(Object rootObject) {
         super(rootObject);
     }
 
     /**
-     * 创建一个表达式上下文对象
+     * Create {@link SpelExpressionContext}
      *
-     * @param expressionContext 表达式上下文
+     * @param expressionContext expression context
      */
     public SpelExpressionContext(ExpressionContext expressionContext) {
         this(expressionContext.getRoot());
@@ -40,9 +40,9 @@ public class SpelExpressionContext extends StandardEvaluationContext implements 
     }
 
     /**
-     * 获取根对象
+     * Get root object.
      *
-     * @return 根对象
+     * @return root object
      */
     @Override
     public Object getRoot() {
@@ -50,9 +50,9 @@ public class SpelExpressionContext extends StandardEvaluationContext implements 
     }
 
     /**
-     * 设置根对象
+     * Set root object.
      *
-     * @param root 根对象
+     * @param root root object
      */
     @Override
     public void setRoot(Object root) {
@@ -60,10 +60,10 @@ public class SpelExpressionContext extends StandardEvaluationContext implements 
     }
 
     /**
-     * 注册变量
+     * Register variables.
      *
-     * @param name 变量名
-     * @param value 变量值
+     * @param name variable names
+     * @param value variables
      */
     @Override
     public void registerVariable(String name, Object value) {
@@ -71,9 +71,9 @@ public class SpelExpressionContext extends StandardEvaluationContext implements 
     }
 
     /**
-     * 获取变量
+     * Get variables.
      *
-     * @return 变量
+     * @return variables
      */
     @SuppressWarnings("unchecked")
     @Override

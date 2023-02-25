@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * 基于SpringAOP实现的方法返回值自动填充切面
+ * Automatic filling of aspect with method return value based on Spring AOP implementation
  *
  * @author huangchengxing
  * @see AutoOperate

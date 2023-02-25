@@ -13,31 +13,31 @@ import java.util.Map;
 public interface ExpressionContext {
 
     /**
-     * 获取根对象
+     * Get root object.
      *
-     * @return 根对象
+     * @return root object
      */
     Object getRoot();
 
     /**
-     * 设置根对象
+     * Set root object.
      *
-     * @param root 根对象
+     * @param root root object
      */
     void setRoot(Object root);
 
     /**
-     * 注册变量
+     * Register variables.
      *
-     * @param name 变量名
-     * @param value 变量值
+     * @param name variable names
+     * @param value variables
      */
     void registerVariable(String name, Object value);
 
     /**
-     * 获取变量
+     * Get variables.
      *
-     * @return 变量
+     * @return variables
      */
     Map<String, Object> getVariables();
 }

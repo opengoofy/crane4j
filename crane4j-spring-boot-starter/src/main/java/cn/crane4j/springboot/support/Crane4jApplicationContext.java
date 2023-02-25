@@ -22,8 +22,9 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * <p>基于Spring上下文实现的全局配置类，当从实例获取所需组件时，
- * 将会直接通过注入的{@link ApplicationContext}获取对应的Bean。
+ * <p>The global configuration class implemented based on the Spring context,
+ * when obtaining the required components from the instance,
+ * will directly obtain the corresponding bean through the {@link ApplicationContext} held.
  *
  * @author huangchengxing
  * @see ApplicationContext
@@ -34,12 +35,12 @@ public class Crane4jApplicationContext
     implements Crane4jGlobalConfiguration, SmartInitializingSingleton, DisposableBean {
 
     /**
-     * Spring上下文
+     * application context
      */
     private final ApplicationContext applicationContext;
 
     /**
-     * 注册的数据源容器
+     * registered containers
      */
     @Getter
     private final Map<String, Container<?>> registeredContainers = new ConcurrentHashMap<>();
@@ -168,10 +169,10 @@ public class Crane4jApplicationContext
     }
 
     /**
-     * 注册数据源容器
+     * Register container.
      *
-     * @param container 要注册的容器
-     * @throws Crane4jException 当该容器的命名空间已被注册时抛出
+     * @param container container
+     * @throws Crane4jException thrown when the namespace of the container has been registered
      */
     public void registerContainer(Container<?> container) {
         String namespace = container.getNamespace();
@@ -181,7 +182,8 @@ public class Crane4jApplicationContext
     }
 
     /**
-     * 当Spring初始化所有单例Bean后，将所有实现了{@link Container}接口的Bean都注册到当前上下文
+     * After Spring initializes all singleton beans,
+     * register all beans that implement the {@link Container} interface with the current context.
      */
     @Override
     public void afterSingletonsInstantiated() {
@@ -190,7 +192,7 @@ public class Crane4jApplicationContext
     }
 
     /**
-     * 销毁时清空容器缓存
+     * Clear container cache on destruction.
      */
     @Override
     public void destroy() {

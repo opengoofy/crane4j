@@ -5,6 +5,7 @@ import cn.crane4j.core.support.expression.ExpressionEvaluator;
 import cn.hutool.core.util.ArrayUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.core.ParameterNameDiscoverer;
 
 import java.lang.reflect.Method;
@@ -14,7 +15,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 /**
- * 用于执行以方法调用为上下文的表达式的计算器
+ * Calculator for executing an expression with a method call as the context.
  *
  * @author huangchengxing
  * @see MethodAnnotatedElementAutoOperateSupport
@@ -28,38 +29,39 @@ public class MethodBaseExpressionEvaluator {
     private final Function<Method, ExpressionContext> contextFactory;
 
     /**
-     * 在指定上文中执行表达式，并返回执行结果
+     * Execute the expression in the specified above and return the execution result.
      *
-     * @param expression 表达式
-     * @param resultType 返回值类型
-     * @param execution    上下文
-     * @return 执行结果，若无结果则返回{@code null}
+     * @param expression expression
+     * @param resultType result type
+     * @param execution execution
+     * @return execution result
      */
+    @Nullable
     public <T> T execute(String expression, Class<T> resultType, MethodExecution execution) {
         ExpressionContext context = resolveContext(execution);
         return expressionEvaluator.execute(expression, resultType, context);
     }
 
     /**
-     * 创建一个方法切面表达式上下文
+     * Create a method aspect expression context.
      *
      * @param methodExecution the function argument
      * @return the function result
      */
     protected ExpressionContext resolveContext(MethodExecution methodExecution) {
         ExpressionContext context = contextFactory.apply(methodExecution.getMethod());
-        // 解析并注册方法参数
+        // resolve and register arguments
         registerParams(methodExecution, context);
-        // 注册返回值
+        // register return value
         context.registerVariable(RESULT, methodExecution.getResult());
         return context;
     }
 
     /**
-     * 向上下文中注册方法的执行参数
+     * Register the execution parameters of the method in the context.
      *
-     * @param methodExecution 方法执行参数
-     * @param context 执行上下文
+     * @param methodExecution method execution
+     * @param context context
      */
     protected void registerParams(MethodExecution methodExecution, ExpressionContext context) {
         String[] paramNames = parameterNameDiscoverer.getParameterNames(methodExecution.getMethod());
@@ -69,11 +71,11 @@ public class MethodBaseExpressionEvaluator {
     }
 
     /**
-     * 解析方法入参
+     * Resolve method input parameter.
      *
-     * @param paramNames 参数名称
-     * @param args 入参
-     * @return 参数名称与入参的对应集合
+     * @param paramNames param names
+     * @param args args
+     * @return A collection of parameter names and input parameters
      */
     protected Map<String, Object> resolvedParams(String[] paramNames, Object[] args) {
         if (ArrayUtil.isEmpty(paramNames)) {
@@ -91,7 +93,7 @@ public class MethodBaseExpressionEvaluator {
     }
 
     /**
-     * 表达式切面上下文，用于根据需求构建用于执行表达式的{@link ExpressionContext}
+     * Expression aspect context, which is used to build {@link ExpressionContext} for expression execution.
      */
     @Getter
     @RequiredArgsConstructor

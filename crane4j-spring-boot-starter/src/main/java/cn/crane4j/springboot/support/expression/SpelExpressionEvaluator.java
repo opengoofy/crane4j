@@ -13,7 +13,7 @@ import org.springframework.expression.ExpressionParser;
 import java.util.Map;
 
 /**
- * 基于SpEL表达式的执行器
+ * {@link ExpressionEvaluator} implementation based on spring SpEL.
  *
  * @author huangchengxing
  */
@@ -24,13 +24,13 @@ public class SpelExpressionEvaluator implements ExpressionEvaluator, DisposableB
     private final ExpressionParser expressionParser;
 
     /**
-     * 在指定上文中执行表达式，并返回执行结果
+     * Execute the expression in the specified above and return the execution result.
      *
-     * @param expression 表达式
-     * @param resultType 返回值类型
-     * @param context 上下文
-     * @param <T> 返回值类型
-     * @return 执行结果，若无结果则返回{@code null}
+     * @param expression expression
+     * @param resultType result type
+     * @param context context
+     * @param <T> return type
+     * @return result of execution, {@code null} otherwise
      */
     @Override
     public <T> T execute(String expression, Class<T> resultType, ExpressionContext context) {
@@ -40,7 +40,7 @@ public class SpelExpressionEvaluator implements ExpressionEvaluator, DisposableB
     }
 
     /**
-     * 销毁Bean时释放资源
+     * Clear resources when destroying the bean.
      */
     @Override
     public void destroy() {

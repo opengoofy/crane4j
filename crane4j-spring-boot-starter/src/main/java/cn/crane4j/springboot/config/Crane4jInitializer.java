@@ -29,7 +29,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 /**
- * 默认的初始化器，用于应用启动后，针对一些缓存或组件进行初始化处理
+ * The default initializer is used to initialize some caches or components after the application is started.
  *
  * @author huangchengxing
  */
@@ -50,13 +50,13 @@ public class Crane4jInitializer implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         log.info("start initializing component cache......");
-        // 加载枚举并将其注册为容器
+        // load enumeration and register it as a container
         loadContainerEnum();
-        // 加载常量类并将其注册为容器
+        // load a constant class and register it as a container
         loadConstantClass();
-        // 预解析类操作配置
+        // pre resolution class operation configuration
         loadOperateEntity();
-        // 包装需要换成的数据源容器
+        // replace to cacheable container
         wrapCacheableContainer();
     }
 
@@ -109,7 +109,6 @@ public class Crane4jInitializer implements ApplicationRunner {
     @SneakyThrows
     private void readMetadata(String path, Consumer<MetadataReader> consumer) {
         String actualPath = CharSequenceUtil.replace(path, ".", "/");
-
         Resource[] resources = resolver.getResources(actualPath);
         for (Resource resource : resources) {
             MetadataReader reader = readerFactory.getMetadataReader(resource);

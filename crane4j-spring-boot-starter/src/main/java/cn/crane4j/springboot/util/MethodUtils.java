@@ -12,7 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * 方法工具类
+ * Method utils.
  *
  * @author huangchengxing
  */
@@ -20,11 +20,11 @@ import java.util.Map;
 public class MethodUtils {
 
     /**
-     * 解析方法参数名
+     * Resolve method parameter names.
      *
-     * @param discoverer 参数名查找器
-     * @param method 方法
-     * @return 参数名-参数对象集合
+     * @param discoverer discoverer
+     * @param method method
+     * @return collection of parameter name and parameter
      */
     @SuppressWarnings("all")
     public static Map<String, Parameter> resolveParameterNames(ParameterNameDiscoverer discoverer, Method method) {

@@ -22,7 +22,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 用于在bean的后处理阶段，处理带有特定注解方法的通用后处理器
+ * A general {@link BeanPostProcessor} implementation for
+ * process annotated methods in the post-processing stage of the bean.
  *
  * @author huangchengxing
  */
@@ -32,17 +33,17 @@ public abstract class AbstractAnnotatedMethodPostProcessor<T extends Annotation>
     implements BeanPostProcessor, DisposableBean {
 
     /**
-     * 无需处理的类型
+     * non annotated classes
      */
     private final Set<Class<?>> nonAnnotatedClasses = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
 
     /**
-     * 要处理的注解类型
+     * annotation type
      */
     protected final Class<T> annotationType;
 
     /**
-     * 销毁Bean时清空资源
+     * Clear resources when destroying beans
      */
     @Override
     public void destroy() {
@@ -50,7 +51,7 @@ public abstract class AbstractAnnotatedMethodPostProcessor<T extends Annotation>
     }
 
     /**
-     * 不做任何操作
+     * Do nothing.
      *
      * @param bean     bean
      * @param beanName beanName
@@ -62,7 +63,8 @@ public abstract class AbstractAnnotatedMethodPostProcessor<T extends Annotation>
     }
 
     /**
-     * 扫描类中带有指定注解的方法，若类上也存在该注解，则一并查找与其对应的类中方法，并进行处理
+     * <p>Scan and process the method with the specified annotation in the class.
+     * If the annotation also exists in the class, find and process the corresponding method in the class.
      *
      * @param bean     bean
      * @param beanName beanName
@@ -87,21 +89,21 @@ public abstract class AbstractAnnotatedMethodPostProcessor<T extends Annotation>
     }
 
     /**
-     * 将被注解的方法适配为
+     * Process annotated methods.
      *
-     * @param bean 目标对象
-     * @param beanType 目标类型
-     * @param annotatedMethods 被注解的方法
+     * @param bean bean
+     * @param beanType bean type
+     * @param annotatedMethods annotated methods
      */
     protected abstract void processAnnotatedMethods(
         Object bean, Class<?> beanType, Multimap<Method, T> annotatedMethods);
 
     /**
-     * 根据类上注解，查找该注解对应的类中方法
+     * Find methods by class level annotations.
      *
-     * @param beanType 目标类型
-     * @param classLevelAnnotation 类上的注解
-     * @return 与注解对应的方法，若不存在则为{@code null}
+     * @param beanType bean type
+     * @param classLevelAnnotation class level annotation
+     * @return method corresponding to annotation
      */
     @Nullable
     protected abstract Method findMethodForAnnotation(Class<?> beanType, T classLevelAnnotation);

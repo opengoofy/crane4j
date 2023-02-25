@@ -4,16 +4,14 @@ import cn.crane4j.springboot.config.Crane4jAutoConfiguration;
 import cn.crane4j.springboot.config.Crane4jInitializer;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
- * 启用Crane4j配置
+ * enable crane4j configuration.
  *
  * @author huangchengxing
+ * @see Crane4jAutoConfiguration
+ * @see Crane4jInitializer
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

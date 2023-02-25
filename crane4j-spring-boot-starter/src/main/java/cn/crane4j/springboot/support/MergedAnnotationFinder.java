@@ -9,7 +9,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.Set;
 
 /**
- * 支持spring元注解/合成注解机制的注解查找器
+ * Annotation finder supporting spring meta-annotation composition annotation mechanism.
  *
  * @author huangchengxing
  * @see AnnotatedElementUtils

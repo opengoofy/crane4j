@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * 基于SpringAOP实现的方法入参自动填充切面
+ * Method input parameter automatic filling Aspect based on Spring AOP implementation.
  *
  * @author huangchengxing
  * @see ArgAutoOperate
@@ -60,17 +60,18 @@ public class MethodArgumentAutoOperateAspect extends MethodAnnotatedElementAutoO
         if (Objects.isNull(annotation)) {
             return;
         }
+        // has any arguments?
         Object[] args = joinPoint.getArgs();
         if (ArrayUtil.isEmpty(args)) {
             return;
         }
+        // cache resolved parameters
         ResolvedElement[] elements = MapUtil.computeIfAbsent(
             methodParameterCaches, method.getName(), name -> resolveParameters(annotation, method)
         );
         if (elements == EMPTY_ELEMENTS) {
             return;
         }
-        // 根据配置缓存填充方法参数
         log.debug("process arguments for [{}]", method.getName());
         processArguments(method, args, elements);
     }
@@ -99,13 +100,13 @@ public class MethodArgumentAutoOperateAspect extends MethodAnnotatedElementAutoO
         ResolvedElement[] results = new ResolvedElement[parameterMap.size()];
         int index = 0;
         for (Map.Entry<String, Parameter> entry : parameterMap.entrySet()) {
-            // 先优先从参数上获取，没有再从方法上获取
+            // find the parameter first, then the method
             String paramName = entry.getKey();
             Parameter param = entry.getValue();
             AutoOperate annotation = Optional
                 .ofNullable(AnnotatedElementUtils.findMergedAnnotation(param, AutoOperate.class))
                 .orElse(methodLevelAnnotations.get(paramName));
-            // 解析注解，生成缓存对象
+            // resolve annotation
             ResolvedElement element = Objects.isNull(annotation) ?
                 EmptyElement.INSTANCE : resolveElement(param, annotation);
             results[index++] = element;

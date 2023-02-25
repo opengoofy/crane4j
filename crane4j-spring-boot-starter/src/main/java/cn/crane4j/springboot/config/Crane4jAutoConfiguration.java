@@ -22,11 +22,7 @@ import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
 import cn.crane4j.springboot.annotation.EnableCrane4j;
 import cn.crane4j.springboot.parser.SpringAnnotationAwareBeanOperationParser;
-import cn.crane4j.springboot.support.AnnotationMethodContainerProcessor;
-import cn.crane4j.springboot.support.Crane4jApplicationContext;
-import cn.crane4j.springboot.support.MergedAnnotationFinder;
-import cn.crane4j.springboot.support.MethodBaseExpressionEvaluator;
-import cn.crane4j.springboot.support.OperateTemplate;
+import cn.crane4j.springboot.support.*;
 import cn.crane4j.springboot.support.aop.MethodArgumentAutoOperateAspect;
 import cn.crane4j.springboot.support.aop.MethodResultAutoOperateAspect;
 import cn.crane4j.springboot.support.expression.SpelExpressionContext;
@@ -54,8 +50,10 @@ import java.util.Comparator;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * <p>crane的自动配置类。将当前配置类注入Spring容器，或者直接通过{@link EnableCrane4j}使其生效，
- * 将自动装配crane运行时所需的各个组件。
+ * <p>The automatic configuration class of crane.<br />
+ * Inject the current configuration class into the Spring container,
+ * or make it effective directly through {@link EnableCrane4j} annotation,
+ * which will automatically assemble various components required by the crane runtime.
  *
  * @author huangchengxing
  */
@@ -64,7 +62,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @EnableConfigurationProperties(Crane4jProperties.class)
 public class Crane4jAutoConfiguration {
 
-    // ============== 基础组件 ==============
+    // ============== basic components ==============
 
     @Bean
     @ConditionalOnMissingBean
@@ -106,7 +104,7 @@ public class Crane4jAutoConfiguration {
         return new SpelExpressionEvaluator(new SpelExpressionParser());
     }
 
-    // ============== 操作解析器 ==============
+    // ============== execute components ==============
 
     @Primary
     @Bean
@@ -115,8 +113,6 @@ public class Crane4jAutoConfiguration {
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration) {
         return new SpringAnnotationAwareBeanOperationParser(annotationFinder, configuration);
     }
-
-    // ============== 操作执行器 ==============
 
     @Primary
     @Bean
@@ -163,7 +159,7 @@ public class Crane4jAutoConfiguration {
         return new ReflectDisassembleOperationHandler(propertyOperator);
     }
 
-    // ============== 扩展组件 ==============
+    // ============== extension components ==============
 
     @Bean
     @ConditionalOnMissingBean

@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * 基于方法与方法参数的上的{@link AutoOperate}注解进行自动操作的公共模板类
+ * Common template class for automatic operation based on {@link AutoOperate} annotation on method or method parameters.
  *
  * @author huangchengxing
  * @see AutoOperate
@@ -42,13 +42,13 @@ public class MethodAnnotatedElementAutoOperateSupport {
     private final MethodBaseExpressionEvaluator methodBaseExpressionEvaluator;
 
     /**
-     * 根据表达式计算结果，检查是否要应用该操作
+     * Check whether to apply the operation according to the expression evaluation result.
      *
-     * @param args 方法参数
-     * @param result 方法返回值，可能为{@code null}
-     * @param method 当前执行的方法
-     * @param condition 应用条件表达式
-     * @return 是否要应用该操作
+     * @param args args
+     * @param result result
+     * @param method method
+     * @param condition condition
+     * @return boolean
      */
     public boolean checkSupport(Object[] args, Object result, Method method, String condition) {
         if (CharSequenceUtil.isEmpty(condition)) {
@@ -60,20 +60,20 @@ public class MethodAnnotatedElementAutoOperateSupport {
     }
 
     /**
-     * 解析元素上的{@link AutoOperate}注解，根据其配置为其构建{@link ResolvedElement}
+     * Resolve the {@link AutoOperate} annotation on the element
+     * and build {@link ResolvedElement} for it according to its configuration.
      *
-     * @param element 被注解的元素
-     * @param annotation 注解
+     * @param element element
+     * @param annotation annotation
      * @return {@link ResolvedElement}
      */
     public ResolvedElement resolveElement(AnnotatedElement element, AutoOperate annotation) {
-        // 获取待执行对象
         MethodInvoker extractor = resolveExtractor(element, annotation);
-        // 根据注解配置获取相关组件
+        // prepare components for use
         BeanOperationParser parser = ConfigurationUtil.getParser(configuration, annotation.parserName(), annotation.parser());
         BeanOperations beanOperations = parser.parse(annotation.type());
         BeanOperationExecutor executor = ConfigurationUtil.getOperationExecutor(configuration, annotation.executorName(), annotation.executor());
-        // 检查组别
+        // check groups
         Set<String> groups = resolveGroups(annotation);
         return new ResolvedElement(element, extractor, groups, beanOperations, executor);
     }
@@ -111,7 +111,7 @@ public class MethodAnnotatedElementAutoOperateSupport {
     }
 
     /**
-     * 被解析的注解元素
+     * Resolved annotated element.
      */
     @Getter
     @RequiredArgsConstructor
