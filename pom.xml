@@ -1,5 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>cn.crane4j</groupId>
@@ -54,6 +54,13 @@
     <reflectasm.version>1.11.9</reflectasm.version>
     <ognl.version>3.3.4</ognl.version>
     <springboot.version>2.3.5.RELEASE</springboot.version>
+    <!--plugins-->
+    <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
+    <maven-javadoc-plugin>3.2.0</maven-javadoc-plugin>
+    <maven-source-plugin>3.2.1</maven-source-plugin>
+    <maven-compiler-plugin>3.8.0</maven-compiler-plugin>
+    <maven-gpg-plugin>1.6</maven-gpg-plugin>
+    <skip.jacoco.plugin>true</skip.jacoco.plugin>
   </properties>
 
   <dependencyManagement>
@@ -148,6 +155,12 @@
       <scope>test</scope>
       <optional>true</optional>
     </dependency>
+
+    <dependency>
+      <groupId>org.jacoco</groupId>
+      <artifactId>jacoco-maven-plugin</artifactId>
+      <version>${jacoco-maven-plugin.version}</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -156,7 +169,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.2.0</version>
+        <version>${maven-javadoc-plugin}</version>
         <executions>
           <execution>
             <id>attach-javadocs</id>
@@ -176,7 +189,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>3.2.1</version>
+        <version>${maven-source-plugin}</version>
         <executions>
           <execution>
             <id>attach-sources</id>
@@ -191,7 +204,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.0</version>
+        <version>${maven-compiler-plugin}</version>
         <configuration>
           <source>${java.version}</source>
           <target>${java.version}</target>
@@ -203,13 +216,37 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-gpg-plugin</artifactId>
-        <version>1.6</version>
+        <version>${maven-gpg-plugin}</version>
         <executions>
           <execution>
             <phase>verify</phase>
             <goals>
               <goal>sign</goal>
             </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- 测试覆盖率 -->
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>${jacoco-maven-plugin.version}</version>
+        <configuration>
+          <skip>${skip.jacoco.plugin}</skip>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>report</id>
+            <goals>
+              <goal>report</goal>
+            </goals>
+            <phase>test</phase>
           </execution>
         </executions>
       </plugin>
