@@ -85,5 +85,5 @@ jobs:
           java-version: 8
       - name: Test with Maven
         run: echo y | mvn -T1C clean install -Dskip.gpg=true -Dspotless.apply.skip=true -Dskip.jacoco.plugin=false
-      - name: Upload to Codecov
-        run: bash <(curl -s https://codecov.io/bash)
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
