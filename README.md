@@ -2,7 +2,7 @@
 
 ![codecov](https://img.shields.io/badge/license-Apache--2.0-green) [![codecov](https://codecov.io/gh/opengoofy/crane4j/branch/dev/graph/badge.svg?token=CF2Q60Q0VH)](https://codecov.io/gh/opengoofy/crane4j) ![stars](https://img.shields.io/github/stars/Createsequence/crane4j) ![maven-central](https://img.shields.io/github/v/release/Createsequence/crane4j)
 
-# crane4j
+# Crane4j
 
 基于注解的字典项、关联表与枚举值处理框架。
 
@@ -23,8 +23,18 @@
 - **多样的数据源支持**：支持将枚举、普通键值对缓存，甚至实例方法或静态方法作为数据源，也支持通过简单的自定义扩展兼容更多类型的数据源，并且对所有类型数据源都提供缓存支持；
 - **强大的字段映射能力**：通过注解即可完成不同类型字段之间映射自动转换，支持模板、排序、分组、自动填充嵌套对象等等功能，除 JDK 原生反射外还支持更快的字节码调用；
 - **高度的可扩展性**：所有主要组件均可由用户自由替换，配合 Spring 的依赖注入可实现轻松优雅的完成自定义扩展。
-- **丰富的扩展功能**：引入 Spring 后，还提供包括方法返回值与方法入参参数的自动填充，多线程填充，自定义符合注解以及表达式等可选功能；
+- **丰富的扩展功能**：引入 Spring 后，还提供包括方法返回值与方法入参参数的自动填充，多线程填充，自定义组合注解以及表达式等扩展功能；
 
-###  参与贡献和技术支持
+### 快速开始
 
-如果在使用中遇到了问题、发现了 bug ，又或者是有什么好点子，欢迎在 issues 或者加入 QQ 群：540919540 反馈！
+文档参阅 [Quick start](https://opengoofy.github.io/crane4j/#/basic/2.%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B.html)
+
+实例项目：[crane4j-example](https://github.com/Createsequence/crane4j-example)
+
+### 友情链接
+
+- [[ hippo4j \]](https://gitee.com/agentart/hippo4j)：强大的动态线程池框架，附带监控报警功能；
+
+### 参与贡献和技术支持
+
+如果在使用中遇到了问题、发现了 bug ，又或者是有什么好点子，欢迎提出你的 issues ，或者[加入社区交流群](https://opengoofy.github.io/crane4j/#/other/%E8%81%94%E7%B3%BB%E4%BD%9C%E8%80%85.html) 讨论！
