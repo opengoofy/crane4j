@@ -81,21 +81,21 @@ public class MultiKeyAssembleOperationHandlerTest extends BaseExecutorTest {
     @Data
     private static class Bean {
         @Assemble(
-            namespace = "test", props = @Mapping(src = "name", ref = "names"),
+            container = "test", props = @Mapping(src = "name", ref = "names"),
             handler = MultiKeyAssembleOperationHandler.class
         )
         private final String ids;
         private List<String> names;
 
         @Assemble(
-            namespace = "test", props = @Mapping(src = "value", ref = "values"),
+            container = "test", props = @Mapping(src = "value", ref = "values"),
             handler = MultiKeyAssembleOperationHandler.class
         )
         private final List<String> keys;
         private Set<String> values;
 
         @Assemble(
-            namespace = "test", props = @Mapping(ref = "items"),
+            container = "test", props = @Mapping(ref = "items"),
             handler = MultiKeyAssembleOperationHandler.class
         )
         private final String[] code;

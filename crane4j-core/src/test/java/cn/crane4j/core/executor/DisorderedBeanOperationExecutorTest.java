@@ -65,7 +65,7 @@ public class DisorderedBeanOperationExecutorTest extends BaseExecutorTest {
     @Accessors(chain = true)
     @Data
     private static class Bean {
-        @Assemble(namespace = "test", props = @Mapping(ref = "name", src = "value"))
+        @Assemble(container = "test", props = @Mapping(ref = "name", src = "value"))
         private Integer id;
         private String name;
         @Disassemble(type = NestedBean.class)
@@ -75,7 +75,7 @@ public class DisorderedBeanOperationExecutorTest extends BaseExecutorTest {
     @Accessors(chain = true)
     @Data
     private static class NestedBean {
-        @Assemble(namespace = "test", props = @Mapping(ref = "typeName", src = "value"))
+        @Assemble(container = "test", props = @Mapping(ref = "typeName", src = "value"))
         private Integer type;
         private String typeName;
     }

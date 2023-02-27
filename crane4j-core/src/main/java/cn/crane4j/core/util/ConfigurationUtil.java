@@ -1,5 +1,6 @@
 package cn.crane4j.core.util;
 
+import cn.crane4j.core.container.ContainerProvider;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
@@ -17,6 +18,15 @@ import java.util.function.BiFunction;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ConfigurationUtil {
+
+    public static ContainerProvider getContainerProvider(
+        Crane4jGlobalConfiguration configuration, String name, Class<?> type) {
+        return getPlugin(
+            configuration, ContainerProvider.class,
+            Crane4jGlobalConfiguration::getContainerProvider, type,
+            Crane4jGlobalConfiguration::getContainerProvider, name
+        );
+    }
 
     public static BeanOperationExecutor getOperationExecutor(
         Crane4jGlobalConfiguration configuration, String name, Class<?> type) {

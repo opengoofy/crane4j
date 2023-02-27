@@ -22,13 +22,18 @@ import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
 import cn.crane4j.springboot.annotation.EnableCrane4j;
 import cn.crane4j.springboot.parser.SpringAnnotationAwareBeanOperationParser;
-import cn.crane4j.springboot.support.*;
+import cn.crane4j.springboot.support.AnnotationMethodContainerProcessor;
+import cn.crane4j.springboot.support.Crane4jApplicationContext;
+import cn.crane4j.springboot.support.MergedAnnotationFinder;
+import cn.crane4j.springboot.support.MethodBaseExpressionEvaluator;
+import cn.crane4j.springboot.support.OperateTemplate;
 import cn.crane4j.springboot.support.aop.MethodArgumentAutoOperateAspect;
 import cn.crane4j.springboot.support.aop.MethodResultAutoOperateAspect;
 import cn.crane4j.springboot.support.expression.SpelExpressionContext;
 import cn.crane4j.springboot.support.expression.SpelExpressionEvaluator;
 import com.esotericsoftware.reflectasm.MethodAccess;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -110,8 +115,9 @@ public class Crane4jAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public SpringAnnotationAwareBeanOperationParser springAnnotationAwareBeanOperationParser(
-        AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration) {
-        return new SpringAnnotationAwareBeanOperationParser(annotationFinder, configuration);
+        AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration,
+        ExpressionEvaluator evaluator, BeanFactory beanFactory) {
+        return new SpringAnnotationAwareBeanOperationParser(annotationFinder, configuration, evaluator, beanFactory);
     }
 
     @Primary

@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.annotation.AliasFor;
+import org.springframework.core.annotation.Order;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.lang.annotation.Documented;
@@ -100,7 +101,7 @@ public class OperateTemplateTest {
         );
     }
 
-    @Assemble(namespace = "test", props = @Mapping(ref = "name"))
+    @Assemble(container = "test", props = @Mapping(ref = "name"))
     @Documented
     @Target({ElementType.ANNOTATION_TYPE, ElementType.FIELD})
     @Retention(RetentionPolicy.RUNTIME)
@@ -122,11 +123,13 @@ public class OperateTemplateTest {
     @RequiredArgsConstructor
     @Data
     private static class NestedFoo {
+        @Order(1)
         @AssembleId(groups = {"nested", "id"})
         private final String id;
         private String name;
+        @Order(2)
         @Assemble(
-            namespace = "test", props = @Mapping(ref = "value"), groups = {"nested", "key"}
+            container = "test", props = @Mapping(ref = "value"), groups = {"nested", "key"}
         )
         private final String key;
         private String value;

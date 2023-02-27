@@ -108,7 +108,7 @@ public class MethodArgumentAutoOperateAspectTest {
         }
     }
 
-    @Assemble(namespace = "onoToOneMethod", props = @Mapping(src = "value", ref = "name"))
+    @Assemble(container = "onoToOneMethod", props = @Mapping(src = "value", ref = "name"))
     @Documented
     @Target({ElementType.ANNOTATION_TYPE, ElementType.FIELD})
     @Retention(RetentionPolicy.RUNTIME)

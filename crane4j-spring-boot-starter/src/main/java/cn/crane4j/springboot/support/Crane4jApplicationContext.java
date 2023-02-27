@@ -1,6 +1,7 @@
 package cn.crane4j.springboot.support;
 
 import cn.crane4j.core.container.Container;
+import cn.crane4j.core.container.ContainerProvider;
 import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
@@ -63,6 +64,28 @@ public class Crane4jApplicationContext
     @Override
     public TypeResolver getTypeResolver() {
         return applicationContext.getBean(TypeResolver.class);
+    }
+
+    /**
+     * Get container provider.
+     *
+     * @param providerType provider type
+     * @return provider
+     */
+    @Override
+    public ContainerProvider getContainerProvider(Class<? extends ContainerProvider> providerType) {
+        return applicationContext.getBean(ContainerProvider.class);
+    }
+
+    /**
+     * Get container provider.
+     *
+     * @param providerName provider name
+     * @return provider
+     */
+    @Override
+    public ContainerProvider getContainerProvider(String providerName) {
+        return applicationContext.getBean(providerName, ContainerProvider.class);
     }
 
     /**

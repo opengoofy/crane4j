@@ -1,6 +1,11 @@
 package cn.crane4j.annotation;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * <p>Declare an assembly operation。<br />
@@ -104,7 +109,21 @@ public @interface Assemble {
      *
      * @return namespace
      */
-    String namespace() default "";
+    String container() default "";
+
+    /**
+     * The type of the container provider to be used.
+     *
+     * @return container factory type
+     */
+    Class<?> containerProvider() default Object.class;
+
+    /**
+     * The name of the container provider to be used.
+     *
+     * @return container factory name
+     */
+    String containerProviderName() default "";
 
     /**
      * The name of the handler to be used.

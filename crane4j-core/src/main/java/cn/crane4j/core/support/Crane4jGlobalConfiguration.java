@@ -1,6 +1,6 @@
 package cn.crane4j.core.support;
 
-import cn.crane4j.core.container.Container;
+import cn.crane4j.core.container.ContainerProvider;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
@@ -12,7 +12,7 @@ import cn.crane4j.core.support.reflect.PropertyOperator;
  *
  * @author huangchengxing
  */
-public interface Crane4jGlobalConfiguration {
+public interface Crane4jGlobalConfiguration extends ContainerProvider {
 
     /**
      * Get property operator.
@@ -27,15 +27,23 @@ public interface Crane4jGlobalConfiguration {
      * @return type resolver
      */
     TypeResolver getTypeResolver();
-    
-    /**
-     * Get data source container.
-     *
-     * @param namespace namespace
-     * @return container
-     */
-    Container<?> getContainer(String namespace);
 
+    /**
+     * Get container provider.
+     *
+     * @param providerType provider type
+     * @return provider
+     */
+    ContainerProvider getContainerProvider(Class<? extends ContainerProvider> providerType);
+
+    /**
+     * Get container provider.
+     *
+     * @param providerName provider name
+     * @return provider
+     */
+    ContainerProvider getContainerProvider(String providerName);
+    
     /**
      * Get bean operation executor.
      *

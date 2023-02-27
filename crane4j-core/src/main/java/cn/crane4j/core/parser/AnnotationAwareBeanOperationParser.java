@@ -5,6 +5,7 @@ import cn.crane4j.annotation.Disassemble;
 import cn.crane4j.annotation.MappingTemplate;
 import cn.crane4j.annotation.Operations;
 import cn.crane4j.core.container.Container;
+import cn.crane4j.core.container.ContainerProvider;
 import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
@@ -19,6 +20,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.text.CharSequenceUtil;
+import cn.hutool.core.util.ObjectUtil;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -210,12 +212,7 @@ public class AnnotationAwareBeanOperationParser implements BeanOperationParser {
      * @return {@link AssembleOperation}
      */
     protected AssembleOperation parseAssembleOperation(Class<?> type, Assemble annotation) {
-        // get data source container
         Assert.isTrue(CharSequenceUtil.isNotBlank(annotation.key()), throwException("the key of assemble operation must not blank"));
-        Container<?> container = CharSequenceUtil.isNotEmpty(annotation.namespace()) ?
-            globalConfiguration.getContainer(annotation.namespace()) : Container.empty();
-        Assert.notNull(container, throwException("container [{}] not found", annotation.namespace()));
-
         // get operation handler
         AssembleOperationHandler assembleOperationHandler = ConfigurationUtil.getAssembleOperationHandler(
             globalConfiguration, annotation.handlerName(), annotation.handler()
@@ -231,6 +228,9 @@ public class AnnotationAwareBeanOperationParser implements BeanOperationParser {
             propertyMappings.addAll(templateMappings);
         }
 
+        // get container
+        Container<?> container = getContainer(annotation);
+
         // create operation
         AssembleOperation operation = new SimpleAssembleOperation(
             annotation.key(), annotation.sort(),
@@ -238,6 +238,28 @@ public class AnnotationAwareBeanOperationParser implements BeanOperationParser {
         );
         operation.getGroups().addAll(Arrays.asList(annotation.groups()));
         return operation;
+    }
+
+    /**
+     * Get container.
+     *
+     * @param annotation annotation
+     * @return container
+     * @throws IllegalArgumentException thrown when the container is null
+     */
+    protected Container<?> getContainer(Assemble annotation) {
+        // determine provider
+        ContainerProvider provider = ConfigurationUtil.getContainerProvider(
+            globalConfiguration, annotation.containerProviderName(), annotation.containerProvider()
+        );
+        provider = ObjectUtil.defaultIfNull(provider, globalConfiguration);
+        // get from provider
+        Container<?> container = CharSequenceUtil.isNotEmpty(annotation.container()) ?
+            provider.getContainer(annotation.container()) : Container.empty();
+        Assert.notNull(
+            container, throwException("cannot find container [{}] from provider [{}]", annotation.container(), provider.getClass())
+        );
+        return container;
     }
 
     @NonNull
@@ -336,7 +358,14 @@ public class AnnotationAwareBeanOperationParser implements BeanOperationParser {
         return new MetaDataCache(assembleOperations, disassembleOperations);
     }
 
-    private static Supplier<Crane4jException> throwException(String errTemp, Object... args) {
+    /**
+     * Get supplier of {@link Crane4jException}.
+     *
+     * @param errTemp errTemp
+     * @param args args
+     * @return supplier of exception
+     */
+    protected static Supplier<Crane4jException> throwException(String errTemp, Object... args) {
         return () -> new Crane4jException(errTemp, args);
     }
 

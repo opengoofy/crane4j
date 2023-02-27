@@ -1,6 +1,7 @@
 package cn.crane4j.core.support;
 
 import cn.crane4j.core.container.Container;
+import cn.crane4j.core.container.ContainerProvider;
 import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
@@ -31,6 +32,7 @@ public class SimpleCrane4jGlobalConfiguration implements Crane4jGlobalConfigurat
     private final Map<String, AssembleOperationHandler> assembleOperationHandlerMap = new HashMap<>(4);
     private final Map<String, DisassembleOperationHandler> disassembleOperationHandlerMap = new HashMap<>(4);
     private final Map<String, BeanOperationExecutor> beanOperationExecutorMap = new HashMap<>(4);
+    private final Map<String, ContainerProvider> containerProviderMap = new HashMap<>(4);
 
     /**
      * Get data source container.
@@ -41,6 +43,28 @@ public class SimpleCrane4jGlobalConfiguration implements Crane4jGlobalConfigurat
     @Override
     public Container<?> getContainer(String namespace) {
         return containerMap.get(namespace);
+    }
+
+    /**
+     * Get container provider.
+     *
+     * @param providerType provider type
+     * @return provider
+     */
+    @Override
+    public ContainerProvider getContainerProvider(Class<? extends ContainerProvider> providerType) {
+        return getContainerProvider(providerType.getName());
+    }
+
+    /**
+     * Get container provider.
+     *
+     * @param providerName provider name
+     * @return provider
+     */
+    @Override
+    public ContainerProvider getContainerProvider(String providerName) {
+        return containerProviderMap.get(providerName);
     }
 
     /**

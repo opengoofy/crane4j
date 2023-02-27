@@ -9,7 +9,7 @@ import lombok.Data;
  */
 @Data
 public class TestBean2 {
-    @Assemble(namespace = "test2", props = @Mapping(ref = "name"))
+    @Assemble(container = "test2", props = @Mapping(ref = "name"))
     private Integer id;
     private String name;
 }

@@ -49,9 +49,9 @@ public class OrderedBeanOperationExecutorTest extends BaseExecutorTest {
     @Accessors(chain = true)
     @Data
     private static class Bean {
-        @Assemble(namespace = "test", props = @Mapping(ref = "name"), sort = 1)
+        @Assemble(container = "test", props = @Mapping(ref = "name"), sort = 1)
         private String code;
-        @Assemble(namespace = "test", props = @Mapping(ref = "code"), sort = 0)
+        @Assemble(container = "test", props = @Mapping(ref = "code"), sort = 0)
         private Integer id;
         private String name;
         @Assemble(props = @Mapping(src = "name"), sort = 2)

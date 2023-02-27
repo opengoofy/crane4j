@@ -159,7 +159,7 @@ public class AnnotationAwareBeanOperationParserTest {
      */
     private static class BaseBean {
         @Assemble(
-            namespace = CONTAINER_NAME,
+            container = CONTAINER_NAME,
             groups = GROUP, sort = SUP_SORT,
             props = @Mapping(src = "name", ref = "name")
         )
@@ -175,7 +175,7 @@ public class AnnotationAwareBeanOperationParserTest {
     private static class Bean extends BaseBean {
         // 装配操作
         @Assemble(
-            namespace = CONTAINER_NAME, sort = SUB_SORT,
+            container = CONTAINER_NAME, sort = SUB_SORT,
             groups = GROUP,
             props = @Mapping(src = "name", ref = "name")
         )
@@ -196,7 +196,7 @@ public class AnnotationAwareBeanOperationParserTest {
     @Operations(
         assembles = @Assemble(
             key = "key",
-            namespace = CONTAINER_NAME, sort = SUB_SORT,
+            container = CONTAINER_NAME, sort = SUB_SORT,
             groups = GROUP,
             propTemplates = MappingTemp.class
         ),

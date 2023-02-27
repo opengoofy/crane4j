@@ -44,6 +44,14 @@ public class SimpleCrane4jGlobalConfigurationTest {
         ReflectDisassembleOperationHandler disassembleOperationHandler = new ReflectDisassembleOperationHandler(new ReflectPropertyOperator());
         configuration.getDisassembleOperationHandlerMap().put(disassembleOperationHandler.getClass().getName(), disassembleOperationHandler);
         configuration.getDisassembleOperationHandlerMap().put(DisassembleOperationHandler.class.getName(), disassembleOperationHandler);
+
+        configuration.getContainerProviderMap().put(configuration.getClass().getName(), configuration);
+    }
+
+    @Test
+    public void getContainerProvider() {
+        Assert.assertSame(configuration, configuration.getContainerProvider(configuration.getClass()));
+        Assert.assertSame(configuration, configuration.getContainerProvider(configuration.getClass().getName()));
     }
 
     @Test

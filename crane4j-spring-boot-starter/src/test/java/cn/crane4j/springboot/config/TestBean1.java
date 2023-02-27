@@ -12,7 +12,7 @@ import java.util.List;
  */
 @Data
 public class TestBean1 {
-    @Assemble(namespace = "test1", props = @Mapping(src = "code", ref = "name"))
+    @Assemble(container = "test1", props = @Mapping(src = "code", ref = "name"))
     private Integer id;
     private String name;
     @Disassemble(type = TestBean2.class)
