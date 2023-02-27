@@ -10,7 +10,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
 /**
- * <p>The asynchronous implementation of {@link BeanOperationExecutor}
+ * <p>The asynchronous implementation of {@link BeanOperationExecutor}.<br />
  * It will group the operations to be executed according to the data source container,
  * then submit them to the executor in turn, and finally complete them asynchronously.
  *

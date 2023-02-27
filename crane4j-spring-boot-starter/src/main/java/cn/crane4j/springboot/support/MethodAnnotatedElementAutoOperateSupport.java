@@ -102,6 +102,12 @@ public class MethodAnnotatedElementAutoOperateSupport {
         }
     }
 
+    /**
+     * Resolve group for {@link AutoOperate#includes()} and {@link AutoOperate#excludes()}.
+     *
+     * @param annotation annotation
+     * @return actual include groups
+     */
     protected static Set<String> resolveGroups(AutoOperate annotation) {
         String[] includes = annotation.includes();
         String[] excludes = annotation.excludes();

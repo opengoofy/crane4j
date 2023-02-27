@@ -43,7 +43,7 @@ public interface Grouped {
      *     <tr><td>[a, b] </td><td>[c]   </td><td>true  </td></tr>
      * </table>
      *
-     * @param groups 分组
+     * @param groups groups
      * @return predicate
      */
     static Predicate<Grouped> noneMatch(String... groups) {

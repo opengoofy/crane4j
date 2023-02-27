@@ -1,10 +1,6 @@
 package cn.crane4j.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * Indicates that member variables in a class can be used as containers.
@@ -35,7 +31,7 @@ public @interface ContainerConstant {
      * The namespace corresponding to the data source container.
      * defaults {@link Class#getSimpleName()} if empty.
      *
-     * @return 命名空间
+     * @return namespace
      */
     String namespace() default "";
 

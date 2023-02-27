@@ -106,5 +106,4 @@ public class MethodInvokerContainer implements Container<Object> {
          */
         Object getKey(Object source);
     }
-
 }

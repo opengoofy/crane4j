@@ -43,19 +43,18 @@ public class MethodResultAutoOperateAspect
         if (Objects.isNull(result)) {
             return;
         }
-        // 获取注解
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
         Method method = methodSignature.getMethod();
         AutoOperate annotation = AnnotatedElementUtils.findMergedAnnotation(method, AutoOperate.class);
         if (Objects.isNull(annotation)) {
             return;
         }
-        // 是否应用该操作
+        // whether to apply the operation?
         String condition = annotation.condition();
         if (!checkSupport(joinPoint.getArgs(), result, method, condition)) {
             return;
         }
-        // 获取/构建方法缓存并执行操作
+        // get and build method cache
         log.debug("process result for [{}]", method.getName());
         ResolvedElement element = MapUtil.computeIfAbsent(methodCaches, method.getName(), m -> resolveElement(method, annotation));
         try {
@@ -66,7 +65,7 @@ public class MethodResultAutoOperateAspect
     }
 
     /**
-     * 销毁Bean时释放资源
+     * Clear resources when destroying the bean.
      */
     @Override
     public void destroy() {

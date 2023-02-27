@@ -15,6 +15,7 @@ import java.util.function.Function;
  * based on the set of input key values.
  *
  * @author huangchengxing
+ * @param <K> key type
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class LambdaContainer<K> implements Container<K> {

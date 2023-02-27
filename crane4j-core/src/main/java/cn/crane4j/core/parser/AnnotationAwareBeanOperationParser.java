@@ -27,17 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
@@ -183,13 +173,13 @@ public class AnnotationAwareBeanOperationParser implements BeanOperationParser {
             Class<?> type = typeQueue.removeFirst();
             accessed.add(type);
 
-            // Existing metadata cache?
+            // existing metadata cache?
             MetaDataCache cache = MapUtil.computeIfAbsent(
                 META_DATA_CACHES, type, this::createMetaDataCache
             );
             cache.append(assembleOperations, disassembleOperations);
 
-            // Then find superclass and interfaces
+            // then find superclass and interfaces
             Class<?> superclass = type.getSuperclass();
             if (Objects.nonNull(superclass) && !Objects.equals(superclass, Object.class) && !accessed.contains(superclass)) {
                 typeQueue.add(superclass);

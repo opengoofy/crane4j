@@ -33,6 +33,7 @@ import java.util.stream.Stream;
  * rather than only corresponding to the entered key.
  *
  * @author huangchengxing
+ * @param <K> key type
  * @see ContainerEnum
  */
 @EqualsAndHashCode

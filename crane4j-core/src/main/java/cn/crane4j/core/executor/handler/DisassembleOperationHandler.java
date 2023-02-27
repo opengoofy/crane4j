@@ -18,6 +18,7 @@ public interface DisassembleOperationHandler {
      *
      * @param operation disassembly operation to be performed
      * @param targets The target object to be processed should be the same type as {@code targetType}
+     * @return nested objects
      */
-    Collection<?> process(DisassembleOperation operation, Collection<?> targets);
+    Collection<Object> process(DisassembleOperation operation, Collection<?> targets);
 }

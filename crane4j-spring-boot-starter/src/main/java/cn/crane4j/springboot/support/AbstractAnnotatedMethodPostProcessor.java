@@ -26,6 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * process annotated methods in the post-processing stage of the bean.
  *
  * @author huangchengxing
+ * @param <T> annotation type
  */
 @Slf4j
 @RequiredArgsConstructor

@@ -6,6 +6,7 @@ import cn.crane4j.core.container.CacheableContainer;
  * Cache object, represents a cache container isolated by name in {@link CacheManager}.
  *
  * @author huangchengxing
+ * @param <K> key type
  * @see CacheManager
  * @see ConcurrentMapCache
  * @see CacheableContainer

@@ -28,6 +28,7 @@ public class SimpleCacheManager implements CacheManager {
      * Get cache, if it does not exist create it first.
      *
      * @param cacheName cache name
+     * @param <K> key type
      * @return cache object
      */
     @SuppressWarnings("unchecked")

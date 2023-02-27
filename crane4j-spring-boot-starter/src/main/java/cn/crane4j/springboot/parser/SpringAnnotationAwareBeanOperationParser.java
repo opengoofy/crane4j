@@ -78,7 +78,7 @@ public class SpringAnnotationAwareBeanOperationParser extends AnnotationAwareBea
         try {
             container = getContainerByExpression(annotation.container(), provider);
         } catch (Exception e) {
-            // maybe namespace is not an expression, ignore it and take it again
+            // maybe namespace is not an expression? ignore it and take it again
         }
 
         // get container directly if parser cannot determine by expression

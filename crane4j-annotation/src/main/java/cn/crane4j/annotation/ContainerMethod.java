@@ -1,11 +1,6 @@
 package cn.crane4j.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Repeatable;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 import java.util.Collection;
 import java.util.Map;
 
@@ -86,7 +81,7 @@ public @interface ContainerMethod {
      * When annotations are used on a class,
      * they are used to bind the corresponding methods in the class.
      *
-     * @return 要查找的方法
+     * @return method to find
      */
     Bind bind() default @Bind("");
 

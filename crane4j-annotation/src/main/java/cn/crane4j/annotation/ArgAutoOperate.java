@@ -1,10 +1,6 @@
 package cn.crane4j.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * <p>Declaration requires automatic processing of method input parameters, for example：
@@ -41,7 +37,7 @@ public @interface ArgAutoOperate {
     /**
      * Operation configuration of parameters.
      *
-     * @return 参数的操作配置
+     * @return configuration of parameters
      */
     AutoOperate[] value() default {};
 }

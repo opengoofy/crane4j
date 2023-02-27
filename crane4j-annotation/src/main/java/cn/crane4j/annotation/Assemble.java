@@ -1,11 +1,6 @@
 package cn.crane4j.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Repeatable;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * <p>Declare an assembly operation。<br />
@@ -89,7 +84,7 @@ public @interface Assemble {
      * Sort values.
      * The lower the value, the higher the priority.
      *
-     * @return 排序值
+     * @return sort values
      */
     int sort() default Integer.MAX_VALUE;
 
@@ -165,7 +160,7 @@ public @interface Assemble {
     String[] groups() default {};
 
     /**
-     * Batch operation
+     * Batch operation.
      *
      * @author huangchengxing
      */

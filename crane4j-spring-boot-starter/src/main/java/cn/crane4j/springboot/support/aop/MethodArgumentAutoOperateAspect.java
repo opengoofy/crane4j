@@ -115,7 +115,7 @@ public class MethodArgumentAutoOperateAspect extends MethodAnnotatedElementAutoO
     }
 
     /**
-     * 销毁Bean时释放资源
+     * Clear resources when destroying the bean.
      */
     @Override
     public void destroy() {
@@ -126,7 +126,7 @@ public class MethodArgumentAutoOperateAspect extends MethodAnnotatedElementAutoO
     }
 
     /**
-     * {@link ResolvedElement}的空实现，用于占位
+     * Empty implementation of {@link ResolvedElement}, only for placeholder.
      */
     protected static class EmptyElement extends ResolvedElement {
         protected static final ResolvedElement INSTANCE = new EmptyElement();

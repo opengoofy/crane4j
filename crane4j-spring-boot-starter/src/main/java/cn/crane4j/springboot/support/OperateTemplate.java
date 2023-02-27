@@ -15,7 +15,7 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 /**
- * Refer to the XXXTemplate provided by Spring as an auxiliary class to simplify the filling operation.
+ * Helper classes used to simplify filling operations, refer to various XXXTemplates provided by Spring.
  *
  * @author huangchengxing
  */

@@ -5,6 +5,7 @@ import cn.crane4j.core.support.expression.ExpressionEvaluator;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.hutool.core.map.MapUtil;
 import lombok.RequiredArgsConstructor;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
@@ -30,8 +31,9 @@ public class SpelExpressionEvaluator implements ExpressionEvaluator, DisposableB
      * @param resultType result type
      * @param context context
      * @param <T> return type
-     * @return result of execution, {@code null} otherwise
+     * @return result of execution
      */
+    @Nullable
     @Override
     public <T> T execute(String expression, Class<T> resultType, ExpressionContext context) {
         EvaluationContext evaluationContext = (context instanceof SpelExpressionContext) ?

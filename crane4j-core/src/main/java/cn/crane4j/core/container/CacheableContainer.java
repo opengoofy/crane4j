@@ -4,12 +4,7 @@ import cn.crane4j.core.cache.Cache;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * <p>Data source container wrapper class with cache function.<br />
@@ -19,6 +14,7 @@ import java.util.Objects;
  * it will be obtained from the original container and added to the cache for this batch of keys.
  *
  * @author huangchengxing
+ * @param <K> key type
  * @see Cache
  */
 @Getter

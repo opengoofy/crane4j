@@ -14,6 +14,8 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 
 /**
+ * ConfigurationUtil
+ *
  * @author huangchengxing
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)

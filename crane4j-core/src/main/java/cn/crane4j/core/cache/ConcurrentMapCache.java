@@ -12,6 +12,7 @@ import java.util.concurrent.ConcurrentMap;
  * to cache the data source in the container.
  *
  * @author huangchengxing
+ * @param <K> key type
  */
 @RequiredArgsConstructor
 public class ConcurrentMapCache<K> implements Cache<K> {

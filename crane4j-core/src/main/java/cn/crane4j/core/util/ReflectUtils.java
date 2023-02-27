@@ -10,11 +10,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * ReflectUtils
@@ -59,8 +55,8 @@ public class ReflectUtils {
     /**
      * Add annotation to method.
      *
-     * @param annotation 注解
-     * @param method 方法
+     * @param annotation annotation
+     * @param method method
      */
     @SuppressWarnings("unchecked")
     public static void putAnnotation(Annotation annotation, Method method) {
@@ -165,5 +161,4 @@ public class ReflectUtils {
         String booleanSetterName = CharSequenceUtil.upperFirstAndAddPre(field.getName(), IS_PREFIX);
         return Optional.ofNullable(ReflectUtil.getMethod(beanType, booleanSetterName, fieldType));
     }
-
 }

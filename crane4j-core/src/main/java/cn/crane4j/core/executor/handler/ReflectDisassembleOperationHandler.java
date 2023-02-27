@@ -9,13 +9,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Assert;
 import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -33,9 +27,10 @@ public class ReflectDisassembleOperationHandler implements DisassembleOperationH
      *
      * @param operation disassembly operation to be performed
      * @param targets The target object to be processed should be the same type as {@code targetType}
+     * @return nested objects
      */
     @Override
-    public Collection<?> process(DisassembleOperation operation, Collection<?> targets) {
+    public Collection<Object> process(DisassembleOperation operation, Collection<?> targets) {
         if (CollUtil.isEmpty(targets)) {
             return Collections.emptyList();
         }

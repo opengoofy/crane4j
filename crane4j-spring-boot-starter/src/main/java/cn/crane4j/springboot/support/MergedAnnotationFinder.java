@@ -3,6 +3,7 @@ package cn.crane4j.springboot.support;
 import cn.crane4j.core.support.AnnotationFinder;
 import lombok.NonNull;
 import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.annotation.MergedAnnotation;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
@@ -13,6 +14,7 @@ import java.util.Set;
  *
  * @author huangchengxing
  * @see AnnotatedElementUtils
+ * @see MergedAnnotation
  */
 public class MergedAnnotationFinder implements AnnotationFinder {
 

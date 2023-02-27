@@ -10,6 +10,7 @@ import java.util.Map;
  * and return grouping by key value can be used as a data source.
  *
  * @author huangchengxing
+ * @param <K> key type
  * @see ConstantContainer
  * @see LambdaContainer
  * @see MethodInvokerContainer

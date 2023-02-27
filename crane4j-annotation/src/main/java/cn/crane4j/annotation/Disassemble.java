@@ -1,11 +1,6 @@
 package cn.crane4j.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Repeatable;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * <p>Declare a disassembly operation.<br />
@@ -53,65 +48,67 @@ import java.lang.annotation.Target;
 public @interface Disassemble {
 
     /**
-     * 排序值，在同一个类中，值越小的装配操作会越优先执行
+     * Sort values.
+     * The lower the value, the higher the priority.
      *
-     * @return 排序值
+     * @return sort values
      */
     int sort() default Integer.MAX_VALUE;
 
     /**
-     * <p>带有需要拆卸的嵌套对象的字段。<br />
-     * 当注解注解在属性上时，会强制指定为被注解属性的名称。
+     * <p>Field name with nested objects to be disassembled.<br />
+     * When the annotation is on an attribute, it is forced to specify the name of the annotated attribute.
      *
-     * @return key字段名
+     * @return field name
      */
     String key() default "";
 
     /**
-     * <p>嵌套对象的类型，该值可填其父类型。<br />
-     * 若对象为泛型，或无法确认，则默认为{@link Object}，将会自动推断类型。
+     * <p>The type of nested object.<br />
+     * If the object is generic or cannot be confirmed, the default value is {@link Object},
+     * and the type will be automatically inferred.
      *
-     * @return 嵌套对象的类型
+     * @return type
      */
     Class<?> type() default Object.class;
 
     /**
-     * 用于完成当前操作的拆卸操作处理器
+     * The type of the handler to be used.
      *
-     * @return 拆卸操作处理器类型
+     * @return type
      */
     Class<?> handler() default Object.class;
 
     /**
-     * 用于完成当前操作的拆卸操作处理器名称
+     * The name of the handler to be used.
      *
-     * @return 用于完成当前操作的拆卸操作处理器名称
+     * @return name
      */
     String handlerName() default "";
 
     /**
-     * 用于解析嵌套对象操作配置的解析器类型
+     * The type of the parser to be used.
      *
-     * @return 类型
+     * @return type
      */
     Class<?> parser() default Object.class;
 
     /**
-     * 用于解析嵌套对象操作配置的解析器类型
+     * The name of the parser to be used.
      *
-     * @return 类型
+     * @return name
      */
     String parserName() default "";
 
     /**
-     * 当前操作所属的组别
+     * The group to which the current operation belongs.
      *
-     * @return 组别
+     * @return groups
      */
     String[] groups() default {};
 
     /**
-     * 批量操作
+     * Batch operation.
      *
      * @author huangchengxing
      */

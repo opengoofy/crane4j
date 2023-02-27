@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class AsmReflectPropertyOperator extends CacheablePropertyOperator {
 
     /**
-     * 方法访问器缓存
+     * method access caches.
      */
     private final Map<Class<?>, MethodAccess> methodAccessCaches = new ConcurrentHashMap<>();
 

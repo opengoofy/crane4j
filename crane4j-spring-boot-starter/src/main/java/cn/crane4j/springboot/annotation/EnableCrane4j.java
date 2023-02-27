@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import java.lang.annotation.*;
 
 /**
- * enable crane4j configuration.
+ * Enable crane4j auto configuration.
  *
  * @author huangchengxing
  * @see Crane4jAutoConfiguration
