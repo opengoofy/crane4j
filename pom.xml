@@ -8,7 +8,7 @@
   <packaging>pom</packaging>
 
   <name>crane4j</name>
-  <url>https://cran4j.cn</url>
+  <url>https://opengoofy.github.io/crane4j/</url>
 
   <modules>
     <module>crane4j-core</module>
@@ -25,9 +25,9 @@
   </licenses>
 
   <scm>
-    <connection>scm:git:https://github.com/Createsequence/crane-pro</connection>
-    <developerConnection>scm:git@github.com:Createsequence/crane-pro.git</developerConnection>
-    <url>https://github.com/Createsequence/crane-pro</url>
+    <connection>scm:git@github.com:opengoofy/crane4j.git</connection>
+    <developerConnection>scm:git@github.com:opengoofy/crane4j.git</developerConnection>
+    <url>https://github.com/opengoofy/crane4j</url>
     <tag>HEAD</tag>
   </scm>
 
@@ -35,7 +35,7 @@
     <developer>
       <name>Createsequence</name>
       <email>841396397@qq.com</email>
-      <organization>createsequence</organization>
+      <organization>opengoofy</organization>
     </developer>
   </developers>
 
