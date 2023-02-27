@@ -74,10 +74,9 @@ public class SpringAnnotationAwareBeanOperationParserTest {
         @Assemble(container = "test")
         private Integer id;
         @Order(-1)
-        @Assemble(container = "@testContainer")
+        @Assemble(container = "@testContainer", containerProviderName = "crane4jApplicationContext")
         private Integer key;
-        @Order(0)
-        @Assemble(container = "'test' + 'Container'")
+        @Assemble(container = "'test' + 'Container'", sort = 0)
         private Integer code;
     }
 }
