@@ -14,6 +14,8 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -50,7 +52,7 @@ public class Crane4jProperties {
      * @see ContainerEnum
      * @see ConstantContainer#forEnum
      */
-    private Set<String> containerEnumPackages;
+    private Set<String> containerEnumPackages = new LinkedHashSet<>();
 
     /**
      * Whether to load only the enumeration annotated by {@link ContainerEnum}.
@@ -65,7 +67,7 @@ public class Crane4jProperties {
      * @see ContainerConstant
      * @see ConstantContainer#forConstantClass
      */
-    private Set<String> containerConstantPackages;
+    private Set<String> containerConstantPackages = new LinkedHashSet<>();
 
     /**
      * <p>Scan all classes under the specified package path and pre-parse them
@@ -77,7 +79,7 @@ public class Crane4jProperties {
      *
      * @see BeanOperationParser
      */
-    private Set<String> operateEntityPackages;
+    private Set<String> operateEntityPackages = new LinkedHashSet<>();
 
     /**
      * Whether to enable automatic filling of aspect with method parameters.
@@ -104,5 +106,5 @@ public class Crane4jProperties {
     /**
      * Declare which data sources need to be packaged as caches in the format {@code cache name: namespace of container}.
      */
-    private Map<String, Set<String>> cacheContainers;
+    private Map<String, Set<String>> cacheContainers = new LinkedHashMap<>();
 }
