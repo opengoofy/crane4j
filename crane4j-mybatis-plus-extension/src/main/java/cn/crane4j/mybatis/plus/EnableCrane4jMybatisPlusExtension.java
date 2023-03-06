@@ -1,7 +1,5 @@
-package cn.crane4j.springboot.annotation;
+package cn.crane4j.mybatis.plus;
 
-import cn.crane4j.springboot.config.Crane4jAutoConfiguration;
-import cn.crane4j.springboot.config.Crane4jInitializer;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.Documented;
@@ -11,15 +9,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Enable crane4j auto configuration.
+ * Enable crane4j mybatis plus extension.
  *
  * @author huangchengxing
- * @see Crane4jAutoConfiguration
- * @see Crane4jInitializer
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import({Crane4jAutoConfiguration.class, Crane4jInitializer.class})
-public @interface EnableCrane4j {
+@Import(Crane4jMybatisPlusConfiguration.class)
+public @interface EnableCrane4jMybatisPlusExtension {
 }

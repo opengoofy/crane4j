@@ -14,6 +14,7 @@
     <module>crane4j-core</module>
     <module>crane4j-spring-boot-starter</module>
     <module>crane4j-annotation</module>
+      <module>crane4j-mybatis-plus-extension</module>
   </modules>
 
   <licenses>
@@ -54,6 +55,7 @@
     <reflectasm.version>1.11.9</reflectasm.version>
     <ognl.version>3.3.4</ognl.version>
     <springboot.version>2.3.5.RELEASE</springboot.version>
+    <mybatis-plus.version>3.4.2</mybatis-plus.version>
     <!--plugins-->
     <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
     <maven-javadoc-plugin>3.2.0</maven-javadoc-plugin>
@@ -132,6 +134,12 @@
         <type>pom</type>
         <scope>import</scope>
         <optional>true</optional>
+      </dependency>
+
+      <dependency>
+        <groupId>com.baomidou</groupId>
+        <artifactId>mybatis-plus-boot-starter</artifactId>
+        <version>${mybatis-plus.version}</version>
       </dependency>
     </dependencies>
 
