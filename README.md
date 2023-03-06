@@ -27,7 +27,7 @@
 
 ### 快速开始
 
-文档参阅 [Quick start](https://opengoofy.github.io/crane4j/#/basic/2.%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B.html)
+文档参阅 [Quick start](https://opengoofy.github.io/crane4j/#/basic/2.%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B.html)，打不开可访问[备用地址](http://www.crane4j.cn/)
 
 实例项目：[crane4j-example](https://github.com/Createsequence/crane4j-example)
 
@@ -38,3 +38,7 @@
 ### 参与贡献和技术支持
 
 如果在使用中遇到了问题、发现了 bug ，又或者是有什么好点子，欢迎提出你的 issues ，或者[加入社区交流群](https://opengoofy.github.io/crane4j/#/other/%E8%81%94%E7%B3%BB%E4%BD%9C%E8%80%85.html) 讨论！
+
+若无法访问连接，或者微信群二维码失效，也可以联系作者加群：
+
+![联系作者](https://foruda.gitee.com/images/1678072903420592910/c0dbb802_5714667.png)
