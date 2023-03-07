@@ -4,10 +4,15 @@ import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerProvider;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
 import cn.crane4j.springboot.support.expression.SpelExpressionContext;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.expression.BeanFactoryResolver;
+
+import javax.annotation.Nullable;
+import java.util.List;
 
 /**
  * Provider of {@link MpBaseMapperContainerRegister}.
@@ -19,7 +24,7 @@ import org.springframework.context.expression.BeanFactoryResolver;
 public class MpMethodContainerProvider implements ContainerProvider {
 
     private final ApplicationContext applicationContext;
-    private final MpBaseMapperContainerRegister containerProcessor;
+    private final MpBaseMapperContainerRegister register;
     private final ExpressionEvaluator evaluator;
 
     /**
@@ -50,12 +55,61 @@ public class MpMethodContainerProvider implements ContainerProvider {
      *
      * @param namespace namespace
      * @return container
-     * @see MpBaseMapperContainerRegister#container
+     * @see MpBaseMapperContainerRegister#getContainer
      */
     @Override
     public Container<?> getContainer(String namespace) {
-        SpelExpressionContext context = new SpelExpressionContext(containerProcessor);
+        SpelExpressionContext context = new SpelExpressionContext(this);
         context.setBeanResolver(new BeanFactoryResolver(applicationContext));
         return evaluator.execute(namespace, Container.class, context);
+    }
+
+    /**
+     * Get a container based on {@link BaseMapper#selectList}.
+     *
+     * @param mapperName mapper name
+     * @param keyProperty key field name for query
+     * @return cn.crane4j.core.container.Container<?>
+     */
+    public Container<?> container(String mapperName, String keyProperty) {
+        return container(mapperName, keyProperty, null);
+    }
+
+    /**
+     * Get a container based on {@link BaseMapper#selectList}.
+     *
+     * @param mapperName mapper name
+     * @return container
+     */
+    public Container<?> container(String mapperName) {
+        return container(mapperName, null, null);
+    }
+
+    /**
+     * Get a container based on {@link BaseMapper#selectList}.
+     *
+     * @param mapperName mapper name
+     * @param properties fields to query
+     * @return container
+     */
+    public Container<?> container(String mapperName, List<String> properties) {
+        return container(mapperName, null, properties);
+    }
+
+    /**
+     * Get a container based on {@link BaseMapper#selectList},
+     * When querying, the attribute name of the input parameter will be converted to
+     * the table columns specified in the corresponding {@link TableField} annotation.
+     *
+     * @param mapperName mapper name
+     * @param keyProperty key field name for query, if it is empty, it defaults to the field annotated by {@link TableId}
+     * @param properties fields to query, if it is empty, all table columns will be queried by default.
+     * @return container
+     * @see TableField
+     * @see TableId
+     */
+    public Container<?> container(
+        String mapperName, @Nullable String keyProperty, @Nullable List<String> properties) {
+        return register.getContainer(mapperName, keyProperty, properties);
     }
 }

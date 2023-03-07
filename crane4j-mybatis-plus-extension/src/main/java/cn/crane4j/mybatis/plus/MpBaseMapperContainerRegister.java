@@ -20,7 +20,6 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.ResolvableType;
 
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -52,7 +51,7 @@ public class MpBaseMapperContainerRegister implements DisposableBean {
     /**
      * Register mapper.
      *
-     * @param mapperName mapper name
+     * @param mapperName mapper named
      * @param baseMapper baseMapper
      */
     public final void registerMapper(String mapperName, BaseMapper<?> baseMapper) {
@@ -69,38 +68,6 @@ public class MpBaseMapperContainerRegister implements DisposableBean {
     }
 
     /**
-     * Get a container based on {@link BaseMapper#selectList}.
-     *
-     * @param mapperName mapper name
-     * @param keyProperty key field name for query
-     * @return cn.crane4j.core.container.Container<?>
-     */
-    public Container<?> container(String mapperName, String keyProperty) {
-        return container(mapperName, keyProperty, null);
-    }
-
-    /**
-     * Get a container based on {@link BaseMapper#selectList}.
-     *
-     * @param mapperName mapper name
-     * @return container
-     */
-    public Container<?> container(String mapperName) {
-        return container(mapperName, null, null);
-    }
-
-    /**
-     * Get a container based on {@link BaseMapper#selectList}.
-     *
-     * @param mapperName mapper name
-     * @param properties fields to query
-     * @return container
-     */
-    public Container<?> container(String mapperName, List<String> properties) {
-        return container(mapperName, null, properties);
-    }
-
-    /**
      * Get a container based on {@link BaseMapper#selectList},
      * When querying, the attribute name of the input parameter will be converted to
      * the table columns specified in the corresponding {@link TableField} annotation.
@@ -112,9 +79,33 @@ public class MpBaseMapperContainerRegister implements DisposableBean {
      * @see TableField
      * @see TableId
      */
-    public Container<?> container(
-        String mapperName, @Nullable String keyProperty, @Nullable List<String> properties) {
-        return getContainer(mapperName, keyProperty, properties);
+    public Container<?> getContainer(String mapperName, String keyProperty, List<String> properties) {
+        MapperInfo info = mapperInfoMap.get(mapperName);
+        Assert.notNull(info, "cannot find mapper [{}]", mapperName);
+        TableInfo tableInfo = info.getTableInfo();
+
+        // resolve query columns
+        Map<String, String> propertyMap = tableInfo.getFieldList().stream()
+            .collect(Collectors.toMap(f -> f.getField().getName(), TableFieldInfo::getColumn));
+        String[] queryColumns = CollUtil.defaultIfEmpty(properties, Collections.emptyList())
+            .stream().map(c -> propertyMap.getOrDefault(c, c)).toArray(String[]::new);
+
+        // resolve key column
+        String keyColumn = propertyMap.getOrDefault(keyProperty, keyProperty);
+        if (CharSequenceUtil.isEmpty(keyProperty)) {
+            keyProperty = tableInfo.getKeyProperty();
+            keyColumn = tableInfo.getKeyColumn();
+        }
+
+        // append key column if not included in query columns
+        if (queryColumns.length > 0) {
+            queryColumns = ArrayUtil.contains(queryColumns, keyColumn) ?
+                queryColumns : ArrayUtil.append(queryColumns, keyColumn);
+        }
+
+        // find by namespace
+        String namespace = generateContainerNamespace(info, keyColumn, queryColumns);
+        return createContainer(info, keyProperty, keyColumn, queryColumns, namespace);
     }
 
     // ================== private ==================
@@ -150,35 +141,6 @@ public class MpBaseMapperContainerRegister implements DisposableBean {
     protected Container<?> doCreateContainer(
         String namespace, BaseMapper<?> mapper, String[] queryColumns, String keyColumn, MethodInvoker keyGetter) {
         return new MpMethodContainer<>(namespace, mapper, queryColumns, keyColumn, keyGetter);
-    }
-
-    private Container<?> getContainer(String mapperName, String keyProperty, List<String> properties) {
-        MapperInfo info = mapperInfoMap.get(mapperName);
-        Assert.notNull(info, "cannot find mapper [{}]", mapperName);
-        TableInfo tableInfo = info.getTableInfo();
-
-        // resolve query columns
-        Map<String, String> propertyMap = tableInfo.getFieldList().stream()
-            .collect(Collectors.toMap(f -> f.getField().getName(), TableFieldInfo::getColumn));
-        String[] queryColumns = CollUtil.defaultIfEmpty(properties, Collections.emptyList())
-            .stream().map(c -> propertyMap.getOrDefault(c, c)).toArray(String[]::new);
-
-        // resolve key column
-        String keyColumn = propertyMap.getOrDefault(keyProperty, keyProperty);
-        if (CharSequenceUtil.isEmpty(keyProperty)) {
-            keyProperty = tableInfo.getKeyProperty();
-            keyColumn = tableInfo.getKeyColumn();
-        }
-
-        // append key column if not included in query columns
-        if (queryColumns.length > 0) {
-            queryColumns = ArrayUtil.contains(queryColumns, keyColumn) ?
-                queryColumns : ArrayUtil.append(queryColumns, keyColumn);
-        }
-
-        // find by namespace
-        String namespace = generateContainerNamespace(info, keyColumn, queryColumns);
-        return createContainer(info, keyProperty, keyColumn, queryColumns, namespace);
     }
 
     private Container<?> createContainer(
