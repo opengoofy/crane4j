@@ -5,6 +5,7 @@ import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Assert;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ArrayUtil;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -25,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -43,7 +45,7 @@ public class MpBaseMapperContainerRegister implements DisposableBean {
     protected final ApplicationContext applicationContext;
     protected final Map<String, MapperInfo> mapperInfoMap = new HashMap<>(32);
     protected final PropertyOperator propertyOperator;
-    private final Map<String, Container<?>> containerCaches = new HashMap<>(32);
+    private final Map<String, Container<?>> containerCaches = new ConcurrentHashMap<>(32);
 
     // ================== public ==================
 
@@ -181,7 +183,7 @@ public class MpBaseMapperContainerRegister implements DisposableBean {
 
     private Container<?> createContainer(
         MapperInfo info, String keyProperty, String keyColumn, String[] queryColumns, String namespace) {
-        return containerCaches.computeIfAbsent(namespace, ns -> {
+        return MapUtil.computeIfAbsent(containerCaches, namespace, ns -> {
             TableInfo tableInfo = info.getTableInfo();
             MethodInvoker keyGetter = propertyOperator.findGetter(tableInfo.getEntityType(), keyProperty);
             Assert.notNull(keyGetter, "cannot find getter method of [{}] in [{}]", keyProperty, tableInfo.getEntityType());
