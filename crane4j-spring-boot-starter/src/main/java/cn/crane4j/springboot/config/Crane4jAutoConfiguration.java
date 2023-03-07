@@ -18,6 +18,7 @@ import cn.crane4j.core.support.SimpleTypeResolver;
 import cn.crane4j.core.support.TypeResolver;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
 import cn.crane4j.core.support.reflect.AsmReflectPropertyOperator;
+import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
 import cn.crane4j.springboot.annotation.EnableCrane4j;
@@ -87,8 +88,9 @@ public class Crane4jAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public PropertyOperator propertyOperator(Crane4jProperties crane4jProperties) {
-        return crane4jProperties.isEnableAsmReflect() ?
+        PropertyOperator operator = crane4jProperties.isEnableAsmReflect() ?
             new AsmReflectPropertyOperator() : new ReflectPropertyOperator();
+        return new MapAccessiblePropertyOperator(operator);
     }
 
     @Bean
