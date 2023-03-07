@@ -68,6 +68,10 @@ public class OperateTemplateTest {
         checkBean(fooList.get(0), "1", "1", "1");
 
         fooList = getFooList();
+        template.execute(fooList, Foo.class);
+        checkBean(fooList.get(0), "1", "1", "1");
+
+        fooList = getFooList();
         template.execute(fooList, op -> op instanceof AssembleOperation);
         checkBean(fooList.get(0), "1", null, null);
 

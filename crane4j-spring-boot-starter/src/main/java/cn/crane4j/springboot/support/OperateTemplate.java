@@ -115,13 +115,21 @@ public class OperateTemplate {
      *
      * @param targets targets
      * @param targetType target type
+     */
+    public void execute(Collection<?> targets, Class<?> targetType) {
+        execute(targets, targetType, defaultParser, defaultExecutor, Grouped.alwaysMatch());
+    }
+
+    /**
+     * Execute the fill operation.
+     *
+     * @param targets targets
      * @param parser parser
      * @param executor executor
      * @param filter filter
-     * @param <T> target type
      */
-    public <T> void execute(
-        Collection<T> targets, Class<T> targetType, BeanOperationParser parser,
+    public void execute(
+        Collection<?> targets, Class<?> targetType, BeanOperationParser parser,
         BeanOperationExecutor executor, Predicate<? super KeyTriggerOperation> filter) {
         if (CollUtil.isEmpty(targets)) {
             return;
