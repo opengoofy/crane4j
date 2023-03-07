@@ -17,6 +17,7 @@
         <dependency>
             <groupId>cn.crane4j</groupId>
             <artifactId>crane4j-annotation</artifactId>
+            <version>${revision}</version>
         </dependency>
 
         <dependency>
