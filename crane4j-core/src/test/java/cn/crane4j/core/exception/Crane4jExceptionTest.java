@@ -13,5 +13,7 @@ public class Crane4jExceptionTest {
     @Test
     public void test() {
         Assert.assertThrows("ex!", Crane4jException.class, () -> { throw new Crane4jException("{}!", "ex"); });
+        RuntimeException e = new RuntimeException("ex!");
+        Assert.assertThrows("ex!", Crane4jException.class, () -> { throw new Crane4jException(e); });
     }
 }

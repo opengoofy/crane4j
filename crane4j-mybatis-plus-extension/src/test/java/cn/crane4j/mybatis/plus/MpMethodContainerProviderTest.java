@@ -1,6 +1,7 @@
 package cn.crane4j.mybatis.plus;
 
 import cn.crane4j.core.container.Container;
+import cn.crane4j.core.exception.Crane4jException;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ArrayUtil;
 import org.junit.Assert;
@@ -22,23 +23,25 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class MpMethodContainerProviderTest {
 
     @Autowired
-    private MpMethodContainerProvider mpMethodContainerProvider;
+    private MpMethodContainerProvider provider;
 
     @Test
     public void getContainer() {
-        Container<?> container = mpMethodContainerProvider.getContainer("container('fooMapper', 'name', {'age', 'sex'})");
+        Assert.assertThrows(Crane4jException.class, () -> provider.getContainer("nothing"));
+
+        Container<?> container = provider.getContainer("container('fooMapper', 'name', {'age', 'sex'})");
         Assert.assertNotNull(container);
         checkNamespace(container.getNamespace(), "name", "age", "sex", "name");
 
-        container = mpMethodContainerProvider.getContainer("container('fooMapper', {'age', 'sex'})");
+        container = provider.getContainer("container('fooMapper', {'age', 'sex'})");
         Assert.assertNotNull(container);
         checkNamespace(container.getNamespace(), "id", "age", "sex", "id");
 
-        container = mpMethodContainerProvider.getContainer("container('fooMapper', 'name')");
+        container = provider.getContainer("container('fooMapper', 'name')");
         Assert.assertNotNull(container);
         checkNamespace(container.getNamespace(), "name");
 
-        container = mpMethodContainerProvider.getContainer("container('fooMapper')");
+        container = provider.getContainer("container('fooMapper')");
         Assert.assertNotNull(container);
         checkNamespace(container.getNamespace(), "id");
     }

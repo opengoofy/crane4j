@@ -42,7 +42,10 @@ public class SimpleCrane4jGlobalConfiguration implements Crane4jGlobalConfigurat
      */
     @Override
     public Container<?> getContainer(String namespace) {
-        return containerMap.get(namespace);
+        return Assert.notNull(
+            containerMap.get(namespace),
+            () -> new Crane4jException("cannot find container [{}]", namespace)
+        );
     }
 
     /**

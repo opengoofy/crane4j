@@ -1,6 +1,7 @@
 package cn.crane4j.core.executor;
 
 import cn.crane4j.core.container.Container;
+import cn.crane4j.core.exception.OperationExecuteException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -22,10 +23,14 @@ public class DisorderedBeanOperationExecutor extends AbstractBeanOperationExecut
      * @param executions executions
      */
     @Override
-    protected void executeOperations(List<AssembleExecution> executions) {
-        executions.stream()
-            .collect(Collectors.groupingBy(AssembleExecution::getContainer))
-            .forEach(this::doExecuteOperations);
+    protected void executeOperations(List<AssembleExecution> executions) throws OperationExecuteException {
+        try {
+            executions.stream()
+                .collect(Collectors.groupingBy(AssembleExecution::getContainer))
+                .forEach(this::doExecuteOperations);
+        } catch (Exception e) {
+            throw new OperationExecuteException(e);
+        }
     }
 
     private void doExecuteOperations(Container<?> container, List<AssembleExecution> executions) {

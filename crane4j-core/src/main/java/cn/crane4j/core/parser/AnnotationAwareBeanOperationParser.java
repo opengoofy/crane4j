@@ -7,6 +7,7 @@ import cn.crane4j.annotation.Operations;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerProvider;
 import cn.crane4j.core.exception.Crane4jException;
+import cn.crane4j.core.exception.OperationParseException;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
@@ -27,7 +28,17 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
@@ -97,19 +108,24 @@ public class AnnotationAwareBeanOperationParser implements BeanOperationParser {
      *
      * @param beanType bean type
      * @return {@link BeanOperations}
+     * @throws OperationParseException thrown when configuration resolution exception
      */
     @NonNull
     @Override
-    public BeanOperations parse(Class<?> beanType) {
+    public BeanOperations parse(Class<?> beanType) throws OperationParseException {
         Objects.requireNonNull(beanType);
-        return MapUtil.computeIfAbsent(parsedBeanOperations, beanType, type -> {
-            BeanOperations beanOperations = createBeanOperations(type);
-            beanOperations.setActive(false);
-            parsedBeanOperations.put(type, beanOperations);
-            doParse(type, beanOperations);
-            beanOperations.setActive(true);
-            return beanOperations;
-        });
+        try {
+            return MapUtil.computeIfAbsent(parsedBeanOperations, beanType, type -> {
+                BeanOperations beanOperations = createBeanOperations(type);
+                beanOperations.setActive(false);
+                parsedBeanOperations.put(type, beanOperations);
+                doParse(type, beanOperations);
+                beanOperations.setActive(true);
+                return beanOperations;
+            });
+        } catch (Exception e) {
+            throw new OperationParseException(e);
+        }
     }
 
     /**

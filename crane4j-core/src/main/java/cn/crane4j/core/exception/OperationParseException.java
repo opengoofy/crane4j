@@ -1,13 +1,11 @@
 package cn.crane4j.core.exception;
 
-import cn.hutool.core.text.CharSequenceUtil;
-
 /**
- * Crane's runtime exception
+ * A runtime exception that may be thrown during the operation configuration resolution phase.
  *
  * @author huangchengxing
  */
-public class Crane4jException extends RuntimeException {
+public class OperationParseException extends Crane4jException {
 
     /**
      * Constructs a new runtime exception with the specified detail message.
@@ -15,11 +13,11 @@ public class Crane4jException extends RuntimeException {
      * call to {@link #initCause}.
      *
      * @param messageTemplate the detail message. The detail message is saved for
-     *                later retrieval by the {@link #getMessage()} method.
-     * @param args args of message template
+     *                        later retrieval by the {@link #getMessage()} method.
+     * @param args            args of message template
      */
-    public Crane4jException(String messageTemplate, Object... args) {
-        super(CharSequenceUtil.format(messageTemplate, args));
+    public OperationParseException(String messageTemplate, Object... args) {
+        super(messageTemplate, args);
     }
 
     /**
@@ -35,7 +33,7 @@ public class Crane4jException extends RuntimeException {
      *              unknown.)
      * @since 1.4
      */
-    public Crane4jException(Throwable cause) {
+    public OperationParseException(Throwable cause) {
         super(cause);
     }
 }

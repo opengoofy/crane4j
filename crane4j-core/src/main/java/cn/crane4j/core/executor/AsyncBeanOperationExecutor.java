@@ -1,6 +1,7 @@
 package cn.crane4j.core.executor;
 
 import cn.crane4j.core.container.Container;
+import cn.crane4j.core.exception.OperationExecuteException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,12 +36,16 @@ public class AsyncBeanOperationExecutor extends AbstractBeanOperationExecutor {
      */
     @SuppressWarnings("unchecked")
     @Override
-    protected void executeOperations(List<AssembleExecution> executions) {
+    protected void executeOperations(List<AssembleExecution> executions) throws OperationExecuteException {
         CompletableFuture<Void>[] tasks = executions.stream()
             .map(execution -> (Runnable)() -> doExecuteOperations(execution))
             .map(task -> CompletableFuture.runAsync(task, executorService))
             .toArray(CompletableFuture[]::new);
-        CompletableFuture.allOf(tasks).join();
+        try {
+            CompletableFuture.allOf(tasks).join();
+        } catch (Exception e) {
+            throw new OperationExecuteException(e);
+        }
     }
 
     private void doExecuteOperations(AssembleExecution execution) {

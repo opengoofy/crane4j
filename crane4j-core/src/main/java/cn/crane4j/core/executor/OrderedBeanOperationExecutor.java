@@ -1,6 +1,7 @@
 package cn.crane4j.core.executor;
 
 import cn.crane4j.core.container.Container;
+import cn.crane4j.core.exception.OperationExecuteException;
 import cn.crane4j.core.parser.AssembleOperation;
 import lombok.RequiredArgsConstructor;
 
@@ -29,9 +30,13 @@ public class OrderedBeanOperationExecutor extends AbstractBeanOperationExecutor 
      * @param executions executions
      */
     @Override
-    protected void executeOperations(List<AssembleExecution> executions) {
-        executions.stream()
-            .sorted(Comparator.comparing(AssembleExecution::getOperation, comparator))
-            .forEach(e -> tryExecute(() -> e.getHandler().process(e.getContainer(), Collections.singletonList(e))));
+    protected void executeOperations(List<AssembleExecution> executions) throws OperationExecuteException {
+        try {
+            executions.stream()
+                .sorted(Comparator.comparing(AssembleExecution::getOperation, comparator))
+                .forEach(e -> tryExecute(() -> e.getHandler().process(e.getContainer(), Collections.singletonList(e))));
+        } catch (Exception e) {
+            throw new OperationExecuteException(e);
+        }
     }
 }

@@ -100,7 +100,7 @@ public class Crane4jApplicationContext
         if (Objects.isNull(container)) {
             container = applicationContext.getBean(namespace, Container.class);
         }
-        return Objects.requireNonNull(container, () -> "cannot find container [" + namespace + "]");
+        return Assert.notNull(container, () -> new Crane4jException("cannot find container [{}]", namespace));
     }
 
     /**

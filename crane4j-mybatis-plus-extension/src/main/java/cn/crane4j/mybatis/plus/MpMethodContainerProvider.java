@@ -2,6 +2,7 @@ package cn.crane4j.mybatis.plus;
 
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerProvider;
+import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
 import cn.crane4j.springboot.support.expression.SpelExpressionContext;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -61,7 +62,11 @@ public class MpMethodContainerProvider implements ContainerProvider {
     public Container<?> getContainer(String namespace) {
         SpelExpressionContext context = new SpelExpressionContext(this);
         context.setBeanResolver(new BeanFactoryResolver(applicationContext));
-        return evaluator.execute(namespace, Container.class, context);
+        try {
+            return evaluator.execute(namespace, Container.class, context);
+        } catch (Exception e) {
+            throw new Crane4jException(e);
+        }
     }
 
     /**

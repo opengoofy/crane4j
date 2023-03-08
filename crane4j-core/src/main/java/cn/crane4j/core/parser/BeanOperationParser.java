@@ -1,5 +1,6 @@
 package cn.crane4j.core.parser;
 
+import cn.crane4j.core.exception.OperationParseException;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 
 /**
@@ -18,6 +19,7 @@ public interface BeanOperationParser {
      *
      * @param beanType bean type
      * @return {@link BeanOperations}
+     * @throws OperationParseException thrown when configuration resolution exception
      */
-    BeanOperations parse(Class<?> beanType);
+    BeanOperations parse(Class<?> beanType) throws OperationParseException;
 }

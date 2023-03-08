@@ -31,7 +31,7 @@ public class MapAccessiblePropertyOperator implements PropertyOperator {
     @Nullable
     @Override
     public Object readProperty(Class<?> targetType, Object target, String propertyName) {
-        if (Map.class.isAssignableFrom(targetType)) {
+        if (isMap(targetType)) {
             return castMap(target).get(propertyName);
         }
         return propertyOperator.readProperty(targetType, target, propertyName);
@@ -47,7 +47,7 @@ public class MapAccessiblePropertyOperator implements PropertyOperator {
     @Nullable
     @Override
     public MethodInvoker findGetter(Class<?> targetType, String propertyName) {
-        if (Map.class.isAssignableFrom(targetType)) {
+        if (isMap(targetType)) {
             return (t, args) -> castMap(t).get(propertyName);
         }
         return propertyOperator.findGetter(targetType, propertyName);
@@ -63,7 +63,7 @@ public class MapAccessiblePropertyOperator implements PropertyOperator {
      */
     @Override
     public void writeProperty(Class<?> targetType, Object target, String propertyName, Object value) {
-        if (Map.class.isAssignableFrom(targetType)) {
+        if (isMap(targetType)) {
             castMap(target).put(propertyName, value);
             return;
         }
@@ -80,7 +80,7 @@ public class MapAccessiblePropertyOperator implements PropertyOperator {
     @Nullable
     @Override
     public MethodInvoker findSetter(Class<?> targetType, String propertyName) {
-        if (Map.class.isAssignableFrom(targetType)) {
+        if (isMap(targetType)) {
             return (t, args) -> castMap(t).put(propertyName, args[0]);
         }
         return propertyOperator.findSetter(targetType, propertyName);
@@ -89,5 +89,9 @@ public class MapAccessiblePropertyOperator implements PropertyOperator {
     @SuppressWarnings("unchecked")
     private static Map<String, Object> castMap(Object target) {
         return (Map<String, Object>)target;
+    }
+
+    private static boolean isMap(Class<?> type) {
+        return Map.class.isAssignableFrom(type);
     }
 }

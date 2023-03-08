@@ -1,6 +1,6 @@
 package cn.crane4j.core.executor;
 
-import cn.crane4j.core.exception.Crane4jException;
+import cn.crane4j.core.exception.OperationExecuteException;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
 import cn.crane4j.core.parser.AssembleOperation;
 import cn.crane4j.core.parser.BeanOperations;
@@ -41,7 +41,7 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
         if (CollUtil.isEmpty(targets) || Objects.isNull(operations)) {
             return;
         }
-        Assert.isTrue(operations.isActive(), () -> new Crane4jException(
+        Assert.isTrue(operations.isActive(), () -> new OperationExecuteException(
             "bean operation of [{}] is not activated", operations.getTargetType()
         ));
         // complete the disassembly first if necessary
@@ -83,6 +83,7 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
      * the corresponding {@link AssembleExecution} is obtained.
      *
      * @param executions assembly operations to be completed
+     * @throws OperationExecuteException thrown when operation execution exception
      * @implNote
      * <ul>
      *     <li>If necessary, you need to ensure the execution order of {@link AssembleExecution};</li>
@@ -92,7 +93,7 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
      *     </li>
      * </ul>
      */
-    protected abstract void executeOperations(List<AssembleExecution> executions);
+    protected abstract void executeOperations(List<AssembleExecution> executions) throws OperationExecuteException;
 
     private static <T> void disassembleIfNecessary(
         Collection<T> targets, BeanOperations operations,
