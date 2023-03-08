@@ -36,3 +36,6 @@ logs
 
 ### npm ###
 **/node_modules
+
+### doc ###
+**/docs
