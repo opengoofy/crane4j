@@ -27,9 +27,9 @@
 
 ### 快速开始
 
-文档参阅 [Quick start](https://opengoofy.github.io/crane4j/#/basic/2.%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B.html)，打不开可访问[备用地址](http://www.crane4j.cn/)
+项目文档：[GitHub](https://opengoofy.github.io/crane4j/#/) / [Gitee](https://createsequence.gitee.io/crane4j/#/)
 
-实例项目：[crane4j-example](https://github.com/Createsequence/crane4j-example)
+示例项目：[crane4j-example](https://github.com/Createsequence/crane4j-example)
 
 ### 友情链接
 
