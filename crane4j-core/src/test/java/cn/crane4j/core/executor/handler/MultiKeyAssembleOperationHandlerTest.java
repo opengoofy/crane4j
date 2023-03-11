@@ -37,7 +37,7 @@ public class MultiKeyAssembleOperationHandlerTest extends BaseExecutorTest {
     @Before
     public void init() {
         PropertyOperator operator = new MapAccessiblePropertyOperator(new ReflectPropertyOperator());
-        MultiKeyAssembleOperationHandler handler = new MultiKeyAssembleOperationHandler(",", operator);
+        MultiKeyAssembleOperationHandler handler = new MultiKeyAssembleOperationHandler(operator);
         configuration.getAssembleOperationHandlerMap().put(handler.getClass().getName(), handler);
 
         executor = new DisorderedBeanOperationExecutor();

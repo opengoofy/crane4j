@@ -17,18 +17,39 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
  * Implementation of {@link AssembleOperationHandler} supporting multiple key value fields.
  *
  * @author huangchengxing
+ * @see DefaultSplitter
  */
 @RequiredArgsConstructor
 public class MultiKeyAssembleOperationHandler implements AssembleOperationHandler {
 
-    private final String separator;
+    /**
+     * splitter used to split the value of key attribute into multiple key values.
+     *
+     * @see DefaultSplitter
+     */
+    private final Function<Object, Collection<Object>> keySplitter;
+
+    /**
+     * property operator.
+     */
     private final PropertyOperator propertyOperator;
+
+    /**
+     * Create a {@link MultiKeyAssembleOperationHandler} instance
+     * and use the default {@link DefaultSplitter} split key value
+     *
+     * @param propertyOperator property operator
+     */
+    public MultiKeyAssembleOperationHandler(PropertyOperator propertyOperator) {
+        this(new DefaultSplitter(","), propertyOperator);
+    }
 
     /**
      * Perform assembly operation.
@@ -82,8 +103,8 @@ public class MultiKeyAssembleOperationHandler implements AssembleOperationHandle
             MethodInvoker getter = propertyOperator.findGetter(targetType, key);
             for (Object target : execution.getTargets()) {
                 Object keyValue = getter.invoke(target);
-                // split key
-                Collection<Object> multiKeys = splitMultiKeys(keyValue);
+                // split keys
+                Collection<Object> multiKeys = keySplitter.apply(keyValue);
                 if (!multiKeys.isEmpty()) {
                     entities.add(new Entity(execution, target, multiKeys));
                 }
@@ -92,37 +113,40 @@ public class MultiKeyAssembleOperationHandler implements AssembleOperationHandle
         return entities;
     }
 
-    /**
-     * Split keys from value of key field.
-     *
-     * @param keys keys
-     * @return keys
-     */
-    @SuppressWarnings("unchecked")
-    protected Collection<Object> splitMultiKeys(Object keys) {
-        if (Objects.isNull(keys)) {
-            return Collections.emptyList();
-        }
-        if (keys instanceof String) {
-            String str = (String)keys;
-            return Arrays.stream(str.split(separator))
-                .map(String::trim)
-                .collect(Collectors.toSet());
-        }
-        if (keys instanceof Collection) {
-            return (Collection<Object>)keys;
-        }
-        if (keys.getClass().isArray()) {
-            return Arrays.asList((Object[])keys);
-        }
-        return Collections.emptyList();
-    }
-
     @Getter
     @RequiredArgsConstructor
     protected static class Entity {
         private final AssembleExecution execution;
         private final Object target;
         private final Collection<Object> keys;
+    }
+
+    /**
+     * The default key value splitter supports splitting {@link Collection},
+     * arrays and strings with specified delimiters.
+     */
+    @RequiredArgsConstructor
+    public static class DefaultSplitter implements Function<Object, Collection<Object>> {
+        private final String strSeparator;
+        @SuppressWarnings("unchecked")
+        @Override
+        public Collection<Object> apply(Object keys) {
+            if (Objects.isNull(keys)) {
+                return Collections.emptyList();
+            }
+            if (keys instanceof String) {
+                String str = (String)keys;
+                return Arrays.stream(str.split(strSeparator))
+                    .map(String::trim)
+                    .collect(Collectors.toSet());
+            }
+            if (keys instanceof Collection) {
+                return (Collection<Object>)keys;
+            }
+            if (keys.getClass().isArray()) {
+                return Arrays.asList((Object[])keys);
+            }
+            return Collections.emptyList();
+        }
     }
 }

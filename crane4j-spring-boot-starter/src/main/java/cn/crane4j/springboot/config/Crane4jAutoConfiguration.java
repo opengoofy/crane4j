@@ -161,7 +161,7 @@ public class Crane4jAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public MultiKeyAssembleOperationHandler multiKeyAssembleOperationHandler(PropertyOperator propertyOperator) {
-        return new MultiKeyAssembleOperationHandler(",", propertyOperator);
+        return new MultiKeyAssembleOperationHandler(propertyOperator);
     }
 
     @Primary
