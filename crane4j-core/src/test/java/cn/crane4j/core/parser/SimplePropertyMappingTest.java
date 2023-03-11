@@ -32,4 +32,9 @@ public class SimplePropertyMappingTest {
     public void getReference() {
         Assert.assertEquals("userName", mapping.getReference());
     }
+
+    @Test
+    public void testToString() {
+        Assert.assertEquals("s.name -> t.userName", mapping.toString());
+    }
 }

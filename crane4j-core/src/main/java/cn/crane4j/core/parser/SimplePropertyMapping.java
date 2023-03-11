@@ -37,4 +37,14 @@ public class SimplePropertyMapping implements PropertyMapping {
     public boolean hasSource() {
         return hasSource;
     }
+
+    /**
+     * Get string as "s.source -> t.reference"
+     *
+     * @return string
+     */
+    @Override
+    public String toString() {
+        return "s" + (hasSource() ? "." + getSource() : "") + " -> t." + reference;
+    }
 }
