@@ -8,6 +8,7 @@ import cn.crane4j.core.container.DefaultMethodContainerFactory;
 import cn.crane4j.core.container.MethodContainerFactory;
 import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
 import cn.crane4j.core.executor.OrderedBeanOperationExecutor;
+import cn.crane4j.core.executor.handler.MultiKeyAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.ReflectAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
 import cn.crane4j.core.parser.AnnotationAwareBeanOperationParser;
@@ -32,11 +33,9 @@ import cn.crane4j.springboot.support.aop.MethodArgumentAutoOperateAspect;
 import cn.crane4j.springboot.support.aop.MethodResultAutoOperateAspect;
 import cn.crane4j.springboot.support.expression.SpelExpressionContext;
 import cn.crane4j.springboot.support.expression.SpelExpressionEvaluator;
-import com.esotericsoftware.reflectasm.MethodAccess;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -155,9 +154,14 @@ public class Crane4jAutoConfiguration {
     @Primary
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnClass(MethodAccess.class)
     public ReflectAssembleOperationHandler reflectAssembleOperationHandler(PropertyOperator propertyOperator) {
         return new ReflectAssembleOperationHandler(propertyOperator);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public MultiKeyAssembleOperationHandler multiKeyAssembleOperationHandler(PropertyOperator propertyOperator) {
+        return new MultiKeyAssembleOperationHandler(",", propertyOperator);
     }
 
     @Primary
