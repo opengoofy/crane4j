@@ -16,10 +16,35 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 /**
- * Provider of {@link MpBaseMapperContainerRegister}.
+ * <p>Provider of {@link MpMethodContainer}. support obtain and call
+ * the specified method in {@link BaseMapper}through incoming expression.
+ *
+ * <p>The input expression supports the following notation:
+ * <ul>
+ *     <li>
+ *         {@code container('fooMapper', 'id', {'name', 'sex', 'age'})}, <br />
+ *         equivalent to {@code select id, name, sex, age from foo where id in ?};
+ *     </li>
+ *     <li>
+ *         {@code container('fooMapper', {'name', 'sex', 'age'})}, <br />
+ *         equivalent to {@code select [pk], name, sex, age from foo where [pk] in ?};
+ *     </li>
+ *     <li>
+ *         {@code container('fooMapper', 'id')}, <br />
+ *         equivalent to {@code select * from foo where id in ?};
+ *     </li>
+ *     <li>
+ *         {@code container('fooMapper')}, <br />
+ *         equivalent to {@code select * from foo where [pk] in ?};
+ *     </li>
+ * </ul>
+ * <b>NOTE:</b>When the query field is limited,
+ * the query columns must contain the column of entered key.
  *
  * @author huangchengxing
  * @see MpBaseMapperContainerRegister
+ * @see SpelExpressionContext
+ * @see ExpressionEvaluator
  */
 @RequiredArgsConstructor
 public class MpMethodContainerProvider implements ContainerProvider {
@@ -29,34 +54,12 @@ public class MpMethodContainerProvider implements ContainerProvider {
     private final ExpressionEvaluator evaluator;
 
     /**
-     * <p>Get data source container, support obtain and call the specified method
-     * in {@link BaseMapper}through incoming expression.
-     *
-     * <p>The input expression supports the following notation:
-     * <ul>
-     *     <li>
-     *         {@code container('fooMapper', 'id', ['name', 'sex', 'age'])}, <br />
-     *         equivalent to {@code select id, name, sex, age from foo where id in ?};
-     *     </li>
-     *     <li>
-     *         {@code container('fooMapper', ['name', 'sex', 'age'])}, <br />
-     *         equivalent to {@code select [pk], name, sex, age from foo where [pk] in ?};
-     *     </li>
-     *     <li>
-     *         {@code container('fooMapper', 'id')}, <br />
-     *         equivalent to {@code select * from foo where id in ?};
-     *     </li>
-     *     <li>
-     *         {@code container('fooMapper')}, <br />
-     *         equivalent to {@code select * from foo where [pk] in ?};
-     *     </li>
-     * </ul>
-     * <b>NOTE:</b>When the query field is limited,
-     * the query columns must contain the column of entered key.
+     * <p>Get data source container by expression.
      *
      * @param namespace namespace
      * @return container
      * @see MpBaseMapperContainerRegister#getContainer
+     * @see #container
      */
     @Override
     public Container<?> getContainer(String namespace) {
