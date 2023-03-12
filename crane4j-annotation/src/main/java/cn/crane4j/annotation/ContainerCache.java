@@ -24,5 +24,5 @@ public @interface ContainerCache {
      *
      * @return cache name
      */
-    String value() default "";
+    String cacheName() default "";
 }
