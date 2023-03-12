@@ -49,6 +49,30 @@ public class SimpleCrane4jGlobalConfigurationTest {
     }
 
     @Test
+    public void containsContainer() {
+        Assert.assertTrue(configuration.containsContainer("test"));
+        Assert.assertFalse(configuration.containsContainer("no registered"));
+    }
+
+    @Test
+    public void replaceContainer() {
+        Assert.assertFalse(configuration.containsContainer("no registered"));
+        Container<?> container1 = configuration.replaceContainer("no registered", container -> {
+            Assert.assertNull(container);
+            return Container.empty();
+        });
+        Assert.assertNull(container1);
+        Assert.assertTrue(configuration.containsContainer("no registered"));
+
+        Container<?> container2 = configuration.replaceContainer("no registered", container -> {
+            Assert.assertNotNull(container);
+            return null;
+        });
+        Assert.assertNotNull(container2);
+        Assert.assertFalse(configuration.containsContainer("no registered"));
+    }
+
+    @Test
     public void getContainerProvider() {
         Assert.assertSame(configuration, configuration.getContainerProvider(configuration.getClass()));
         Assert.assertSame(configuration, configuration.getContainerProvider(configuration.getClass().getName()));

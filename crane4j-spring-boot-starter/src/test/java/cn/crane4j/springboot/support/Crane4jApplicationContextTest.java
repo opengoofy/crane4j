@@ -1,6 +1,7 @@
 package cn.crane4j.springboot.support;
 
 import cn.crane4j.core.container.ConstantContainer;
+import cn.crane4j.core.container.Container;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
@@ -45,6 +46,30 @@ public class Crane4jApplicationContextTest {
         Assert.assertFalse(context.getRegisteredContainers().isEmpty());
         context.destroy();
         Assert.assertTrue(context.getRegisteredContainers().isEmpty());
+    }
+
+    @Test
+    public void containsContainer() {
+        Assert.assertTrue(context.containsContainer("test"));
+        Assert.assertFalse(context.containsContainer("no registered"));
+    }
+
+    @Test
+    public void replaceContainer() {
+        Assert.assertFalse(context.containsContainer("no registered"));
+        Container<?> container1 = context.replaceContainer("no registered", container -> {
+            Assert.assertNull(container);
+            return Container.empty();
+        });
+        Assert.assertNull(container1);
+        Assert.assertTrue(context.containsContainer("no registered"));
+
+        Container<?> container2 = context.replaceContainer("no registered", container -> {
+            Assert.assertNotNull(container);
+            return null;
+        });
+        Assert.assertNotNull(container2);
+        Assert.assertFalse(context.containsContainer("no registered"));
     }
 
     protected static class TestConfig {

@@ -24,7 +24,7 @@ import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 
 import java.util.Collection;
-import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -73,16 +73,14 @@ public class Crane4jInitializer implements ApplicationRunner {
 
     @SuppressWarnings("unchecked")
     private void wrapCacheableContainer() {
-        Map<String, Container<?>> containerMap = configuration.getRegisteredContainers();
         crane4jProperties.getCacheContainers().forEach((cacheName, namespaces) -> {
             Cache<Object> cache = cacheManager.getCache(cacheName);
-            for (String namespace : namespaces) {
-                containerMap.computeIfPresent(
-                    namespace, (n, container) -> new CacheableContainer<>((Container<Object>)container, cache)
-                );
-            }
+            namespaces.forEach(namespace -> configuration.replaceContainer(
+                namespace, container -> Objects.isNull(container) ? null : new CacheableContainer<>((Container<Object>)container, cache)
+            ));
         });
     }
+
     @SuppressWarnings("unchecked")
     private void loadContainerEnum() {
         Set<String> enumPackages = crane4jProperties.getContainerEnumPackages();

@@ -58,8 +58,8 @@ public class Crane4jInitializerTest {
             Collections.singleton("cn.crane4j.springboot.config.*"),
             crane4jProperties.getContainerEnumPackages()
         );
-        Assert.assertTrue(context.getRegisteredContainers().get("test1") instanceof ConstantContainer);
-        Container<?> container = context.getRegisteredContainers().get("test2");
+        Assert.assertTrue(context.getContainer("test1") instanceof ConstantContainer);
+        Container<?> container = context.getContainer("test2");
         Assert.assertTrue(container instanceof CacheableContainer);
         Assert.assertTrue(((CacheableContainer<?>)container).getContainer() instanceof ConstantContainer);
         Assert.assertSame(
@@ -72,7 +72,7 @@ public class Crane4jInitializerTest {
             Collections.singleton("cn.crane4j.springboot.config.*"),
             crane4jProperties.getContainerConstantPackages()
         );
-        Container<?> constant = context.getRegisteredContainers().get("constant");
+        Container<?> constant = context.getContainer("constant");
         Assert.assertTrue(constant instanceof ConstantContainer);
         Map<?, ?> constantData = constant.get(null);
         Assert.assertEquals("one", constantData.get("one"));

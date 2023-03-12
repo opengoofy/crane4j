@@ -12,8 +12,11 @@ import cn.hutool.core.lang.Assert;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.function.UnaryOperator;
 
 /**
  * Basic implementation of {@link Crane4jGlobalConfiguration}.
@@ -46,6 +49,39 @@ public class SimpleCrane4jGlobalConfiguration implements Crane4jGlobalConfigurat
             containerMap.get(namespace),
             () -> new Crane4jException("cannot find container [{}]", namespace)
         );
+    }
+
+    /**
+     * Whether the container has been registered.
+     *
+     * @param namespace namespace
+     * @return boolean
+     */
+    @Override
+    public boolean containsContainer(String namespace) {
+        return containerMap.containsKey(namespace);
+    }
+
+    /**
+     * Replace the registered container.
+     * <ul>
+     *     <li>if the container is not registered, it will be added;</li>
+     *     <li>if {@code replacer} return {@code null}, the old container will be deleted;</li>
+     * </ul>
+     *
+     * @param namespace namespace
+     * @param replacer  replacer
+     * @return old container
+     */
+    @Nullable
+    @Override
+    public Container<?> replaceContainer(String namespace, UnaryOperator<Container<?>> replacer) {
+        Container<?> prev = containerMap.remove(namespace);
+        Container<?> next = replacer.apply(prev);
+        if (Objects.nonNull(next)) {
+            containerMap.put(namespace, next);
+        }
+        return prev;
     }
 
     /**

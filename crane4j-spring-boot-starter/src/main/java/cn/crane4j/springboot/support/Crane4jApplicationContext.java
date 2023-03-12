@@ -11,6 +11,7 @@ import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.TypeResolver;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.hutool.core.lang.Assert;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,9 +19,11 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.context.ApplicationContext;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.UnaryOperator;
 
 /**
  * <p>The global configuration class implemented based on the Spring context,
@@ -43,8 +46,42 @@ public class Crane4jApplicationContext
     /**
      * registered containers
      */
-    @Getter
+    @Getter(value = AccessLevel.PROTECTED)
     private final Map<String, Container<?>> registeredContainers = new ConcurrentHashMap<>();
+
+    /**
+     * Whether the container has been registered.
+     *
+     * @param namespace namespace
+     * @return boolean
+     */
+    @Override
+    public boolean containsContainer(String namespace) {
+        return registeredContainers.containsKey(namespace)
+            || applicationContext.containsBean(namespace);
+    }
+
+    /**
+     * Replace the registered container.
+     * <ul>
+     *     <li>if the container is not registered, it will be added;</li>
+     *     <li>if {@code replacer} return {@code null}, the old container will be deleted;</li>
+     * </ul>
+     *
+     * @param namespace namespace
+     * @param replacer  replacer
+     * @return old container
+     */
+    @Nullable
+    @Override
+    public Container<?> replaceContainer(String namespace, UnaryOperator<Container<?>> replacer) {
+        Container<?> prev = registeredContainers.remove(namespace);
+        Container<?> next = replacer.apply(prev);
+        if (Objects.nonNull(next)) {
+            registeredContainers.put(namespace, next);
+        }
+        return prev;
+    }
 
     /**
      * Get property operator.
