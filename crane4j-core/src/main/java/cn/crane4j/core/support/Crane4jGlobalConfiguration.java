@@ -6,9 +6,11 @@ import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
 import cn.crane4j.core.parser.BeanOperationParser;
+import cn.crane4j.core.support.callback.ContainerRegisterAware;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.function.UnaryOperator;
 
 /**
@@ -17,6 +19,20 @@ import java.util.function.UnaryOperator;
  * @author huangchengxing
  */
 public interface Crane4jGlobalConfiguration extends ContainerProvider {
+
+    /**
+     * Add a {@link ContainerRegisterAware} callback.
+     *
+     * @param containerRegisterAware callback
+     */
+    void addContainerRegisterAware(ContainerRegisterAware containerRegisterAware);
+
+    /**
+     * Get all registered {@link ContainerRegisterAware} callback.
+     *
+     * @return {@link ContainerRegisterAware} instances
+     */
+    Collection<ContainerRegisterAware> getContainerRegisterAwareList();
 
     /**
      * Whether the container has been registered.

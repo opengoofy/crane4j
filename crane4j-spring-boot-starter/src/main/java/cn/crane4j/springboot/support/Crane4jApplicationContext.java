@@ -9,7 +9,9 @@ import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.TypeResolver;
+import cn.crane4j.core.support.callback.ContainerRegisterAware;
 import cn.crane4j.core.support.reflect.PropertyOperator;
+import cn.crane4j.core.util.ConfigurationUtil;
 import cn.hutool.core.lang.Assert;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -20,6 +22,7 @@ import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.context.ApplicationContext;
 
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -48,6 +51,23 @@ public class Crane4jApplicationContext
      */
     @Getter(value = AccessLevel.PROTECTED)
     private final Map<String, Container<?>> registeredContainers = new ConcurrentHashMap<>();
+
+    /**
+     * registered callback
+     */
+    @Getter
+    private final List<ContainerRegisterAware> containerRegisterAwareList;
+
+    /**
+     * Add a {@link ContainerRegisterAware} callback.
+     *
+     * @param containerRegisterAware callback
+     */
+    @Override
+    public void addContainerRegisterAware(ContainerRegisterAware containerRegisterAware) {
+        containerRegisterAwareList.remove(containerRegisterAware);
+        containerRegisterAwareList.add(containerRegisterAware);
+    }
 
     /**
      * Whether the container has been registered.
@@ -236,9 +256,19 @@ public class Crane4jApplicationContext
      */
     public void registerContainer(Container<?> container) {
         String namespace = container.getNamespace();
-        Container<?> old = registeredContainers.put(namespace, container);
+        // is container already registered?
+        Container<?> old = registeredContainers.get(namespace);
         Assert.isNull(old, () -> new Crane4jException("the container [{}] has been registered", namespace));
-        log.info("register data source container [{}]", container.getNamespace());
+
+        // invoke callback for container
+        Container<?> actual = ConfigurationUtil.invokeBeforeContainerRegister(
+            this, container, getContainerRegisterAwareList()
+        );
+        if (Objects.nonNull(actual)) {
+            registeredContainers.put(namespace, actual);
+            ConfigurationUtil.invokeAfterContainerRegister(this, container, getContainerRegisterAwareList());
+            log.info("register data source container [{}]", container.getNamespace());
+        }
     }
 
     /**

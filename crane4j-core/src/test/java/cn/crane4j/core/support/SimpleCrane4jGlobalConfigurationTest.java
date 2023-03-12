@@ -9,10 +9,13 @@ import cn.crane4j.core.executor.handler.ReflectAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
 import cn.crane4j.core.parser.AnnotationAwareBeanOperationParser;
 import cn.crane4j.core.parser.BeanOperationParser;
+import cn.crane4j.core.support.callback.ContainerRegisterAware;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Collection;
 
 /**
  * test for {@link SimpleCrane4jGlobalConfiguration}
@@ -46,6 +49,17 @@ public class SimpleCrane4jGlobalConfigurationTest {
         configuration.getDisassembleOperationHandlerMap().put(DisassembleOperationHandler.class.getName(), disassembleOperationHandler);
 
         configuration.getContainerProviderMap().put(configuration.getClass().getName(), configuration);
+    }
+
+    @Test
+    public void addContainerRegisterAware() {
+        Collection<ContainerRegisterAware> awareList = configuration.getContainerRegisterAwareList();
+        Assert.assertTrue(awareList.isEmpty());
+        ContainerRegisterAware aware = new ContainerRegisterAware() { };
+        configuration.addContainerRegisterAware(aware);
+        Assert.assertEquals(1, awareList.size());
+        configuration.addContainerRegisterAware(aware);
+        Assert.assertEquals(1, awareList.size());
     }
 
     @Test

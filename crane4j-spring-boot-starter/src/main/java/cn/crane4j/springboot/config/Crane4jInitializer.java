@@ -2,9 +2,7 @@ package cn.crane4j.springboot.config;
 
 import cn.crane4j.annotation.ContainerConstant;
 import cn.crane4j.annotation.ContainerEnum;
-import cn.crane4j.core.cache.Cache;
 import cn.crane4j.core.cache.CacheManager;
-import cn.crane4j.core.container.CacheableContainer;
 import cn.crane4j.core.container.ConstantContainer;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.parser.BeanOperationParser;
@@ -24,7 +22,6 @@ import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 
 import java.util.Collection;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -56,8 +53,6 @@ public class Crane4jInitializer implements ApplicationRunner {
         loadConstantClass();
         // pre resolution class operation configuration
         loadOperateEntity();
-        // replace to cacheable container
-        wrapCacheableContainer();
     }
 
     private void loadConstantClass() {
@@ -69,16 +64,6 @@ public class Crane4jInitializer implements ApplicationRunner {
                 configuration.registerContainer(container);
             }
         }));
-    }
-
-    @SuppressWarnings("unchecked")
-    private void wrapCacheableContainer() {
-        crane4jProperties.getCacheContainers().forEach((cacheName, namespaces) -> {
-            Cache<Object> cache = cacheManager.getCache(cacheName);
-            namespaces.forEach(namespace -> configuration.replaceContainer(
-                namespace, container -> Objects.isNull(container) ? null : new CacheableContainer<>((Container<Object>)container, cache)
-            ));
-        });
     }
 
     @SuppressWarnings("unchecked")

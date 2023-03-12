@@ -6,6 +6,7 @@ import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
 import cn.crane4j.core.parser.BeanOperationParser;
+import cn.crane4j.core.support.callback.ContainerRegisterAware;
 import cn.crane4j.springboot.config.Crane4jAutoConfiguration;
 import cn.hutool.core.map.MapUtil;
 import org.junit.Assert;
@@ -42,6 +43,13 @@ public class Crane4jApplicationContextTest {
         Assert.assertNotNull(context.getDisassembleOperationHandler("reflectDisassembleOperationHandler"));
         Assert.assertNotNull(context.getContainer("test"));
         Assert.assertNotNull(context.getContainer("testBean"));
+
+        Assert.assertEquals(1, context.getContainerRegisterAwareList().size());
+        ContainerRegisterAware aware = new ContainerRegisterAware() { };
+        context.addContainerRegisterAware(aware);
+        Assert.assertEquals(2, context.getContainerRegisterAwareList().size());
+        context.addContainerRegisterAware(aware);
+        Assert.assertEquals(2, context.getContainerRegisterAwareList().size());
 
         Assert.assertFalse(context.getRegisteredContainers().isEmpty());
         context.destroy();

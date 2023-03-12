@@ -1,5 +1,6 @@
 package cn.crane4j.mybatis.plus;
 
+import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.springboot.config.Crane4jAutoConfiguration;
@@ -26,8 +27,8 @@ public class Crane4jMybatisPlusConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public MpBaseMapperContainerRegister mpBaseMapperContainerRegister(
-        ApplicationContext applicationContext, PropertyOperator propertyOperator) {
-        return new MpBaseMapperContainerRegister(applicationContext, propertyOperator);
+        ApplicationContext applicationContext, PropertyOperator propertyOperator, Crane4jGlobalConfiguration globalConfiguration) {
+        return new MpBaseMapperContainerRegister(applicationContext, globalConfiguration, propertyOperator);
     }
 
 

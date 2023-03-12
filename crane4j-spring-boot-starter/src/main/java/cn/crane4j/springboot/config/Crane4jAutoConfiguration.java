@@ -17,6 +17,7 @@ import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.SimpleTypeResolver;
 import cn.crane4j.core.support.TypeResolver;
+import cn.crane4j.core.support.callback.ContainerRegisterAware;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
 import cn.crane4j.core.support.reflect.AsmReflectPropertyOperator;
 import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
@@ -26,6 +27,7 @@ import cn.crane4j.springboot.annotation.EnableCrane4j;
 import cn.crane4j.springboot.parser.SpringAnnotationAwareBeanOperationParser;
 import cn.crane4j.springboot.support.AnnotationMethodContainerProcessor;
 import cn.crane4j.springboot.support.Crane4jApplicationContext;
+import cn.crane4j.springboot.support.DefaultCacheableContainerProcessor;
 import cn.crane4j.springboot.support.MergedAnnotationFinder;
 import cn.crane4j.springboot.support.MethodBaseExpressionEvaluator;
 import cn.crane4j.springboot.support.OperateTemplate;
@@ -50,8 +52,12 @@ import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.core.annotation.Order;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -71,17 +77,11 @@ public class Crane4jAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public CacheManager cacheManager() {
-        return new SimpleCacheManager(
-            new ConcurrentHashMap<>(8),
-            cacheName -> new ConcurrentMapCache<>(new ConcurrentHashMap<>(16))
-        );
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
     public Crane4jApplicationContext crane4jApplicationContext(ApplicationContext applicationContext) {
-        return new Crane4jApplicationContext(applicationContext);
+        List<ContainerRegisterAware> awareList = applicationContext
+            .getBeanNamesForType(ContainerRegisterAware.class).length > 0 ?
+            new ArrayList<>(applicationContext.getBeansOfType(ContainerRegisterAware.class).values()) : new ArrayList<>();
+        return new Crane4jApplicationContext(applicationContext, awareList);
     }
 
     @Bean
@@ -108,6 +108,26 @@ public class Crane4jAutoConfiguration {
     @ConditionalOnMissingBean
     public ExpressionEvaluator expressionEvaluator() {
         return new SpelExpressionEvaluator(new SpelExpressionParser());
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public CacheManager cacheManager() {
+        return new SimpleCacheManager(
+            new ConcurrentHashMap<>(8),
+            cacheName -> new ConcurrentMapCache<>(new ConcurrentHashMap<>(16))
+        );
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    @ConditionalOnBean(CacheManager.class)
+    public DefaultCacheableContainerProcessor cacheableContainerRegistrar(CacheManager cacheManager, Crane4jProperties crane4jProperties) {
+        Map<String, String> containerConfigs = new HashMap<>();
+        crane4jProperties.getCacheContainers().forEach((cacheName, namespaces) ->
+            namespaces.forEach(namespace -> containerConfigs.put(namespace, cacheName))
+        );
+        return new DefaultCacheableContainerProcessor(cacheManager, containerConfigs);
     }
 
     // ============== execute components ==============

@@ -1,15 +1,19 @@
 package cn.crane4j.core.util;
 
+import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerProvider;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
+import cn.crane4j.core.support.callback.ContainerRegisterAware;
 import cn.hutool.core.text.CharSequenceUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.function.BiFunction;
 
@@ -20,6 +24,27 @@ import java.util.function.BiFunction;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ConfigurationUtil {
+
+    @Nullable
+    public static Container<?> invokeBeforeContainerRegister(
+        Object caller, Container<?> container,
+        Collection<ContainerRegisterAware> containerRegisterAwareCollection) {
+        for (ContainerRegisterAware containerRegisterAware : containerRegisterAwareCollection) {
+            if (Objects.isNull(container)) {
+                return null;
+            }
+            container = containerRegisterAware.beforeContainerRegister(caller, container);
+        }
+        return container;
+    }
+
+    public static void invokeAfterContainerRegister(
+        Object caller, @Nullable Container<?> container,
+        Collection<ContainerRegisterAware> containerRegisterAwareList) {
+        if (Objects.nonNull(container)) {
+            containerRegisterAwareList.forEach(aware -> aware.afterContainerRegister(caller, container));
+        }
+    }
 
     public static ContainerProvider getContainerProvider(
         Crane4jGlobalConfiguration configuration, String name, Class<?> type) {

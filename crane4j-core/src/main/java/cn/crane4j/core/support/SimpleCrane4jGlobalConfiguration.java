@@ -7,13 +7,16 @@ import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
 import cn.crane4j.core.parser.BeanOperationParser;
+import cn.crane4j.core.support.callback.ContainerRegisterAware;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.hutool.core.lang.Assert;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.UnaryOperator;
@@ -30,6 +33,8 @@ public class SimpleCrane4jGlobalConfiguration implements Crane4jGlobalConfigurat
     private TypeResolver typeResolver;
     @Setter
     private PropertyOperator propertyOperator;
+    @Getter
+    private final List<ContainerRegisterAware> containerRegisterAwareList = new ArrayList<>(4);
     private final Map<String, Container<?>> containerMap = new HashMap<>(16);
     private final Map<String, BeanOperationParser> beanOperationParserMap = new HashMap<>(16);
     private final Map<String, AssembleOperationHandler> assembleOperationHandlerMap = new HashMap<>(4);
@@ -49,6 +54,17 @@ public class SimpleCrane4jGlobalConfiguration implements Crane4jGlobalConfigurat
             containerMap.get(namespace),
             () -> new Crane4jException("cannot find container [{}]", namespace)
         );
+    }
+
+    /**
+     * Add a {@link ContainerRegisterAware} callback.
+     *
+     * @param containerRegisterAware callback
+     */
+    @Override
+    public void addContainerRegisterAware(ContainerRegisterAware containerRegisterAware) {
+        containerRegisterAwareList.remove(containerRegisterAware);
+        containerRegisterAwareList.add(containerRegisterAware);
     }
 
     /**

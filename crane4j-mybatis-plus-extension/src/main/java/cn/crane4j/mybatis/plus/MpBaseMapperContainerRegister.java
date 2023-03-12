@@ -1,8 +1,12 @@
 package cn.crane4j.mybatis.plus;
 
 import cn.crane4j.core.container.Container;
+import cn.crane4j.core.exception.Crane4jException;
+import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.MethodInvoker;
+import cn.crane4j.core.support.callback.ContainerRegisterAware;
 import cn.crane4j.core.support.reflect.PropertyOperator;
+import cn.crane4j.core.util.ConfigurationUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.map.MapUtil;
@@ -16,10 +20,12 @@ import com.baomidou.mybatisplus.core.metadata.TableInfo;
 import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.ResolvableType;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -38,10 +44,12 @@ import java.util.stream.Collectors;
  * @see MpBaseMapperContainerAutoRegistrar
  * @see MpMethodContainer
  */
+@Slf4j
 @RequiredArgsConstructor
 public class MpBaseMapperContainerRegister implements DisposableBean {
 
     protected final ApplicationContext applicationContext;
+    protected final Crane4jGlobalConfiguration crane4jGlobalConfiguration;
     protected final Map<String, MapperInfo> mapperInfoMap = new HashMap<>(32);
     protected final PropertyOperator propertyOperator;
     private final Map<String, Container<?>> containerCaches = new ConcurrentHashMap<>(32);
@@ -105,7 +113,12 @@ public class MpBaseMapperContainerRegister implements DisposableBean {
 
         // find by namespace
         String namespace = generateContainerNamespace(info, keyColumn, queryColumns);
-        return createContainer(info, keyProperty, keyColumn, queryColumns, namespace);
+        Container<?> container = createContainer(info, keyProperty, keyColumn, queryColumns, namespace);
+        Assert.isFalse(
+            Objects.equals(Container.empty(), container),
+            () -> new Crane4jException("cannot resolve mybatis plus container for [{}]", namespace)
+        );
+        return container;
     }
 
     // ================== private ==================
@@ -149,7 +162,13 @@ public class MpBaseMapperContainerRegister implements DisposableBean {
             TableInfo tableInfo = info.getTableInfo();
             MethodInvoker keyGetter = propertyOperator.findGetter(tableInfo.getEntityType(), keyProperty);
             Assert.notNull(keyGetter, "cannot find getter method of [{}] in [{}]", keyProperty, tableInfo.getEntityType());
-            return doCreateContainer(namespace, info.getBaseMapper(), queryColumns, keyColumn, keyGetter);
+            Container<?> container = doCreateContainer(namespace, info.getBaseMapper(), queryColumns, keyColumn, keyGetter);
+            // invoke aware callback
+            Collection<ContainerRegisterAware> awareList = crane4jGlobalConfiguration.getContainerRegisterAwareList();
+            Container<?> actual = ConfigurationUtil.invokeBeforeContainerRegister(null, container, awareList);
+            ConfigurationUtil.invokeAfterContainerRegister(this, actual, awareList);
+            log.info("create container [{}] from mapper [{}]", namespace, info.getName());
+            return Objects.isNull(actual) ? Container.empty() : actual;
         });
     }
 
