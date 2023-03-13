@@ -1,6 +1,8 @@
 package cn.crane4j.core.support;
 
 import cn.crane4j.core.container.Container;
+import cn.crane4j.core.container.LambdaContainer;
+import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
@@ -16,6 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * test for {@link SimpleCrane4jGlobalConfiguration}
@@ -63,13 +66,14 @@ public class SimpleCrane4jGlobalConfigurationTest {
     }
 
     @Test
-    public void containsContainer() {
+    public void testContainerApi() {
         Assert.assertTrue(configuration.containsContainer("test"));
         Assert.assertFalse(configuration.containsContainer("no registered"));
-    }
 
-    @Test
-    public void replaceContainer() {
+        Assert.assertFalse(configuration.containsContainer("test register"));
+        configuration.registerContainer(LambdaContainer.forLambda("test register", ids -> Collections.emptyMap()));
+        Assert.assertTrue(configuration.containsContainer("test register"));
+
         Assert.assertFalse(configuration.containsContainer("no registered"));
         Container<?> container1 = configuration.replaceContainer("no registered", container -> {
             Assert.assertNull(container);
@@ -104,6 +108,7 @@ public class SimpleCrane4jGlobalConfigurationTest {
 
     @Test
     public void getContainer() {
+        Assert.assertThrows(Crane4jException.class, () -> configuration.getContainer("not found container"));
         Assert.assertNotNull(configuration.getContainer("test"));
     }
 

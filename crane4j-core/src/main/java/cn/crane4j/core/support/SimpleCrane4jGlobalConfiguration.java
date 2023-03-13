@@ -9,6 +9,7 @@ import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.support.callback.ContainerRegisterAware;
 import cn.crane4j.core.support.reflect.PropertyOperator;
+import cn.crane4j.core.util.ConfigurationUtil;
 import cn.hutool.core.lang.Assert;
 import lombok.Getter;
 import lombok.Setter;
@@ -98,6 +99,20 @@ public class SimpleCrane4jGlobalConfiguration implements Crane4jGlobalConfigurat
             containerMap.put(namespace, next);
         }
         return prev;
+    }
+
+    /**
+     * Register container.
+     *
+     * @param container container
+     * @throws Crane4jException thrown when the namespace of the container has been registered
+     */
+    @Override
+    public void registerContainer(Container<?> container) {
+        ConfigurationUtil.registerContainer(
+            this, containerMap::get, c -> containerMap.put(c.getNamespace(), c),
+            container, getContainerRegisterAwareList()
+        );
     }
 
     /**

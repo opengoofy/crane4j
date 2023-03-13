@@ -2,6 +2,7 @@ package cn.crane4j.core.support;
 
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerProvider;
+import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
@@ -19,6 +20,8 @@ import java.util.function.UnaryOperator;
  * @author huangchengxing
  */
 public interface Crane4jGlobalConfiguration extends ContainerProvider {
+
+    // ================= container apis =================
 
     /**
      * Add a {@link ContainerRegisterAware} callback.
@@ -55,6 +58,16 @@ public interface Crane4jGlobalConfiguration extends ContainerProvider {
      */
     @Nullable
     Container<?> replaceContainer(String namespace, UnaryOperator<Container<?>> replacer);
+
+    /**
+     * Register container.
+     *
+     * @param container container
+     * @throws Crane4jException thrown when the namespace of the container has been registered
+     */
+    void registerContainer(Container<?> container);
+
+    // ================= component apis =================
 
     /**
      * Get property operator.

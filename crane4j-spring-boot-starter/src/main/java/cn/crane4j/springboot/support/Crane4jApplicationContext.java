@@ -254,21 +254,12 @@ public class Crane4jApplicationContext
      * @param container container
      * @throws Crane4jException thrown when the namespace of the container has been registered
      */
+    @Override
     public void registerContainer(Container<?> container) {
-        String namespace = container.getNamespace();
-        // is container already registered?
-        Container<?> old = registeredContainers.get(namespace);
-        Assert.isNull(old, () -> new Crane4jException("the container [{}] has been registered", namespace));
-
-        // invoke callback for container
-        Container<?> actual = ConfigurationUtil.invokeBeforeContainerRegister(
-            this, container, getContainerRegisterAwareList()
+        ConfigurationUtil.registerContainer(
+            this, registeredContainers::get, c -> registeredContainers.put(c.getNamespace(), c),
+            container, getContainerRegisterAwareList()
         );
-        if (Objects.nonNull(actual)) {
-            registeredContainers.put(namespace, actual);
-            ConfigurationUtil.invokeAfterContainerRegister(this, container, getContainerRegisterAwareList());
-            log.info("register data source container [{}]", container.getNamespace());
-        }
     }
 
     /**

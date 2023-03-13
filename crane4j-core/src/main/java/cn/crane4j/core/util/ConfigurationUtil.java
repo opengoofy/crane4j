@@ -2,12 +2,14 @@ package cn.crane4j.core.util;
 
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerProvider;
+import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.callback.ContainerRegisterAware;
+import cn.hutool.core.lang.Assert;
 import cn.hutool.core.text.CharSequenceUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -16,6 +18,8 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * ConfigurationUtil
@@ -24,6 +28,25 @@ import java.util.function.BiFunction;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ConfigurationUtil {
+
+    public static void registerContainer(
+        Object caller,
+        Function<String, Container<?>> containerGetter, Consumer<Container<?>> containerSetter,
+        Container<?> container, Collection<ContainerRegisterAware> awareList) {
+        String namespace = container.getNamespace();
+        // is container already registered?
+        Container<?> old = containerGetter.apply(namespace);
+        Assert.isNull(old, () -> new Crane4jException("the container [{}] has been registered", namespace));
+
+        // invoke callback for container
+        Container<?> actual = invokeBeforeContainerRegister(
+            caller, container, awareList
+        );
+        if (Objects.nonNull(actual)) {
+            containerSetter.accept(actual);
+            ConfigurationUtil.invokeAfterContainerRegister(caller, container, awareList);
+        }
+    }
 
     @Nullable
     public static Container<?> invokeBeforeContainerRegister(
