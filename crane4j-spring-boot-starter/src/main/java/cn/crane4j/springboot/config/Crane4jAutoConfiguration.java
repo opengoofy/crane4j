@@ -14,6 +14,7 @@ import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
 import cn.crane4j.core.parser.AnnotationAwareBeanOperationParser;
 import cn.crane4j.core.parser.AssembleOperation;
 import cn.crane4j.core.support.AnnotationFinder;
+import cn.crane4j.core.support.ContainerRegisteredLogger;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.SimpleTypeResolver;
 import cn.crane4j.core.support.TypeResolver;
@@ -128,6 +129,12 @@ public class Crane4jAutoConfiguration {
             namespaces.forEach(namespace -> containerConfigs.put(namespace, cacheName))
         );
         return new DefaultCacheableContainerProcessor(cacheManager, containerConfigs);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public ContainerRegisteredLogger containerRegisteredLogger() {
+        return new ContainerRegisteredLogger();
     }
 
     // ============== execute components ==============

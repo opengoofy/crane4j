@@ -44,12 +44,12 @@ public class Crane4jApplicationContextTest {
         Assert.assertNotNull(context.getContainer("test"));
         Assert.assertNotNull(context.getContainer("testBean"));
 
-        Assert.assertEquals(1, context.getContainerRegisterAwareList().size());
+        int size = context.getContainerRegisterAwareList().size();
         ContainerRegisterAware aware = new ContainerRegisterAware() { };
         context.addContainerRegisterAware(aware);
-        Assert.assertEquals(2, context.getContainerRegisterAwareList().size());
+        Assert.assertEquals(size + 1, context.getContainerRegisterAwareList().size());
         context.addContainerRegisterAware(aware);
-        Assert.assertEquals(2, context.getContainerRegisterAwareList().size());
+        Assert.assertEquals(size + 1, context.getContainerRegisterAwareList().size());
 
         Assert.assertFalse(context.getRegisteredContainers().isEmpty());
         context.destroy();
