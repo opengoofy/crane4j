@@ -1,12 +1,11 @@
-package cn.crane4j.springboot.support;
+package cn.crane4j.core.support.callback;
 
 import cn.crane4j.core.cache.Cache;
 import cn.crane4j.core.cache.CacheManager;
 import cn.crane4j.core.container.CacheableContainer;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerProvider;
-import cn.crane4j.core.support.callback.ContainerRegisterAware;
-import cn.crane4j.springboot.config.Crane4jProperties;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -16,10 +15,12 @@ import java.util.Objects;
 /**
  * <p>The default implementation of {@link ContainerRegisterAware}. <br />
  * Used to wrap the container as a cacheable container
- * according to {@link Crane4jProperties#getCacheContainers()} configuration before registering it.
+ * according to container-cache configuration before registering it.
  *
  * @author huangchengxing
+ * @see CacheableContainer
  */
+@Slf4j
 public class DefaultCacheableContainerProcessor implements ContainerRegisterAware {
 
     private final CacheManager cacheManager;
@@ -50,8 +51,9 @@ public class DefaultCacheableContainerProcessor implements ContainerRegisterAwar
     public Container<?> beforeContainerRegister(Object operator, @Nonnull Container<?> container) {
         String cacheName = containerConfigs.get(container.getNamespace());
         if (Objects.nonNull(cacheName)) {
+            log.info("use cache [{}] for container [{}]", cacheName, container.getNamespace());
             Cache<Object> cache = cacheManager.getCache(cacheName);
-            return new CacheableContainer<>((Container<Object>)container, cache);
+            container = new CacheableContainer<>((Container<Object>)container, cache);
         }
         return container;
     }

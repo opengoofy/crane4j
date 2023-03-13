@@ -18,6 +18,7 @@ import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.SimpleTypeResolver;
 import cn.crane4j.core.support.TypeResolver;
 import cn.crane4j.core.support.callback.ContainerRegisterAware;
+import cn.crane4j.core.support.callback.DefaultCacheableContainerProcessor;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
 import cn.crane4j.core.support.reflect.AsmReflectPropertyOperator;
 import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
@@ -27,7 +28,6 @@ import cn.crane4j.springboot.annotation.EnableCrane4j;
 import cn.crane4j.springboot.parser.SpringAnnotationAwareBeanOperationParser;
 import cn.crane4j.springboot.support.AnnotationMethodContainerProcessor;
 import cn.crane4j.springboot.support.Crane4jApplicationContext;
-import cn.crane4j.springboot.support.DefaultCacheableContainerProcessor;
 import cn.crane4j.springboot.support.MergedAnnotationFinder;
 import cn.crane4j.springboot.support.MethodBaseExpressionEvaluator;
 import cn.crane4j.springboot.support.OperateTemplate;
@@ -123,7 +123,7 @@ public class Crane4jAutoConfiguration {
     @ConditionalOnMissingBean
     @ConditionalOnBean(CacheManager.class)
     public DefaultCacheableContainerProcessor cacheableContainerRegistrar(CacheManager cacheManager, Crane4jProperties crane4jProperties) {
-        Map<String, String> containerConfigs = new HashMap<>();
+        Map<String, String> containerConfigs = new HashMap<>(16);
         crane4jProperties.getCacheContainers().forEach((cacheName, namespaces) ->
             namespaces.forEach(namespace -> containerConfigs.put(namespace, cacheName))
         );
