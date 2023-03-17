@@ -25,13 +25,16 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.ResolvableType;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -87,28 +90,45 @@ public class MpBaseMapperContainerRegister implements DisposableBean {
      * @see TableField
      * @see TableId
      */
-    public Container<?> getContainer(String mapperName, String keyProperty, List<String> properties) {
+    public Container<?> getContainer(String mapperName, @Nullable String keyProperty, @Nullable List<String> properties) {
         MapperInfo info = mapperInfoMap.get(mapperName);
         Assert.notNull(info, "cannot find mapper [{}]", mapperName);
         TableInfo tableInfo = info.getTableInfo();
 
         // resolve query columns
-        Map<String, String> propertyMap = tableInfo.getFieldList().stream()
-            .collect(Collectors.toMap(f -> f.getField().getName(), TableFieldInfo::getColumn));
+        Map<String, TableFieldInfo> propertyMap = tableInfo.getFieldList().stream()
+            .collect(Collectors.toMap(f -> f.getField().getName(), Function.identity()));
         String[] queryColumns = CollUtil.defaultIfEmpty(properties, Collections.emptyList())
-            .stream().map(c -> propertyMap.getOrDefault(c, c)).toArray(String[]::new);
+            .stream()
+            .map(c -> Optional.ofNullable(propertyMap.get(c)).map(TableFieldInfo::getSqlSelect).orElse(c))
+            .toArray(String[]::new);
 
-        // resolve key column
-        String keyColumn = propertyMap.getOrDefault(keyProperty, keyProperty);
+        String keyColumn;
+        String keyQueryColumn;
+
+        // 1.key is default PK
         if (CharSequenceUtil.isEmpty(keyProperty)) {
             keyProperty = tableInfo.getKeyProperty();
             keyColumn = tableInfo.getKeyColumn();
+            keyQueryColumn = tableInfo.getKeyColumn();
+        } else {
+            // 2.key is table field
+            TableFieldInfo keyFieldInfo = propertyMap.get(keyProperty);
+            if (Objects.nonNull(keyFieldInfo)) {
+                keyColumn = keyFieldInfo.getColumn();
+                keyQueryColumn = keyFieldInfo.getSqlSelect();
+            }
+            // 3.key is unknown
+            else {
+                keyColumn = keyProperty;
+                keyQueryColumn = keyProperty;
+            }
         }
 
         // append key column if not included in query columns
         if (queryColumns.length > 0) {
-            queryColumns = ArrayUtil.contains(queryColumns, keyColumn) ?
-                queryColumns : ArrayUtil.append(queryColumns, keyColumn);
+            queryColumns = ArrayUtil.contains(queryColumns, keyQueryColumn) ?
+                queryColumns : ArrayUtil.append(queryColumns, keyQueryColumn);
         }
 
         // find by namespace
@@ -119,6 +139,16 @@ public class MpBaseMapperContainerRegister implements DisposableBean {
             () -> new Crane4jException("cannot resolve mybatis plus container for [{}]", namespace)
         );
         return container;
+    }
+
+    /**
+     * Invoked by the containing {@code BeanFactory} on destruction of a bean.
+     *
+     */
+    @Override
+    public void destroy() {
+        mapperInfoMap.clear();
+        containerCaches.clear();
     }
 
     // ================== private ==================
@@ -165,21 +195,11 @@ public class MpBaseMapperContainerRegister implements DisposableBean {
             Container<?> container = doCreateContainer(namespace, info.getBaseMapper(), queryColumns, keyColumn, keyGetter);
             // invoke aware callback
             Collection<ContainerRegisterAware> awareList = crane4jGlobalConfiguration.getContainerRegisterAwareList();
-            Container<?> actual = ConfigurationUtil.invokeBeforeContainerRegister(null, container, awareList);
+            Container<?> actual = ConfigurationUtil.invokeBeforeContainerRegister(this, container, awareList);
             ConfigurationUtil.invokeAfterContainerRegister(this, actual, awareList);
             log.info("create container [{}] from mapper [{}]", namespace, info.getName());
             return Objects.isNull(actual) ? Container.empty() : actual;
         });
-    }
-
-    /**
-     * Invoked by the containing {@code BeanFactory} on destruction of a bean.
-     *
-     */
-    @Override
-    public void destroy() {
-        mapperInfoMap.clear();
-        containerCaches.clear();
     }
 
     /**

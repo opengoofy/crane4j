@@ -29,15 +29,15 @@ public class MpMethodContainerProviderTest {
     public void getContainer() {
         Assert.assertThrows(Crane4jException.class, () -> provider.getContainer("nothing"));
 
-        Container<?> container = provider.getContainer("container('fooMapper', 'name', {'age', 'sex'})");
+        Container<?> container = provider.getContainer("container('fooMapper', 'userName', {'userAge', 'userSex'})");
         Assert.assertNotNull(container);
-        checkNamespace(container.getNamespace(), "name", "age", "sex", "name");
+        checkNamespace(container.getNamespace(), "name", "age AS userAge", "sex AS userSex", "name AS userName");
 
-        container = provider.getContainer("container('fooMapper', {'age', 'sex'})");
+        container = provider.getContainer("container('fooMapper', {'userAge', 'userSex'})");
         Assert.assertNotNull(container);
-        checkNamespace(container.getNamespace(), "id", "age", "sex", "id");
+        checkNamespace(container.getNamespace(), "id", "age AS userAge", "sex AS userSex", "id");
 
-        container = provider.getContainer("container('fooMapper', 'name')");
+        container = provider.getContainer("container('fooMapper', 'userName')");
         Assert.assertNotNull(container);
         checkNamespace(container.getNamespace(), "name");
 
@@ -47,9 +47,6 @@ public class MpMethodContainerProviderTest {
     }
 
     private void checkNamespace(String namespace, String keyColumn, String... queryColumns) {
-        if (ArrayUtil.length(queryColumns) > 0 && !ArrayUtil.contains(queryColumns, keyColumn)) {
-            queryColumns = ArrayUtil.append(queryColumns, keyColumn);
-        }
         String expected = CharSequenceUtil.format(
             "select {} from foo where {} in ?",
             ArrayUtil.isEmpty(queryColumns) ? "*" : ArrayUtil.join(queryColumns, ", "), keyColumn

@@ -16,11 +16,11 @@ public class Foo {
     private Integer id;
 
     @TableField("name")
-    private String name;
+    private String userName;
 
     @TableField("age")
-    private Integer age;
+    private Integer userAge;
 
     @TableField("sex")
-    private Integer sex;
+    private Integer userSex;
 }

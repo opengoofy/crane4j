@@ -63,7 +63,7 @@ public class MpBaseMapperContainerRegisterTest {
         Assert.assertSame(container, processor.getContainer("fooMapper", null, null));
         container = (Container<Object>)processor.getContainer("fooMapper", null, Arrays.asList("age", "name"));
         checkContainer(container, "id", "age", "name", "id");
-        container = (Container<Object>)processor.getContainer("fooMapper", "name", null);
+        container = (Container<Object>)processor.getContainer("fooMapper", "userName", null);
         checkContainer(container, "name", Arrays.asList("小红", "小明", "小刚"));
         container = (Container<Object>)processor.getContainer("fooMapper", "id", Arrays.asList("name", "age"));
         checkContainer(container, "id", "name", "age");
