@@ -10,12 +10,14 @@ import javax.annotation.Nullable;
  * The callback function before the {@link Container} is registered to {@link ContainerProvider}.
  *
  * @author huangchengxing
+ * @see Container
+ * @see ContainerProvider
  */
 public interface ContainerRegisterAware {
 
     /**
      * Called before {@link Container} is registered to {@link ContainerProvider}.<br />
-     * If the return value is {@code null}, the registration of the container will be abandoned
+     * If the return value is {@code null}, the registration of the container will be abandoned.
      *
      * @param operator caller of the current method
      * @param container container
@@ -27,7 +29,7 @@ public interface ContainerRegisterAware {
     }
 
     /**
-     * Called after {@link Container} is registered to {@link ContainerProvider}
+     * Called after {@link Container} is registered to {@link ContainerProvider}.
      *
      * @param operator caller of the current method
      * @param container container

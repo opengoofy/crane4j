@@ -1,5 +1,7 @@
 package cn.crane4j.core.container;
 
+import cn.crane4j.core.support.callback.ContainerRegisterAware;
+
 import java.util.Collection;
 import java.util.Map;
 
@@ -9,8 +11,16 @@ import java.util.Map;
  * Any Map set object method that can accept the key value set
  * and return grouping by key value can be used as a data source.
  *
+ * <p>Containers are typically created and initialized at application startup,
+ * and then manually or automatically registered to the specified {@link ContainerProvider}
+ * (this stage will trigger a callback for {@link ContainerRegisterAware}).
+ * Once everything is ready, containers can be retrieved from
+ * the cache through {@link ContainerProvider#getContainer}.
+ *
  * @author huangchengxing
  * @param <K> key type
+ * @see ContainerRegisterAware
+ * @see ContainerProvider
  * @see ConstantContainer
  * @see LambdaContainer
  * @see MethodInvokerContainer
