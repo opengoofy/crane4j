@@ -76,6 +76,7 @@ public class Crane4jAutoConfiguration {
 
     // ============== basic components ==============
 
+    @Primary
     @Bean
     @ConditionalOnMissingBean
     public Crane4jApplicationContext crane4jApplicationContext(ApplicationContext applicationContext) {
