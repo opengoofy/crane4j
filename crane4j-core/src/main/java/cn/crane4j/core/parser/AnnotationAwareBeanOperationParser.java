@@ -205,9 +205,9 @@ public class AnnotationAwareBeanOperationParser implements BeanOperationParser {
 
         // before registering an operation, sort it according to the sort value
         assembleOperations.sort(operationComparator);
-        assembleOperations.forEach(beanOperations::putAssembleOperations);
+        assembleOperations.forEach(beanOperations::addAssembleOperations);
         disassembleOperations.sort(operationComparator);
-        disassembleOperations.forEach(beanOperations::putDisassembleOperations);
+        disassembleOperations.forEach(beanOperations::addDisassembleOperations);
     }
 
     /**

@@ -31,7 +31,7 @@ public class SimpleBeanOperations implements BeanOperations {
      * @param operation operation
      */
     @Override
-    public void putAssembleOperations(AssembleOperation operation) {
+    public void addAssembleOperations(AssembleOperation operation) {
         Objects.requireNonNull(operation);
         assembleOperations.remove(operation);
         assembleOperations.add(operation);
@@ -44,7 +44,7 @@ public class SimpleBeanOperations implements BeanOperations {
      * @param operation operation
      */
     @Override
-    public void putDisassembleOperations(DisassembleOperation operation) {
+    public void addDisassembleOperations(DisassembleOperation operation) {
         Objects.requireNonNull(operation);
         disassembleOperations.remove(operation);
         disassembleOperations.add(operation);

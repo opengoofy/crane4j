@@ -4,7 +4,7 @@ import cn.crane4j.core.exception.OperationParseException;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 
 /**
- * The configuration parser of {@link BeanOperations},
+ * <p>The configuration parser of {@link BeanOperations},
  * it used to obtain all assembly and handling configurations
  * for a specific type according to the type.
  *

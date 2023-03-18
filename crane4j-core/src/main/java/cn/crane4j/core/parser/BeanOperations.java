@@ -6,20 +6,21 @@ import cn.crane4j.core.support.Sorted;
 import java.util.Collection;
 
 /**
- * <p>Object operation configuration is used to describe all assembly and disassembly operations of an object.<br />
- * Generally, a {@link Class} is parsed by {@link BeanOperationParser}, and when used,
- * all operations are performed through {@link BeanOperationExecutor} with the corresponding type of object collection.
+ * <p>The configuration for a JavaBean operation.
+ * Typically, it is parsed from a class by the {@link BeanOperationParser},
+ * and used in the {@link BeanOperationExecutor} to indicate
+ * how the executor should operate on the input object based on the configuration.
  *
- * <p>Through {@link #getAssembleOperations()} or {@link #getDisassembleOperations()} obtained operation configuration
- * is generally orderly, and the order follows the definition of {@link Sorted#getSort()}.<br />
- * However, the actual execution order needs to be guaranteed by {@link BeanOperationExecutor},
- * so different executors may lead to different execution orders.
+ * <p>The obtained operation configuration through {@link #getAssembleOperations} or {@link #getDisassembleOperations}
+ * is generally in order, and the order follows the definition of {@link Sorted#getSort}.
+ * However, the actual execution order needs to be ensured by the {@link BeanOperationExecutor},
+ * hence different executors may lead to different execution orders.
  *
- * <p>Because the configuration may be nested, for example,
- * an attribute type that needs to be disassembled in an object is another object,
- * so when the object operation configuration instance is obtained, it may still be in recursive resolution,
- * so before use, you need to ensure that the configuration object
- * has completed resolution through {@link #isActive()}.
+ * <p>Since the configuration may be nested,
+ * such as when an attribute type that needs to be disassembled in an object is another object,
+ * the object operation configuration instance may still be in recursive resolution when obtained.
+ * Therefore, it is essential to ensure that
+ * the configuration object has completed resolution through {@link #isActive} before use.
  *
  * @author huangchengxing
  * @see AssembleOperation
@@ -49,7 +50,7 @@ public interface BeanOperations {
      *
      * @param operation operation
      */
-    void putAssembleOperations(AssembleOperation operation);
+    void addAssembleOperations(AssembleOperation operation);
 
     /**
      * Get disassembly operations.
@@ -64,7 +65,7 @@ public interface BeanOperations {
      *
      * @param operation operation
      */
-    void putDisassembleOperations(DisassembleOperation operation);
+    void addDisassembleOperations(DisassembleOperation operation);
 
     /**
      * Whether the current operation configuration is active.

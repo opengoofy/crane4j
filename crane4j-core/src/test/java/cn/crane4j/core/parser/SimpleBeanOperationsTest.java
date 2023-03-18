@@ -37,8 +37,8 @@ public class SimpleBeanOperationsTest {
         AssembleOperation operation = new SimpleAssembleOperation(
             "key", Integer.MIN_VALUE, Collections.emptySet(), Container.empty(), null
         );
-        operations.putAssembleOperations(operation);
-        operations.putAssembleOperations(operation);
+        operations.addAssembleOperations(operation);
+        operations.addAssembleOperations(operation);
         Assert.assertEquals(1, operations.getAssembleOperations().size());
     }
 
@@ -53,8 +53,8 @@ public class SimpleBeanOperationsTest {
         DisassembleOperation operation = new TypeFixedDisassembleOperation(
             "key", Object.class, null, null
         );
-        operations.putDisassembleOperations(operation);
-        operations.putDisassembleOperations(operation);
+        operations.addDisassembleOperations(operation);
+        operations.addDisassembleOperations(operation);
         Assert.assertEquals(1, operations.getDisassembleOperations().size());
     }
 
