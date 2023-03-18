@@ -38,6 +38,7 @@ public class MpMethodContainer<T> implements Container<Object> {
     @Override
     public Map<Object, ?> get(Collection<Object> keys) {
         QueryWrapper<T> wrapper = getQueryWrapper(keys);
+        // TODO support one to manay
         List<T> targets = baseMapper.selectList(wrapper);
         return targets.stream().collect(Collectors.toMap(
             keyExtractor::invoke, Function.identity()

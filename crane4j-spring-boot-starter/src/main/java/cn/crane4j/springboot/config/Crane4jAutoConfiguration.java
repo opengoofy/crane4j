@@ -37,7 +37,6 @@ import cn.crane4j.springboot.support.aop.MethodResultAutoOperateAspect;
 import cn.crane4j.springboot.support.expression.SpelExpressionContext;
 import cn.crane4j.springboot.support.expression.SpelExpressionEvaluator;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.BeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -145,8 +144,8 @@ public class Crane4jAutoConfiguration {
     @ConditionalOnMissingBean
     public SpringAnnotationAwareBeanOperationParser springAnnotationAwareBeanOperationParser(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration,
-        ExpressionEvaluator evaluator, BeanFactory beanFactory) {
-        return new SpringAnnotationAwareBeanOperationParser(annotationFinder, configuration, evaluator, beanFactory);
+        ExpressionEvaluator evaluator, ApplicationContext applicationContext) {
+        return new SpringAnnotationAwareBeanOperationParser(annotationFinder, configuration, evaluator, applicationContext);
     }
 
     @Primary

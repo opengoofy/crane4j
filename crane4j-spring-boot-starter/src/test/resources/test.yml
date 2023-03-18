@@ -16,3 +16,6 @@ crane4j:
   enable-method-argument-auto-operate: false
   # 是否启用返回值自动填充
   enable-method-result-auto-operate: false
+
+  # 测试动态namespace
+  container-name: testContainer

@@ -15,10 +15,12 @@ import cn.crane4j.springboot.support.expression.SpelExpressionContext;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.ObjectUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.BeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.EmbeddedValueResolverAware;
 import org.springframework.context.expression.BeanFactoryResolver;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.Order;
+import org.springframework.util.StringValueResolver;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -37,10 +39,12 @@ import java.util.Objects;
  * @see Order
  */
 @Slf4j
-public class SpringAnnotationAwareBeanOperationParser extends AnnotationAwareBeanOperationParser {
+public class SpringAnnotationAwareBeanOperationParser
+    extends AnnotationAwareBeanOperationParser implements EmbeddedValueResolverAware {
 
     private final ExpressionEvaluator evaluator;
-    private final BeanFactory beanFactory;
+    private final ApplicationContext applicationContext;
+    private StringValueResolver stringValueResolver;
 
     /**
      * <p>Create an operation parser that supports annotation configuration.<br />
@@ -52,10 +56,10 @@ public class SpringAnnotationAwareBeanOperationParser extends AnnotationAwareBea
     public SpringAnnotationAwareBeanOperationParser(
         AnnotationFinder annotationFinder,
         Crane4jGlobalConfiguration globalConfiguration,
-        ExpressionEvaluator evaluator, BeanFactory beanFactory) {
+        ExpressionEvaluator evaluator, ApplicationContext applicationContext) {
         super(annotationFinder, globalConfiguration, Sorted.comparator());
         this.evaluator = evaluator;
-        this.beanFactory = beanFactory;
+        this.applicationContext = applicationContext;
     }
 
     /**
@@ -75,15 +79,16 @@ public class SpringAnnotationAwareBeanOperationParser extends AnnotationAwareBea
 
         // determine container by expression
         Container<?> container = null;
+        String namespace = stringValueResolver.resolveStringValue(annotation.container());
         try {
-            container = getContainerByExpression(annotation.container(), provider);
+            container = getContainerByExpression(namespace, provider);
         } catch (Exception e) {
             // maybe namespace is not an expression? ignore it and take it again
         }
 
         // get container directly if parser cannot determine by expression
         if (Objects.isNull(container)) {
-            container = provider.getContainer(annotation.container());
+            container = provider.getContainer(namespace);
         }
         Assert.notNull(
             container, throwException("cannot find container [{}] from provider [{}]", annotation.container(), provider.getClass())
@@ -121,7 +126,7 @@ public class SpringAnnotationAwareBeanOperationParser extends AnnotationAwareBea
         Object target = null;
         try {
             SpelExpressionContext context = new SpelExpressionContext();
-            context.setBeanResolver(new BeanFactoryResolver(beanFactory));
+            context.setBeanResolver(new BeanFactoryResolver(applicationContext));
             context.setVariable("provider", provider);
             target = evaluator.execute(expression, Object.class, context);
         } catch (Exception e) {
@@ -145,5 +150,15 @@ public class SpringAnnotationAwareBeanOperationParser extends AnnotationAwareBea
             ReflectUtils.setAttributeValue(a, "sort", annotation.value());
         }
         return a;
+    }
+
+    /**
+     * Set the StringValueResolver to use for resolving embedded definition values.
+     *
+     * @param resolver resolver
+     */
+    @Override
+    public void setEmbeddedValueResolver(StringValueResolver resolver) {
+        this.stringValueResolver = resolver;
     }
 }

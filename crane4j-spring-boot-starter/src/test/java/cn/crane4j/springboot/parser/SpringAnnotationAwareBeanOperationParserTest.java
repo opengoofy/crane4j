@@ -17,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Collection;
@@ -28,6 +29,7 @@ import java.util.Map;
  *
  * @author huangchengxing
  */
+@TestPropertySource(properties = "spring.config.location = classpath:test.yml")
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {Crane4jAutoConfiguration.class, SpringAnnotationAwareBeanOperationParserTest.TestConfig.class})
 public class SpringAnnotationAwareBeanOperationParserTest {
@@ -71,7 +73,7 @@ public class SpringAnnotationAwareBeanOperationParserTest {
     @Data
     private static class Foo {
         @Order(1)
-        @Assemble(container = "test")
+        @Assemble(container = "${crane4j.container-name}")
         private Integer id;
         @Order(-1)
         @Assemble(container = "@testContainer", containerProviderName = "crane4jApplicationContext")
