@@ -1,8 +1,7 @@
 package cn.crane4j.springboot.config;
 
 import cn.crane4j.core.cache.CacheManager;
-import cn.crane4j.core.cache.ConcurrentMapCache;
-import cn.crane4j.core.cache.SimpleCacheManager;
+import cn.crane4j.core.cache.ConcurrentMapCacheManager;
 import cn.crane4j.core.container.CacheableMethodContainerFactory;
 import cn.crane4j.core.container.DefaultMethodContainerFactory;
 import cn.crane4j.core.container.MethodContainerFactory;
@@ -25,6 +24,7 @@ import cn.crane4j.core.support.reflect.AsmReflectPropertyOperator;
 import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
+import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.springboot.annotation.EnableCrane4j;
 import cn.crane4j.springboot.parser.SpringAnnotationAwareBeanOperationParser;
 import cn.crane4j.springboot.support.AnnotationMethodContainerProcessor;
@@ -58,7 +58,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * <p>The automatic configuration class of crane.<br />
@@ -114,10 +113,7 @@ public class Crane4jAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public CacheManager cacheManager() {
-        return new SimpleCacheManager(
-            new ConcurrentHashMap<>(8),
-            cacheName -> new ConcurrentMapCache<>(new ConcurrentHashMap<>(16))
-        );
+        return new ConcurrentMapCacheManager(CollectionUtils::newWeakConcurrentMap);
     }
 
     @Bean

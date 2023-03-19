@@ -25,7 +25,10 @@ public class CollectionUtils {
      * @return {@link ConcurrentMap}
      */
     public static <K, V> ConcurrentMap<K, V> newWeakConcurrentMap() {
-        return new MapMaker().weakKeys().weakValues().makeMap();
+        return new MapMaker()
+            .concurrencyLevel(Runtime.getRuntime().availableProcessors())
+            .weakKeys().weakValues()
+            .makeMap();
     }
 
     /**

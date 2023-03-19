@@ -63,8 +63,11 @@ public class Crane4jInitializerTest {
         Assert.assertTrue(container instanceof CacheableContainer);
         Assert.assertTrue(((CacheableContainer<?>)container).getContainer() instanceof ConstantContainer);
         Assert.assertSame(
-            applicationContext.getBean(CacheManager.class).getCache("shared-cache"),
-            ((CacheableContainer<?>)container).getCache()
+            applicationContext.getBean(CacheManager.class),
+            ((CacheableContainer<?>)container).getCacheManager()
+        );
+        Assert.assertEquals(
+            "shared-cache", ((CacheableContainer<?>)container).getCacheName()
         );
 
         // 注册常量类容器

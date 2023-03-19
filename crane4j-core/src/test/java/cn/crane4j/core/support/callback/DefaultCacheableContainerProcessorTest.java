@@ -1,8 +1,7 @@
 package cn.crane4j.core.support.callback;
 
 import cn.crane4j.core.cache.CacheManager;
-import cn.crane4j.core.cache.ConcurrentMapCache;
-import cn.crane4j.core.cache.SimpleCacheManager;
+import cn.crane4j.core.cache.ConcurrentMapCacheManager;
 import cn.crane4j.core.container.CacheableContainer;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.LambdaContainer;
@@ -26,9 +25,7 @@ public class DefaultCacheableContainerProcessorTest {
 
     @Before
     public void init() {
-        CacheManager manager = new SimpleCacheManager(
-            new ConcurrentHashMap<>(), name -> new ConcurrentMapCache<>(new ConcurrentHashMap<>())
-        );
+        CacheManager manager = new ConcurrentMapCacheManager(ConcurrentHashMap::new);
         Map<String, String> conf = new HashMap<>();
         conf.put("test", "cache");
         defaultCacheableContainerProcessor = new DefaultCacheableContainerProcessor(manager, conf);

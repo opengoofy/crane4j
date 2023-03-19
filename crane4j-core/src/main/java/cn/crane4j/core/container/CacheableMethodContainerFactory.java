@@ -1,7 +1,6 @@
 package cn.crane4j.core.container;
 
 import cn.crane4j.annotation.ContainerCache;
-import cn.crane4j.core.cache.Cache;
 import cn.crane4j.core.cache.CacheManager;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.reflect.PropertyOperator;
@@ -67,10 +66,10 @@ public class CacheableMethodContainerFactory extends DefaultMethodContainerFacto
     public List<Container<Object>> get(Object source, Method method) {
         ContainerCache annotation = annotationFinder.findAnnotation(method, ContainerCache.class);
         // if cache name is not specified, the namespace of the container is taken by default
-        Function<Container<Object>, Cache<Object>> containerFactory = CharSequenceUtil.isEmpty(annotation.cacheName()) ?
-            container -> cacheManager.getCache(annotation.cacheName()) : container -> cacheManager.getCache(container.getNamespace());
+        Function<Container<Object>, String> cacheNameFactory = CharSequenceUtil.isEmpty(annotation.cacheName()) ?
+            Container::getNamespace : container -> annotation.cacheName();
         return super.get(source, method).stream()
-            .map(container -> new CacheableContainer<>(container, containerFactory.apply(container)))
+            .map(container -> new CacheableContainer<>(container, cacheManager, cacheNameFactory.apply(container)))
             .collect(Collectors.toList());
     }
 }

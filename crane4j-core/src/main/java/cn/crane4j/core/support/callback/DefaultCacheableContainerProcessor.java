@@ -1,6 +1,5 @@
 package cn.crane4j.core.support.callback;
 
-import cn.crane4j.core.cache.Cache;
 import cn.crane4j.core.cache.CacheManager;
 import cn.crane4j.core.container.CacheableContainer;
 import cn.crane4j.core.container.Container;
@@ -52,8 +51,7 @@ public class DefaultCacheableContainerProcessor implements ContainerRegisterAwar
         String cacheName = containerConfigs.get(container.getNamespace());
         if (Objects.nonNull(cacheName)) {
             log.info("use cache [{}] for container [{}]", cacheName, container.getNamespace());
-            Cache<Object> cache = cacheManager.getCache(cacheName);
-            container = new CacheableContainer<>((Container<Object>)container, cache);
+            container = new CacheableContainer<>((Container<Object>)container, cacheManager, cacheName);
         }
         return container;
     }

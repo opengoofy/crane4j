@@ -2,8 +2,7 @@ package cn.crane4j.core.container;
 
 import cn.crane4j.annotation.ContainerCache;
 import cn.crane4j.annotation.ContainerMethod;
-import cn.crane4j.core.cache.ConcurrentMapCache;
-import cn.crane4j.core.cache.SimpleCacheManager;
+import cn.crane4j.core.cache.ConcurrentMapCacheManager;
 import cn.crane4j.core.support.SimpleAnnotationFinder;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
 import cn.hutool.core.collection.CollUtil;
@@ -36,10 +35,7 @@ public class CacheableMethodContainerFactoryTest {
     @Before
     public void init() {
         factory = new CacheableMethodContainerFactory(
-            new ReflectPropertyOperator(), new SimpleAnnotationFinder(), new SimpleCacheManager(
-            new ConcurrentHashMap<>(8),
-            cacheName -> new ConcurrentMapCache<>(new ConcurrentHashMap<>(16))
-        )
+            new ReflectPropertyOperator(), new SimpleAnnotationFinder(), new ConcurrentMapCacheManager(ConcurrentHashMap::new)
         );
         service = new Service();
         annotatedMethod = ReflectUtil.getMethod(Service.class, "annotatedMethod", List.class);

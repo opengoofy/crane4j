@@ -1,10 +1,15 @@
 package cn.crane4j.core.container;
 
 import cn.crane4j.core.cache.Cache;
+import cn.crane4j.core.cache.CacheManager;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * <p>Data source container wrapper class with cache function.<br />
@@ -15,14 +20,15 @@ import java.util.*;
  *
  * @author huangchengxing
  * @param <K> key type
- * @see Cache
+ * @see CacheManager
  */
 @Getter
 @RequiredArgsConstructor
 public class CacheableContainer<K> implements Container<K> {
 
     private final Container<K> container;
-    private final Cache<K> cache;
+    private final CacheManager cacheManager;
+    private final String cacheName;
 
     /**
      * Gets the namespace of the data source container,
@@ -46,19 +52,15 @@ public class CacheableContainer<K> implements Container<K> {
     @SuppressWarnings("unchecked")
     @Override
     public Map<K, ?> get(Collection<K> keys) {
-        Map<K, Object> results = new HashMap<>(keys.size());
-        List<K> noneCachedKeys = new ArrayList<>(keys.size());
-        for (K key : keys) {
-            Object val = cache.get(key);
-            if (Objects.isNull(val)) {
-                noneCachedKeys.add(key);
-            } else {
-                results.put(key, val);
-            }
+        Cache<K> cache = cacheManager.getCache(cacheName);
+        Map<K, Object> cachedValues = cache.getAll(keys);
+        Set<K> noneCachedKeys = keys.stream().filter(k -> !cachedValues.containsKey(k)).collect(Collectors.toSet());
+        Map<K, Object> noneCachedValues = noneCachedKeys.isEmpty() ?
+            Collections.emptyMap() : (Map<K, Object>)container.get(noneCachedKeys);
+        if (!cache.isExpired()) {
+            cache.putAll(noneCachedValues);
         }
-        Map<K, Object> data = (Map<K, Object>)container.get(noneCachedKeys);
-        data.forEach(cache::putIfAbsent);
-        results.putAll(data);
-        return results;
+        cachedValues.putAll(noneCachedValues);
+        return cachedValues;
     }
 }

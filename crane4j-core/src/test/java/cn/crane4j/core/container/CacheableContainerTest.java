@@ -1,7 +1,8 @@
 package cn.crane4j.core.container;
 
-import cn.crane4j.core.cache.Cache;
-import cn.crane4j.core.cache.ConcurrentMapCache;
+import cn.crane4j.core.cache.CacheManager;
+import cn.crane4j.core.cache.ConcurrentMapCacheManager;
+import cn.hutool.core.map.WeakConcurrentMap;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,7 +10,6 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * test for {@link CacheableContainer}
@@ -19,8 +19,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class CacheableContainerTest {
 
     private Container<String> container;
+    private CacheManager cacheManager;
     private CacheableContainer<String> cacheableContainer;
-    private Cache<String> cache;
 
     @Before
     public void init() {
@@ -29,8 +29,8 @@ public class CacheableContainerTest {
             keys.forEach(key -> map.put(key, new Object()));
             return map;
         });
-        cache = new ConcurrentMapCache<>(new ConcurrentHashMap<>(2));
-        cacheableContainer = new CacheableContainer<>(container, cache);
+        cacheManager = new ConcurrentMapCacheManager(WeakConcurrentMap::new);
+        cacheableContainer = new CacheableContainer<>(container, cacheManager, "test");
     }
 
     @Test
@@ -40,7 +40,13 @@ public class CacheableContainerTest {
 
     @Test
     public void getCache() {
-        Assert.assertSame(cache, cacheableContainer.getCache());
+        Assert.assertSame(cacheManager, cacheableContainer.getCacheManager());
+    }
+
+
+    @Test
+    public void getCacheName() {
+        Assert.assertSame("test", cacheableContainer.getCacheName());
     }
 
     @Test
