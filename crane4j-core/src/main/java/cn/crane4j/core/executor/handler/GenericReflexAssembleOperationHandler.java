@@ -17,13 +17,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Abstract implementation of {@link AssembleOperationHandler} based on reflection.
+ * Generic implementation of {@link AssembleOperationHandler} based on reflection.
  *
  * @author huangchengxing
  * @see PropertyOperator
  */
 @RequiredArgsConstructor
-public abstract class AbstractReflexAssembleOperationHandler extends AbstractAssembleOperationHandler<Object, KeyEntity> {
+public class GenericReflexAssembleOperationHandler extends AbstractAssembleOperationHandler<Object, KeyEntity> {
 
     /**
      * propertyOperator

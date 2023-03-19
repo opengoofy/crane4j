@@ -8,7 +8,7 @@ import cn.crane4j.core.support.reflect.PropertyOperator;
  *
  * @author huangchengxing
  */
-public class OneToOneReflexAssembleOperationHandler extends AbstractReflexAssembleOperationHandler {
+public class OneToOneReflexAssembleOperationHandler extends GenericReflexAssembleOperationHandler {
 
     /**
      * Create an {@link ManyToManyReflexAssembleOperationHandler} instance.

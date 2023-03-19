@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  *
  * @author huangchengxing
  */
-public class OneToManyReflexAssembleOperationHandler extends AbstractReflexAssembleOperationHandler {
+public class OneToManyReflexAssembleOperationHandler extends GenericReflexAssembleOperationHandler {
 
     /**
      * Create an {@link OneToManyReflexAssembleOperationHandler} instance.
