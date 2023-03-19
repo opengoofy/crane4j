@@ -9,7 +9,7 @@ import lombok.Getter;
  * @author huangchengxing
  */
 @Getter
-public class KeyEntity extends AbstractAssembleOperationHandler.Target<Object> {
+public class AssembleOperationTarget extends AbstractAssembleOperationHandler.Target {
 
     /**
      * value of key property
@@ -17,13 +17,13 @@ public class KeyEntity extends AbstractAssembleOperationHandler.Target<Object> {
     private final Object key;
 
     /**
-     * Create a {@link KeyEntity} instance.
+     * Create a {@link AssembleOperationTarget} instance.
      *
      * @param execution execution
      * @param target target
      * @param key value of key property
      */
-    public KeyEntity(AssembleExecution execution, Object target, Object key) {
+    public AssembleOperationTarget(AssembleExecution execution, Object target, Object key) {
         super(execution, target);
         this.key = key;
     }

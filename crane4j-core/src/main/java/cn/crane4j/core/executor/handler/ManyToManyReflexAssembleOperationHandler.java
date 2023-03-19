@@ -57,16 +57,16 @@ public class ManyToManyReflexAssembleOperationHandler extends OneToManyReflexAss
     }
 
     /**
-     * Create a {@link KeyEntity} instance.
+     * Create a {@link AssembleOperationTarget} instance.
      *
      * @param execution execution
      * @param origin    origin
      * @param keyValue  key value
-     * @return {@link KeyEntity}
+     * @return {@link AssembleOperationTarget}
      */
     @Override
-    protected KeyEntity createTarget(AssembleExecution execution, Object origin, Object keyValue) {
-        return new KeyEntity(execution, origin, keySplitter.apply(keyValue));
+    protected AssembleOperationTarget createTarget(AssembleExecution execution, Object origin, Object keyValue) {
+        return new AssembleOperationTarget(execution, origin, keySplitter.apply(keyValue));
     }
 
     /**
@@ -78,9 +78,9 @@ public class ManyToManyReflexAssembleOperationHandler extends OneToManyReflexAss
      */
     @SuppressWarnings("unchecked")
     @Override
-    protected Map<Object, Object> getSourcesFromContainer(Container<?> container, Collection<KeyEntity> targets) {
+    protected Map<Object, Object> getSourcesFromContainer(Container<?> container, Collection<AssembleOperationTarget> targets) {
         Set<Object> keys = targets.stream()
-            .map(KeyEntity::getKey)
+            .map(AssembleOperationTarget::getKey)
             .map(k -> (Collection<?>)k)
             .flatMap(Collection::stream)
             .collect(Collectors.toSet());
@@ -95,7 +95,7 @@ public class ManyToManyReflexAssembleOperationHandler extends OneToManyReflexAss
      * @return data source object associated with the target object
      */
     @Override
-    protected Object getTheAssociatedSource(KeyEntity target, Map<Object, Object> sources) {
+    protected Object getTheAssociatedSource(AssembleOperationTarget target, Map<Object, Object> sources) {
         return ((Collection<?>)target.getKey()).stream()
             .map(sources::get)
             .filter(Objects::nonNull)

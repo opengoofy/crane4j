@@ -15,10 +15,9 @@ import java.util.Map;
  * Abstract template implementation of {@link AssembleOperationHandler}.
  *
  * @author huangchengxing
- * @param <K> key type
  * @param <T> target type
  */
-public abstract class AbstractAssembleOperationHandler<K, T extends AbstractAssembleOperationHandler.Target<K>> implements AssembleOperationHandler {
+public abstract class AbstractAssembleOperationHandler<T extends AbstractAssembleOperationHandler.Target> implements AssembleOperationHandler {
 
     /**
      * Perform assembly operation.
@@ -92,12 +91,10 @@ public abstract class AbstractAssembleOperationHandler<K, T extends AbstractAsse
 
     /**
      * Target object to be processed.
-     *
-     * @param <K> key type
      */
     @Getter
     @RequiredArgsConstructor
-    protected abstract static class Target<K> {
+    protected static class Target {
 
         /**
          * execution
@@ -108,12 +105,5 @@ public abstract class AbstractAssembleOperationHandler<K, T extends AbstractAsse
          * objects to be processed
          */
         protected final Object origin;
-
-        /**
-         * Get key from target object.
-         *
-         * @return key
-         */
-        protected abstract K getKey();
     }
 }

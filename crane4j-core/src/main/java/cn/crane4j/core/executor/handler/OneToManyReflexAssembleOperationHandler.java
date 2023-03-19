@@ -38,7 +38,7 @@ public class OneToManyReflexAssembleOperationHandler extends GenericReflexAssemb
      * @param target target
      */
     @Override
-    protected void completeMapping(Object source, KeyEntity target) {
+    protected void completeMapping(Object source, AssembleOperationTarget target) {
         Collection<?> sources = CollectionUtils.adaptObjectToCollection(source);
         Set<PropertyMapping> mappings = target.getExecution().getOperation().getPropertyMappings();
         for (PropertyMapping mapping : mappings) {

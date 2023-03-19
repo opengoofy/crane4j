@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  * @see PropertyOperator
  */
 @RequiredArgsConstructor
-public class GenericReflexAssembleOperationHandler extends AbstractAssembleOperationHandler<Object, KeyEntity> {
+public class GenericReflexAssembleOperationHandler extends AbstractAssembleOperationHandler<AssembleOperationTarget> {
 
     /**
      * propertyOperator
@@ -37,8 +37,8 @@ public class GenericReflexAssembleOperationHandler extends AbstractAssembleOpera
      * @return {@link Target}
      */
     @Override
-    protected Collection<KeyEntity> collectToEntities(Collection<AssembleExecution> executions) {
-        List<KeyEntity> targets = new ArrayList<>();
+    protected Collection<AssembleOperationTarget> collectToEntities(Collection<AssembleExecution> executions) {
+        List<AssembleOperationTarget> targets = new ArrayList<>();
         for (AssembleExecution execution : executions) {
             Class<?> targetType = execution.getTargetType();
             String key = execution.getOperation().getKey();
@@ -54,15 +54,15 @@ public class GenericReflexAssembleOperationHandler extends AbstractAssembleOpera
     }
 
     /**
-     * Create a {@link KeyEntity} instance.
+     * Create a {@link AssembleOperationTarget} instance.
      *
      * @param execution execution
      * @param origin    origin
      * @param keyValue  key value
-     * @return {@link KeyEntity}
+     * @return {@link AssembleOperationTarget}
      */
-    protected KeyEntity createTarget(AssembleExecution execution, Object origin, Object keyValue) {
-        return new KeyEntity(execution, origin, keyValue);
+    protected AssembleOperationTarget createTarget(AssembleExecution execution, Object origin, Object keyValue) {
+        return new AssembleOperationTarget(execution, origin, keyValue);
     }
 
     /**
@@ -74,9 +74,9 @@ public class GenericReflexAssembleOperationHandler extends AbstractAssembleOpera
      */
     @SuppressWarnings("unchecked")
     @Override
-    protected Map<Object, Object> getSourcesFromContainer(Container<?> container, Collection<KeyEntity> targets) {
+    protected Map<Object, Object> getSourcesFromContainer(Container<?> container, Collection<AssembleOperationTarget> targets) {
         Set<Object> keys = targets.stream()
-            .map(KeyEntity::getKey)
+            .map(AssembleOperationTarget::getKey)
             .filter(Objects::nonNull)
             .collect(Collectors.toSet());
         return (Map<Object, Object>)((Container<Object>)container).get(keys);
@@ -90,7 +90,7 @@ public class GenericReflexAssembleOperationHandler extends AbstractAssembleOpera
      * @return data source object associated with the target object
      */
     @Override
-    protected Object getTheAssociatedSource(KeyEntity target, Map<Object, Object> sources) {
+    protected Object getTheAssociatedSource(AssembleOperationTarget target, Map<Object, Object> sources) {
         return sources.get(target.getKey());
     }
 
@@ -101,7 +101,7 @@ public class GenericReflexAssembleOperationHandler extends AbstractAssembleOpera
      * @param target target
      */
     @Override
-    protected void completeMapping(Object source, KeyEntity target) {
+    protected void completeMapping(Object source, AssembleOperationTarget target) {
         AssembleExecution execution = target.getExecution();
         Class<?> targetType = execution.getTargetType();
         Set<PropertyMapping> mappings = execution.getOperation().getPropertyMappings();
@@ -110,7 +110,7 @@ public class GenericReflexAssembleOperationHandler extends AbstractAssembleOpera
         }
     }
 
-    private void mappingProperty(KeyEntity entity, Object source, Class<?> targetType, PropertyMapping mapping) {
+    private void mappingProperty(AssembleOperationTarget entity, Object source, Class<?> targetType, PropertyMapping mapping) {
         Object sourceValue = mapping.hasSource() ?
             propertyOperator.readProperty(source.getClass(), source, mapping.getSource()) : source;
         if (Objects.nonNull(sourceValue)) {

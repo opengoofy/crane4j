@@ -18,8 +18,9 @@ import java.util.Collection;
  * the reading and writing of beans and the requests for data source containers.
  *
  * @author huangchengxing
+ * @see OneToOneReflexAssembleOperationHandler
+ * @see OneToManyReflexAssembleOperationHandler
  * @see ManyToManyReflexAssembleOperationHandler
- * @see MultiKeyAssembleOperationHandler
  */
 public interface AssembleOperationHandler {
 
