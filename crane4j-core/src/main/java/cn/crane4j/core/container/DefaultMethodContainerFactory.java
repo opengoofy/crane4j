@@ -8,6 +8,7 @@ import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ReflectUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
  * @author huangchengxing
  * @see ContainerMethod
  */
+@Slf4j
 @RequiredArgsConstructor
 public class DefaultMethodContainerFactory implements MethodContainerFactory {
 
@@ -66,6 +68,7 @@ public class DefaultMethodContainerFactory implements MethodContainerFactory {
     }
 
     private MethodInvokerContainer createContainer(Object source, Method method, ContainerMethod annotation) {
+        log.debug("create method container from [{}]", method);
         MethodInvoker methodInvoker = (t, args) -> ReflectUtil.invoke(t, method, args);
         MethodInvokerContainer.KeyExtractor keyExtractor = null;
         // if necessary, specify the method to extract the key from the returned data source object

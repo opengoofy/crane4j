@@ -179,6 +179,7 @@ public class AnnotationAwareBeanOperationParser implements BeanOperationParser {
     }
 
     private void doParse(Class<?> beanType, BeanOperations beanOperations) {
+        log.debug("parse operations from [{}]", beanType);
         Set<Class<?>> accessed = new HashSet<>();
         Deque<Class<?>> typeQueue = new LinkedList<>();
         typeQueue.add(beanType);

@@ -5,6 +5,7 @@ import cn.crane4j.core.cache.CacheManager;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.hutool.core.text.CharSequenceUtil;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
  * @author huangchengxing
  * @see ContainerCache
  */
+@Slf4j
 public class CacheableMethodContainerFactory extends DefaultMethodContainerFactory {
 
     public static final int ORDER = DefaultMethodContainerFactory.ORDER - 1;
@@ -64,6 +66,7 @@ public class CacheableMethodContainerFactory extends DefaultMethodContainerFacto
      */
     @Override
     public List<Container<Object>> get(Object source, Method method) {
+        log.debug("create cacheable method container from [{}]", method);
         ContainerCache annotation = annotationFinder.findAnnotation(method, ContainerCache.class);
         // if cache name is not specified, the namespace of the container is taken by default
         Function<Container<Object>, String> cacheNameFactory = CharSequenceUtil.isEmpty(annotation.cacheName()) ?
