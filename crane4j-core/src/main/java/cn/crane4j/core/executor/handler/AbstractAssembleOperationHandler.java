@@ -1,0 +1,119 @@
+package cn.crane4j.core.executor.handler;
+
+import cn.crane4j.core.container.Container;
+import cn.crane4j.core.container.EmptyContainer;
+import cn.crane4j.core.executor.AssembleExecution;
+import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.ObjectUtil;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Collection;
+import java.util.Map;
+
+/**
+ * Abstract template implementation of {@link AssembleOperationHandler}.
+ *
+ * @author huangchengxing
+ * @param <K> key type
+ * @param <T> target type
+ */
+public abstract class AbstractAssembleOperationHandler<K, T extends AbstractAssembleOperationHandler.Target<K>> implements AssembleOperationHandler {
+
+    /**
+     * Perform assembly operation.
+     *
+     * @param container  container
+     * @param executions operations to be performed
+     */
+    @Override
+    public void process(Container<?> container, Collection<AssembleExecution> executions) {
+        Collection<T> targets = collectToEntities(executions);
+        if (container instanceof EmptyContainer) {
+            introspectForEntities(targets);
+            return;
+        }
+        Map<Object, Object> sources = getSourcesFromContainer(container, targets);
+        if (MapUtil.isEmpty(sources)) {
+            return;
+        }
+        for (T target : targets) {
+            Object source = getTheAssociatedSource(target, sources);
+            if (ObjectUtil.isNotEmpty(source)) {
+                completeMapping(source, target);
+            }
+        }
+    }
+
+    /**
+     * Split the {@link AssembleExecution} into pending objects and wrap it as {@link Target}.
+     *
+     * @param executions executions
+     * @return {@link Target}
+     */
+    protected abstract Collection<T> collectToEntities(Collection<AssembleExecution> executions);
+
+    /**
+     * When the container is {@link EmptyContainer}, introspect the object to be processed.
+     *
+     * @param targets targets
+     */
+    protected void introspectForEntities(Collection<T> targets) {
+        for (T target : targets) {
+            completeMapping(target.getOrigin(), target);
+        }
+    }
+
+    /**
+     * Obtain the corresponding data source object from the data source container based on the entity's key value.
+     *
+     * @param container container
+     * @param targets targets
+     * @return source objects
+     */
+    protected abstract Map<Object, Object> getSourcesFromContainer(Container<?> container, Collection<T> targets);
+
+    /**
+     * Get the data source object associated with the target object.
+     *
+     * @param target target
+     * @param sources sources
+     * @return data source object associated with the target object
+     */
+    protected abstract Object getTheAssociatedSource(T target, Map<Object, Object> sources);
+
+    /**
+     * Complete attribute mapping between the target object and the data source object.
+     *
+     * @param source source
+     * @param target target
+     */
+    protected abstract void completeMapping(Object source, T target);
+
+    /**
+     * Target object to be processed.
+     *
+     * @param <K> key type
+     */
+    @Getter
+    @RequiredArgsConstructor
+    protected abstract static class Target<K> {
+
+        /**
+         * execution
+         */
+        private final AssembleExecution execution;
+
+        /**
+         * objects to be processed
+         */
+        protected final Object origin;
+
+        /**
+         * Get key from target object.
+         *
+         * @return key
+         */
+        protected abstract K getKey();
+    }
+}

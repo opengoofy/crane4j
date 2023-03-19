@@ -7,8 +7,9 @@ import cn.crane4j.core.container.DefaultMethodContainerFactory;
 import cn.crane4j.core.container.MethodContainerFactory;
 import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
 import cn.crane4j.core.executor.OrderedBeanOperationExecutor;
-import cn.crane4j.core.executor.handler.MultiKeyAssembleOperationHandler;
-import cn.crane4j.core.executor.handler.ReflectAssembleOperationHandler;
+import cn.crane4j.core.executor.handler.ManyToManyReflexAssembleOperationHandler;
+import cn.crane4j.core.executor.handler.OneToManyReflexAssembleOperationHandler;
+import cn.crane4j.core.executor.handler.OneToOneReflexAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
 import cn.crane4j.core.parser.AnnotationAwareBeanOperationParser;
 import cn.crane4j.core.parser.AssembleOperation;
@@ -177,14 +178,20 @@ public class Crane4jAutoConfiguration {
     @Primary
     @Bean
     @ConditionalOnMissingBean
-    public ReflectAssembleOperationHandler reflectAssembleOperationHandler(PropertyOperator propertyOperator) {
-        return new ReflectAssembleOperationHandler(propertyOperator);
+    public OneToOneReflexAssembleOperationHandler oneToOneReflexAssembleOperationHandler(PropertyOperator propertyOperator) {
+        return new OneToOneReflexAssembleOperationHandler(propertyOperator);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public MultiKeyAssembleOperationHandler multiKeyAssembleOperationHandler(PropertyOperator propertyOperator) {
-        return new MultiKeyAssembleOperationHandler(propertyOperator);
+    public ManyToManyReflexAssembleOperationHandler manyToManyReflexAssembleOperationHandler(PropertyOperator propertyOperator) {
+        return new ManyToManyReflexAssembleOperationHandler(propertyOperator);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public OneToManyReflexAssembleOperationHandler oneToManyReflexAssembleOperationHandler(PropertyOperator propertyOperator) {
+        return new OneToManyReflexAssembleOperationHandler(propertyOperator);
     }
 
     @Primary

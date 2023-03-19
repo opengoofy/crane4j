@@ -26,18 +26,18 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * test for {@link MultiKeyAssembleOperationHandler}
+ * test for {@link ManyToManyReflexAssembleOperationHandler}
  *
  * @author huangchengxing
  */
-public class MultiKeyAssembleOperationHandlerTest extends BaseExecutorTest {
+public class ManyToManyReflexAssembleOperationHandlerTest extends BaseExecutorTest {
 
     private BeanOperationExecutor executor;
 
     @Before
     public void init() {
         PropertyOperator operator = new MapAccessiblePropertyOperator(new ReflectPropertyOperator());
-        MultiKeyAssembleOperationHandler handler = new MultiKeyAssembleOperationHandler(operator);
+        ManyToManyReflexAssembleOperationHandler handler = new ManyToManyReflexAssembleOperationHandler(operator);
         configuration.getAssembleOperationHandlerMap().put(handler.getClass().getName(), handler);
 
         executor = new DisorderedBeanOperationExecutor();
@@ -58,7 +58,8 @@ public class MultiKeyAssembleOperationHandlerTest extends BaseExecutorTest {
         BeanOperations operations = parseOperations(Bean.class);
         List<Bean> beanList = Arrays.asList(
             new Bean("1, 2, 3", Arrays.asList("1", "2", "3"), new String[]{"1", "2", "3"}),
-            new Bean("4, 5", Arrays.asList("4", "5"), new String[]{"4", "5"})
+            new Bean("4, 5", Arrays.asList("4", "5"), new String[]{"4", "5"}),
+            new Bean(null, null, null)
         );
 
         executor.execute(beanList, operations);
@@ -66,6 +67,10 @@ public class MultiKeyAssembleOperationHandlerTest extends BaseExecutorTest {
         checkBean(bean1, "1", "2", "3");
         Bean bean2 = CollUtil.get(beanList, 1);
         checkBean(bean2, "4", "5");
+        Bean bean3 = CollUtil.get(beanList, 2);
+        Assert.assertTrue(CollUtil.isEmpty(bean3.getValues()));
+        Assert.assertTrue(CollUtil.isEmpty(bean3.getItems()));
+        Assert.assertTrue(CollUtil.isEmpty(bean3.getNames()));
     }
 
     private void checkBean(Bean bean, String... ids) {
@@ -83,21 +88,21 @@ public class MultiKeyAssembleOperationHandlerTest extends BaseExecutorTest {
     private static class Bean {
         @Assemble(
             container = "test", props = @Mapping(src = "name", ref = "names"),
-            handler = MultiKeyAssembleOperationHandler.class
+            handler = ManyToManyReflexAssembleOperationHandler.class
         )
         private final String ids;
         private List<String> names;
 
         @Assemble(
             container = "test", props = @Mapping(src = "value", ref = "values"),
-            handler = MultiKeyAssembleOperationHandler.class
+            handler = ManyToManyReflexAssembleOperationHandler.class
         )
         private final List<String> keys;
         private Set<String> values;
 
         @Assemble(
             container = "test", props = @Mapping(ref = "items"),
-            handler = MultiKeyAssembleOperationHandler.class
+            handler = ManyToManyReflexAssembleOperationHandler.class
         )
         private final String[] code;
         private List<Object> items;

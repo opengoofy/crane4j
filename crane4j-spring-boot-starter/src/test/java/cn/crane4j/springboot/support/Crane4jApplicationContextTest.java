@@ -38,7 +38,7 @@ public class Crane4jApplicationContextTest {
         Assert.assertNotNull(context.getBeanOperationExecutor(BeanOperationExecutor.class));
         Assert.assertNotNull(context.getBeanOperationExecutor("disorderedBeanOperationExecutor"));
         Assert.assertNotNull(context.getAssembleOperationHandler(AssembleOperationHandler.class));
-        Assert.assertNotNull(context.getAssembleOperationHandler("reflectAssembleOperationHandler"));
+        Assert.assertNotNull(context.getAssembleOperationHandler("oneToOneReflexAssembleOperationHandler"));
         Assert.assertNotNull(context.getDisassembleOperationHandler(DisassembleOperationHandler.class));
         Assert.assertNotNull(context.getDisassembleOperationHandler("reflectDisassembleOperationHandler"));
         Assert.assertNotNull(context.getContainer("test"));

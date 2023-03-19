@@ -2,7 +2,7 @@ package cn.crane4j.core.executor;
 
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
-import cn.crane4j.core.executor.handler.ReflectAssembleOperationHandler;
+import cn.crane4j.core.executor.handler.OneToOneReflexAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
 import cn.crane4j.core.parser.AnnotationAwareBeanOperationParser;
 import cn.crane4j.core.parser.BeanOperationParser;
@@ -28,9 +28,9 @@ public class BaseExecutorTest {
         configuration.getBeanOperationParserMap().put(parser.getClass().getName(), parser);
         configuration.getBeanOperationParserMap().put(BeanOperationParser.class.getName(), parser);
 
-        ReflectAssembleOperationHandler assembleOperationHandler = new ReflectAssembleOperationHandler(new ReflectPropertyOperator());
-        configuration.getAssembleOperationHandlerMap().put(assembleOperationHandler.getClass().getName(), assembleOperationHandler);
-        configuration.getAssembleOperationHandlerMap().put(AssembleOperationHandler.class.getName(), assembleOperationHandler);
+        OneToOneReflexAssembleOperationHandler oneToOneReflexAssembleOperationHandler = new OneToOneReflexAssembleOperationHandler(new ReflectPropertyOperator());
+        configuration.getAssembleOperationHandlerMap().put(oneToOneReflexAssembleOperationHandler.getClass().getName(), oneToOneReflexAssembleOperationHandler);
+        configuration.getAssembleOperationHandlerMap().put(AssembleOperationHandler.class.getName(), oneToOneReflexAssembleOperationHandler);
 
         ReflectDisassembleOperationHandler disassembleOperationHandler = new ReflectDisassembleOperationHandler(new ReflectPropertyOperator());
         configuration.getDisassembleOperationHandlerMap().put(disassembleOperationHandler.getClass().getName(), disassembleOperationHandler);
