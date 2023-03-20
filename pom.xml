@@ -14,7 +14,8 @@
     <module>crane4j-core</module>
     <module>crane4j-spring-boot-starter</module>
     <module>crane4j-annotation</module>
-      <module>crane4j-mybatis-plus-extension</module>
+    <module>crane4j-mybatis-plus-extension</module>
+    <module>crane4j-example</module>
   </modules>
 
   <licenses>
@@ -166,6 +167,18 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <profiles>
+    <profile>
+      <id>expensive-modules-to-build</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>crane4j-example</module>
+      </modules>
+    </profile>
+  </profiles>
 
   <build>
     <plugins>

@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:mysql://gz-cynosdbmysql-grp-nl9mays3.sql.tencentcdb.com:22327/crane4j-example?characterEncoding=utf8&useUnicode=true&useSSL=false&serverTimezone=Asia/Shanghai&&allowMultiQueries=true
+    username: crane4j
+    password: crane4j-test
+    driver-class-name: com.mysql.cj.jdbc.Driver
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
