@@ -13,11 +13,7 @@ import cn.crane4j.core.executor.handler.OneToOneReflexAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
 import cn.crane4j.core.parser.AnnotationAwareBeanOperationParser;
 import cn.crane4j.core.parser.AssembleOperation;
-import cn.crane4j.core.support.AnnotationFinder;
-import cn.crane4j.core.support.ContainerRegisteredLogger;
-import cn.crane4j.core.support.Crane4jGlobalConfiguration;
-import cn.crane4j.core.support.SimpleTypeResolver;
-import cn.crane4j.core.support.TypeResolver;
+import cn.crane4j.core.support.*;
 import cn.crane4j.core.support.callback.ContainerRegisterAware;
 import cn.crane4j.core.support.callback.DefaultCacheableContainerProcessor;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
@@ -28,11 +24,7 @@ import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.springboot.annotation.EnableCrane4j;
 import cn.crane4j.springboot.parser.SpringAnnotationAwareBeanOperationParser;
-import cn.crane4j.springboot.support.AnnotationMethodContainerProcessor;
-import cn.crane4j.springboot.support.Crane4jApplicationContext;
-import cn.crane4j.springboot.support.MergedAnnotationFinder;
-import cn.crane4j.springboot.support.MethodBaseExpressionEvaluator;
-import cn.crane4j.springboot.support.OperateTemplate;
+import cn.crane4j.springboot.support.*;
 import cn.crane4j.springboot.support.aop.MethodArgumentAutoOperateAspect;
 import cn.crane4j.springboot.support.aop.MethodResultAutoOperateAspect;
 import cn.crane4j.springboot.support.expression.SpelExpressionContext;
@@ -53,12 +45,7 @@ import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.core.annotation.Order;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>The automatic configuration class of crane.<br />
@@ -160,7 +147,6 @@ public class Crane4jAutoConfiguration {
 
     @Order
     @Bean
-    @ConditionalOnMissingBean
     public DefaultMethodContainerFactory defaultMethodContainerFactory(
         PropertyOperator propertyOperator, AnnotationFinder annotationFinder) {
         return new DefaultMethodContainerFactory(propertyOperator, annotationFinder);
@@ -168,7 +154,6 @@ public class Crane4jAutoConfiguration {
 
     @Order(Ordered.LOWEST_PRECEDENCE - 1)
     @Bean
-    @ConditionalOnMissingBean
     @ConditionalOnBean(CacheManager.class)
     public CacheableMethodContainerFactory cacheableMethodContainerFactory(
         CacheManager cacheManager, PropertyOperator propertyOperator, AnnotationFinder annotationFinder) {
@@ -177,19 +162,16 @@ public class Crane4jAutoConfiguration {
 
     @Primary
     @Bean
-    @ConditionalOnMissingBean
     public OneToOneReflexAssembleOperationHandler oneToOneReflexAssembleOperationHandler(PropertyOperator propertyOperator) {
         return new OneToOneReflexAssembleOperationHandler(propertyOperator);
     }
 
     @Bean
-    @ConditionalOnMissingBean
     public ManyToManyReflexAssembleOperationHandler manyToManyReflexAssembleOperationHandler(PropertyOperator propertyOperator) {
         return new ManyToManyReflexAssembleOperationHandler(propertyOperator);
     }
 
     @Bean
-    @ConditionalOnMissingBean
     public OneToManyReflexAssembleOperationHandler oneToManyReflexAssembleOperationHandler(PropertyOperator propertyOperator) {
         return new OneToManyReflexAssembleOperationHandler(propertyOperator);
     }
