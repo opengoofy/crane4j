@@ -131,6 +131,7 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
             execute.run();
         } catch(Exception e) {
             log.warn("execute operation fail: {}", e.getMessage());
+            e.printStackTrace();
         }
     }
 }

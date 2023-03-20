@@ -88,6 +88,7 @@ public class MethodArgumentAutoOperateAspect extends MethodAnnotatedElementAutoO
                     method.getName(), ((Parameter)element.getElement()).getName(),
                     ExceptionUtil.getRootCause(e).getMessage()
                 );
+                e.printStackTrace();
             }
         }
     }

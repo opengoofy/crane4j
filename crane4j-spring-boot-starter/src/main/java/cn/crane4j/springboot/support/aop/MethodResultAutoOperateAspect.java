@@ -61,6 +61,7 @@ public class MethodResultAutoOperateAspect
             element.execute(result);
         } catch (Exception e) {
             log.warn("cannot process result for [{}]: [{}]", method.getName(), ExceptionUtil.getRootCause(e).getMessage());
+            e.printStackTrace();
         }
     }
 
