@@ -23,14 +23,17 @@ import java.util.function.Supplier;
  */
 public abstract class CacheablePropertyOperator implements PropertyOperator {
 
-    private static final String SETTER_PREFIX = "set-";
-    private static final String GETTER_PREFIX = "get-";
     private static final Object NULL = new Object();
 
     /**
-     * method cache
+     * getter cache
      */
-    private final Map<Class<?>, Map<String, Object>> methodCaches = CollectionUtils.newWeakConcurrentMap();
+    private final Map<Class<?>, Map<String, Object>> getterCaches = CollectionUtils.newWeakConcurrentMap();
+
+    /**
+     * setter cache
+     */
+    private final Map<Class<?>, Map<String, Object>> setterCaches = CollectionUtils.newWeakConcurrentMap();
 
     /**
      * Get the specified property value.
@@ -57,8 +60,8 @@ public abstract class CacheablePropertyOperator implements PropertyOperator {
     @Nullable
     @Override
     public MethodInvoker findGetter(Class<?> targetType, String propertyName) {
-        return getCachedInvoker(
-            targetType, GETTER_PREFIX, propertyName,
+        return getCachedGetter(
+            targetType, propertyName,
             () -> ReflectUtils.findGetterMethod(targetType, propertyName)
                 .map(method -> createInvoker(targetType, propertyName, method))
                 .orElse(null)
@@ -91,8 +94,8 @@ public abstract class CacheablePropertyOperator implements PropertyOperator {
     @Nullable
     @Override
     public MethodInvoker findSetter(Class<?> targetType, String propertyName) {
-        return getCachedInvoker(
-            targetType, SETTER_PREFIX, propertyName,
+        return getCachedSetter(
+            targetType, propertyName,
             () -> {
                 Field field = ReflectUtil.getField(targetType, propertyName);
                 if (Objects.isNull(field)) {
@@ -115,14 +118,15 @@ public abstract class CacheablePropertyOperator implements PropertyOperator {
      */
     protected abstract MethodInvoker createInvoker(Class<?> targetType, String propertyName, Method method);
 
-    private MethodInvoker getCachedInvoker(Class<?> type, String prefix, String methodName, Supplier<MethodInvoker> invokerSupplier) {
-        methodName = prefix + methodName;
-        Map<String, Object> caches = MapUtil.computeIfAbsent(
-            methodCaches, type, t -> new ConcurrentHashMap<>(8)
-        );
-        Object target = MapUtil.computeIfAbsent(
-            caches, methodName, m -> createInvoker(invokerSupplier.get())
-        );
+    private MethodInvoker getCachedGetter(Class<?> type, String methodName, Supplier<MethodInvoker> invokerSupplier) {
+        Map<String, Object> caches = MapUtil.computeIfAbsent(getterCaches, type, t -> new ConcurrentHashMap<>(8));
+        Object target = MapUtil.computeIfAbsent(caches, methodName, m -> createInvoker(invokerSupplier.get()));
+        return getInvoker(target);
+    }
+
+    private MethodInvoker getCachedSetter(Class<?> type, String methodName, Supplier<MethodInvoker> invokerSupplier) {
+        Map<String, Object> caches = MapUtil.computeIfAbsent(setterCaches, type, t -> new ConcurrentHashMap<>(8));
+        Object target = MapUtil.computeIfAbsent(caches, methodName, m -> createInvoker(invokerSupplier.get()));
         return getInvoker(target);
     }
 

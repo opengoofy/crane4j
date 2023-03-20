@@ -13,6 +13,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.expression.BeanFactoryResolver;
 
 /**
  * Crane4j mybatis plus configuration.
@@ -50,7 +51,7 @@ public class Crane4jMybatisPlusConfiguration {
         ApplicationContext applicationContext, ExpressionEvaluator evaluator,
         MpBaseMapperContainerRegister mpBaseMapperContainerRegister) {
         return new MpMethodContainerProvider(
-            applicationContext, mpBaseMapperContainerRegister, evaluator
+            new BeanFactoryResolver(applicationContext), mpBaseMapperContainerRegister, evaluator
         );
     }
 }

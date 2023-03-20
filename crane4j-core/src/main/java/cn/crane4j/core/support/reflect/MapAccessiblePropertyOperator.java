@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 import java.util.Map;
 
 /**
- * The wrapper class of {@link PropertyOperator}
+ * The wrapper class of {@link PropertyOperator} that
  * adds support for map operations to the original operator.
  *
  * @author huangchengxing

@@ -43,7 +43,7 @@ public class SpringAnnotationAwareBeanOperationParser
     extends AnnotationAwareBeanOperationParser implements EmbeddedValueResolverAware {
 
     private final ExpressionEvaluator evaluator;
-    private final ApplicationContext applicationContext;
+    private final BeanFactoryResolver beanFactoryResolver;
     private StringValueResolver stringValueResolver;
 
     /**
@@ -59,7 +59,7 @@ public class SpringAnnotationAwareBeanOperationParser
         ExpressionEvaluator evaluator, ApplicationContext applicationContext) {
         super(annotationFinder, globalConfiguration, Sorted.comparator());
         this.evaluator = evaluator;
-        this.applicationContext = applicationContext;
+        this.beanFactoryResolver = new BeanFactoryResolver(applicationContext);
     }
 
     /**
@@ -126,7 +126,7 @@ public class SpringAnnotationAwareBeanOperationParser
         Object target = null;
         try {
             SpelExpressionContext context = new SpelExpressionContext();
-            context.setBeanResolver(new BeanFactoryResolver(applicationContext));
+            context.setBeanResolver(beanFactoryResolver);
             context.setVariable("provider", provider);
             target = evaluator.execute(expression, Object.class, context);
         } catch (Exception e) {

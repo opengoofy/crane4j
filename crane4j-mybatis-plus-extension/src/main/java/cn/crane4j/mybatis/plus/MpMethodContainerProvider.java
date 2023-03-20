@@ -9,7 +9,6 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.expression.BeanFactoryResolver;
 
 import javax.annotation.Nullable;
@@ -23,19 +22,19 @@ import java.util.List;
  * <ul>
  *     <li>
  *         {@code container('fooMapper', 'id', {'name', 'sex', 'age'})}, <br />
- *         equivalent to {@code select id, name, sex, age from foo where id in ?};
+ *         equivalent to {@code 'select id, name, sex, age from foo where id in ?'};
  *     </li>
  *     <li>
  *         {@code container('fooMapper', {'name', 'sex', 'age'})}, <br />
- *         equivalent to {@code select [pk], name, sex, age from foo where [pk] in ?};
+ *         equivalent to {@code 'select [pk], name, sex, age from foo where [pk] in ?'};
  *     </li>
  *     <li>
  *         {@code container('fooMapper', 'id')}, <br />
- *         equivalent to {@code select * from foo where id in ?};
+ *         equivalent to {@code 'select * from foo where id in ?'};
  *     </li>
  *     <li>
  *         {@code container('fooMapper')}, <br />
- *         equivalent to {@code select * from foo where [pk] in ?};
+ *         equivalent to {@code 'select * from foo where [pk] in ?'};
  *     </li>
  * </ul>
  * <b>NOTE:</b>When the query field is limited,
@@ -49,7 +48,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MpMethodContainerProvider implements ContainerProvider {
 
-    private final ApplicationContext applicationContext;
+    private final BeanFactoryResolver beanFactoryResolver;
     private final MpBaseMapperContainerRegister register;
     private final ExpressionEvaluator evaluator;
 
@@ -64,7 +63,7 @@ public class MpMethodContainerProvider implements ContainerProvider {
     @Override
     public Container<?> getContainer(String namespace) {
         SpelExpressionContext context = new SpelExpressionContext(this);
-        context.setBeanResolver(new BeanFactoryResolver(applicationContext));
+        context.setBeanResolver(beanFactoryResolver);
         try {
             return evaluator.execute(namespace, Container.class, context);
         } catch (Exception e) {
