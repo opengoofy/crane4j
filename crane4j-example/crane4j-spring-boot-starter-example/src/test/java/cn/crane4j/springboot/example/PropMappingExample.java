@@ -28,6 +28,7 @@ import java.util.stream.IntStream;
  * 演示如何使用属性映射，包括一对一装配情况下的属性映射，以及批量装配情况下的属性映射
  *
  * @author huangchengxing
+ * @since 1.1.0
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {Crane4jSpringBootStarterExampleApplication.class})

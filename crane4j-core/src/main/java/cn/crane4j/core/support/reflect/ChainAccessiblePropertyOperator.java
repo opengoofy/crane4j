@@ -15,6 +15,7 @@ import java.util.function.Function;
  * adds support for nested bean chain operations to the original operator.
  *
  * @author huangchengxing
+ * @since 1.1.0
  */
 @RequiredArgsConstructor
 public class ChainAccessiblePropertyOperator implements PropertyOperator {
