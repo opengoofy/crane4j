@@ -8,7 +8,7 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>crane4j-mybaits-plus-extension-example</artifactId>
+    <artifactId>crane4j-mybatis-plus-extension-example</artifactId>
     <version>${revision}</version>
     <packaging>jar</packaging>
     <name>crane4j-mybatis-plus-extension-example</name>

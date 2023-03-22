@@ -14,6 +14,7 @@
 - `PropMappingExample`：如何配置一对一或一/多对多情况下的属性映射；
 - `OneToManyAssembleExample`：如何使用一对多装配器完成一对多类型的填充；
 - `ManyToManyAssembleExample`：如何使用多对多装配器完成多对多类型的填充；
+- `ChainPropMappingExample`：如何在属性映射中通过类似 "xx.xx.xx" 的链式操作费进行属性映射；
 
 
 
