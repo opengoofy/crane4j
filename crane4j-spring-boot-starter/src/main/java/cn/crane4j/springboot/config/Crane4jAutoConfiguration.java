@@ -17,10 +17,7 @@ import cn.crane4j.core.support.*;
 import cn.crane4j.core.support.callback.ContainerRegisterAware;
 import cn.crane4j.core.support.callback.DefaultCacheableContainerProcessor;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
-import cn.crane4j.core.support.reflect.AsmReflectPropertyOperator;
-import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
-import cn.crane4j.core.support.reflect.PropertyOperator;
-import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
+import cn.crane4j.core.support.reflect.*;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.springboot.annotation.EnableCrane4j;
 import cn.crane4j.springboot.parser.SpringAnnotationAwareBeanOperationParser;
@@ -77,7 +74,8 @@ public class Crane4jAutoConfiguration {
     public PropertyOperator propertyOperator(Crane4jProperties crane4jProperties) {
         PropertyOperator operator = crane4jProperties.isEnableAsmReflect() ?
             new AsmReflectPropertyOperator() : new ReflectPropertyOperator();
-        return new MapAccessiblePropertyOperator(operator);
+        operator = new MapAccessiblePropertyOperator(operator);
+        return new ChainAccessiblePropertyOperator(operator);
     }
 
     @Bean
