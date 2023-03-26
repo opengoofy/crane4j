@@ -27,6 +27,7 @@ import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
 import cn.crane4j.core.util.CollectionUtils;
+import cn.crane4j.extension.expression.MethodBaseExpressionEvaluatorDelegate;
 import cn.crane4j.extension.support.OperateTemplate;
 import cn.crane4j.springboot.annotation.EnableCrane4j;
 import cn.crane4j.springboot.parser.SpringAnnotationAwareBeanOperationParser;
@@ -247,8 +248,9 @@ public class Crane4jAutoConfiguration {
         havingValue = "true", matchIfMissing = true
     )
     public MethodArgumentAutoOperateAspect methodArgumentAutoOperateAspect(
-        Crane4jGlobalConfiguration configuration, ResolvableExpressionEvaluator resolvableExpressionEvaluator, ParameterNameDiscoverer parameterNameDiscoverer) {
-        return new MethodArgumentAutoOperateAspect(configuration, resolvableExpressionEvaluator, parameterNameDiscoverer);
+        Crane4jGlobalConfiguration configuration, MethodBaseExpressionEvaluatorDelegate methodBaseExpressionEvaluatorDelegate,
+        ParameterNameDiscoverer parameterNameDiscoverer, AnnotationFinder annotationFinder) {
+        return new MethodArgumentAutoOperateAspect(configuration, methodBaseExpressionEvaluatorDelegate, parameterNameDiscoverer, annotationFinder);
     }
 
     @Bean

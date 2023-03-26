@@ -2,11 +2,8 @@ package cn.crane4j.springboot.support.aop;
 
 import cn.crane4j.annotation.AutoOperate;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
-import cn.crane4j.core.util.CollectionUtils;
-import cn.crane4j.springboot.support.MethodAnnotatedElementAutoOperateSupport;
-import cn.crane4j.springboot.support.ResolvableExpressionEvaluator;
-import cn.hutool.core.exceptions.ExceptionUtil;
-import cn.hutool.core.map.MapUtil;
+import cn.crane4j.extension.aop.MethodResultAutoOperateSupport;
+import cn.crane4j.extension.expression.MethodBaseExpressionEvaluatorDelegate;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -16,7 +13,6 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 
 import java.lang.reflect.Method;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -27,14 +23,11 @@ import java.util.Objects;
  */
 @Slf4j
 @Aspect
-public class MethodResultAutoOperateAspect
-    extends MethodAnnotatedElementAutoOperateSupport implements DisposableBean {
-
-    private final Map<String, ResolvedElement> methodCaches = CollectionUtils.newWeakConcurrentMap();
+public class MethodResultAutoOperateAspect extends MethodResultAutoOperateSupport implements DisposableBean {
 
     public MethodResultAutoOperateAspect(
-        Crane4jGlobalConfiguration configuration, ResolvableExpressionEvaluator resolvableExpressionEvaluator) {
-        super(configuration, resolvableExpressionEvaluator);
+        Crane4jGlobalConfiguration configuration, MethodBaseExpressionEvaluatorDelegate methodBaseExpressionEvaluatorDelegate) {
+        super(configuration, methodBaseExpressionEvaluatorDelegate);
         log.info("enable automatic filling of method result");
     }
 
@@ -46,23 +39,7 @@ public class MethodResultAutoOperateAspect
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
         Method method = methodSignature.getMethod();
         AutoOperate annotation = AnnotatedElementUtils.findMergedAnnotation(method, AutoOperate.class);
-        if (Objects.isNull(annotation)) {
-            return;
-        }
-        // whether to apply the operation?
-        String condition = annotation.condition();
-        if (!checkSupport(joinPoint.getArgs(), result, method, condition)) {
-            return;
-        }
-        // get and build method cache
-        log.debug("process result for [{}]", method.getName());
-        ResolvedElement element = MapUtil.computeIfAbsent(methodCaches, method.getName(), m -> resolveElement(method, annotation));
-        try {
-            element.execute(result);
-        } catch (Exception e) {
-            log.warn("cannot process result for [{}]: [{}]", method.getName(), ExceptionUtil.getRootCause(e).getMessage());
-            e.printStackTrace();
-        }
+        afterMethodInvoker(annotation, method, result, joinPoint.getArgs());
     }
 
     /**

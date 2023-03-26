@@ -1,4 +1,4 @@
-package cn.crane4j.springboot.support;
+package cn.crane4j.extension.aop;
 
 import cn.crane4j.annotation.AutoOperate;
 import cn.crane4j.core.executor.BeanOperationExecutor;
@@ -10,8 +10,7 @@ import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.ConfigurationUtil;
-import cn.crane4j.springboot.support.aop.MethodArgumentAutoOperateAspect;
-import cn.crane4j.springboot.support.aop.MethodResultAutoOperateAspect;
+import cn.crane4j.extension.expression.MethodBaseExpressionEvaluatorDelegate;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ArrayUtil;
 import lombok.Getter;
@@ -31,15 +30,13 @@ import java.util.stream.Stream;
  *
  * @author huangchengxing
  * @see AutoOperate
- * @see ResolvableExpressionEvaluator
- * @see MethodArgumentAutoOperateAspect
- * @see MethodResultAutoOperateAspect
+ * @see MethodBaseExpressionEvaluatorDelegate
  */
 @RequiredArgsConstructor
 public class MethodAnnotatedElementAutoOperateSupport {
 
     private final Crane4jGlobalConfiguration configuration;
-    private final ResolvableExpressionEvaluator resolvableExpressionEvaluator;
+    private final MethodBaseExpressionEvaluatorDelegate methodBaseExpressionEvaluatorDelegate;
 
     /**
      * Check whether to apply the operation according to the expression evaluation result.
@@ -54,8 +51,8 @@ public class MethodAnnotatedElementAutoOperateSupport {
         if (CharSequenceUtil.isEmpty(condition)) {
             return true;
         }
-        ResolvableExpressionEvaluator.MethodExecution methodContext = new ResolvableExpressionEvaluator.MethodExecution(args, method, result);
-        Boolean support = resolvableExpressionEvaluator.execute(condition, Boolean.class, methodContext);
+        MethodBaseExpressionEvaluatorDelegate.MethodExecution methodContext = new MethodBaseExpressionEvaluatorDelegate.MethodExecution(args, method, result);
+        Boolean support = methodBaseExpressionEvaluatorDelegate.execute(condition, Boolean.class, methodContext);
         return Objects.equals(Boolean.TRUE, support);
     }
 

@@ -1,9 +1,9 @@
-package cn.crane4j.springboot.util;
+package cn.crane4j.extension.util;
 
+import cn.crane4j.extension.support.ParameterNameFinder;
 import cn.hutool.core.util.ArrayUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.springframework.core.ParameterNameDiscoverer;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -22,14 +22,14 @@ public class MethodUtils {
     /**
      * Resolve method parameter names.
      *
-     * @param discoverer discoverer
+     * @param finder discoverer
      * @param method method
      * @return collection of parameter name and parameter
      */
     @SuppressWarnings("all")
-    public static Map<String, Parameter> resolveParameterNames(ParameterNameDiscoverer discoverer, Method method) {
+    public static Map<String, Parameter> resolveParameterNames(ParameterNameFinder finder, Method method) {
         Parameter[] parameters = method.getParameters();
-        String[] parameterNames = discoverer.getParameterNames(method);
+        String[] parameterNames = finder.getParameterNames(method);
         if (ArrayUtil.isEmpty(parameters)) {
             return Collections.emptyMap();
         }

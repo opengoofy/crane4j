@@ -2,14 +2,10 @@ package cn.crane4j.springboot.support.aop;
 
 import cn.crane4j.annotation.ArgAutoOperate;
 import cn.crane4j.annotation.AutoOperate;
+import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
-import cn.crane4j.core.util.CollectionUtils;
-import cn.crane4j.springboot.support.MethodAnnotatedElementAutoOperateSupport;
-import cn.crane4j.springboot.support.ResolvableExpressionEvaluator;
-import cn.crane4j.springboot.util.MethodUtils;
-import cn.hutool.core.exceptions.ExceptionUtil;
-import cn.hutool.core.map.MapUtil;
-import cn.hutool.core.util.ArrayUtil;
+import cn.crane4j.extension.aop.MethodArgumentAutoOperateSupport;
+import cn.crane4j.extension.expression.MethodBaseExpressionEvaluatorDelegate;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -20,14 +16,7 @@ import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.util.Arrays;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Method input parameter automatic filling Aspect based on Spring AOP implementation.
@@ -38,17 +27,13 @@ import java.util.stream.Stream;
  */
 @Slf4j
 @Aspect
-public class MethodArgumentAutoOperateAspect extends MethodAnnotatedElementAutoOperateSupport implements DisposableBean {
-
-    private static final ResolvedElement[] EMPTY_ELEMENTS = new ResolvedElement[0];
-    private final Map<String, ResolvedElement[]> methodParameterCaches = CollectionUtils.newWeakConcurrentMap();
-    private final ParameterNameDiscoverer parameterNameDiscoverer;
+public class MethodArgumentAutoOperateAspect extends MethodArgumentAutoOperateSupport implements DisposableBean {
 
     public MethodArgumentAutoOperateAspect(
-        Crane4jGlobalConfiguration configuration, ResolvableExpressionEvaluator resolvableExpressionEvaluator,
-        ParameterNameDiscoverer parameterNameDiscoverer) {
-        super(configuration, resolvableExpressionEvaluator);
-        this.parameterNameDiscoverer = parameterNameDiscoverer;
+        Crane4jGlobalConfiguration configuration,
+        MethodBaseExpressionEvaluatorDelegate methodBaseExpressionEvaluatorDelegate,
+        ParameterNameDiscoverer parameterNameDiscoverer, AnnotationFinder annotationFinder) {
+        super(configuration, methodBaseExpressionEvaluatorDelegate, parameterNameDiscoverer::getParameterNames, annotationFinder);
         log.info("enable automatic filling of method argument");
     }
 
@@ -57,62 +42,7 @@ public class MethodArgumentAutoOperateAspect extends MethodAnnotatedElementAutoO
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
         Method method = methodSignature.getMethod();
         ArgAutoOperate annotation = AnnotatedElementUtils.findMergedAnnotation(method, ArgAutoOperate.class);
-        if (Objects.isNull(annotation)) {
-            return;
-        }
-        // has any arguments?
-        Object[] args = joinPoint.getArgs();
-        if (ArrayUtil.isEmpty(args)) {
-            return;
-        }
-        // cache resolved parameters
-        ResolvedElement[] elements = MapUtil.computeIfAbsent(
-            methodParameterCaches, method.getName(), name -> resolveParameters(annotation, method)
-        );
-        if (elements == EMPTY_ELEMENTS) {
-            return;
-        }
-        log.debug("process arguments for [{}]", method.getName());
-        processArguments(method, args, elements);
-    }
-
-    private void processArguments(Method method, Object[] args, ResolvedElement[] resolvedElements) {
-        for (int i = 0; i < args.length; i++) {
-            Object arg = args[i];
-            ResolvedElement element = resolvedElements[i];
-            try {
-                element.execute(arg);
-            } catch (Exception e) {
-                log.warn(
-                    "cannot process argument [{}] for [{}]: [{}]",
-                    method.getName(), ((Parameter)element.getElement()).getName(),
-                    ExceptionUtil.getRootCause(e).getMessage()
-                );
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private ResolvedElement[] resolveParameters(ArgAutoOperate argAutoOperate, Method method) {
-        Map<String, Parameter> parameterMap = MethodUtils.resolveParameterNames(parameterNameDiscoverer, method);
-        Map<String, AutoOperate> methodLevelAnnotations = Stream.of(argAutoOperate.value())
-            .collect(Collectors.toMap(AutoOperate::value, Function.identity()));
-
-        ResolvedElement[] results = new ResolvedElement[parameterMap.size()];
-        int index = 0;
-        for (Map.Entry<String, Parameter> entry : parameterMap.entrySet()) {
-            // find the parameter first, then the method
-            String paramName = entry.getKey();
-            Parameter param = entry.getValue();
-            AutoOperate annotation = Optional
-                .ofNullable(AnnotatedElementUtils.findMergedAnnotation(param, AutoOperate.class))
-                .orElse(methodLevelAnnotations.get(paramName));
-            // resolve annotation
-            ResolvedElement element = Objects.isNull(annotation) ?
-                EmptyElement.INSTANCE : resolveElement(param, annotation);
-            results[index++] = element;
-        }
-        return results;
+        beforeMethodInvoke(annotation, method, joinPoint.getArgs());
     }
 
     /**
@@ -124,19 +54,5 @@ public class MethodArgumentAutoOperateAspect extends MethodAnnotatedElementAutoO
             Arrays.fill(elements, null);
         }
         methodParameterCaches.clear();
-    }
-
-    /**
-     * Empty implementation of {@link ResolvedElement}, only for placeholder.
-     */
-    protected static class EmptyElement extends ResolvedElement {
-        protected static final ResolvedElement INSTANCE = new EmptyElement();
-        public EmptyElement() {
-            super(null, null, null, null, null);
-        }
-        @Override
-        public void execute(Object result) {
-            // do nothing
-        }
     }
 }

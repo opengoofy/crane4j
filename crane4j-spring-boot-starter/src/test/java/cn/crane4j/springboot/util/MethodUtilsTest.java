@@ -1,5 +1,6 @@
 package cn.crane4j.springboot.util;
 
+import cn.crane4j.extension.util.MethodUtils;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ReflectUtil;
 import org.junit.Assert;
