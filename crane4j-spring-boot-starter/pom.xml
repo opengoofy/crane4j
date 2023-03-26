@@ -16,7 +16,7 @@
     <dependencies>
         <dependency>
             <groupId>cn.crane4j</groupId>
-            <artifactId>crane4j-core</artifactId>
+            <artifactId>crane4j-extension</artifactId>
             <version>${project.version}</version>
         </dependency>
 
