@@ -1,8 +1,8 @@
-package cn.crane4j.extension.expression;
+package cn.crane4j.core.support.aop;
 
+import cn.crane4j.core.support.ParameterNameFinder;
 import cn.crane4j.core.support.expression.ExpressionContext;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
-import cn.crane4j.extension.support.ParameterNameFinder;
 import cn.hutool.core.util.ArrayUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -20,12 +20,12 @@ import java.util.function.Function;
  * @author huangchengxing
  */
 @RequiredArgsConstructor
-public class MethodBaseExpressionEvaluatorDelegate {
+public class MethodBaseExpressionExecuteDelegate {
 
     public static final String RESULT = "result";
-    private final ParameterNameFinder parameterNameDiscoverer;
+    protected final ParameterNameFinder parameterNameDiscoverer;
     protected final ExpressionEvaluator expressionEvaluator;
-    private final Function<Method, ExpressionContext> contextFactory;
+    protected final Function<Method, ExpressionContext> contextFactory;
 
     /**
      * Execute the expression in the specified above and return the execution result.

@@ -1,13 +1,12 @@
-package cn.crane4j.extension.aop;
+package cn.crane4j.core.support.aop;
 
 import cn.crane4j.annotation.ArgAutoOperate;
 import cn.crane4j.annotation.AutoOperate;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
+import cn.crane4j.core.support.ParameterNameFinder;
 import cn.crane4j.core.util.CollectionUtils;
-import cn.crane4j.extension.expression.MethodBaseExpressionEvaluatorDelegate;
-import cn.crane4j.extension.support.ParameterNameFinder;
-import cn.crane4j.extension.util.MethodUtils;
+import cn.crane4j.core.util.MethodUtils;
 import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ArrayUtil;
@@ -39,15 +38,15 @@ public class MethodArgumentAutoOperateSupport extends MethodAnnotatedElementAuto
      * Create a {@link MethodArgumentAutoOperateSupport} instance.
      *
      * @param configuration configuration
-     * @param methodBaseExpressionEvaluatorDelegate method base expression evaluator delegate
+     * @param methodBaseExpressionExecuteDelegate method base expression evaluator delegate
      * @param parameterNameFinder parameter name finder
      * @param annotationFinder annotation finder
      */
     public MethodArgumentAutoOperateSupport(
         Crane4jGlobalConfiguration configuration,
-        MethodBaseExpressionEvaluatorDelegate methodBaseExpressionEvaluatorDelegate,
+        MethodBaseExpressionExecuteDelegate methodBaseExpressionExecuteDelegate,
         ParameterNameFinder parameterNameFinder, AnnotationFinder annotationFinder) {
-        super(configuration, methodBaseExpressionEvaluatorDelegate);
+        super(configuration, methodBaseExpressionExecuteDelegate);
         this.annotationFinder = annotationFinder;
         this.parameterNameFinder = parameterNameFinder;
     }

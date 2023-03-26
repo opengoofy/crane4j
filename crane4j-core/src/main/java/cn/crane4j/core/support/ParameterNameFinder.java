@@ -1,4 +1,4 @@
-package cn.crane4j.extension.support;
+package cn.crane4j.core.support;
 
 import java.lang.reflect.Method;
 

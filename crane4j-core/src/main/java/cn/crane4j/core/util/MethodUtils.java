@@ -1,6 +1,6 @@
-package cn.crane4j.extension.util;
+package cn.crane4j.core.util;
 
-import cn.crane4j.extension.support.ParameterNameFinder;
+import cn.crane4j.core.support.ParameterNameFinder;
 import cn.hutool.core.util.ArrayUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

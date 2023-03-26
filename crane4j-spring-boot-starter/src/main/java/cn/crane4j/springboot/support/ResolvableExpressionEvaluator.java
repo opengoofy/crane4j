@@ -1,8 +1,8 @@
 package cn.crane4j.springboot.support;
 
+import cn.crane4j.core.support.aop.MethodBaseExpressionExecuteDelegate;
 import cn.crane4j.core.support.expression.ExpressionContext;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
-import cn.crane4j.extension.expression.MethodBaseExpressionEvaluatorDelegate;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.context.EmbeddedValueResolverAware;
 import org.springframework.core.ParameterNameDiscoverer;
@@ -18,7 +18,7 @@ import java.util.function.Function;
  * @author huangchengxing
  */
 public class ResolvableExpressionEvaluator
-    extends MethodBaseExpressionEvaluatorDelegate implements EmbeddedValueResolverAware {
+    extends MethodBaseExpressionExecuteDelegate implements EmbeddedValueResolverAware {
 
     /**
      * resolver

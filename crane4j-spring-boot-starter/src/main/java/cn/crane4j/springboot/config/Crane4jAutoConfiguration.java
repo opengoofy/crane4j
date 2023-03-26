@@ -16,8 +16,10 @@ import cn.crane4j.core.parser.AssembleOperation;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.ContainerRegisteredLogger;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
+import cn.crane4j.core.support.OperateTemplate;
 import cn.crane4j.core.support.SimpleTypeResolver;
 import cn.crane4j.core.support.TypeResolver;
+import cn.crane4j.core.support.aop.MethodBaseExpressionExecuteDelegate;
 import cn.crane4j.core.support.callback.ContainerRegisterAware;
 import cn.crane4j.core.support.callback.DefaultCacheableContainerProcessor;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
@@ -27,8 +29,6 @@ import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
 import cn.crane4j.core.util.CollectionUtils;
-import cn.crane4j.extension.expression.MethodBaseExpressionEvaluatorDelegate;
-import cn.crane4j.extension.support.OperateTemplate;
 import cn.crane4j.springboot.annotation.EnableCrane4j;
 import cn.crane4j.springboot.parser.SpringAnnotationAwareBeanOperationParser;
 import cn.crane4j.springboot.support.AnnotationMethodContainerProcessor;
@@ -248,9 +248,9 @@ public class Crane4jAutoConfiguration {
         havingValue = "true", matchIfMissing = true
     )
     public MethodArgumentAutoOperateAspect methodArgumentAutoOperateAspect(
-        Crane4jGlobalConfiguration configuration, MethodBaseExpressionEvaluatorDelegate methodBaseExpressionEvaluatorDelegate,
+        Crane4jGlobalConfiguration configuration, MethodBaseExpressionExecuteDelegate methodBaseExpressionExecuteDelegate,
         ParameterNameDiscoverer parameterNameDiscoverer, AnnotationFinder annotationFinder) {
-        return new MethodArgumentAutoOperateAspect(configuration, methodBaseExpressionEvaluatorDelegate, parameterNameDiscoverer, annotationFinder);
+        return new MethodArgumentAutoOperateAspect(configuration, methodBaseExpressionExecuteDelegate, parameterNameDiscoverer, annotationFinder);
     }
 
     @Bean

@@ -2,8 +2,8 @@ package cn.crane4j.springboot.support.aop;
 
 import cn.crane4j.annotation.AutoOperate;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
-import cn.crane4j.extension.aop.MethodResultAutoOperateSupport;
-import cn.crane4j.extension.expression.MethodBaseExpressionEvaluatorDelegate;
+import cn.crane4j.core.support.aop.MethodBaseExpressionExecuteDelegate;
+import cn.crane4j.core.support.aop.MethodResultAutoOperateSupport;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -26,8 +26,8 @@ import java.util.Objects;
 public class MethodResultAutoOperateAspect extends MethodResultAutoOperateSupport implements DisposableBean {
 
     public MethodResultAutoOperateAspect(
-        Crane4jGlobalConfiguration configuration, MethodBaseExpressionEvaluatorDelegate methodBaseExpressionEvaluatorDelegate) {
-        super(configuration, methodBaseExpressionEvaluatorDelegate);
+        Crane4jGlobalConfiguration configuration, MethodBaseExpressionExecuteDelegate methodBaseExpressionExecuteDelegate) {
+        super(configuration, methodBaseExpressionExecuteDelegate);
         log.info("enable automatic filling of method result");
     }
 

@@ -4,7 +4,7 @@ import cn.crane4j.annotation.Assemble;
 import cn.crane4j.annotation.Mapping;
 import cn.crane4j.annotation.MappingTemplate;
 import cn.crane4j.annotation.extension.AssembleByMp;
-import cn.crane4j.extension.support.OperateTemplate;
+import cn.crane4j.core.support.OperateTemplate;
 import cn.crane4j.mybatis.plus.MpMethodContainerProvider;
 import cn.crane4j.mybatis.plus.extension.example.Crane4jMybatisPlusExampleApplication;
 import cn.crane4j.mybatis.plus.extension.example.Foo;

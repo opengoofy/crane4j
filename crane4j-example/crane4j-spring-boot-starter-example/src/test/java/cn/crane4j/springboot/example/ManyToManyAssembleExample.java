@@ -5,7 +5,7 @@ import cn.crane4j.annotation.Mapping;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.LambdaContainer;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
-import cn.crane4j.extension.support.OperateTemplate;
+import cn.crane4j.core.support.OperateTemplate;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;

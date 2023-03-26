@@ -4,8 +4,8 @@ import cn.crane4j.annotation.ArgAutoOperate;
 import cn.crane4j.annotation.AutoOperate;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
-import cn.crane4j.extension.aop.MethodArgumentAutoOperateSupport;
-import cn.crane4j.extension.expression.MethodBaseExpressionEvaluatorDelegate;
+import cn.crane4j.core.support.aop.MethodArgumentAutoOperateSupport;
+import cn.crane4j.core.support.aop.MethodBaseExpressionExecuteDelegate;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -31,9 +31,9 @@ public class MethodArgumentAutoOperateAspect extends MethodArgumentAutoOperateSu
 
     public MethodArgumentAutoOperateAspect(
         Crane4jGlobalConfiguration configuration,
-        MethodBaseExpressionEvaluatorDelegate methodBaseExpressionEvaluatorDelegate,
+        MethodBaseExpressionExecuteDelegate methodBaseExpressionExecuteDelegate,
         ParameterNameDiscoverer parameterNameDiscoverer, AnnotationFinder annotationFinder) {
-        super(configuration, methodBaseExpressionEvaluatorDelegate, parameterNameDiscoverer::getParameterNames, annotationFinder);
+        super(configuration, methodBaseExpressionExecuteDelegate, parameterNameDiscoverer::getParameterNames, annotationFinder);
         log.info("enable automatic filling of method argument");
     }
 

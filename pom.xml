@@ -17,7 +17,6 @@
     <module>crane4j-annotation</module>
     <module>crane4j-mybatis-plus-extension</module>
     <module>crane4j-example</module>
-    <module>crane4j-extension</module>
   </modules>
 
   <licenses>

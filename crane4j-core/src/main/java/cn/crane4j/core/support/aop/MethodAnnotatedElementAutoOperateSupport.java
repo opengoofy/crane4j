@@ -1,4 +1,4 @@
-package cn.crane4j.extension.aop;
+package cn.crane4j.core.support.aop;
 
 import cn.crane4j.annotation.AutoOperate;
 import cn.crane4j.core.executor.BeanOperationExecutor;
@@ -10,7 +10,6 @@ import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.ConfigurationUtil;
-import cn.crane4j.extension.expression.MethodBaseExpressionEvaluatorDelegate;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ArrayUtil;
 import lombok.Getter;
@@ -30,13 +29,13 @@ import java.util.stream.Stream;
  *
  * @author huangchengxing
  * @see AutoOperate
- * @see MethodBaseExpressionEvaluatorDelegate
+ * @see MethodBaseExpressionExecuteDelegate
  */
 @RequiredArgsConstructor
 public class MethodAnnotatedElementAutoOperateSupport {
 
     private final Crane4jGlobalConfiguration configuration;
-    private final MethodBaseExpressionEvaluatorDelegate methodBaseExpressionEvaluatorDelegate;
+    private final MethodBaseExpressionExecuteDelegate methodBaseExpressionExecuteDelegate;
 
     /**
      * Check whether to apply the operation according to the expression evaluation result.
@@ -51,8 +50,8 @@ public class MethodAnnotatedElementAutoOperateSupport {
         if (CharSequenceUtil.isEmpty(condition)) {
             return true;
         }
-        MethodBaseExpressionEvaluatorDelegate.MethodExecution methodContext = new MethodBaseExpressionEvaluatorDelegate.MethodExecution(args, method, result);
-        Boolean support = methodBaseExpressionEvaluatorDelegate.execute(condition, Boolean.class, methodContext);
+        MethodBaseExpressionExecuteDelegate.MethodExecution methodContext = new MethodBaseExpressionExecuteDelegate.MethodExecution(args, method, result);
+        Boolean support = methodBaseExpressionExecuteDelegate.execute(condition, Boolean.class, methodContext);
         return Objects.equals(Boolean.TRUE, support);
     }
 

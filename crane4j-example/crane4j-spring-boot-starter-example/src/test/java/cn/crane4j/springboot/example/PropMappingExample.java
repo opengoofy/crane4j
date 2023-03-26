@@ -4,7 +4,7 @@ import cn.crane4j.annotation.Assemble;
 import cn.crane4j.annotation.Mapping;
 import cn.crane4j.core.container.ConstantContainer;
 import cn.crane4j.core.executor.handler.ManyToManyReflexAssembleOperationHandler;
-import cn.crane4j.extension.support.OperateTemplate;
+import cn.crane4j.core.support.OperateTemplate;
 import cn.crane4j.springboot.support.Crane4jApplicationContext;
 import cn.hutool.core.util.ObjectUtil;
 import lombok.Data;

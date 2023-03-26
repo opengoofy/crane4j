@@ -4,7 +4,7 @@ import cn.crane4j.annotation.Assemble;
 import cn.crane4j.annotation.AutoOperate;
 import cn.crane4j.annotation.ContainerMethod;
 import cn.crane4j.annotation.Mapping;
-import cn.crane4j.extension.support.OperateTemplate;
+import cn.crane4j.core.support.OperateTemplate;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -1,10 +1,9 @@
-package cn.crane4j.extension.aop;
+package cn.crane4j.core.support.aop;
 
 import cn.crane4j.annotation.ArgAutoOperate;
 import cn.crane4j.annotation.AutoOperate;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.util.CollectionUtils;
-import cn.crane4j.extension.expression.MethodBaseExpressionEvaluatorDelegate;
 import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.map.MapUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -30,11 +29,11 @@ public class MethodResultAutoOperateSupport extends MethodAnnotatedElementAutoOp
      * Create a {@link MethodResultAutoOperateSupport} instance
      *
      * @param configuration configuration
-     * @param methodBaseExpressionEvaluatorDelegate method base expression evaluator delegate
+     * @param methodBaseExpressionExecuteDelegate method base expression evaluator delegate
      */
     public MethodResultAutoOperateSupport(
-        Crane4jGlobalConfiguration configuration, MethodBaseExpressionEvaluatorDelegate methodBaseExpressionEvaluatorDelegate) {
-        super(configuration, methodBaseExpressionEvaluatorDelegate);
+        Crane4jGlobalConfiguration configuration, MethodBaseExpressionExecuteDelegate methodBaseExpressionExecuteDelegate) {
+        super(configuration, methodBaseExpressionExecuteDelegate);
     }
 
     /**

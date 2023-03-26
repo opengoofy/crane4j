@@ -3,7 +3,7 @@ package cn.crane4j.springboot.support;
 import cn.crane4j.annotation.AutoOperate;
 import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
-import cn.crane4j.extension.aop.MethodAnnotatedElementAutoOperateSupport;
+import cn.crane4j.core.support.aop.MethodAnnotatedElementAutoOperateSupport;
 import cn.crane4j.springboot.config.Crane4jAutoConfiguration;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
