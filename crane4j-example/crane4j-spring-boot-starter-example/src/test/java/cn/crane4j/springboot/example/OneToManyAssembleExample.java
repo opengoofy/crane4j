@@ -5,7 +5,7 @@ import cn.crane4j.annotation.Mapping;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.LambdaContainer;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
-import cn.crane4j.springboot.support.OperateTemplate;
+import cn.crane4j.extension.support.OperateTemplate;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 演示如何使用一对多装配处理器：

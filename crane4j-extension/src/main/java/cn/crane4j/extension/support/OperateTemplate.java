@@ -1,4 +1,4 @@
-package cn.crane4j.springboot.support;
+package cn.crane4j.extension.support;
 
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.parser.BeanOperationParser;
