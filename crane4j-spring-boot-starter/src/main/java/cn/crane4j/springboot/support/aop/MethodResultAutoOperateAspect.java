@@ -4,7 +4,7 @@ import cn.crane4j.annotation.AutoOperate;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.springboot.support.MethodAnnotatedElementAutoOperateSupport;
-import cn.crane4j.springboot.support.MethodBaseExpressionEvaluator;
+import cn.crane4j.springboot.support.ResolvableExpressionEvaluator;
 import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.map.MapUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -33,8 +33,8 @@ public class MethodResultAutoOperateAspect
     private final Map<String, ResolvedElement> methodCaches = CollectionUtils.newWeakConcurrentMap();
 
     public MethodResultAutoOperateAspect(
-        Crane4jGlobalConfiguration configuration, MethodBaseExpressionEvaluator methodBaseExpressionEvaluator) {
-        super(configuration, methodBaseExpressionEvaluator);
+        Crane4jGlobalConfiguration configuration, ResolvableExpressionEvaluator resolvableExpressionEvaluator) {
+        super(configuration, resolvableExpressionEvaluator);
         log.info("enable automatic filling of method result");
     }
 

@@ -1,36 +1,31 @@
-package cn.crane4j.springboot.support;
+package cn.crane4j.extension.expression;
 
 import cn.crane4j.core.support.expression.ExpressionContext;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
+import cn.crane4j.extension.support.ParameterNameFinder;
 import cn.hutool.core.util.ArrayUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.springframework.context.EmbeddedValueResolverAware;
-import org.springframework.core.ParameterNameDiscoverer;
-import org.springframework.util.StringValueResolver;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Function;
 
 /**
- * Calculator for executing an expression with a method call as the context.
+ * Method base expression evaluator delegate.
  *
  * @author huangchengxing
- * @see MethodAnnotatedElementAutoOperateSupport
  */
 @RequiredArgsConstructor
-public class MethodBaseExpressionEvaluator implements EmbeddedValueResolverAware {
+public class MethodBaseExpressionEvaluatorDelegate {
 
     public static final String RESULT = "result";
-    private final ParameterNameDiscoverer parameterNameDiscoverer;
-    private final ExpressionEvaluator expressionEvaluator;
+    private final ParameterNameFinder parameterNameDiscoverer;
+    protected final ExpressionEvaluator expressionEvaluator;
     private final Function<Method, ExpressionContext> contextFactory;
-    private StringValueResolver resolver;
 
     /**
      * Execute the expression in the specified above and return the execution result.
@@ -43,9 +38,6 @@ public class MethodBaseExpressionEvaluator implements EmbeddedValueResolverAware
     @Nullable
     public <T> T execute(String expression, Class<T> resultType, MethodExecution execution) {
         ExpressionContext context = resolveContext(execution);
-        if (Objects.nonNull(resolver)) {
-            expression = resolver.resolveStringValue(expression);
-        }
         return expressionEvaluator.execute(expression, resultType, context);
     }
 
@@ -97,16 +89,6 @@ public class MethodBaseExpressionEvaluator implements EmbeddedValueResolverAware
         }
 
         return results;
-    }
-
-    /**
-     * Set the StringValueResolver to use for resolving embedded definition values.
-     *
-     * @param resolver resolver
-     */
-    @Override
-    public void setEmbeddedValueResolver(StringValueResolver resolver) {
-        this.resolver = resolver;
     }
 
     /**

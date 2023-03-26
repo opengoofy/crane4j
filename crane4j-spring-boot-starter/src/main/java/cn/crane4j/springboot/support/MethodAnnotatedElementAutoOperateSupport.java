@@ -31,7 +31,7 @@ import java.util.stream.Stream;
  *
  * @author huangchengxing
  * @see AutoOperate
- * @see MethodBaseExpressionEvaluator
+ * @see ResolvableExpressionEvaluator
  * @see MethodArgumentAutoOperateAspect
  * @see MethodResultAutoOperateAspect
  */
@@ -39,7 +39,7 @@ import java.util.stream.Stream;
 public class MethodAnnotatedElementAutoOperateSupport {
 
     private final Crane4jGlobalConfiguration configuration;
-    private final MethodBaseExpressionEvaluator methodBaseExpressionEvaluator;
+    private final ResolvableExpressionEvaluator resolvableExpressionEvaluator;
 
     /**
      * Check whether to apply the operation according to the expression evaluation result.
@@ -54,8 +54,8 @@ public class MethodAnnotatedElementAutoOperateSupport {
         if (CharSequenceUtil.isEmpty(condition)) {
             return true;
         }
-        MethodBaseExpressionEvaluator.MethodExecution methodContext = new MethodBaseExpressionEvaluator.MethodExecution(args, method, result);
-        Boolean support = methodBaseExpressionEvaluator.execute(condition, Boolean.class, methodContext);
+        ResolvableExpressionEvaluator.MethodExecution methodContext = new ResolvableExpressionEvaluator.MethodExecution(args, method, result);
+        Boolean support = resolvableExpressionEvaluator.execute(condition, Boolean.class, methodContext);
         return Objects.equals(Boolean.TRUE, support);
     }
 

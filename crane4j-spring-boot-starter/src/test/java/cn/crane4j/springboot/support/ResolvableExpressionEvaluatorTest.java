@@ -11,33 +11,33 @@ import org.springframework.util.ReflectionUtils;
 import java.lang.reflect.Method;
 
 /**
- * test for {@link MethodBaseExpressionEvaluator}
+ * test for {@link ResolvableExpressionEvaluator}
  *
  * @author huangchengxing
  */
-public class MethodBaseExpressionEvaluatorTest {
+public class ResolvableExpressionEvaluatorTest {
 
     @Test
     public void testExecute() {
-        MethodBaseExpressionEvaluator evaluator = new MethodBaseExpressionEvaluator(
+        ResolvableExpressionEvaluator evaluator = new ResolvableExpressionEvaluator(
             new DefaultParameterNameDiscoverer(),
             new SpelExpressionEvaluator(new SpelExpressionParser()),
             method -> new SpelExpressionContext()
         );
 
-        Method method = ReflectionUtils.findMethod(MethodBaseExpressionEvaluatorTest.class, "compute", Integer.class, Integer.class);
+        Method method = ReflectionUtils.findMethod(ResolvableExpressionEvaluatorTest.class, "compute", Integer.class, Integer.class);
         Assert.assertNotNull(method);
         String expression = "#a + #b + #result";
-        MethodBaseExpressionEvaluator.MethodExecution execution = new MethodBaseExpressionEvaluator.MethodExecution(
+        ResolvableExpressionEvaluator.MethodExecution execution = new ResolvableExpressionEvaluator.MethodExecution(
             new Object[]{2, 3}, method, 5
         );
         Integer result = evaluator.execute(expression, Integer.class, execution);
         Assert.assertEquals((Integer)10, result);
 
-        method = ReflectionUtils.findMethod(MethodBaseExpressionEvaluatorTest.class, "compute");
+        method = ReflectionUtils.findMethod(ResolvableExpressionEvaluatorTest.class, "compute");
         Assert.assertNotNull(method);
         expression = "#result == 0";
-        execution = new MethodBaseExpressionEvaluator.MethodExecution(
+        execution = new ResolvableExpressionEvaluator.MethodExecution(
             new Object[]{2, 3}, method, 0
         );
         Assert.assertTrue(evaluator.execute(expression, Boolean.class, execution));

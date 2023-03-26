@@ -30,14 +30,14 @@ public class MethodAnnotatedElementAutoOperateSupportTest {
     @Autowired
     private Crane4jGlobalConfiguration applicationContext;
     @Autowired
-    private MethodBaseExpressionEvaluator methodBaseExpressionEvaluator;
+    private ResolvableExpressionEvaluator resolvableExpressionEvaluator;
 
     private MethodAnnotatedElementAutoOperateSupport support;
 
     @Before
     public void init() {
         support = new MethodAnnotatedElementAutoOperateSupport(
-            applicationContext, methodBaseExpressionEvaluator
+            applicationContext, resolvableExpressionEvaluator
         );
     }
 

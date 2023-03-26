@@ -5,7 +5,7 @@ import cn.crane4j.annotation.AutoOperate;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.springboot.support.MethodAnnotatedElementAutoOperateSupport;
-import cn.crane4j.springboot.support.MethodBaseExpressionEvaluator;
+import cn.crane4j.springboot.support.ResolvableExpressionEvaluator;
 import cn.crane4j.springboot.util.MethodUtils;
 import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.map.MapUtil;
@@ -45,9 +45,9 @@ public class MethodArgumentAutoOperateAspect extends MethodAnnotatedElementAutoO
     private final ParameterNameDiscoverer parameterNameDiscoverer;
 
     public MethodArgumentAutoOperateAspect(
-        Crane4jGlobalConfiguration configuration, MethodBaseExpressionEvaluator methodBaseExpressionEvaluator,
+        Crane4jGlobalConfiguration configuration, ResolvableExpressionEvaluator resolvableExpressionEvaluator,
         ParameterNameDiscoverer parameterNameDiscoverer) {
-        super(configuration, methodBaseExpressionEvaluator);
+        super(configuration, resolvableExpressionEvaluator);
         this.parameterNameDiscoverer = parameterNameDiscoverer;
         log.info("enable automatic filling of method argument");
     }
