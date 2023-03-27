@@ -58,6 +58,7 @@
     <ognl.version>3.3.4</ognl.version>
     <springboot.version>2.3.5.RELEASE</springboot.version>
     <mybatis-plus.version>3.4.2</mybatis-plus.version>
+    <ognl.version>3.1.19</ognl.version>
     <!--plugins-->
     <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
     <maven-javadoc-plugin>3.2.0</maven-javadoc-plugin>
@@ -125,6 +126,12 @@
         <groupId>com.baomidou</groupId>
         <artifactId>mybatis-plus-boot-starter</artifactId>
         <version>${mybatis-plus.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>ognl</groupId>
+        <artifactId>ognl</artifactId>
+        <version>${ognl.version}</version>
       </dependency>
     </dependencies>
 
