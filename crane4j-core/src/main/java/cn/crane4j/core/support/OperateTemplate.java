@@ -13,7 +13,7 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 /**
- * Helper classes used to simplify filling operations, refer to various XXXTemplates provided by Spring.
+ * Helper classes used to simplify filling operations.
  *
  * @author huangchengxing
  */

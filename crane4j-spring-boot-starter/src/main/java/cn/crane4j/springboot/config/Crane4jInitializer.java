@@ -2,12 +2,11 @@ package cn.crane4j.springboot.config;
 
 import cn.crane4j.annotation.ContainerConstant;
 import cn.crane4j.annotation.ContainerEnum;
-import cn.crane4j.core.cache.CacheManager;
 import cn.crane4j.core.container.ConstantContainer;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.support.AnnotationFinder;
-import cn.crane4j.springboot.support.Crane4jApplicationContext;
+import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ClassUtil;
 import lombok.RequiredArgsConstructor;
@@ -37,10 +36,9 @@ public class Crane4jInitializer implements ApplicationRunner {
     private final MetadataReaderFactory readerFactory;
     private final ResourcePatternResolver resolver;
 
-    private final CacheManager cacheManager;
     private final Crane4jProperties crane4jProperties;
     private final AnnotationFinder annotationFinder;
-    private final Crane4jApplicationContext configuration;
+    private final Crane4jGlobalConfiguration configuration;
     private final Collection<BeanOperationParser> parsers;
 
     @SneakyThrows

@@ -31,7 +31,7 @@ import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.springboot.annotation.EnableCrane4j;
 import cn.crane4j.springboot.parser.SpringAnnotationAwareBeanOperationParser;
-import cn.crane4j.springboot.support.AnnotationMethodContainerProcessor;
+import cn.crane4j.springboot.support.AnnotationMethodContainerPostProcessor;
 import cn.crane4j.springboot.support.Crane4jApplicationContext;
 import cn.crane4j.springboot.support.MergedAnnotationFinder;
 import cn.crane4j.springboot.support.ResolvableExpressionEvaluator;
@@ -260,8 +260,8 @@ public class Crane4jAutoConfiguration {
         name = "enable-method-container",
         havingValue = "true", matchIfMissing = true
     )
-    public AnnotationMethodContainerProcessor annotationMethodContainerProcessor(
-        Collection<MethodContainerFactory> factories, Crane4jApplicationContext configuration) {
-        return new AnnotationMethodContainerProcessor(factories, configuration);
+    public AnnotationMethodContainerPostProcessor annotationMethodContainerProcessor(
+        AnnotationFinder annotationFinder, Collection<MethodContainerFactory> factories, Crane4jGlobalConfiguration configuration) {
+        return new AnnotationMethodContainerPostProcessor(annotationFinder, factories, configuration);
     }
 }

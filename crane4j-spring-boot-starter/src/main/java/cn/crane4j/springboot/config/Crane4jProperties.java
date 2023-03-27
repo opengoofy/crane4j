@@ -7,7 +7,7 @@ import cn.crane4j.core.container.ConstantContainer;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.support.reflect.AsmReflectPropertyOperator;
 import cn.crane4j.core.support.reflect.PropertyOperator;
-import cn.crane4j.springboot.support.AnnotationMethodContainerProcessor;
+import cn.crane4j.springboot.support.AnnotationMethodContainerPostProcessor;
 import cn.crane4j.springboot.support.aop.MethodArgumentAutoOperateAspect;
 import cn.crane4j.springboot.support.aop.MethodResultAutoOperateAspect;
 import lombok.Data;
@@ -99,7 +99,7 @@ public class Crane4jProperties {
      * Whether to automatically scan and register the method
      * annotated by {@link ContainerMethod} as the data source container.
      *
-     * @see AnnotationMethodContainerProcessor
+     * @see AnnotationMethodContainerPostProcessor
      */
     private boolean enableMethodContainer = true;
     

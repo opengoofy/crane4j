@@ -18,7 +18,6 @@ import java.util.Map;
  */
 public class OgnlExpressionEvaluator implements ExpressionEvaluator {
 
-    private static final Object NULL = new Object();
     private final Map<String, Object> expressionCaches = CollectionUtils.newWeakConcurrentMap();
 
     /**
@@ -42,9 +41,6 @@ public class OgnlExpressionEvaluator implements ExpressionEvaluator {
             }
             return result;
         });
-        if (NULL == exp) {
-            return null;
-        }
         context = context instanceof OgnlContext ? context : new OgnlExpressionContext(context);
         return (T)Ognl.getValue(exp, context, resultType);
     }
