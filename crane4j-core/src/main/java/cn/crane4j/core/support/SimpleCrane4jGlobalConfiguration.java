@@ -1,16 +1,39 @@
 package cn.crane4j.core.support;
 
+import cn.crane4j.core.cache.CacheManager;
+import cn.crane4j.core.cache.ConcurrentMapCacheManager;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerProvider;
 import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.executor.BeanOperationExecutor;
+import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
+import cn.crane4j.core.executor.OrderedBeanOperationExecutor;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
+import cn.crane4j.core.executor.handler.ManyToManyReflexAssembleOperationHandler;
+import cn.crane4j.core.executor.handler.OneToManyReflexAssembleOperationHandler;
+import cn.crane4j.core.executor.handler.OneToOneReflexAssembleOperationHandler;
+import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
+import cn.crane4j.core.parser.AnnotationAwareBeanOperationParser;
 import cn.crane4j.core.parser.BeanOperationParser;
+import cn.crane4j.core.support.aop.MethodArgumentAutoOperateSupport;
+import cn.crane4j.core.support.aop.MethodBaseExpressionExecuteDelegate;
+import cn.crane4j.core.support.aop.MethodResultAutoOperateSupport;
 import cn.crane4j.core.support.callback.ContainerRegisterAware;
+import cn.crane4j.core.support.callback.DefaultCacheableContainerProcessor;
+import cn.crane4j.core.support.container.CacheableMethodContainerFactory;
+import cn.crane4j.core.support.container.DefaultMethodContainerFactory;
+import cn.crane4j.core.support.expression.ExpressionEvaluator;
+import cn.crane4j.core.support.expression.OgnlExpressionContext;
+import cn.crane4j.core.support.expression.OgnlExpressionEvaluator;
+import cn.crane4j.core.support.reflect.ChainAccessiblePropertyOperator;
+import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.PropertyOperator;
+import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
+import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.ConfigurationUtil;
 import cn.hutool.core.lang.Assert;
+import cn.hutool.core.map.MapUtil;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -42,6 +65,71 @@ public class SimpleCrane4jGlobalConfiguration implements Crane4jGlobalConfigurat
     private final Map<String, DisassembleOperationHandler> disassembleOperationHandlerMap = new HashMap<>(4);
     private final Map<String, BeanOperationExecutor> beanOperationExecutorMap = new HashMap<>(4);
     private final Map<String, ContainerProvider> containerProviderMap = new HashMap<>(4);
+
+    /**
+     * Create a {@link SimpleCrane4jGlobalConfiguration} using the default configuration.
+     *
+     * @return configuration
+     */
+    public static SimpleCrane4jGlobalConfiguration create(@Nullable Map<String, String> cacheConfig) {
+        SimpleCrane4jGlobalConfiguration configuration = new SimpleCrane4jGlobalConfiguration();
+        // basic components
+        PropertyOperator operator = new ReflectPropertyOperator();
+        operator = new MapAccessiblePropertyOperator(operator);
+        operator = new ChainAccessiblePropertyOperator(operator);
+        configuration.setPropertyOperator(operator);
+        configuration.setTypeResolver(new SimpleTypeResolver());
+        CacheManager cacheManager = new ConcurrentMapCacheManager(CollectionUtils::newWeakConcurrentMap);
+
+        // container register aware
+        configuration.addContainerRegisterAware(new ContainerRegisteredLogger());
+        if (MapUtil.isNotEmpty(cacheConfig)) {
+            configuration.addContainerRegisterAware(new DefaultCacheableContainerProcessor(cacheManager, cacheConfig));
+        }
+
+        // operation parser
+        AnnotationFinder finder = new SimpleAnnotationFinder();
+        BeanOperationParser parser = new AnnotationAwareBeanOperationParser(finder, configuration);
+        configuration.getBeanOperationParserMap().put(parser.getClass().getName(), parser);
+
+        // operation executor
+        DisorderedBeanOperationExecutor disorderedBeanOperationExecutor = new DisorderedBeanOperationExecutor();
+        configuration.getBeanOperationExecutorMap().put(disorderedBeanOperationExecutor.getClass().getName(), disorderedBeanOperationExecutor);
+        OrderedBeanOperationExecutor orderedBeanOperationExecutor = new OrderedBeanOperationExecutor(Sorted.comparator());
+        configuration.getBeanOperationExecutorMap().put(orderedBeanOperationExecutor.getClass().getName(), orderedBeanOperationExecutor);
+
+        // operation handler
+        OneToOneReflexAssembleOperationHandler oneToOneReflexAssembleOperationHandler = new OneToOneReflexAssembleOperationHandler(operator);
+        configuration.getAssembleOperationHandlerMap().put(oneToOneReflexAssembleOperationHandler.getClass().getName(), oneToOneReflexAssembleOperationHandler);
+        OneToManyReflexAssembleOperationHandler oneToManyReflexAssembleOperationHandler = new OneToManyReflexAssembleOperationHandler(operator);
+        configuration.getAssembleOperationHandlerMap().put(oneToManyReflexAssembleOperationHandler.getClass().getName(), oneToManyReflexAssembleOperationHandler);
+        ManyToManyReflexAssembleOperationHandler manyToManyReflexAssembleOperationHandler = new ManyToManyReflexAssembleOperationHandler(operator);
+        configuration.getAssembleOperationHandlerMap().put(manyToManyReflexAssembleOperationHandler.getClass().getName(), manyToManyReflexAssembleOperationHandler);
+        ReflectDisassembleOperationHandler reflectDisassembleOperationHandler = new ReflectDisassembleOperationHandler(operator);
+        configuration.getDisassembleOperationHandlerMap().put(reflectDisassembleOperationHandler.getClass().getName(), reflectDisassembleOperationHandler);
+
+        // expression
+        ExpressionEvaluator evaluator = new OgnlExpressionEvaluator();
+
+        // auto operate support
+        ParameterNameFinder parameterNameFinder = new SimpleParameterNameFinder();
+        MethodBaseExpressionExecuteDelegate expressionExecuteDelegate = new MethodBaseExpressionExecuteDelegate(
+            parameterNameFinder, evaluator, method -> new OgnlExpressionContext()
+        );
+        MethodResultAutoOperateSupport methodResultAutoOperateSupport = new MethodResultAutoOperateSupport(configuration, expressionExecuteDelegate);
+        MethodArgumentAutoOperateSupport methodArgumentAutoOperateSupport = new MethodArgumentAutoOperateSupport(
+            configuration, expressionExecuteDelegate, parameterNameFinder, finder
+        );
+
+        // method container factory
+        DefaultMethodContainerFactory defaultMethodContainerFactory = new DefaultMethodContainerFactory(operator, finder);
+        CacheableMethodContainerFactory cacheableMethodContainerFactory = new CacheableMethodContainerFactory(operator, finder, cacheManager);
+
+        // operate template
+        OperateTemplate operateTemplate = new OperateTemplate(parser, disorderedBeanOperationExecutor, configuration.getTypeResolver());
+        
+        return configuration;
+    }
 
     /**
      * Get data source container.

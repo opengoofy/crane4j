@@ -2,6 +2,7 @@ package cn.crane4j.core.container;
 
 import cn.crane4j.annotation.MappingType;
 import cn.crane4j.core.support.MethodInvoker;
+import cn.crane4j.core.support.container.MethodContainerFactory;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.hutool.core.lang.Assert;
 import lombok.Getter;
@@ -96,7 +97,7 @@ public class MethodInvokerContainer implements Container<Object> {
      * The key value extractor is used to obtain the key value from the data source object.
      */
     @FunctionalInterface
-    interface KeyExtractor {
+    public interface KeyExtractor {
 
         /**
          * Get key value from source object.

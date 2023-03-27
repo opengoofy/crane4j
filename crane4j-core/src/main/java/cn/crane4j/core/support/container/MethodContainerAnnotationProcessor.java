@@ -3,7 +3,6 @@ package cn.crane4j.core.support.container;
 import cn.crane4j.annotation.Bind;
 import cn.crane4j.annotation.ContainerMethod;
 import cn.crane4j.core.container.Container;
-import cn.crane4j.core.container.MethodContainerFactory;
 import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.hutool.core.collection.CollUtil;
