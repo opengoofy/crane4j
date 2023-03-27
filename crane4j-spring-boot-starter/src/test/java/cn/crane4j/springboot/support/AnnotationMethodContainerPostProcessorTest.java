@@ -25,18 +25,18 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * test for {@link AnnotationMethodContainerProcessor}
+ * test for {@link AnnotationMethodContainerPostProcessor}
  *
  * @author huangchengxing
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {Crane4jAutoConfiguration.class, AnnotationMethodContainerProcessorTest.Service.class})
-public class AnnotationMethodContainerProcessorTest {
+@SpringBootTest(classes = {Crane4jAutoConfiguration.class, AnnotationMethodContainerPostProcessorTest.Service.class})
+public class AnnotationMethodContainerPostProcessorTest {
 
     @Autowired
     private Crane4jApplicationContext context;
     @Autowired
-    private AnnotationMethodContainerProcessor annotationMethodContainerProcessor;
+    private AnnotationMethodContainerPostProcessor annotationMethodContainerPostProcessor;
 
     @Test
     public void test() {
@@ -59,7 +59,7 @@ public class AnnotationMethodContainerProcessorTest {
         Assert.assertTrue(oneToManyMethod instanceof CacheableContainer);
         Assert.assertEquals("oneToManyMethod", oneToManyMethod.getNamespace());
 
-        annotationMethodContainerProcessor.destroy();
+        annotationMethodContainerPostProcessor.destroy();
     }
 
     protected static class BaseService {
