@@ -20,6 +20,13 @@ import java.lang.annotation.Target;
 public @interface Mapping {
 
     /**
+     * Set both {@link #src} and {@link #ref} attributes.
+     *
+     * @return java.lang.String
+     */
+    String value() default "";
+
+    /**
      * Data source object properties to get.
      *
      * @return field name

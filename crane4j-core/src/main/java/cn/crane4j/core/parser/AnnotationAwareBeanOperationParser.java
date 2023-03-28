@@ -2,6 +2,7 @@ package cn.crane4j.core.parser;
 
 import cn.crane4j.annotation.Assemble;
 import cn.crane4j.annotation.Disassemble;
+import cn.crane4j.annotation.Mapping;
 import cn.crane4j.annotation.MappingTemplate;
 import cn.crane4j.annotation.Operations;
 import cn.crane4j.core.container.Container;
@@ -228,7 +229,7 @@ public class AnnotationAwareBeanOperationParser implements BeanOperationParser {
 
         // resolved property mapping from annotation and template
         Set<PropertyMapping> propertyMappings = Stream.of(annotation.props())
-            .map(m -> new SimplePropertyMapping(m.src(), CharSequenceUtil.isEmpty(m.ref()) ? annotation.key() : m.ref()))
+            .map(m -> createPropertyMapping(m, annotation.key()))
             .collect(Collectors.toSet());
         List<PropertyMapping> templateMappings = parsePropTemplate(annotation);
         if (CollUtil.isNotEmpty(templateMappings)) {
@@ -275,7 +276,7 @@ public class AnnotationAwareBeanOperationParser implements BeanOperationParser {
             .map(t -> annotationFinder.findAnnotation(t, MappingTemplate.class))
             .map(MappingTemplate::value)
             .flatMap(Stream::of)
-            .map(m -> new SimplePropertyMapping(m.src(), m.ref()))
+            .map(this::createPropertyMapping)
             .collect(Collectors.toList());
     }
 
@@ -344,6 +345,18 @@ public class AnnotationAwareBeanOperationParser implements BeanOperationParser {
             }
         }
         return results;
+    }
+
+    private PropertyMapping createPropertyMapping(Mapping annotation) {
+        return createPropertyMapping(annotation, null);
+    }
+
+    private PropertyMapping createPropertyMapping(Mapping annotation, String defaultReference) {
+        if (CharSequenceUtil.isNotEmpty(annotation.value())) {
+            return new SimplePropertyMapping(annotation.value(), annotation.value());
+        }
+        String ref = CharSequenceUtil.emptyToDefault(annotation.ref(), defaultReference);
+        return new SimplePropertyMapping(annotation.src(), ref);
     }
 
     private MetaDataCache createMetaDataCache(Class<?> type) {
