@@ -2,10 +2,11 @@ package cn.crane4j.core.support.aop;
 
 import cn.crane4j.annotation.ArgAutoOperate;
 import cn.crane4j.annotation.AutoOperate;
-import cn.crane4j.core.support.Crane4jGlobalConfiguration;
+import static cn.crane4j.core.support.aop.AutoOperateMethodAnnotatedElementResolver.ResolvedElement;
+import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
 import cn.crane4j.core.util.CollectionUtils;
-import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.text.CharSequenceUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
@@ -16,24 +17,25 @@ import java.util.Objects;
  * Method result auto operate support.
  *
  * @author huangchengxing
+ * @see AutoOperateMethodAnnotatedElementResolver
  */
 @Slf4j
-public class MethodResultAutoOperateSupport extends MethodAnnotatedElementAutoOperateSupport {
+public class MethodResultAutoOperateSupport {
 
-    /**
-     * method caches
-     */
     protected final Map<String, ResolvedElement> methodCaches = CollectionUtils.newWeakConcurrentMap();
+    protected final AutoOperateMethodAnnotatedElementResolver elementResolver;
+    protected final MethodBaseExpressionExecuteDelegate expressionExecuteDelegate;
 
     /**
      * Create a {@link MethodResultAutoOperateSupport} instance
      *
-     * @param configuration configuration
-     * @param methodBaseExpressionExecuteDelegate method base expression evaluator delegate
+     * @param elementResolver element resolver
+     * @param expressionExecuteDelegate method base expression evaluator delegate
      */
     public MethodResultAutoOperateSupport(
-        Crane4jGlobalConfiguration configuration, MethodBaseExpressionExecuteDelegate methodBaseExpressionExecuteDelegate) {
-        super(configuration, methodBaseExpressionExecuteDelegate);
+        AutoOperateMethodAnnotatedElementResolver elementResolver, MethodBaseExpressionExecuteDelegate expressionExecuteDelegate) {
+        this.elementResolver = elementResolver;
+        this.expressionExecuteDelegate = expressionExecuteDelegate;
     }
 
     /**
@@ -50,19 +52,17 @@ public class MethodResultAutoOperateSupport extends MethodAnnotatedElementAutoOp
         if (Objects.isNull(annotation)) {
             return;
         }
-        // whether to apply the operation?
-        String condition = annotation.condition();
-        if (!checkSupport(args, result, method, condition)) {
-            return;
-        }
         // get and build method cache
         log.debug("process result for [{}]", method.getName());
-        ResolvedElement element = MapUtil.computeIfAbsent(methodCaches, method.getName(), m -> resolveElement(method, annotation));
-        try {
+        ResolvedElement element = MapUtil.computeIfAbsent(methodCaches, method.getName(), m -> elementResolver.resolve(method, annotation));
+        // whether to apply the operation?
+        String condition = element.getAnnotation().condition();
+        if (support(method, result, args, condition)) {
             element.execute(result);
-        } catch (Exception e) {
-            log.warn("cannot process result for [{}]: [{}]", method.getName(), ExceptionUtil.getRootCause(e).getMessage());
-            e.printStackTrace();
         }
+    }
+
+    private boolean support(Method method, Object result, Object[] args, String condition) {
+        return CharSequenceUtil.isEmpty(condition) || Boolean.TRUE.equals(expressionExecuteDelegate.execute(condition, Boolean.class, method, args, result));
     }
 }

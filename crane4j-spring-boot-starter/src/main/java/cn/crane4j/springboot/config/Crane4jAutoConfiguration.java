@@ -11,18 +11,19 @@ import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
 import cn.crane4j.core.parser.AnnotationAwareBeanOperationParser;
 import cn.crane4j.core.parser.AssembleOperation;
 import cn.crane4j.core.support.AnnotationFinder;
-import cn.crane4j.core.support.ContainerRegisteredLogger;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.OperateTemplate;
 import cn.crane4j.core.support.SimpleTypeResolver;
 import cn.crane4j.core.support.TypeResolver;
-import cn.crane4j.core.support.aop.MethodBaseExpressionExecuteDelegate;
+import cn.crane4j.core.support.aop.AutoOperateMethodAnnotatedElementResolver;
 import cn.crane4j.core.support.callback.ContainerRegisterAware;
+import cn.crane4j.core.support.callback.ContainerRegisteredLogger;
 import cn.crane4j.core.support.callback.DefaultCacheableContainerProcessor;
 import cn.crane4j.core.support.container.CacheableMethodContainerFactory;
 import cn.crane4j.core.support.container.DefaultMethodContainerFactory;
 import cn.crane4j.core.support.container.MethodContainerFactory;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
+import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
 import cn.crane4j.core.support.reflect.AsmReflectPropertyOperator;
 import cn.crane4j.core.support.reflect.ChainAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
@@ -216,7 +217,13 @@ public class Crane4jAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ResolvableExpressionEvaluator methodBaseExpressionEvaluator(
+    public AutoOperateMethodAnnotatedElementResolver autoOperateMethodAnnotatedElementResolver(Crane4jGlobalConfiguration crane4jGlobalConfiguration) {
+        return new AutoOperateMethodAnnotatedElementResolver(crane4jGlobalConfiguration);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public ResolvableExpressionEvaluator resolvableExpressionEvaluator(
         ApplicationContext applicationContext, ExpressionEvaluator expressionEvaluator, ParameterNameDiscoverer parameterNameDiscoverer) {
         return new ResolvableExpressionEvaluator(
             parameterNameDiscoverer, expressionEvaluator,
@@ -236,8 +243,9 @@ public class Crane4jAutoConfiguration {
         havingValue = "true", matchIfMissing = true
     )
     public MethodResultAutoOperateAspect methodResultAutoOperateAspect(
-        Crane4jGlobalConfiguration configuration, ResolvableExpressionEvaluator resolvableExpressionEvaluator) {
-        return new MethodResultAutoOperateAspect(configuration, resolvableExpressionEvaluator);
+        AutoOperateMethodAnnotatedElementResolver autoOperateMethodAnnotatedElementResolver,
+        ResolvableExpressionEvaluator resolvableExpressionEvaluator) {
+        return new MethodResultAutoOperateAspect(autoOperateMethodAnnotatedElementResolver, resolvableExpressionEvaluator);
     }
 
     @Bean
@@ -248,9 +256,14 @@ public class Crane4jAutoConfiguration {
         havingValue = "true", matchIfMissing = true
     )
     public MethodArgumentAutoOperateAspect methodArgumentAutoOperateAspect(
-        Crane4jGlobalConfiguration configuration, MethodBaseExpressionExecuteDelegate methodBaseExpressionExecuteDelegate,
+        MethodBaseExpressionExecuteDelegate methodBaseExpressionExecuteDelegate,
+        AutoOperateMethodAnnotatedElementResolver autoOperateMethodAnnotatedElementResolver,
         ParameterNameDiscoverer parameterNameDiscoverer, AnnotationFinder annotationFinder) {
-        return new MethodArgumentAutoOperateAspect(configuration, methodBaseExpressionExecuteDelegate, parameterNameDiscoverer, annotationFinder);
+        return new MethodArgumentAutoOperateAspect(
+            autoOperateMethodAnnotatedElementResolver,
+            methodBaseExpressionExecuteDelegate,
+            parameterNameDiscoverer, annotationFinder
+        );
     }
 
     @Bean
@@ -260,7 +273,7 @@ public class Crane4jAutoConfiguration {
         name = "enable-method-container",
         havingValue = "true", matchIfMissing = true
     )
-    public AnnotationMethodContainerPostProcessor annotationMethodContainerProcessor(
+    public AnnotationMethodContainerPostProcessor annotationMethodContainerPostProcessor(
         AnnotationFinder annotationFinder, Collection<MethodContainerFactory> factories, Crane4jGlobalConfiguration configuration) {
         return new AnnotationMethodContainerPostProcessor(annotationFinder, factories, configuration);
     }

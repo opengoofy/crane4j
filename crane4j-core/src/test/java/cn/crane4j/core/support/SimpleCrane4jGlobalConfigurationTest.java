@@ -27,7 +27,7 @@ import java.util.Collections;
  */
 public class SimpleCrane4jGlobalConfigurationTest {
 
-    private final SimpleCrane4jGlobalConfiguration configuration = new SimpleCrane4jGlobalConfiguration();
+    private final SimpleCrane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create(Collections.emptyMap());
 
     @Before
     public void init() {
@@ -57,12 +57,12 @@ public class SimpleCrane4jGlobalConfigurationTest {
     @Test
     public void addContainerRegisterAware() {
         Collection<ContainerRegisterAware> awareList = configuration.getContainerRegisterAwareList();
-        Assert.assertTrue(awareList.isEmpty());
+        int size = awareList.size();
         ContainerRegisterAware aware = new ContainerRegisterAware() { };
         configuration.addContainerRegisterAware(aware);
-        Assert.assertEquals(1, awareList.size());
+        Assert.assertEquals(size + 1, awareList.size());
         configuration.addContainerRegisterAware(aware);
-        Assert.assertEquals(1, awareList.size());
+        Assert.assertEquals(size + 1, awareList.size());
     }
 
     @Test

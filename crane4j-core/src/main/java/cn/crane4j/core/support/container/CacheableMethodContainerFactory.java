@@ -71,8 +71,7 @@ public class CacheableMethodContainerFactory extends DefaultMethodContainerFacto
         log.debug("create cacheable method container from [{}]", method);
         ContainerCache annotation = annotationFinder.findAnnotation(method, ContainerCache.class);
         // if cache name is not specified, the namespace of the container is taken by default
-        Function<Container<Object>, String> cacheNameFactory = CharSequenceUtil.isEmpty(annotation.cacheName()) ?
-            Container::getNamespace : container -> annotation.cacheName();
+        Function<Container<Object>, String> cacheNameFactory = container -> CharSequenceUtil.emptyToDefault(annotation.cacheName(), container.getNamespace());
         return super.get(source, method).stream()
             .map(container -> new CacheableContainer<>(container, cacheManager, cacheNameFactory.apply(container)))
             .collect(Collectors.toList());

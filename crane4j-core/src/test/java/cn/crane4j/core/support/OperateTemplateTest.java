@@ -1,33 +1,21 @@
-package cn.crane4j.springboot.support;
+package cn.crane4j.core.support;
 
 import cn.crane4j.annotation.Assemble;
 import cn.crane4j.annotation.Disassemble;
 import cn.crane4j.annotation.Mapping;
 import cn.crane4j.core.container.ConstantContainer;
+import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
 import cn.crane4j.core.parser.AssembleOperation;
 import cn.crane4j.core.parser.BeanOperationParser;
-import cn.crane4j.core.support.OperateTemplate;
-import cn.crane4j.core.support.TypeResolver;
-import cn.crane4j.springboot.config.Crane4jAutoConfiguration;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.annotation.AliasFor;
-import org.springframework.core.annotation.Order;
-import org.springframework.test.context.junit4.SpringRunner;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,28 +26,26 @@ import java.util.Map;
  * @author huangchengxing
  */
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = Crane4jAutoConfiguration.class)
 public class OperateTemplateTest {
 
-    @Autowired
+    private BeanOperationExecutor beanOperationExecutor;
     private OperateTemplate template;
-    @Autowired
-    private Crane4jApplicationContext context;
-    @Autowired
-    private BeanOperationParser beanOperationParser;
-    @Autowired
-    private TypeResolver typeResolver;
-    @Autowired
-    private DisorderedBeanOperationExecutor beanOperationExecutor;
 
     @Before
     public void init() {
+        SimpleCrane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create(Collections.emptyMap());
+        beanOperationExecutor = new DisorderedBeanOperationExecutor();
+        template = new OperateTemplate(
+            configuration.getBeanOperationsParser(BeanOperationParser.class),
+            beanOperationExecutor, configuration.getTypeResolver()
+        );
+
         Map<String, String> sources = new HashMap<>();
         sources.put("1", "1");
         sources.put("2", "2");
         sources.put("3", "3");
-        context.registerContainer(ConstantContainer.forMap("test", sources));
+        configuration.registerContainer(ConstantContainer.forMap("test", sources));
+
     }
 
     @Test
@@ -106,19 +92,10 @@ public class OperateTemplateTest {
         );
     }
 
-    @Assemble(container = "test", props = @Mapping(ref = "name"))
-    @Documented
-    @Target({ElementType.ANNOTATION_TYPE, ElementType.FIELD})
-    @Retention(RetentionPolicy.RUNTIME)
-    private @interface AssembleId {
-        @AliasFor(annotation = Assemble.class, attribute = "groups")
-        String[] groups() default {};
-    }
-
     @RequiredArgsConstructor
     @Data
     private static class Foo {
-        @AssembleId(groups = "id")
+        @Assemble(container = "test", groups = "id", props = @Mapping(ref = "name"))
         private final String id;
         private String name;
         @Disassemble(groups = {"nested", "nestedFoo"})
@@ -128,13 +105,11 @@ public class OperateTemplateTest {
     @RequiredArgsConstructor
     @Data
     private static class NestedFoo {
-        @Order(1)
-        @AssembleId(groups = {"nested", "id"})
+        @Assemble(container = "test", groups = {"nested", "id"}, props = @Mapping(ref = "name"), sort = 1)
         private final String id;
         private String name;
-        @Order(2)
         @Assemble(
-            container = "test", props = @Mapping(ref = "value"), groups = {"nested", "key"}
+            container = "test", props = @Mapping(ref = "value"), groups = {"nested", "key"}, sort = 2
         )
         private final String key;
         private String value;

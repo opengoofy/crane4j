@@ -1,8 +1,6 @@
-package cn.crane4j.core.support.aop;
+package cn.crane4j.core.support.expression;
 
 import cn.crane4j.core.support.ParameterNameFinder;
-import cn.crane4j.core.support.expression.ExpressionContext;
-import cn.crane4j.core.support.expression.ExpressionEvaluator;
 import cn.hutool.core.util.ArrayUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +40,21 @@ public class MethodBaseExpressionExecuteDelegate {
     }
 
     /**
+     * Execute the expression in the specified above and return the execution result.
+     *
+     * @param expression expression
+     * @param resultType result type
+     * @param method method
+     * @param args args
+     * @param result result
+     * @return execution result
+     */
+    @Nullable
+    public <T> T execute(String expression, Class<T> resultType, Method method, Object[] args, Object result) {
+        return execute(expression, resultType, new MethodBaseExpressionExecuteDelegate.MethodExecution(args, method, result));
+    }
+
+    /**
      * Create a method aspect expression context.
      *
      * @param methodExecution the function argument
@@ -67,6 +80,9 @@ public class MethodBaseExpressionExecuteDelegate {
         Object[] args = methodExecution.getArgs();
         Map<String, Object> paramsMap = resolvedParams(paramNames, args);
         paramsMap.forEach(context::registerVariable);
+        for (int i = 0; i < args.length; i++) {
+            context.registerVariable("a" + i, args[i]);
+        }
     }
 
     /**
@@ -87,7 +103,6 @@ public class MethodBaseExpressionExecuteDelegate {
             Object arg = i < argCount ? args[i] : null;
             results.put(name, arg);
         }
-
         return results;
     }
 

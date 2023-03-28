@@ -3,25 +3,24 @@ package cn.crane4j.core.support.container;
 import cn.crane4j.annotation.Bind;
 import cn.crane4j.annotation.ContainerMethod;
 import cn.crane4j.core.container.Container;
-import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.support.AnnotationFinder;
+import cn.crane4j.core.util.ReflectUtils;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ReflectUtil;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -31,12 +30,16 @@ import java.util.stream.Stream;
  * <p>An {@link ContainerMethod} annotation processor.
  * Scan methods annotated directly by {@link ContainerMethod}
  * in the class or methods bound by annotations on class,
- * and adapt it to {@link Container} instance
- * according to given {@link MethodContainerFactory}.
+ * and adapt it to {@link Container} instance according to given {@link MethodContainerFactory}.
+ *
+ * <p><b>NOTE</b>：In order to facilitate subsequent processing,
+ * when looking up the method in the class according to the annotation on the class,
+ * the corresponding annotation will be added to {@link Method#declaredAnnotations} through reflection.
  *
  * @author huangchengxing
  * @see ContainerMethod
  */
+@Slf4j
 public class MethodContainerAnnotationProcessor {
 
     /**
@@ -102,7 +105,9 @@ public class MethodContainerAnnotationProcessor {
         Collection<ContainerMethod> classLevelAnnotation = annotationFinder.findAllAnnotations(type, ContainerMethod.class);
         for (ContainerMethod annotation : classLevelAnnotation) {
             Method resolvedMethod = resolveMethodForClassLevelAnnotation(methodGroup, annotation);
-            annotatedMethods.put(resolvedMethod, annotation);
+            if (Objects.nonNull(resolvedMethod)) {
+                annotatedMethods.put(resolvedMethod, annotation);
+            }
         }
     }
 
@@ -134,8 +139,8 @@ public class MethodContainerAnnotationProcessor {
      */
     protected boolean checkMethodMatch(ContainerMethod annotation, Method method) {
         Bind bind = annotation.bind();
-        Class<?>[] paramTypes = bind.paramTypes();
-        return ArrayUtil.equals(method.getParameterTypes(), paramTypes);
+        return Objects.equals(method.getName(), bind.value())
+            && ArrayUtil.equals(method.getParameterTypes(), bind.paramTypes());
     }
 
     /**
@@ -165,21 +170,20 @@ public class MethodContainerAnnotationProcessor {
         return annotationFinder.findAllAnnotations(method, ContainerMethod.class);
     }
 
+    @Nullable
     private Method resolveMethodForClassLevelAnnotation(Map<String, List<Method>> methodGroup, ContainerMethod annotation) {
         Bind bind = annotation.bind();
         String methodName = CharSequenceUtil.emptyToDefault(bind.value(), annotation.namespace());
-        return methodGroup.getOrDefault(methodName, Collections.emptyList()).stream()
+        Method resolvedMethod = methodGroup.getOrDefault(methodName, Collections.emptyList()).stream()
             .filter(method -> checkMethodMatch(annotation, method))
             .findFirst()
-            .orElseThrow(() -> new Crane4jException("method cannot be bind to annotation: [{}]", bind));
-    }
-
-    @Getter
-    @RequiredArgsConstructor
-    protected static class ProcessContext<T extends Annotation> {
-        private final Object target;
-        private final Class<?> type;
-        private final Set<T> classLevelAnnotations = new LinkedHashSet<>();
-        private final Multimap<Method, T> annotatedMethods = HashMultimap.create();
+            .orElse(null);
+        if (Objects.isNull(resolvedMethod)) {
+            log.debug("bound method not found: [{}]", bind);
+            return null;
+        }
+        // try to binding annotations to method
+        ReflectUtils.putAnnotation(annotation, resolvedMethod);
+        return resolvedMethod;
     }
 }

@@ -16,16 +16,9 @@ import cn.crane4j.core.executor.handler.OneToOneReflexAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
 import cn.crane4j.core.parser.AnnotationAwareBeanOperationParser;
 import cn.crane4j.core.parser.BeanOperationParser;
-import cn.crane4j.core.support.aop.MethodArgumentAutoOperateSupport;
-import cn.crane4j.core.support.aop.MethodBaseExpressionExecuteDelegate;
-import cn.crane4j.core.support.aop.MethodResultAutoOperateSupport;
 import cn.crane4j.core.support.callback.ContainerRegisterAware;
+import cn.crane4j.core.support.callback.ContainerRegisteredLogger;
 import cn.crane4j.core.support.callback.DefaultCacheableContainerProcessor;
-import cn.crane4j.core.support.container.CacheableMethodContainerFactory;
-import cn.crane4j.core.support.container.DefaultMethodContainerFactory;
-import cn.crane4j.core.support.expression.ExpressionEvaluator;
-import cn.crane4j.core.support.expression.OgnlExpressionContext;
-import cn.crane4j.core.support.expression.OgnlExpressionEvaluator;
 import cn.crane4j.core.support.reflect.ChainAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.PropertyOperator;
@@ -88,46 +81,29 @@ public class SimpleCrane4jGlobalConfiguration implements Crane4jGlobalConfigurat
         }
 
         // operation parser
-        AnnotationFinder finder = new SimpleAnnotationFinder();
-        BeanOperationParser parser = new AnnotationAwareBeanOperationParser(finder, configuration);
-        configuration.getBeanOperationParserMap().put(parser.getClass().getName(), parser);
+        AnnotationFinder annotationFinder = new SimpleAnnotationFinder();
+        BeanOperationParser beanOperationParser = new AnnotationAwareBeanOperationParser(annotationFinder, configuration);
+        configuration.getBeanOperationParserMap().put(BeanOperationParser.class.getName(), beanOperationParser);
+        configuration.getBeanOperationParserMap().put(beanOperationParser.getClass().getName(), beanOperationParser);
 
         // operation executor
         DisorderedBeanOperationExecutor disorderedBeanOperationExecutor = new DisorderedBeanOperationExecutor();
+        configuration.getBeanOperationExecutorMap().put(BeanOperationExecutor.class.getName(), disorderedBeanOperationExecutor);
         configuration.getBeanOperationExecutorMap().put(disorderedBeanOperationExecutor.getClass().getName(), disorderedBeanOperationExecutor);
         OrderedBeanOperationExecutor orderedBeanOperationExecutor = new OrderedBeanOperationExecutor(Sorted.comparator());
         configuration.getBeanOperationExecutorMap().put(orderedBeanOperationExecutor.getClass().getName(), orderedBeanOperationExecutor);
 
         // operation handler
         OneToOneReflexAssembleOperationHandler oneToOneReflexAssembleOperationHandler = new OneToOneReflexAssembleOperationHandler(operator);
+        configuration.getAssembleOperationHandlerMap().put(AssembleOperationHandler.class.getName(), oneToOneReflexAssembleOperationHandler);
         configuration.getAssembleOperationHandlerMap().put(oneToOneReflexAssembleOperationHandler.getClass().getName(), oneToOneReflexAssembleOperationHandler);
         OneToManyReflexAssembleOperationHandler oneToManyReflexAssembleOperationHandler = new OneToManyReflexAssembleOperationHandler(operator);
         configuration.getAssembleOperationHandlerMap().put(oneToManyReflexAssembleOperationHandler.getClass().getName(), oneToManyReflexAssembleOperationHandler);
         ManyToManyReflexAssembleOperationHandler manyToManyReflexAssembleOperationHandler = new ManyToManyReflexAssembleOperationHandler(operator);
         configuration.getAssembleOperationHandlerMap().put(manyToManyReflexAssembleOperationHandler.getClass().getName(), manyToManyReflexAssembleOperationHandler);
         ReflectDisassembleOperationHandler reflectDisassembleOperationHandler = new ReflectDisassembleOperationHandler(operator);
+        configuration.getDisassembleOperationHandlerMap().put(DisassembleOperationHandler.class.getName(), reflectDisassembleOperationHandler);
         configuration.getDisassembleOperationHandlerMap().put(reflectDisassembleOperationHandler.getClass().getName(), reflectDisassembleOperationHandler);
-
-        // expression
-        ExpressionEvaluator evaluator = new OgnlExpressionEvaluator();
-
-        // auto operate support
-        ParameterNameFinder parameterNameFinder = new SimpleParameterNameFinder();
-        MethodBaseExpressionExecuteDelegate expressionExecuteDelegate = new MethodBaseExpressionExecuteDelegate(
-            parameterNameFinder, evaluator, method -> new OgnlExpressionContext()
-        );
-        MethodResultAutoOperateSupport methodResultAutoOperateSupport = new MethodResultAutoOperateSupport(configuration, expressionExecuteDelegate);
-        MethodArgumentAutoOperateSupport methodArgumentAutoOperateSupport = new MethodArgumentAutoOperateSupport(
-            configuration, expressionExecuteDelegate, parameterNameFinder, finder
-        );
-
-        // method container factory
-        DefaultMethodContainerFactory defaultMethodContainerFactory = new DefaultMethodContainerFactory(operator, finder);
-        CacheableMethodContainerFactory cacheableMethodContainerFactory = new CacheableMethodContainerFactory(operator, finder, cacheManager);
-
-        // operate template
-        OperateTemplate operateTemplate = new OperateTemplate(parser, disorderedBeanOperationExecutor, configuration.getTypeResolver());
-        
         return configuration;
     }
 

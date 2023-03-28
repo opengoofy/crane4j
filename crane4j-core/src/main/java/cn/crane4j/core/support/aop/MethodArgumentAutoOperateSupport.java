@@ -3,12 +3,13 @@ package cn.crane4j.core.support.aop;
 import cn.crane4j.annotation.ArgAutoOperate;
 import cn.crane4j.annotation.AutoOperate;
 import cn.crane4j.core.support.AnnotationFinder;
-import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.ParameterNameFinder;
+import static cn.crane4j.core.support.aop.AutoOperateMethodAnnotatedElementResolver.ResolvedElement;
+import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.MethodUtils;
-import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ArrayUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,30 +26,35 @@ import java.util.stream.Stream;
  * Method argument auto operate support.
  *
  * @author huangchengxing
+ * @see AutoOperateMethodAnnotatedElementResolver
+ * @see MethodBaseExpressionExecuteDelegate
  */
 @Slf4j
-public class MethodArgumentAutoOperateSupport extends MethodAnnotatedElementAutoOperateSupport {
+public class MethodArgumentAutoOperateSupport {
 
     protected static final ResolvedElement[] EMPTY_ELEMENTS = new ResolvedElement[0];
+    protected final AutoOperateMethodAnnotatedElementResolver elementResolver;
     protected final Map<String, ResolvedElement[]> methodParameterCaches = CollectionUtils.newWeakConcurrentMap();
     protected final ParameterNameFinder parameterNameFinder;
     protected final AnnotationFinder annotationFinder;
+    protected final MethodBaseExpressionExecuteDelegate expressionExecuteDelegate;
     
     /**
      * Create a {@link MethodArgumentAutoOperateSupport} instance.
      *
-     * @param configuration configuration
-     * @param methodBaseExpressionExecuteDelegate method base expression evaluator delegate
+     * @param elementResolver element resolver
+     * @param expressionExecuteDelegate expression evaluator delegate
      * @param parameterNameFinder parameter name finder
      * @param annotationFinder annotation finder
      */
     public MethodArgumentAutoOperateSupport(
-        Crane4jGlobalConfiguration configuration,
-        MethodBaseExpressionExecuteDelegate methodBaseExpressionExecuteDelegate,
+        AutoOperateMethodAnnotatedElementResolver elementResolver,
+        MethodBaseExpressionExecuteDelegate expressionExecuteDelegate,
         ParameterNameFinder parameterNameFinder, AnnotationFinder annotationFinder) {
-        super(configuration, methodBaseExpressionExecuteDelegate);
+        this.elementResolver = elementResolver;
         this.annotationFinder = annotationFinder;
         this.parameterNameFinder = parameterNameFinder;
+        this.expressionExecuteDelegate = expressionExecuteDelegate;
     }
 
     /**
@@ -89,20 +95,14 @@ public class MethodArgumentAutoOperateSupport extends MethodAnnotatedElementAuto
     protected void processArguments(Method method, Object[] args, ResolvedElement[] resolvedElements) {
         for (int i = 0; i < args.length; i++) {
             Object arg = args[i];
+            // maybe not annotated element
             ResolvedElement element = resolvedElements[i];
-            try {
+            if (Objects.nonNull(element) && support(method, args, element.getAnnotation().condition())) {
                 element.execute(arg);
-            } catch (Exception e) {
-                log.warn(
-                    "cannot process argument [{}] for [{}]: [{}]",
-                    method.getName(), ((Parameter)element.getElement()).getName(),
-                    ExceptionUtil.getRootCause(e).getMessage()
-                );
-                e.printStackTrace();
             }
         }
     }
-    
+
     /**
      * Analyze the annotations on methods and method parameters
      * to obtain the operation configuration of method parameters.
@@ -125,25 +125,12 @@ public class MethodArgumentAutoOperateSupport extends MethodAnnotatedElementAuto
             AutoOperate annotation = Optional
                 .ofNullable(annotationFinder.findAnnotation(param, AutoOperate.class))
                 .orElse(methodLevelAnnotations.get(paramName));
-            // resolve annotation
-            ResolvedElement element = Objects.isNull(annotation) ?
-                EmptyElement.INSTANCE : resolveElement(param, annotation);
-            results[index++] = element;
+            results[index++] = Objects.isNull(annotation) ? null : elementResolver.resolve(param, annotation);
         }
         return results;
     }
 
-    /**
-     * Empty implementation of {@link ResolvedElement}, only for placeholder.
-     */
-    protected static class EmptyElement extends ResolvedElement {
-        protected static final ResolvedElement INSTANCE = new EmptyElement();
-        public EmptyElement() {
-            super(null, null, null, null, null);
-        }
-        @Override
-        public void execute(Object result) {
-            // do nothing
-        }
+    private boolean support(Method method, Object[] args, String condition) {
+        return CharSequenceUtil.isEmpty(condition) || Boolean.TRUE.equals(expressionExecuteDelegate.execute(condition, Boolean.class, method, args, null));
     }
 }

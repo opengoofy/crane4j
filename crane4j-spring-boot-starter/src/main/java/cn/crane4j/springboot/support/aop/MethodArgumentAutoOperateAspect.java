@@ -3,9 +3,10 @@ package cn.crane4j.springboot.support.aop;
 import cn.crane4j.annotation.ArgAutoOperate;
 import cn.crane4j.annotation.AutoOperate;
 import cn.crane4j.core.support.AnnotationFinder;
-import cn.crane4j.core.support.Crane4jGlobalConfiguration;
+import cn.crane4j.core.support.aop.AutoOperateMethodAnnotatedElementResolver;
+import static cn.crane4j.core.support.aop.AutoOperateMethodAnnotatedElementResolver.ResolvedElement;
 import cn.crane4j.core.support.aop.MethodArgumentAutoOperateSupport;
-import cn.crane4j.core.support.aop.MethodBaseExpressionExecuteDelegate;
+import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -31,10 +32,10 @@ import java.util.Arrays;
 public class MethodArgumentAutoOperateAspect extends MethodArgumentAutoOperateSupport implements DisposableBean {
 
     public MethodArgumentAutoOperateAspect(
-        Crane4jGlobalConfiguration configuration,
-        MethodBaseExpressionExecuteDelegate methodBaseExpressionExecuteDelegate,
+        AutoOperateMethodAnnotatedElementResolver elementResolver,
+        MethodBaseExpressionExecuteDelegate expressionExecuteDelegate,
         ParameterNameDiscoverer parameterNameDiscoverer, AnnotationFinder annotationFinder) {
-        super(configuration, methodBaseExpressionExecuteDelegate, parameterNameDiscoverer::getParameterNames, annotationFinder);
+        super(elementResolver, expressionExecuteDelegate, parameterNameDiscoverer::getParameterNames, annotationFinder);
         log.info("enable automatic filling of method argument");
     }
 

@@ -1,8 +1,7 @@
-package cn.crane4j.core.support;
+package cn.crane4j.core.support.callback;
 
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerProvider;
-import cn.crane4j.core.support.callback.ContainerRegisterAware;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Nonnull;

@@ -1,5 +1,6 @@
 package cn.crane4j.core.util;
 
+import cn.hutool.core.lang.Assert;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ReflectUtil;
 import lombok.AccessLevel;
@@ -10,7 +11,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * ReflectUtils
@@ -57,6 +62,7 @@ public class ReflectUtils {
      *
      * @param annotation annotation
      * @param method method
+     * @throws IllegalArgumentException thrown when a method already has annotations of the same type
      */
     @SuppressWarnings("unchecked")
     public static void putAnnotation(Annotation annotation, Method method) {
@@ -66,6 +72,10 @@ public class ReflectUtils {
             .map(map -> (Map<Class<? extends Annotation >, Annotation>)map)
             .map(LinkedHashMap::new)
             .ifPresent(map -> {
+                Assert.isFalse(
+                    map.containsKey(annotation.annotationType()),
+                    "method has been annotated by [{}]", annotation.annotationType()
+                );
                 map.put(annotation.annotationType(), annotation);
                 ReflectUtil.setFieldValue(method, "declaredAnnotations", Collections.unmodifiableMap(map));
             });

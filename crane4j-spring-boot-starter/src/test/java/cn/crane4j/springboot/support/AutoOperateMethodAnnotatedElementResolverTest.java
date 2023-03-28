@@ -3,7 +3,7 @@ package cn.crane4j.springboot.support;
 import cn.crane4j.annotation.AutoOperate;
 import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
-import cn.crane4j.core.support.aop.MethodAnnotatedElementAutoOperateSupport;
+import cn.crane4j.core.support.aop.AutoOperateMethodAnnotatedElementResolver;
 import cn.crane4j.springboot.config.Crane4jAutoConfiguration;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -17,38 +17,25 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Method;
-import java.util.function.Predicate;
 
 /**
- * test for {@link MethodAnnotatedElementAutoOperateSupport}
+ * test for {@link AutoOperateMethodAnnotatedElementResolver}
  *
  * @author huangchengxing
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Crane4jAutoConfiguration.class)
-public class MethodAnnotatedElementAutoOperateSupportTest {
+public class AutoOperateMethodAnnotatedElementResolverTest {
 
     @Autowired
     private Crane4jGlobalConfiguration applicationContext;
-    @Autowired
-    private ResolvableExpressionEvaluator resolvableExpressionEvaluator;
-
-    private MethodAnnotatedElementAutoOperateSupport support;
+    private AutoOperateMethodAnnotatedElementResolver support;
 
     @Before
     public void init() {
-        support = new MethodAnnotatedElementAutoOperateSupport(
-            applicationContext, resolvableExpressionEvaluator
+        support = new AutoOperateMethodAnnotatedElementResolver(
+            applicationContext
         );
-    }
-
-    @Test
-    public void checkSupport() {
-        Method method = getMethod();
-        Predicate<String> predicate = exp -> support.checkSupport(new Object[]{1, 2}, new Foo(3), method, exp);
-        Assert.assertTrue(predicate.test("(#a + #b) == #result.getTotal()"));
-        Assert.assertFalse(predicate.test("(#a + #b) != #result.getTotal()"));
-        Assert.assertTrue(predicate.test(""));
     }
 
     @Test
@@ -56,11 +43,11 @@ public class MethodAnnotatedElementAutoOperateSupportTest {
         Method noneMethod = ReflectionUtils.findMethod(getClass(), "compute");
         Assert.assertNotNull(noneMethod);
         AutoOperate noneAnnotation = noneMethod.getAnnotation(AutoOperate.class);
-        Assert.assertThrows(NullPointerException.class, () -> support.resolveElement(noneMethod, noneAnnotation));
+        Assert.assertThrows(NullPointerException.class, () -> support.resolve(noneMethod, noneAnnotation));
 
         Method method = getMethod();
         AutoOperate annotation = method.getAnnotation(AutoOperate.class);
-        MethodAnnotatedElementAutoOperateSupport.ResolvedElement element = support.resolveElement(method, annotation);
+        AutoOperateMethodAnnotatedElementResolver.ResolvedElement element = support.resolve(method, annotation);
         Assert.assertEquals(method, element.getElement());
         Assert.assertSame(2, element.getExtractor().invoke(new Foo(2)));
         Assert.assertEquals(1, element.getGroups().size());

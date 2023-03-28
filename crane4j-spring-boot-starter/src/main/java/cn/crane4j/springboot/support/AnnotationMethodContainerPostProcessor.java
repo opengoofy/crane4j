@@ -24,7 +24,7 @@ import java.util.Collection;
  * @author huangchengxing
  * @see ContainerMethod
  * @see MethodContainerFactory
- * @see Crane4jApplicationContext
+ * @see Crane4jGlobalConfiguration
  */
 @Order
 @Slf4j

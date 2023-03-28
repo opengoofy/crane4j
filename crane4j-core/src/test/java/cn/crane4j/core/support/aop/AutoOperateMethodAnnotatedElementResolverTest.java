@@ -1,0 +1,118 @@
+package cn.crane4j.core.support.aop;
+
+import cn.crane4j.annotation.Assemble;
+import cn.crane4j.annotation.AutoOperate;
+import cn.crane4j.annotation.Mapping;
+import cn.crane4j.core.container.LambdaContainer;
+import cn.crane4j.core.executor.BeanOperationExecutor;
+import cn.crane4j.core.support.Crane4jGlobalConfiguration;
+import cn.crane4j.core.support.MethodInvoker;
+import cn.crane4j.core.support.SimpleCrane4jGlobalConfiguration;
+import cn.hutool.core.util.ReflectUtil;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+/**
+ * test for {@link AutoOperateMethodAnnotatedElementResolver}.
+ *
+ * @author huangchengxing
+ */
+public class AutoOperateMethodAnnotatedElementResolverTest {
+
+    private Crane4jGlobalConfiguration configuration;
+    private AutoOperateMethodAnnotatedElementResolver resolver;
+
+    @Before
+    public void init() {
+        configuration = SimpleCrane4jGlobalConfiguration.create(Collections.emptyMap());
+        resolver = new AutoOperateMethodAnnotatedElementResolver(configuration);
+        configuration.registerContainer(LambdaContainer.<Integer>forLambda(
+            "test", ids -> ids.stream().map(id -> new Foo(id, "name" + id))
+                .collect(Collectors.toMap(Foo::getId, Function.identity()))
+        ));
+    }
+
+    @Test
+    public void resolveMethod() {
+        Method method = ReflectUtil.getMethod(this.getClass(), "method", Collection.class);
+        Assert.assertNotNull(method);
+        AutoOperate annotation = method.getAnnotation(AutoOperate.class);
+        Assert.assertNotNull(annotation);
+        AutoOperateMethodAnnotatedElementResolver.ResolvedElement element = resolver.resolve(method, annotation);
+
+        checkElement(method, annotation, element);
+
+        Result<Foo> foo = new Result<>(new Foo(1));
+        element.execute(foo);
+        Assert.assertEquals("name1", foo.getData().getName());
+
+        Assert.assertThrows(IllegalArgumentException.class, () -> resolver.resolve(Object.class, annotation));
+    }
+
+    @Test
+    public void resolveParameter() {
+        Method method = ReflectUtil.getMethod(this.getClass(), "method2", Result.class);
+        Assert.assertNotNull(method);
+        Parameter parameter = method.getParameters()[0];
+        AutoOperate annotation = parameter.getAnnotation(AutoOperate.class);
+        Assert.assertNotNull(annotation);
+        AutoOperateMethodAnnotatedElementResolver.ResolvedElement element = resolver.resolve(parameter, annotation);
+
+        checkElement(parameter, annotation, element);
+
+        Result<Foo> foo = new Result<>(new Foo(1));
+        element.execute(foo);
+        Assert.assertEquals("name1", foo.getData().getName());
+    }
+
+    private void checkElement(AnnotatedElement ele, AutoOperate annotation, AutoOperateMethodAnnotatedElementResolver.ResolvedElement element) {
+        Assert.assertSame(annotation, element.getAnnotation());
+        Assert.assertSame(ele, element.getElement());
+        Assert.assertEquals(Arrays.asList("a", "b"), new ArrayList<>(element.getGroups()));
+        Assert.assertEquals(Foo.class, element.getBeanOperations().getTargetType());
+        Assert.assertEquals(configuration.getBeanOperationExecutor(BeanOperationExecutor.class), element.getExecutor());
+        MethodInvoker extractor = element.getExtractor();
+        Assert.assertEquals(extractor, extractor.invoke(new Result<>(extractor)));
+    }
+
+    @AutoOperate(type = Foo.class, includes = {"a", "b", "c"}, excludes = "c", on = "data")
+    private Result<Collection<Foo>> method(Collection<Integer> ids) {
+        return new Result<>(ids.stream().map(Foo::new).collect(Collectors.toList()));
+    }
+
+    private Result<Collection<Foo>> method2(
+        @AutoOperate(type = Foo.class, includes = {"a", "b", "c"}, excludes = "c", on = "data")
+        Result<Collection<Foo>> result) {
+        return result;
+    }
+
+    @Getter
+    @RequiredArgsConstructor
+    private static class Result<T> {
+        private final T data;
+    }
+
+    @AllArgsConstructor
+    @RequiredArgsConstructor
+    @Data
+    private static class Foo {
+        @Assemble(container = "test", props = @Mapping("name"), groups = "b")
+        private final Integer id;
+        private String name;
+    }
+}
