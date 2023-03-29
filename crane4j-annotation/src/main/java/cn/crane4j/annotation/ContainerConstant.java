@@ -36,6 +36,16 @@ public @interface ContainerConstant {
     String namespace() default "";
 
     /**
+     * Whether to reverse the key value pair.
+     * When this item is set to {@code true},
+     * the constant attribute value will be used as the key,
+     * and the constant attribute name will be used as the value.
+     *
+     * @return boolean
+     */
+    boolean reverse() default false;
+
+    /**
      * Specify the key name for the attribute.
      */
     @Documented

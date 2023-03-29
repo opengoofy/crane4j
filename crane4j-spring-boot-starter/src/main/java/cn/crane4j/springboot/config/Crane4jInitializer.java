@@ -58,7 +58,7 @@ public class Crane4jInitializer implements ApplicationRunner {
         constantPackages.forEach(path -> readMetadata(path, reader -> {
             Class<?> targetType = ClassUtil.loadClass(reader.getClassMetadata().getClassName());
             if (AnnotatedElementUtils.isAnnotated(targetType, ContainerConstant.class)) {
-                Container<String> container = ConstantContainer.forConstantClass(targetType, annotationFinder);
+                Container<?> container = ConstantContainer.forConstantClass(targetType, annotationFinder);
                 configuration.registerContainer(container);
             }
         }));

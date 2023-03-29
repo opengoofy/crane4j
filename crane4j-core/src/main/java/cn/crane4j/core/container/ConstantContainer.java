@@ -4,6 +4,7 @@ import cn.crane4j.annotation.ContainerConstant;
 import cn.crane4j.annotation.ContainerEnum;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.hutool.core.lang.Assert;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ReflectUtil;
 import lombok.AccessLevel;
@@ -128,7 +129,7 @@ public class ConstantContainer<K> implements Container<K> {
      * @return container
      * @see ContainerConstant
      */
-    public static ConstantContainer<String> forConstantClass(
+    public static ConstantContainer<?> forConstantClass(
         Class<?> constantClass, AnnotationFinder annotationFinder) {
         Objects.requireNonNull(constantClass);
         ContainerConstant annotation = annotationFinder.findAnnotation(constantClass, ContainerConstant.class);
@@ -137,7 +138,7 @@ public class ConstantContainer<K> implements Container<K> {
         boolean onlyExplicitlyIncluded = annotation.onlyExplicitlyIncluded();
         // get attribute
         Field[] fields = ReflectUtil.getFields(constantClass);
-        Map<String, Object> data = new LinkedHashMap<>();
+        Map<Object, Object> data = new LinkedHashMap<>();
         Stream.of(fields)
             .filter(field -> Modifier.isStatic(field.getModifiers()))
             .filter(field -> !onlyPublic || Modifier.isPublic(field.getModifiers()))
@@ -151,7 +152,7 @@ public class ConstantContainer<K> implements Container<K> {
             });
         // build container
         String namespace = CharSequenceUtil.emptyToDefault(annotation.namespace(), constantClass.getSimpleName());
-        return forMap(namespace, data);
+        return forMap(namespace, annotation.reverse() ? MapUtil.reverse(data) : data);
     }
 
     /**

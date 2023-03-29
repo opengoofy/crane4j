@@ -72,27 +72,38 @@ public class ConstantContainerTest {
 
     @Test
     public void forConstantClass() {
-        ConstantContainer<String> container1 = ConstantContainer.forConstantClass(
+        ConstantContainer<?> container1 = ConstantContainer.forConstantClass(
             FooConstant1.class, new SimpleAnnotationFinder()
         );
         Assert.assertEquals("foo", container1.getNamespace());
-        Map<String, ?> sources1 = container1.get(null);
+        Map<?, ?> sources1 = container1.get(null);
         Assert.assertTrue(sources1.containsKey("ONE"));
         Assert.assertEquals("one", sources1.get("ONE"));
         Assert.assertTrue(sources1.containsKey("THREE"));
         Assert.assertEquals("three", sources1.get("THREE"));
         Assert.assertFalse(sources1.containsKey("two"));
 
-        ConstantContainer<String> container2 = ConstantContainer.forConstantClass(
+        ConstantContainer<?> container2 = ConstantContainer.forConstantClass(
             FooConstant2.class, new SimpleAnnotationFinder()
         );
         Assert.assertEquals(FooConstant2.class.getSimpleName(), container2.getNamespace());
-        Map<String, ?> sources2 = container2.get(null);
+        Map<?, ?> sources2 = container2.get(null);
         Assert.assertTrue(sources2.containsKey("ONE"));
-        Assert.assertEquals("one", sources1.get("ONE"));
+        Assert.assertEquals("one", sources2.get("ONE"));
         Assert.assertTrue(sources2.containsKey("THREE"));
-        Assert.assertEquals("three", sources1.get("THREE"));
+        Assert.assertEquals("three", sources2.get("THREE"));
         Assert.assertFalse(sources2.containsKey("two"));
+
+        ConstantContainer<?> container3 = ConstantContainer.forConstantClass(
+            FooConstant3.class, new SimpleAnnotationFinder()
+        );
+        Assert.assertEquals(FooConstant3.class.getSimpleName(), container3.getNamespace());
+        Map<?, ?> sources3 = container3.get(null);
+        Assert.assertTrue(sources3.containsKey("one"));
+        Assert.assertEquals("ONE", sources3.get("one"));
+        Assert.assertTrue(sources3.containsKey("three"));
+        Assert.assertEquals("THREE", sources3.get("three"));
+        Assert.assertFalse(sources3.containsKey("two"));
     }
 
     @Getter
@@ -128,6 +139,16 @@ public class ConstantContainerTest {
 
     @ContainerConstant(onlyExplicitlyIncluded = true, onlyPublic = false)
     public static class FooConstant2 {
+        @ContainerConstant.Include
+        public static final String ONE = "one";
+        public static final String TWO = "two";
+        @ContainerConstant.Include
+        @ContainerConstant.Name("THREE")
+        private static final String SAN = "three";
+    }
+
+    @ContainerConstant(onlyExplicitlyIncluded = true, onlyPublic = false, reverse = true)
+    public static class FooConstant3 {
         @ContainerConstant.Include
         public static final String ONE = "one";
         public static final String TWO = "two";
