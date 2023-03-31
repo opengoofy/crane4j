@@ -32,7 +32,7 @@ public class MethodBaseExpressionExecuteDelegateTest {
         );
         Assert.assertNotNull(method);
         Integer result = expressionExecuteDelegate.execute(
-            "arg0 + arg1 + result", Integer.class,
+            "#arg0 + #arg1 + #result", Integer.class,
             method, new Object[]{ 1, 2 }, 3
         );
         Assert.assertEquals((Integer)6, result);
@@ -40,7 +40,7 @@ public class MethodBaseExpressionExecuteDelegateTest {
         method = ReflectUtil.getMethod(MethodBaseExpressionExecuteDelegateTest.class, "method2");
         Assert.assertNotNull(method);
         result = expressionExecuteDelegate.execute(
-            "a0 + a1 + result", Integer.class,
+            "#a0 + #a1 + #result", Integer.class,
             method, new Object[]{ 1, 2 }, 3
         );
         Assert.assertEquals((Integer)6, result);

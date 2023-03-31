@@ -8,12 +8,7 @@ import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
 import cn.crane4j.core.executor.OrderedBeanOperationExecutor;
-import cn.crane4j.core.executor.handler.AssembleOperationHandler;
-import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
-import cn.crane4j.core.executor.handler.ManyToManyReflexAssembleOperationHandler;
-import cn.crane4j.core.executor.handler.OneToManyReflexAssembleOperationHandler;
-import cn.crane4j.core.executor.handler.OneToOneReflexAssembleOperationHandler;
-import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
+import cn.crane4j.core.executor.handler.*;
 import cn.crane4j.core.parser.AnnotationAwareBeanOperationParser;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.support.callback.ContainerRegisterAware;
@@ -31,11 +26,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.UnaryOperator;
 
 /**
@@ -62,6 +53,7 @@ public class SimpleCrane4jGlobalConfiguration implements Crane4jGlobalConfigurat
     /**
      * Create a {@link SimpleCrane4jGlobalConfiguration} using the default configuration.
      *
+     * @param cacheConfig cacheConfig
      * @return configuration
      */
     public static SimpleCrane4jGlobalConfiguration create(@Nullable Map<String, String> cacheConfig) {
@@ -173,9 +165,10 @@ public class SimpleCrane4jGlobalConfiguration implements Crane4jGlobalConfigurat
      */
     @Override
     public void registerContainer(Container<?> container) {
-        ConfigurationUtil.registerContainer(
-            this, containerMap::get, c -> containerMap.put(c.getNamespace(), c),
-            container, getContainerRegisterAwareList()
+        String namespace = container.getNamespace();
+        Assert.isFalse(containerMap.containsKey(namespace), () -> new Crane4jException("the container [{}] has been registered", namespace));
+        ConfigurationUtil.invokeRegisterAware(
+            this, container, getContainerRegisterAwareList(), c -> containerMap.put(namespace, c)
         );
     }
 

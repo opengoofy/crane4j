@@ -15,8 +15,8 @@
     <module>crane4j-core</module>
     <module>crane4j-spring-boot-starter</module>
     <module>crane4j-annotation</module>
-    <module>crane4j-mybatis-plus-extension</module>
     <module>crane4j-example</module>
+    <module>crane4j-extension</module>
   </modules>
 
   <licenses>
@@ -37,7 +37,7 @@
   <developers>
     <developer>
       <name>Createsequence</name>
-      <email>841396397@qq.com</email>
+      <email>cn.createsequence@gmail.com</email>
       <organization>opengoofy</organization>
     </developer>
   </developers>

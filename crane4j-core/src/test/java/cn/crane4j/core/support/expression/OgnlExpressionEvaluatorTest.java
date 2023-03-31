@@ -24,7 +24,7 @@ public class OgnlExpressionEvaluatorTest {
         ExpressionContext context = new OgnlExpressionContext();
         context.registerVariable("something", "love");
         Assert.assertThrows(Crane4jException.class, () -> evaluator.execute("something + is necessary", String.class, context));
-        String expected = evaluator.execute("something + ' is necessary'", String.class, context);
+        String expected = evaluator.execute("#something + ' is necessary'", String.class, context);
         Assert.assertEquals("love is necessary", expected);
     }
 }

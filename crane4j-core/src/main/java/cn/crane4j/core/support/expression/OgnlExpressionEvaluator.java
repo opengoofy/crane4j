@@ -41,7 +41,8 @@ public class OgnlExpressionEvaluator implements ExpressionEvaluator {
             }
             return result;
         });
-        context = context instanceof OgnlContext ? context : new OgnlExpressionContext(context);
-        return (T)Ognl.getValue(exp, context, resultType);
+        OgnlContext ognlContext = context instanceof OgnlContext ?
+            (OgnlContext)context : new OgnlExpressionContext(context);
+        return (T)Ognl.getValue(exp, ognlContext, ognlContext.getRoot(), resultType);
     }
 }

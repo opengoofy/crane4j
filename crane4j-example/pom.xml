@@ -29,22 +29,7 @@
         <dependencies>
             <dependency>
                 <groupId>cn.crane4j</groupId>
-                <artifactId>crane4j-annotation</artifactId>
-                <version>${revision}</version>
-            </dependency>
-            <dependency>
-                <groupId>cn.crane4j</groupId>
-                <artifactId>crane4j-core</artifactId>
-                <version>${revision}</version>
-            </dependency>
-            <dependency>
-                <groupId>cn.crane4j</groupId>
                 <artifactId>crane4j-spring-boot-starter</artifactId>
-                <version>${revision}</version>
-            </dependency>
-            <dependency>
-                <groupId>cn.crane4j</groupId>
-                <artifactId>crane4j-mybatis-plus-extension</artifactId>
                 <version>${revision}</version>
             </dependency>
             <dependency>

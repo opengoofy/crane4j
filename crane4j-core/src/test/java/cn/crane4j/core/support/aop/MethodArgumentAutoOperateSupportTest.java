@@ -5,11 +5,7 @@ import cn.crane4j.annotation.Assemble;
 import cn.crane4j.annotation.AutoOperate;
 import cn.crane4j.annotation.Mapping;
 import cn.crane4j.core.container.LambdaContainer;
-import cn.crane4j.core.support.Crane4jGlobalConfiguration;
-import cn.crane4j.core.support.ParameterNameFinder;
-import cn.crane4j.core.support.SimpleAnnotationFinder;
-import cn.crane4j.core.support.SimpleCrane4jGlobalConfiguration;
-import cn.crane4j.core.support.SimpleParameterNameFinder;
+import cn.crane4j.core.support.*;
 import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
 import cn.crane4j.core.support.expression.OgnlExpressionContext;
 import cn.crane4j.core.support.expression.OgnlExpressionEvaluator;
@@ -65,7 +61,7 @@ public class MethodArgumentAutoOperateSupportTest {
     }
 
     @ArgAutoOperate(
-        @AutoOperate(value = "arg0", type = Foo.class, on = "data", condition = "arg0 != null")
+        @AutoOperate(value = "arg0", type = Foo.class, on = "data", condition = "#arg0 != null")
     )
     private Result<Collection<Foo>> method(Result<Collection<Foo>> result, Object noneAnnotatedParam) {
         return result;

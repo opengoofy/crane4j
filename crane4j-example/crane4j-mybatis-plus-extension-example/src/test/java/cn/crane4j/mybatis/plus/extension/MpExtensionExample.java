@@ -5,7 +5,7 @@ import cn.crane4j.annotation.Mapping;
 import cn.crane4j.annotation.MappingTemplate;
 import cn.crane4j.annotation.extension.AssembleByMp;
 import cn.crane4j.core.support.OperateTemplate;
-import cn.crane4j.mybatis.plus.MpMethodContainerProvider;
+import cn.crane4j.extension.mybatis.plus.MpMethodContainerProvider;
 import cn.crane4j.mybatis.plus.extension.example.Crane4jMybatisPlusExampleApplication;
 import cn.crane4j.mybatis.plus.extension.example.Foo;
 import cn.crane4j.mybatis.plus.extension.example.FooMapper;
@@ -69,6 +69,7 @@ public class MpExtensionExample {
      */
     @Test
     public void testPrimaryKeyAndAllColumns() {
+
         List<FooVO> fooList = Arrays.asList(new FooVO().setId(1), new FooVO().setId(2));
         operateTemplate.executeIfMatchAnyGroups(fooList, "testPrimaryKeyAndAllColumns");
 
