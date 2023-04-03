@@ -9,7 +9,7 @@ import java.util.Collection;
  * Used to extract nested pending objects from a pending target object.
  *
  * @author huangchengxing
- * @see ManyToManyReflexAssembleOperationHandler
+ * @see ReflectDisassembleOperationHandler
  */
 public interface DisassembleOperationHandler {
 

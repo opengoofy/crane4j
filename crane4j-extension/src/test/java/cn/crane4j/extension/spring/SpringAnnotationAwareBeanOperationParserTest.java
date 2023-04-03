@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * test for {@link SpringAnnotationAwareBeanOperationParser}
+ * test for {@link SpringAnnotationOperationsResolver}
  *
  * @author huangchengxing
  */

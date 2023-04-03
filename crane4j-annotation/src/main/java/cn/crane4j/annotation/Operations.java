@@ -1,6 +1,10 @@
 package cn.crane4j.annotation;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * <p>Used to centrally configure a group of operations of assemble and disassemble on a class.<br />
@@ -10,6 +14,7 @@ import java.lang.annotation.*;
  *
  * @see Assemble
  * @see Disassemble
+ * @see cn.crane4j.core.parser.DefaultAnnotationOperationsResolver;
  * @author huangchengxing
  */
 @Documented

@@ -8,9 +8,15 @@ import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
 import cn.crane4j.core.executor.OrderedBeanOperationExecutor;
-import cn.crane4j.core.executor.handler.*;
-import cn.crane4j.core.parser.AnnotationAwareBeanOperationParser;
+import cn.crane4j.core.executor.handler.AssembleOperationHandler;
+import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
+import cn.crane4j.core.executor.handler.ManyToManyReflexAssembleOperationHandler;
+import cn.crane4j.core.executor.handler.OneToManyReflexAssembleOperationHandler;
+import cn.crane4j.core.executor.handler.OneToOneReflexAssembleOperationHandler;
+import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
 import cn.crane4j.core.parser.BeanOperationParser;
+import cn.crane4j.core.parser.DefaultAnnotationOperationsResolver;
+import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
 import cn.crane4j.core.support.callback.ContainerRegisterAware;
 import cn.crane4j.core.support.callback.ContainerRegisteredLogger;
 import cn.crane4j.core.support.callback.DefaultCacheableContainerProcessor;
@@ -26,7 +32,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.UnaryOperator;
 
 /**
@@ -43,7 +55,7 @@ public class SimpleCrane4jGlobalConfiguration implements Crane4jGlobalConfigurat
     private PropertyOperator propertyOperator;
     @Getter
     private final List<ContainerRegisterAware> containerRegisterAwareList = new ArrayList<>(4);
-    private final Map<String, Container<?>> containerMap = new HashMap<>(16);
+    private final Map<String, Container<?>> containerMap = new ConcurrentHashMap<>(16);
     private final Map<String, BeanOperationParser> beanOperationParserMap = new HashMap<>(16);
     private final Map<String, AssembleOperationHandler> assembleOperationHandlerMap = new HashMap<>(4);
     private final Map<String, DisassembleOperationHandler> disassembleOperationHandlerMap = new HashMap<>(4);
@@ -74,7 +86,9 @@ public class SimpleCrane4jGlobalConfiguration implements Crane4jGlobalConfigurat
 
         // operation parser
         AnnotationFinder annotationFinder = new SimpleAnnotationFinder();
-        BeanOperationParser beanOperationParser = new AnnotationAwareBeanOperationParser(annotationFinder, configuration);
+        BeanOperationParser beanOperationParser = new TypeHierarchyBeanOperationParser(
+            Collections.singletonList(new DefaultAnnotationOperationsResolver(annotationFinder, configuration))
+        );
         configuration.getBeanOperationParserMap().put(BeanOperationParser.class.getName(), beanOperationParser);
         configuration.getBeanOperationParserMap().put(beanOperationParser.getClass().getName(), beanOperationParser);
 
@@ -96,6 +110,9 @@ public class SimpleCrane4jGlobalConfiguration implements Crane4jGlobalConfigurat
         ReflectDisassembleOperationHandler reflectDisassembleOperationHandler = new ReflectDisassembleOperationHandler(operator);
         configuration.getDisassembleOperationHandlerMap().put(DisassembleOperationHandler.class.getName(), reflectDisassembleOperationHandler);
         configuration.getDisassembleOperationHandlerMap().put(reflectDisassembleOperationHandler.getClass().getName(), reflectDisassembleOperationHandler);
+
+        configuration.getContainerProviderMap().put(configuration.getClass().getName(), configuration);
+        configuration.getContainerProviderMap().put(ContainerProvider.class.getName(), configuration);
         return configuration;
     }
 

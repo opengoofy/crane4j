@@ -9,7 +9,7 @@ import cn.crane4j.core.executor.BeanOperationExecutor;
  * for a specific type according to the type.
  *
  * @author huangchengxing
- * @see AnnotationAwareBeanOperationParser
+ * @see TypeHierarchyBeanOperationParser
  * @see BeanOperationExecutor
  */
 public interface BeanOperationParser {

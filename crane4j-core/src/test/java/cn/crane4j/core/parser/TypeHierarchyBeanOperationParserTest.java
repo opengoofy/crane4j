@@ -28,11 +28,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * test for {@link AnnotationAwareBeanOperationParser}
+ * test for {@link TypeHierarchyBeanOperationParser}
  *
  * @author huangchengxing
  */
-public class AnnotationAwareBeanOperationParserTest {
+public class TypeHierarchyBeanOperationParserTest {
 
     private static final String GROUP = "test";
     private static final String CONTAINER_NAME = "test";
@@ -44,13 +44,13 @@ public class AnnotationAwareBeanOperationParserTest {
         new ReflectPropertyOperator()
     );
 
-    private AnnotationAwareBeanOperationParser parser;
+    private BeanOperationParser parser;
 
     @Before
     public void init() {
         SimpleCrane4jGlobalConfiguration configuration = new SimpleCrane4jGlobalConfiguration();
-        parser = new AnnotationAwareBeanOperationParser(
-            new SimpleAnnotationFinder(), configuration
+        parser = new TypeHierarchyBeanOperationParser(
+            Collections.singletonList(new DefaultAnnotationOperationsResolver(new SimpleAnnotationFinder(), configuration))
         );
         configuration.setTypeResolver(new SimpleTypeResolver());
         configuration.getContainerMap().put(CONTAINER.getNamespace(), CONTAINER);

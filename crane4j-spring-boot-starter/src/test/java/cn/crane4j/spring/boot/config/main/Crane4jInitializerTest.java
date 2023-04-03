@@ -4,8 +4,9 @@ import cn.crane4j.core.cache.CacheManager;
 import cn.crane4j.core.container.CacheableContainer;
 import cn.crane4j.core.container.ConstantContainer;
 import cn.crane4j.core.container.Container;
-import cn.crane4j.core.parser.AnnotationAwareBeanOperationParser;
+import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.BeanOperations;
+import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
 import cn.crane4j.extension.spring.Crane4jApplicationContext;
 import cn.crane4j.spring.boot.config.Crane4jAutoConfiguration;
 import cn.hutool.core.util.ReflectUtil;
@@ -87,8 +88,8 @@ public class Crane4jInitializerTest {
             Collections.singleton("cn.crane4j.spring.boot.config.main.*"),
             properties.getOperateEntityPackages()
         );
-        AnnotationAwareBeanOperationParser parser = applicationContext.getBean(AnnotationAwareBeanOperationParser.class);
-        Map<Class<?>, BeanOperations> parsedBeanOperations = (Map<Class<?>, BeanOperations>)ReflectUtil.getFieldValue(parser, "parsedBeanOperations");
+        BeanOperationParser parser = applicationContext.getBean(TypeHierarchyBeanOperationParser.class);
+        Map<Class<?>, BeanOperations> parsedBeanOperations = (Map<Class<?>, BeanOperations>)ReflectUtil.getFieldValue(parser, "resolvedTypes");
         Assert.assertTrue(parsedBeanOperations.containsKey(TestBean1.class));
         Assert.assertTrue(parsedBeanOperations.containsKey(TestBean2.class));
     }

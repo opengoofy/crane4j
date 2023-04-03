@@ -8,9 +8,15 @@ import cn.crane4j.core.executor.handler.ManyToManyReflexAssembleOperationHandler
 import cn.crane4j.core.executor.handler.OneToManyReflexAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.OneToOneReflexAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
-import cn.crane4j.core.parser.AnnotationAwareBeanOperationParser;
 import cn.crane4j.core.parser.AssembleOperation;
-import cn.crane4j.core.support.*;
+import cn.crane4j.core.parser.BeanOperationParser;
+import cn.crane4j.core.parser.BeanOperationsResolver;
+import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
+import cn.crane4j.core.support.AnnotationFinder;
+import cn.crane4j.core.support.Crane4jGlobalConfiguration;
+import cn.crane4j.core.support.OperateTemplate;
+import cn.crane4j.core.support.SimpleTypeResolver;
+import cn.crane4j.core.support.TypeResolver;
 import cn.crane4j.core.support.aop.AutoOperateMethodAnnotatedElementResolver;
 import cn.crane4j.core.support.callback.ContainerRegisterAware;
 import cn.crane4j.core.support.callback.ContainerRegisteredLogger;
@@ -103,10 +109,16 @@ public class Crane4jSpringTestConfiguration {
 
     @Primary
     @Bean
-    public SpringAnnotationAwareBeanOperationParser springAnnotationAwareBeanOperationParser(
+    public SpringAnnotationOperationsResolver springAnnotationOperationsResolver(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration,
         ExpressionEvaluator evaluator, BeanResolver beanResolver) {
-        return new SpringAnnotationAwareBeanOperationParser(annotationFinder, configuration, evaluator, beanResolver);
+        return new SpringAnnotationOperationsResolver(annotationFinder, configuration, evaluator, beanResolver);
+    }
+
+    @Primary
+    @Bean
+    public BeanOperationParser typeHierarchyBeanOperationParser(Collection<BeanOperationsResolver> beanOperationsResolver) {
+        return new TypeHierarchyBeanOperationParser(beanOperationsResolver);
     }
 
     @Primary
@@ -160,7 +172,7 @@ public class Crane4jSpringTestConfiguration {
 
     @Bean
     public OperateTemplate operateTemplate(
-        AnnotationAwareBeanOperationParser parser, DisorderedBeanOperationExecutor executor, TypeResolver typeResolver) {
+        BeanOperationParser parser, DisorderedBeanOperationExecutor executor, TypeResolver typeResolver) {
         return new OperateTemplate(parser, executor, typeResolver);
     }
 

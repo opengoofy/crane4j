@@ -9,8 +9,10 @@ import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
 import cn.crane4j.core.executor.handler.ManyToManyReflexAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
-import cn.crane4j.core.parser.AnnotationAwareBeanOperationParser;
 import cn.crane4j.core.parser.BeanOperationParser;
+import cn.crane4j.core.parser.BeanOperationsResolver;
+import cn.crane4j.core.parser.DefaultAnnotationOperationsResolver;
+import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
 import cn.crane4j.core.support.callback.ContainerRegisterAware;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
 import org.junit.Assert;
@@ -39,7 +41,8 @@ public class SimpleCrane4jGlobalConfigurationTest {
         configuration.getBeanOperationExecutorMap().put(executor.getClass().getName(), executor);
         configuration.getBeanOperationExecutorMap().put(BeanOperationExecutor.class.getName(), executor);
 
-        AnnotationAwareBeanOperationParser parser = new AnnotationAwareBeanOperationParser(new SimpleAnnotationFinder(), configuration);
+        BeanOperationsResolver resolver = new DefaultAnnotationOperationsResolver(new SimpleAnnotationFinder(), configuration);
+        BeanOperationParser parser = new TypeHierarchyBeanOperationParser(Collections.singletonList(resolver));
         configuration.getBeanOperationParserMap().put(parser.getClass().getName(), parser);
         configuration.getBeanOperationParserMap().put(BeanOperationParser.class.getName(), parser);
 
@@ -114,7 +117,7 @@ public class SimpleCrane4jGlobalConfigurationTest {
 
     @Test
     public void getBeanOperationsParser() {
-        Assert.assertNotNull(configuration.getBeanOperationsParser(AnnotationAwareBeanOperationParser.class));
+        Assert.assertNotNull(configuration.getBeanOperationsParser(TypeHierarchyBeanOperationParser.class));
     }
 
     @Test
