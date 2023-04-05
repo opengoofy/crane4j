@@ -2,7 +2,6 @@ package cn.crane4j.core.support.aop;
 
 import cn.crane4j.annotation.ArgAutoOperate;
 import cn.crane4j.annotation.AutoOperate;
-import static cn.crane4j.core.support.aop.AutoOperateMethodAnnotatedElementResolver.ResolvedElement;
 import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.hutool.core.map.MapUtil;
@@ -12,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Objects;
+
+import static cn.crane4j.core.support.aop.AutoOperateMethodAnnotatedElementResolver.ResolvedElement;
 
 /**
  * Method result auto operate support.
@@ -47,7 +48,7 @@ public class MethodResultAutoOperateSupport {
      * @param result result
      * @param args args
      */
-    public void afterMethodInvoker(AutoOperate annotation, Method method, Object result, Object[] args) {
+    public void afterMethodInvoke(AutoOperate annotation, Method method, Object result, Object[] args) {
         // has annotation?
         if (Objects.isNull(annotation)) {
             return;

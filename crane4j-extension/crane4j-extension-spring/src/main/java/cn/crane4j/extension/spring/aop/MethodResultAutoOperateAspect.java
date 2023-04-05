@@ -34,14 +34,14 @@ public class MethodResultAutoOperateAspect extends MethodResultAutoOperateSuppor
     }
 
     @AfterReturning(returning = "result", pointcut = "@annotation(cn.crane4j.annotation.AutoOperate)")
-    public void afterReturning(JoinPoint joinPoint, Object result) {
+    public void afterMethodInvoke(JoinPoint joinPoint, Object result) {
         if (Objects.isNull(result)) {
             return;
         }
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
         Method method = methodSignature.getMethod();
         AutoOperate annotation = AnnotatedElementUtils.findMergedAnnotation(method, AutoOperate.class);
-        afterMethodInvoker(annotation, method, result, joinPoint.getArgs());
+        super.afterMethodInvoke(annotation, method, result, joinPoint.getArgs());
     }
 
     /**

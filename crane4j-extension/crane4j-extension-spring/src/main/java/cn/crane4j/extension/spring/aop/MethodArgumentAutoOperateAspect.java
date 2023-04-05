@@ -41,11 +41,11 @@ public class MethodArgumentAutoOperateAspect extends MethodArgumentAutoOperateSu
     }
 
     @Before("@annotation(cn.crane4j.annotation.ArgAutoOperate)")
-    public void before(JoinPoint joinPoint) {
+    public void beforeMethodInvoke(JoinPoint joinPoint) {
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
         Method method = methodSignature.getMethod();
         ArgAutoOperate annotation = AnnotatedElementUtils.findMergedAnnotation(method, ArgAutoOperate.class);
-        beforeMethodInvoke(annotation, method, joinPoint.getArgs());
+        super.beforeMethodInvoke(annotation, method, joinPoint.getArgs());
     }
 
     /**

@@ -59,7 +59,7 @@ public class MethodResultAutoOperateSupportTest {
         AutoOperate annotation = method.getAnnotation(AutoOperate.class);
         Assert.assertNotNull(annotation);
         Result<Foo> foo = new Result<>(new Foo(1));
-        support.afterMethodInvoker(annotation, method, foo, new Object[]{ Arrays.asList(1, 2) });
+        support.afterMethodInvoke(annotation, method, foo, new Object[]{ Arrays.asList(1, 2) });
         Assert.assertEquals("name1", foo.getData().getName());
     }
 

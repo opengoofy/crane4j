@@ -30,7 +30,7 @@
             <dependency>
                 <groupId>cn.crane4j</groupId>
                 <artifactId>crane4j-spring-boot-starter</artifactId>
-                <version>${revision}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.baomidou</groupId>
