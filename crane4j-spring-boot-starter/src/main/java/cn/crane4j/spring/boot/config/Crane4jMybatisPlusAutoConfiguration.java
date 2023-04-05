@@ -4,11 +4,7 @@ import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
 import cn.crane4j.core.support.reflect.PropertyOperator;
-import cn.crane4j.extension.mybatis.plus.MpAnnotationOperationsResolver;
-import cn.crane4j.extension.mybatis.plus.MpBaseMapperContainerRegister;
-import cn.crane4j.extension.mybatis.plus.MpMethodContainer;
-import cn.crane4j.extension.mybatis.plus.MpMethodContainerProvider;
-import cn.crane4j.extension.spring.LazyLoadMpBaseMapperContainerRegister;
+import cn.crane4j.extension.mybatis.plus.*;
 import cn.crane4j.extension.spring.expression.SpelExpressionContext;
 import com.baomidou.mybatisplus.autoconfigure.MybatisPlusAutoConfiguration;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -48,7 +44,7 @@ public class Crane4jMybatisPlusAutoConfiguration {
     @ConditionalOnMissingBean
     public MpBaseMapperContainerRegister mpBaseMapperContainerRegister(
         PropertyOperator propertyOperator, Crane4jGlobalConfiguration globalConfiguration, ApplicationContext applicationContext) {
-        return new LazyLoadMpBaseMapperContainerRegister(globalConfiguration, propertyOperator, applicationContext);
+        return new LazyLoadMpBaseMapperContainerRegister(globalConfiguration, propertyOperator, mapperName -> applicationContext.getBean(mapperName, BaseMapper.class));
     }
 
     @Bean
@@ -161,7 +157,7 @@ public class Crane4jMybatisPlusAutoConfiguration {
     @Slf4j
     public static class InitializationLogger implements ApplicationRunner {
         @Override
-        public void run(ApplicationArguments args) throws Exception {
+        public void run(ApplicationArguments args) {
             log.info("Initialized crane4j mybatis-plus extension components......");
         }
     }

@@ -17,11 +17,7 @@ import cn.crane4j.core.parser.AssembleOperation;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.BeanOperationsResolver;
 import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
-import cn.crane4j.core.support.AnnotationFinder;
-import cn.crane4j.core.support.Crane4jGlobalConfiguration;
-import cn.crane4j.core.support.OperateTemplate;
-import cn.crane4j.core.support.SimpleTypeResolver;
-import cn.crane4j.core.support.TypeResolver;
+import cn.crane4j.core.support.*;
 import cn.crane4j.core.support.aop.AutoOperateMethodAnnotatedElementResolver;
 import cn.crane4j.core.support.callback.ContainerRegisterAware;
 import cn.crane4j.core.support.callback.ContainerRegisteredLogger;
@@ -31,17 +27,9 @@ import cn.crane4j.core.support.container.DefaultMethodContainerFactory;
 import cn.crane4j.core.support.container.MethodContainerFactory;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
 import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
-import cn.crane4j.core.support.reflect.AsmReflectPropertyOperator;
-import cn.crane4j.core.support.reflect.ChainAccessiblePropertyOperator;
-import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
-import cn.crane4j.core.support.reflect.PropertyOperator;
-import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
+import cn.crane4j.core.support.reflect.*;
 import cn.crane4j.core.util.CollectionUtils;
-import cn.crane4j.extension.spring.Crane4jApplicationContext;
-import cn.crane4j.extension.spring.MergedAnnotationFinder;
-import cn.crane4j.extension.spring.MergedAnnotationMethodContainerPostProcessor;
-import cn.crane4j.extension.spring.ResolvableExpressionEvaluator;
-import cn.crane4j.extension.spring.SpringAnnotationOperationsResolver;
+import cn.crane4j.extension.spring.*;
 import cn.crane4j.extension.spring.aop.MethodArgumentAutoOperateAspect;
 import cn.crane4j.extension.spring.aop.MethodResultAutoOperateAspect;
 import cn.crane4j.extension.spring.expression.SpelExpressionContext;
@@ -79,15 +67,7 @@ import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.expression.BeanResolver;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -463,7 +443,7 @@ public class Crane4jAutoConfiguration {
                     .collect(Collectors.toList());
                 Stream.of(parserNames)
                     .map(beanName -> applicationContext.getBean(beanName, TypeHierarchyBeanOperationParser.class))
-                    .forEach(parser -> resolvers.forEach(parser::addBeanOperationsResolvers));
+                    .forEach(parser -> resolvers.forEach(parser::addBeanOperationsResolver));
             }
         }
 

@@ -6,15 +6,7 @@ import cn.hutool.core.collection.CollUtil;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Collection;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -58,7 +50,7 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
      *
      * @param resolver resolver
      */
-    public void addBeanOperationsResolvers(BeanOperationsResolver resolver) {
+    public void addBeanOperationsResolver(BeanOperationsResolver resolver) {
         Objects.requireNonNull(resolver);
         if (!beanOperationsResolvers.contains(resolver)) {
             beanOperationsResolvers.add(resolver);

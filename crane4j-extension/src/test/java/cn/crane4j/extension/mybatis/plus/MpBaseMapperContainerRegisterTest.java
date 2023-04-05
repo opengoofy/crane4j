@@ -27,7 +27,7 @@ public class MpBaseMapperContainerRegisterTest extends MpBaseTest {
     @Override
     public void afterInit() {
         Crane4jGlobalConfiguration crane4jGlobalConfiguration = SimpleCrane4jGlobalConfiguration.create(Collections.emptyMap());
-        mapperContainerRegister = new MpBaseMapperContainerRegister(crane4jGlobalConfiguration, new ReflectPropertyOperator());
+        mapperContainerRegister = new LazyLoadMpBaseMapperContainerRegister(crane4jGlobalConfiguration, new ReflectPropertyOperator(), name -> fooMapper);
         mapperContainerRegister.registerMapper("fooMapper", fooMapper);
     }
 
@@ -49,16 +49,16 @@ public class MpBaseMapperContainerRegisterTest extends MpBaseTest {
         mapperContainerRegister.destroy();
         Assert.assertTrue(infoMap.isEmpty());
 
-        // check register
-        mapperContainerRegister.registerMapper("fooMapper", fooMapper);
+        // check container
+        Container<Object> container = (Container<Object>)mapperContainerRegister.getContainer("fooMapper", null, null);
+
+        // check lazy load
         MpBaseMapperContainerRegister.MapperInfo mapperInfo = infoMap.get("fooMapper");
         Assert.assertNotNull(mapperInfo);
         Assert.assertSame(fooMapper, mapperInfo.getBaseMapper());
         Assert.assertEquals("fooMapper", mapperInfo.getName());
         Assert.assertEquals(TableInfoHelper.getTableInfo(Foo.class), mapperInfo.getTableInfo());
 
-        // check container
-        Container<Object> container = (Container<Object>)mapperContainerRegister.getContainer("fooMapper", null, null);
         checkContainer(container, "id");
         Assert.assertSame(container, mapperContainerRegister.getContainer("fooMapper", null, null));
         container = (Container<Object>)mapperContainerRegister.getContainer("fooMapper", null, Arrays.asList("age", "name"));

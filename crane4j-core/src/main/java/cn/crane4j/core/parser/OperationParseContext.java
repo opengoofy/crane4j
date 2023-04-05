@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
  * Context in parsing.
  *
  * @author huangchengxing
+ * @since 1.2.0
  */
 @RequiredArgsConstructor
 public class OperationParseContext {

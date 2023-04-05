@@ -1,21 +1,16 @@
-package cn.crane4j.extension.spring;
+package cn.crane4j.extension.mybatis.plus;
 
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.reflect.PropertyOperator;
-import cn.crane4j.extension.mybatis.plus.MpBaseMapperContainerRegister;
-import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.map.MapUtil;
-import cn.hutool.core.text.CharSequenceUtil;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.context.ApplicationContext;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * <p>A implementation of {@link MpBaseMapperContainerRegister} that support lazy loading.<br />
@@ -28,20 +23,20 @@ import java.util.List;
  */
 public class LazyLoadMpBaseMapperContainerRegister extends MpBaseMapperContainerRegister implements DisposableBean {
 
-    private final ApplicationContext applicationContext;
+    private final Function<String, BaseMapper<?>> mapperFactory;
 
     /**
      * Create a {@link LazyLoadMpBaseMapperContainerRegister} instance.
      *
      * @param crane4jGlobalConfiguration crane4j global configuration
      * @param propertyOperator property operator
-     * @param applicationContext application context
+     * @param mapperFactory mapper factory
      */
     public LazyLoadMpBaseMapperContainerRegister(
         Crane4jGlobalConfiguration crane4jGlobalConfiguration, PropertyOperator propertyOperator,
-        ApplicationContext applicationContext) {
+        Function<String, BaseMapper<?>> mapperFactory) {
         super(crane4jGlobalConfiguration, propertyOperator);
-        this.applicationContext = applicationContext;
+        this.mapperFactory = mapperFactory;
     }
 
     /**
@@ -58,17 +53,11 @@ public class LazyLoadMpBaseMapperContainerRegister extends MpBaseMapperContainer
      */
     @Override
     public Container<?> getContainer(String name, @Nullable String keyProperty, @Nullable List<String> properties) {
-        CacheKey cacheKey = new CacheKey(
-            name, CharSequenceUtil.emptyToNull(keyProperty),
-            CollUtil.defaultIfEmpty(properties, Collections.emptyList())
-        );
         if (!registerMappers.containsKey(name)) {
             synchronized (registerMappers) {
-                if (!registerMappers.containsKey(name)) {
-                    registerMapper(name, applicationContext.getBean(name, BaseMapper.class));
-                }
+                registerMapper(name, mapperFactory.apply(name));
             }
         }
-        return MapUtil.computeIfAbsent(containerCaches, cacheKey, this::doGetContainer);
+        return super.getContainer(name, keyProperty, properties);
     }
 }
