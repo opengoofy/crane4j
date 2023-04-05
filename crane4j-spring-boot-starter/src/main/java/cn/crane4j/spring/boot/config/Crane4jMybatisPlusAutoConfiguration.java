@@ -8,6 +8,7 @@ import cn.crane4j.extension.mybatis.plus.MpAnnotationOperationsResolver;
 import cn.crane4j.extension.mybatis.plus.MpBaseMapperContainerRegister;
 import cn.crane4j.extension.mybatis.plus.MpMethodContainer;
 import cn.crane4j.extension.mybatis.plus.MpMethodContainerProvider;
+import cn.crane4j.extension.spring.LazyLoadMpBaseMapperContainerRegister;
 import cn.crane4j.extension.spring.expression.SpelExpressionContext;
 import com.baomidou.mybatisplus.autoconfigure.MybatisPlusAutoConfiguration;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -46,8 +47,8 @@ public class Crane4jMybatisPlusAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public MpBaseMapperContainerRegister mpBaseMapperContainerRegister(
-        PropertyOperator propertyOperator, Crane4jGlobalConfiguration globalConfiguration) {
-        return new MpBaseMapperContainerRegister(globalConfiguration, propertyOperator);
+        PropertyOperator propertyOperator, Crane4jGlobalConfiguration globalConfiguration, ApplicationContext applicationContext) {
+        return new LazyLoadMpBaseMapperContainerRegister(globalConfiguration, propertyOperator, applicationContext);
     }
 
     @Bean

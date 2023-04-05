@@ -58,7 +58,7 @@ public class MpBaseMapperContainerRegister {
     @Getter
     protected final Map<String, MapperInfo> registerMappers = new HashMap<>(32);
     protected final PropertyOperator propertyOperator;
-    private final Map<CacheKey, Container<?>> containerCaches = new ConcurrentHashMap<>(32);
+    protected final Map<CacheKey, Container<?>> containerCaches = new ConcurrentHashMap<>(32);
 
     // ================== public ==================
 
@@ -98,20 +98,10 @@ public class MpBaseMapperContainerRegister {
      */
     public Container<?> getContainer(String name, @Nullable String keyProperty, @Nullable List<String> properties) {
         CacheKey cacheKey = new CacheKey(
-            name,
-            CharSequenceUtil.emptyToNull(keyProperty),
+            name, CharSequenceUtil.emptyToNull(keyProperty),
             CollUtil.defaultIfEmpty(properties, Collections.emptyList())
         );
         return MapUtil.computeIfAbsent(containerCaches, cacheKey, this::doGetContainer);
-    }
-
-    /**
-     * Invoked by the containing {@code BeanFactory} on destruction of a bean.
-     *
-     */
-    public void destroy() {
-        registerMappers.clear();
-        containerCaches.clear();
     }
 
     /**
@@ -147,9 +137,13 @@ public class MpBaseMapperContainerRegister {
         return new MpMethodContainer<>(namespace, mapper, queryColumns, keyColumn, keyGetter);
     }
 
-    // ================== private ==================
-
-    private Container<?> doGetContainer(CacheKey cacheKey) {
+    /**
+     * Create container for cache key.
+     *
+     * @param cacheKey cacheKey
+     * @return {@link Container}
+     */
+    protected Container<?> doGetContainer(CacheKey cacheKey) {
         String mapperName = cacheKey.getMapperName();
         String keyProperty = cacheKey.getKeyProperty();
         List<String> properties = cacheKey.getProperties();
@@ -198,6 +192,8 @@ public class MpBaseMapperContainerRegister {
         return createContainer(info, keyProperty, keyColumn, queryColumns, namespace);
     }
 
+    // ================== private ==================
+
     @Nullable
     private Container<?> createContainer(
         MapperInfo info, String keyProperty, String keyColumn, String[] queryColumns, String namespace) {
@@ -243,6 +239,15 @@ public class MpBaseMapperContainerRegister {
             }
         }
         return target == null ? null : (Class<?>) target.getActualTypeArguments()[0];
+    }
+
+    /**
+     * Invoked by the containing {@code BeanFactory} on destruction of a bean.
+     *
+     */
+    public void destroy() {
+        registerMappers.clear();
+        containerCaches.clear();
     }
 
     /**

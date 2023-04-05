@@ -35,6 +35,7 @@ import java.util.stream.Stream;
  * @author huangchengxing
  * @see AssembleMp
  * @see MpBaseMapperContainerRegister
+ * @since 1.2.0
  */
 public class MpAnnotationOperationsResolver extends AbstractCacheableOperationResolver {
 
