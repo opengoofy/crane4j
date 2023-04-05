@@ -17,11 +17,6 @@
         <!--dependencies-->
         <dependency>
             <groupId>cn.crane4j</groupId>
-            <artifactId>crane4j-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>cn.crane4j</groupId>
             <artifactId>crane4j-extension</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -36,6 +31,16 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>cn.crane4j</groupId>
+            <artifactId>crane4j-extension-spring</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.crane4j</groupId>
+            <artifactId>crane4j-extension-mybatis-plus</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <!--provider-->

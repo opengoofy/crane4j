@@ -3,14 +3,7 @@ package cn.crane4j.extension.mybatis.plus;
 import cn.crane4j.annotation.AssembleMp;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
-import cn.crane4j.core.parser.AbstractCacheableOperationResolver;
-import cn.crane4j.core.parser.AssembleOperation;
-import cn.crane4j.core.parser.BeanOperationsResolver;
-import cn.crane4j.core.parser.DisassembleOperation;
-import cn.crane4j.core.parser.KeyTriggerOperation;
-import cn.crane4j.core.parser.OperationParseContext;
-import cn.crane4j.core.parser.PropertyMapping;
-import cn.crane4j.core.parser.SimpleAssembleOperation;
+import cn.crane4j.core.parser.*;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.Sorted;
@@ -18,11 +11,7 @@ import cn.crane4j.core.util.ConfigurationUtil;
 import cn.crane4j.core.util.ReflectUtils;
 import cn.hutool.core.lang.Assert;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -102,7 +91,7 @@ public class MpAnnotationOperationsResolver extends AbstractCacheableOperationRe
         AssembleOperationHandler handler = ConfigurationUtil.getAssembleOperationHandler(
             globalConfiguration, annotation.handlerName(), annotation.handler()
         );
-        Assert.notNull(handler, throwException("assemble operation handler [{}]({}) not found", annotation.handlerName(), annotation.handler()));
+        Assert.notNull(handler, AbstractCacheableOperationResolver.throwException("assemble operation handler [{}]({}) not found", annotation.handlerName(), annotation.handler()));
         // get container
         Container<?> container = mapperContainerRegister.getContainer(
             annotation.mapper(), annotation.where(), Arrays.asList(annotation.selects())

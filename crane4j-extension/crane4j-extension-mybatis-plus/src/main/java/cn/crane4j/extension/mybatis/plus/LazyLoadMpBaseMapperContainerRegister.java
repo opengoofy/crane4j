@@ -6,7 +6,6 @@ import cn.crane4j.core.support.reflect.PropertyOperator;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.springframework.beans.factory.DisposableBean;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -21,7 +20,7 @@ import java.util.function.Function;
  * @author huangchengxing
  * @since 1.2.0
  */
-public class LazyLoadMpBaseMapperContainerRegister extends MpBaseMapperContainerRegister implements DisposableBean {
+public class LazyLoadMpBaseMapperContainerRegister extends MpBaseMapperContainerRegister {
 
     private final Function<String, BaseMapper<?>> mapperFactory;
 
