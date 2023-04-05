@@ -33,7 +33,7 @@ import java.util.stream.IntStream;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {Crane4jSpringBootStarterExampleApplication.class})
-public class ManyToManyAssembleExample {
+public class ManyToManyAssembleExampleTest {
 
     @Autowired
     private Crane4jGlobalConfiguration configuration;

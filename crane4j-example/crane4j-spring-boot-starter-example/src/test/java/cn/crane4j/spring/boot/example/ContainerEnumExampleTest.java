@@ -30,7 +30,7 @@ import java.util.stream.IntStream;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {Crane4jSpringBootStarterExampleApplication.class})
-public class ContainerEnumExample {
+public class ContainerEnumExampleTest {
 
     @Autowired
     private Crane4jApplicationContext context;

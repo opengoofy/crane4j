@@ -29,7 +29,7 @@ import java.util.*;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {Crane4jSpringBootStarterExampleApplication.class})
-public class OneToManyAssembleExample {
+public class OneToManyAssembleExampleTest {
 
     @Autowired
     private Crane4jGlobalConfiguration configuration;

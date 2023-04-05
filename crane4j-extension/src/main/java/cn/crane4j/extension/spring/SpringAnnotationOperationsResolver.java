@@ -36,6 +36,7 @@ import java.util.Objects;
  *
  * @author huangchengxing
  * @see Order
+ * @since 1.2.0
  */
 @Slf4j
 public class SpringAnnotationOperationsResolver

@@ -32,8 +32,8 @@ import java.util.stream.IntStream;
  * @author huangchengxing
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {Crane4jSpringBootStarterExampleApplication.class, ContainerMethodExample.Service.class})
-public class ContainerMethodExample {
+@SpringBootTest(classes = {Crane4jSpringBootStarterExampleApplication.class, ContainerMethodExampleTest.Service.class})
+public class ContainerMethodExampleTest {
 
     @Autowired
     private OperateTemplate operateTemplate;

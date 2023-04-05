@@ -33,8 +33,8 @@ import java.util.stream.IntStream;
  * @author huangchengxing
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {Crane4jSpringBootStarterExampleApplication.class, AutoOperateExample.Service.class})
-public class AutoOperateExample {
+@SpringBootTest(classes = {Crane4jSpringBootStarterExampleApplication.class, AutoOperateTestExample.Service.class})
+public class AutoOperateTestExample {
 
     @Autowired
     private Crane4jApplicationContext context;

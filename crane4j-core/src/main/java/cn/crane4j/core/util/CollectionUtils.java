@@ -5,7 +5,6 @@ import com.google.common.collect.MapMaker;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentMap;
 
@@ -46,9 +45,6 @@ public class CollectionUtils {
         }
         if (obj.getClass().isArray()) {
             return Arrays.asList((Object[])obj);
-        }
-        if (obj instanceof Map) {
-            return ((Map<?, ?>)obj).entrySet();
         }
         return Collections.singletonList(obj);
     }

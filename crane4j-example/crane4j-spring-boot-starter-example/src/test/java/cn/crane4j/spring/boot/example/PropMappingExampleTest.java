@@ -32,7 +32,7 @@ import java.util.stream.IntStream;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {Crane4jSpringBootStarterExampleApplication.class})
-public class PropMappingExample {
+public class PropMappingExampleTest {
 
     @Autowired
     private Crane4jApplicationContext context;

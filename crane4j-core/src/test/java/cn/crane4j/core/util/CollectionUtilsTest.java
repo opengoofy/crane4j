@@ -22,7 +22,7 @@ public class CollectionUtilsTest {
         Assert.assertTrue(CollectionUtils.adaptObjectToCollection(null).isEmpty());
         Assert.assertTrue(CollectionUtils.adaptObjectToCollection(new Object[0]).isEmpty());
         Assert.assertTrue(CollectionUtils.adaptObjectToCollection(Collections.emptyList()).isEmpty());
-        Assert.assertTrue(CollectionUtils.adaptObjectToCollection(Collections.emptyMap()).isEmpty());
+        Assert.assertEquals(1, CollectionUtils.adaptObjectToCollection(Collections.emptyMap()).size());
         Assert.assertEquals(1, CollectionUtils.adaptObjectToCollection(new Object()).size());
     }
 }
