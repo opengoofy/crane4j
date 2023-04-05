@@ -10,11 +10,13 @@ import java.util.Collection;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * <p>General implementation of {@link BeanOperationParser}.
@@ -30,13 +32,14 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author huangchengxing
  * @see BeanOperationsResolver
  * @see OperationParseContext
+ * @since 1.2.0
  */
 @Slf4j
 public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
 
-    protected final Collection<BeanOperationsResolver> beanOperationsResolvers;
+    protected Set<BeanOperationsResolver> beanOperationsResolvers;
     private final Map<Class<?>, BeanOperations> resolvedTypes = new ConcurrentHashMap<>(32);
-    private final Map<Class<?>, BeanOperations> currentlyInCreation = new LinkedHashMap<>(16);
+    private final Map<Class<?>, BeanOperations> currentlyInParsing = new LinkedHashMap<>(16);
 
     /**
      * Create a {@link TypeHierarchyBeanOperationParser} instance.
@@ -45,13 +48,33 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
      */
     public TypeHierarchyBeanOperationParser(
         Collection<BeanOperationsResolver> beanOperationsResolvers) {
-        this.beanOperationsResolvers = CollUtil.sort(beanOperationsResolvers, Sorted.comparator());
+        this.beanOperationsResolvers = beanOperationsResolvers.stream()
+            .sorted(Sorted.comparator())
+            .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    /**
+     * Add bean operations resolvers.
+     *
+     * @param resolver resolver
+     */
+    public void addBeanOperationsResolvers(BeanOperationsResolver resolver) {
+        Objects.requireNonNull(resolver);
+        if (!beanOperationsResolvers.contains(resolver)) {
+            beanOperationsResolvers.add(resolver);
+            this.beanOperationsResolvers = beanOperationsResolvers.stream()
+                .sorted(Sorted.comparator())
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+        }
     }
 
     /**
      * <p>Parse the class and class attribute information,
      * and generate the corresponding {@link BeanOperations} instance.<br />
      * If there is a cache, it will be obtained from the cache first.
+     *
+     * <p><b>NOTE:</b>The {@link BeanOperations} obtained may still be being parsed.
+     * Please confirm whether it is ready through {@link BeanOperations#isActive()}.
      *
      * @param beanType bean type
      * @return {@link BeanOperations}
@@ -82,19 +105,19 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
         BeanOperations beanOperations = resolvedTypes.get(beanType);
         if (Objects.isNull(beanOperations)) {
             synchronized (this) {
-                // target is resolved ?
+                // target is parsed ?
                 beanOperations = resolvedTypes.get(beanType);
                 if (Objects.isNull(beanOperations)) {
-                    // target is in creation?
-                    beanOperations = currentlyInCreation.get(beanType);
-                    // target need create
+                    // target is in parsing?
+                    beanOperations = currentlyInParsing.get(beanType);
+                    // target need parse, do it!
                     if (Objects.isNull(beanOperations)) {
                         beanOperations = createBeanOperations(beanType);
-                        OperationParseContext context = new OperationParseContext(beanOperations, resolvedTypes, this);
+                        OperationParseContext context = new OperationParseContext(beanOperations, this);
                         beanOperations.setActive(false);
-                        currentlyInCreation.put(beanType, beanOperations);
+                        currentlyInParsing.put(beanType, beanOperations);
                         doParse(beanType, context);
-                        resolvedTypes.put(beanType, currentlyInCreation.remove(beanType));
+                        resolvedTypes.put(beanType, currentlyInParsing.remove(beanType));
                         beanOperations.setActive(true);
                     }
                 }

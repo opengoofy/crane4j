@@ -2,12 +2,9 @@ package cn.crane4j.core.parser;
 
 import cn.crane4j.annotation.Assemble;
 import cn.crane4j.annotation.Disassemble;
-import cn.crane4j.annotation.Mapping;
-import cn.crane4j.annotation.MappingTemplate;
 import cn.crane4j.annotation.Operations;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerProvider;
-import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
@@ -20,7 +17,6 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ObjectUtil;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
@@ -29,7 +25,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -46,6 +41,7 @@ import java.util.stream.Stream;
  * This order is guaranteed by the executor {@link BeanOperationExecutor}.
  *
  * @author huangchengxing
+ * @since 1.2.0
  */
 @Slf4j
 public class DefaultAnnotationOperationsResolver extends AbstractCacheableOperationResolver {
@@ -135,9 +131,9 @@ public class DefaultAnnotationOperationsResolver extends AbstractCacheableOperat
 
         // resolved property mapping from annotation and template
         Set<PropertyMapping> propertyMappings = Stream.of(annotation.props())
-            .map(m -> createPropertyMapping(m, annotation.key()))
+            .map(m -> ConfigurationUtil.createPropertyMapping(m, annotation.key()))
             .collect(Collectors.toSet());
-        List<PropertyMapping> templateMappings = parsePropTemplate(annotation);
+        List<PropertyMapping> templateMappings = ConfigurationUtil.parsePropTemplateClasses(annotation.propTemplates(), annotationFinder);
         if (CollUtil.isNotEmpty(templateMappings)) {
             propertyMappings.addAll(templateMappings);
         }
@@ -262,34 +258,5 @@ public class DefaultAnnotationOperationsResolver extends AbstractCacheableOperat
      */
     protected Operations parseOperationsAnnotation(Class<?> beanType) {
         return annotationFinder.findAnnotation(beanType, Operations.class);
-    }
-
-    /**
-     * Get supplier of {@link Crane4jException}.
-     *
-     * @param errTemp errTemp
-     * @param args args
-     * @return supplier of exception
-     */
-    protected static Supplier<Crane4jException> throwException(String errTemp, Object... args) {
-        return () -> new Crane4jException(errTemp, args);
-    }
-
-    @NonNull
-    private List<PropertyMapping> parsePropTemplate(Assemble annotation) {
-        return Stream.of(annotation.propTemplates())
-            .map(t -> annotationFinder.findAnnotation(t, MappingTemplate.class))
-            .map(MappingTemplate::value)
-            .flatMap(Stream::of)
-            .map(mapping -> createPropertyMapping(mapping, null))
-            .collect(Collectors.toList());
-    }
-
-    private PropertyMapping createPropertyMapping(Mapping annotation, String defaultReference) {
-        if (CharSequenceUtil.isNotEmpty(annotation.value())) {
-            return new SimplePropertyMapping(annotation.value(), annotation.value());
-        }
-        String ref = CharSequenceUtil.emptyToDefault(annotation.ref(), defaultReference);
-        return new SimplePropertyMapping(annotation.src(), ref);
     }
 }

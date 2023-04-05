@@ -1,8 +1,10 @@
 package cn.crane4j.spring.boot.config;
 
+import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
 import cn.crane4j.core.support.reflect.PropertyOperator;
+import cn.crane4j.extension.mybatis.plus.MpAnnotationOperationsResolver;
 import cn.crane4j.extension.mybatis.plus.MpBaseMapperContainerRegister;
 import cn.crane4j.extension.mybatis.plus.MpMethodContainer;
 import cn.crane4j.extension.mybatis.plus.MpMethodContainerProvider;
@@ -46,6 +48,15 @@ public class Crane4jMybatisPlusAutoConfiguration {
     public MpBaseMapperContainerRegister mpBaseMapperContainerRegister(
         PropertyOperator propertyOperator, Crane4jGlobalConfiguration globalConfiguration) {
         return new MpBaseMapperContainerRegister(globalConfiguration, propertyOperator);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public MpAnnotationOperationsResolver mpAnnotationOperationsResolver(
+        AnnotationFinder annotationFinder, MpBaseMapperContainerRegister mapperContainerRegister, Crane4jGlobalConfiguration globalConfiguration) {
+        return new MpAnnotationOperationsResolver(
+            annotationFinder, mapperContainerRegister, globalConfiguration
+        );
     }
 
     @Bean

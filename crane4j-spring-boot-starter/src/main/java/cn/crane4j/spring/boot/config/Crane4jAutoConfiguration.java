@@ -48,6 +48,7 @@ import cn.crane4j.extension.spring.expression.SpelExpressionContext;
 import cn.crane4j.extension.spring.expression.SpelExpressionEvaluator;
 import cn.crane4j.spring.boot.annotation.EnableCrane4j;
 import cn.hutool.core.text.CharSequenceUtil;
+import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ClassUtil;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -88,6 +89,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * <p>The automatic configuration class of crane.<br />
@@ -320,11 +323,10 @@ public class Crane4jAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public Crane4jInitializer crane4jInitializer(
-        MetadataReaderFactory readerFactory, ResourcePatternResolver resolver,
-        AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration, Collection<BeanOperationParser> parsers,
-        Properties properties) {
+        MetadataReaderFactory readerFactory, ResourcePatternResolver resolver, ApplicationContext applicationContext,
+        AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration, Properties properties) {
         return new Crane4jInitializer(
-            readerFactory, resolver, properties, annotationFinder, configuration, parsers
+            readerFactory, resolver, applicationContext, properties, annotationFinder, configuration
         );
     }
 
@@ -433,21 +435,36 @@ public class Crane4jAutoConfiguration {
         private final MetadataReaderFactory readerFactory;
         private final ResourcePatternResolver resolver;
 
+        private final ApplicationContext applicationContext;
         private final Properties properties;
         private final AnnotationFinder annotationFinder;
         private final Crane4jGlobalConfiguration configuration;
-        private final Collection<BeanOperationParser> parsers;
 
         @SneakyThrows
         @Override
         public void run(ApplicationArguments args) {
             log.info("start initializing crane4j components......");
+            // load bean operations resolver
+            loadBeanOperationsResolver();
             // load enumeration and register it as a container
             loadContainerEnum();
             // load a constant class and register it as a container
             loadConstantClass();
             // pre resolution class operation configuration
             loadOperateEntity();
+        }
+
+        public void loadBeanOperationsResolver() {
+            String[] parserNames = applicationContext.getBeanNamesForType(TypeHierarchyBeanOperationParser.class);
+            String[] resolverNames = applicationContext.getBeanNamesForType(BeanOperationsResolver.class);
+            if (ArrayUtil.isNotEmpty(parserNames) && ArrayUtil.isNotEmpty(resolverNames)) {
+                List<BeanOperationsResolver> resolvers = Stream.of(resolverNames)
+                    .map(beanName -> applicationContext.getBean(beanName, BeanOperationsResolver.class))
+                    .collect(Collectors.toList());
+                Stream.of(parserNames)
+                    .map(beanName -> applicationContext.getBean(beanName, TypeHierarchyBeanOperationParser.class))
+                    .forEach(parser -> resolvers.forEach(parser::addBeanOperationsResolvers));
+            }
         }
 
         private void loadConstantClass() {
@@ -480,7 +497,8 @@ public class Crane4jAutoConfiguration {
             entityPackages.forEach(path -> readMetadata(path, reader -> {
                 Class<?> targetType = ClassUtil.loadClass(reader.getClassMetadata()
                     .getClassName());
-                parsers.forEach(parser -> parser.parse(targetType));
+                applicationContext.getBeansOfType(BeanOperationParser.class).values()
+                    .forEach(parser -> parser.parse(targetType));
             }));
         }
 

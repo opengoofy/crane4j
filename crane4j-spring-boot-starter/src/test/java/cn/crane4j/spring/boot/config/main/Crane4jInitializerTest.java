@@ -6,6 +6,7 @@ import cn.crane4j.core.container.ConstantContainer;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.BeanOperations;
+import cn.crane4j.core.parser.BeanOperationsResolver;
 import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
 import cn.crane4j.extension.spring.Crane4jApplicationContext;
 import cn.crane4j.spring.boot.config.Crane4jAutoConfiguration;
@@ -22,6 +23,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * test for {@link Crane4jAutoConfiguration.Properties}
@@ -34,6 +36,8 @@ import java.util.Map;
 @SpringBootTest(classes = Crane4jAutoConfiguration.class)
 public class Crane4jInitializerTest {
 
+    @Autowired
+    private BeanOperationParser beanOperationParser;
     @Autowired
     private ApplicationContext applicationContext;
     @Autowired
@@ -52,6 +56,12 @@ public class Crane4jInitializerTest {
         // 启用方法参数自动填充
         Assert.assertTrue(properties.isEnableMethodArgumentAutoOperate());
         //Assert.assertThrows(NoSuchBeanDefinitionException.class, () -> applicationContext.getBean(MethodArgumentAutoOperateAspect.class));
+
+        // 配置解析器
+        if (beanOperationParser instanceof TypeHierarchyBeanOperationParser) {
+            Set<BeanOperationsResolver> resolvers = (Set<BeanOperationsResolver>)ReflectUtil.getFieldValue(beanOperationParser, "beanOperationsResolvers");
+            Assert.assertEquals(1, resolvers.size());
+        }
 
         // 注册枚举容器
         Crane4jApplicationContext context = applicationContext.getBean(Crane4jApplicationContext.class);

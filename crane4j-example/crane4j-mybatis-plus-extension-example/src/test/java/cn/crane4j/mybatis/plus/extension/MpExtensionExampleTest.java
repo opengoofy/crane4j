@@ -1,6 +1,7 @@
 package cn.crane4j.mybatis.plus.extension;
 
 import cn.crane4j.annotation.Assemble;
+import cn.crane4j.annotation.AssembleMp;
 import cn.crane4j.annotation.Mapping;
 import cn.crane4j.annotation.MappingTemplate;
 import cn.crane4j.annotation.extension.AssembleByMp;
@@ -57,7 +58,7 @@ import java.util.List;
 @TestPropertySource(properties = "spring.config.location = classpath:test.yml")
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {Crane4jMybatisPlusExampleApplication.class})
-public class MpExtensionExample {
+public class MpExtensionExampleTest {
 
     @Autowired
     private OperateTemplate operateTemplate;
@@ -163,10 +164,9 @@ public class MpExtensionExample {
             groups = "testMethodContainer",
             propTemplates = FooVO.class
         )
-        @Assemble(
-            container = "container('fooMapper')",
+        @AssembleMp(
+            mapper = "fooMapper",
             groups = "testPrimaryKeyAndAllColumns",
-            containerProvider = MpMethodContainerProvider.class,
             propTemplates = FooVO.class
         )
         @Assemble(container = "container('fooMapper', {'name as userName'})",
@@ -181,10 +181,10 @@ public class MpExtensionExample {
             groups = "testCustomKeyAndAllColumns",
             propTemplates = FooVO.class
         )
-        @Assemble(
-            container = "container('fooMapper', 'userName', {'userAge'})",
+        @AssembleMp(
+            mapper = "fooMapper",
+            selects = "userAge", where = "userName",
             groups = "testCustomKeyAndCustomColumns",
-            containerProvider = MpMethodContainerProvider.class,
             propTemplates = FooVO.class
         )
         private String userName;

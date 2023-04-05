@@ -1,11 +1,16 @@
 package cn.crane4j.core.util;
 
+import cn.crane4j.annotation.Mapping;
+import cn.crane4j.annotation.MappingTemplate;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerProvider;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
 import cn.crane4j.core.parser.BeanOperationParser;
+import cn.crane4j.core.parser.PropertyMapping;
+import cn.crane4j.core.parser.SimplePropertyMapping;
+import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.callback.ContainerRegisterAware;
 import cn.hutool.core.text.CharSequenceUtil;
@@ -13,9 +18,12 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * ConfigurationUtil
@@ -44,6 +52,37 @@ public class ConfigurationUtil {
         }
         return container;
     }
+
+    // ==================== parsing ====================
+
+    public static List<PropertyMapping> parsePropTemplateClasses(Class<?>[] annotatedTypes, AnnotationFinder annotationFinder) {
+        return Stream.of(annotatedTypes)
+            .map(type -> annotationFinder.findAnnotation(type, MappingTemplate.class))
+            .map(ConfigurationUtil::parsePropTemplate)
+            .filter(Objects::nonNull)
+            .flatMap(Collection::stream)
+            .collect(Collectors.toList());
+    }
+
+    public static List<PropertyMapping> parsePropTemplate(MappingTemplate annotation) {
+        return Stream.of(annotation.value())
+            .map(ConfigurationUtil::createPropertyMapping)
+            .collect(Collectors.toList());
+    }
+
+    public static PropertyMapping createPropertyMapping(Mapping annotation) {
+        return createPropertyMapping(annotation, null);
+    }
+
+    public static PropertyMapping createPropertyMapping(Mapping annotation, String defaultReference) {
+        if (CharSequenceUtil.isNotEmpty(annotation.value())) {
+            return new SimplePropertyMapping(annotation.value(), annotation.value());
+        }
+        String ref = CharSequenceUtil.emptyToDefault(annotation.ref(), defaultReference);
+        return new SimplePropertyMapping(annotation.src(), ref);
+    }
+
+    // ==================== get plugin ====================
 
     public static ContainerProvider getContainerProvider(
         Crane4jGlobalConfiguration configuration, String name, Class<?> type) {

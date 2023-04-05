@@ -1,5 +1,6 @@
 package cn.crane4j.core.parser;
 
+import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.exception.OperationParseException;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.util.CollectionUtils;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
  * implementation that cacheable、 annotation aware and support operation compare.
  *
  * @author huangchengxing
+ * @since 1.2.0
  */
 @Slf4j
 @RequiredArgsConstructor
@@ -106,6 +109,17 @@ public abstract class AbstractCacheableOperationResolver implements BeanOperatio
             }
         }
         return results;
+    }
+
+    /**
+     * Get supplier of {@link Crane4jException}.
+     *
+     * @param errTemp errTemp
+     * @param args args
+     * @return supplier of exception
+     */
+    protected static Supplier<Crane4jException> throwException(String errTemp, Object... args) {
+        return () -> new Crane4jException(errTemp, args);
     }
 
     /**
