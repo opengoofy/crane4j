@@ -27,6 +27,6 @@ coverage:
         informational: true
 ignore:
   - "crane4j-annotation/.*"
-  - "crane4j-example/.*"
+#  - "crane4j-example/.*"
   - "docs/.*"
   - "website/.*"

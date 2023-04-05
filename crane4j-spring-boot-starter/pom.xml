@@ -16,11 +16,6 @@
     <dependencies>
         <!--dependencies-->
         <dependency>
-            <groupId>cn.crane4j</groupId>
-            <artifactId>crane4j-extension</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
         </dependency>
@@ -32,6 +27,8 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
         </dependency>
+
+        <!--extension-->
         <dependency>
             <groupId>cn.crane4j</groupId>
             <artifactId>crane4j-extension-spring</artifactId>
