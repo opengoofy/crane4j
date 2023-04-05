@@ -11,21 +11,32 @@ import cn.hutool.core.lang.Assert;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ArrayUtil;
+import cn.hutool.core.util.ReflectUtil;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.core.injector.AbstractSqlInjector;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.TableFieldInfo;
 import com.baomidou.mybatisplus.core.metadata.TableInfo;
 import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
+import com.baomidou.mybatisplus.core.toolkit.ArrayUtils;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.core.ResolvableType;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Proxy;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -41,7 +52,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @RequiredArgsConstructor
-public class MpBaseMapperContainerRegister implements DisposableBean {
+public class MpBaseMapperContainerRegister {
 
     protected final Crane4jGlobalConfiguration crane4jGlobalConfiguration;
     @Getter
@@ -54,19 +65,22 @@ public class MpBaseMapperContainerRegister implements DisposableBean {
     /**
      * Register mapper.
      *
-     * @param mapperName mapper named
+     * @param name mapper name, or table name
      * @param baseMapper baseMapper
      */
-    public final void registerMapper(String mapperName, BaseMapper<?> baseMapper) {
-        Objects.requireNonNull(mapperName);
+    public final void registerMapper(String name, BaseMapper<?> baseMapper) {
+        Objects.requireNonNull(name);
         Objects.requireNonNull(baseMapper);
-        registerMappers.computeIfAbsent(mapperName, name -> {
-            Class<?> beanType = ResolvableType.forClass(
-                BaseMapper.class, baseMapper.getClass()
-            ).getGeneric(0).getRawClass();
-            Assert.notNull(beanType, "cannot resolve bean type of mapper [{}]", mapperName);
-            TableInfo tableInfo = TableInfoHelper.getTableInfo(beanType);
-            return new MapperInfo(name, baseMapper, tableInfo);
+        registerMappers.computeIfAbsent(name, n -> {
+            TableInfo tableInfo = TableInfoHelper.getTableInfo(n);
+            if (Objects.isNull(tableInfo)) {
+                tableInfo = Optional.ofNullable(Proxy.getInvocationHandler(baseMapper))
+                    .map(h -> (Class<?>)ReflectUtil.getFieldValue(h, "mapperInterface"))
+                    .map(this::extractModelClass)
+                    .map(TableInfoHelper::getTableInfo)
+                    .orElseThrow(() -> new Crane4jException("cannot resolve bean type of mapper [{}]", name));
+            }
+            return new MapperInfo(n, baseMapper, tableInfo);
         });
     }
 
@@ -75,15 +89,19 @@ public class MpBaseMapperContainerRegister implements DisposableBean {
      * When querying, the attribute name of the input parameter will be converted to
      * the table columns specified in the corresponding {@link TableField} annotation.
      *
-     * @param mapperName mapper name
+     * @param name mapper name
      * @param keyProperty key field name for query, if it is empty, it defaults to the field annotated by {@link TableId}
      * @param properties fields to query, if it is empty, all table columns will be queried by default.
      * @return container
      * @see TableField
      * @see TableId
      */
-    public Container<?> getContainer(String mapperName, @Nullable String keyProperty, @Nullable List<String> properties) {
-        CacheKey cacheKey = new CacheKey(mapperName, keyProperty, properties);
+    public Container<?> getContainer(String name, @Nullable String keyProperty, @Nullable List<String> properties) {
+        CacheKey cacheKey = new CacheKey(
+            name,
+            CharSequenceUtil.emptyToNull(keyProperty),
+            CollUtil.defaultIfEmpty(properties, Collections.emptyList())
+        );
         return MapUtil.computeIfAbsent(containerCaches, cacheKey, this::doGetContainer);
     }
 
@@ -91,7 +109,6 @@ public class MpBaseMapperContainerRegister implements DisposableBean {
      * Invoked by the containing {@code BeanFactory} on destruction of a bean.
      *
      */
-    @Override
     public void destroy() {
         registerMappers.clear();
         containerCaches.clear();
@@ -198,6 +215,34 @@ public class MpBaseMapperContainerRegister implements DisposableBean {
         );
         log.info("create container [{}] from mapper [{}]", namespace, info.getName());
         return container;
+    }
+
+    /**
+     * Copy from {@link AbstractSqlInjector#extractModelClass}
+     *
+     * @param mapperClass mapper class
+     * @return model class
+     */
+    protected Class<?> extractModelClass(Class<?> mapperClass) {
+        Type[] types = mapperClass.getGenericInterfaces();
+        ParameterizedType target = null;
+        for (Type type : types) {
+            if (type instanceof ParameterizedType) {
+                Type[] typeArray = ((ParameterizedType) type).getActualTypeArguments();
+                if (ArrayUtils.isNotEmpty(typeArray)) {
+                    for (Type t : typeArray) {
+                        if (t instanceof TypeVariable || t instanceof WildcardType) {
+                            break;
+                        } else {
+                            target = (ParameterizedType) type;
+                            break;
+                        }
+                    }
+                }
+                break;
+            }
+        }
+        return target == null ? null : (Class<?>) target.getActualTypeArguments()[0];
     }
 
     /**
