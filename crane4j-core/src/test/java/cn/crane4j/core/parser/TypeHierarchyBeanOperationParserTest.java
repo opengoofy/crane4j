@@ -20,6 +20,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -50,7 +51,10 @@ public class TypeHierarchyBeanOperationParserTest {
     public void init() {
         SimpleCrane4jGlobalConfiguration configuration = new SimpleCrane4jGlobalConfiguration();
         parser = new TypeHierarchyBeanOperationParser(
-            Collections.singletonList(new DefaultAnnotationOperationsResolver(new SimpleAnnotationFinder(), configuration))
+            Arrays.asList(
+                new AssembleAnnotationOperationsResolver(new SimpleAnnotationFinder(), configuration),
+                new DisassembleAnnotationOperationsResolver(new SimpleAnnotationFinder(), configuration)
+            )
         );
         configuration.setTypeResolver(new SimpleTypeResolver());
         configuration.getContainerMap().put(CONTAINER.getNamespace(), CONTAINER);
@@ -112,6 +116,11 @@ public class TypeHierarchyBeanOperationParserTest {
         // disassemble: bean
         Collection<DisassembleOperation> disassembles = nestedBeanOperations.getDisassembleOperations();
         DisassembleOperation bean = CollUtil.get(disassembles, 0);
+        if (!(bean instanceof TypeFixedDisassembleOperation)) {
+            System.out.println(bean);
+            System.out.println(bean.getKey());
+            System.out.println(disassembles);
+        }
         Assert.assertTrue(bean instanceof TypeFixedDisassembleOperation);
         Assert.assertEquals("bean", bean.getKey());
         Assert.assertEquals(NestedBean.class, bean.getSourceType());
@@ -206,7 +215,7 @@ public class TypeHierarchyBeanOperationParserTest {
             // 此处嵌套对象类型为确定类型，并且构成循环引用
             @Disassemble(key = "bean", type = Bean.class, sort = SUB_SORT, groups = GROUP),
             // 此处嵌套对象类型为无法确定的泛型，故不指定类型而等到执行时再推断
-            @Disassemble(key = "dynamicBean", sort = SUB_SORT, groups = GROUP)
+            @Disassemble(key = "dynamicBean", groups = GROUP)
         }
     )
     private static class NestedBean<T> extends BaseBean {

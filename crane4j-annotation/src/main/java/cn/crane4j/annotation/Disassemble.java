@@ -43,7 +43,7 @@ import java.lang.annotation.Target;
  *
  * @author huangchengxing
  * @see cn.crane4j.core.executor.handler.DisassembleOperationHandler;
- * @see cn.crane4j.core.parser.DefaultAnnotationOperationsResolver;
+ * @see cn.crane4j.core.parser.DisassembleAnnotationOperationsResolver;
  * @see cn.crane4j.core.parser.DisassembleOperation;
  */
 @Repeatable(value = Disassemble.List.class)

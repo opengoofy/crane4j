@@ -14,7 +14,8 @@ import java.lang.annotation.Target;
  *
  * @see Assemble
  * @see Disassemble
- * @see cn.crane4j.core.parser.DefaultAnnotationOperationsResolver;
+ * @see cn.crane4j.core.parser.AssembleAnnotationOperationsResolver;
+ * @see cn.crane4j.core.parser.DisassembleAnnotationOperationsResolver;
  * @author huangchengxing
  */
 @Documented

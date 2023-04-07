@@ -60,7 +60,7 @@ public class Crane4jInitializerTest {
         // 配置解析器
         if (beanOperationParser instanceof TypeHierarchyBeanOperationParser) {
             Set<BeanOperationsResolver> resolvers = (Set<BeanOperationsResolver>)ReflectUtil.getFieldValue(beanOperationParser, "beanOperationsResolvers");
-            Assert.assertEquals(1, resolvers.size());
+            Assert.assertEquals(2, applicationContext.getBeanNamesForType(BeanOperationsResolver.class).length);
         }
 
         // 注册枚举容器

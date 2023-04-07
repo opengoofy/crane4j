@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -22,8 +23,10 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
- * An abstract {@link BeanOperationsResolver}
- * implementation that cacheable、 annotation aware and support operation compare.
+ * <p>An abstract {@link BeanOperationsResolver} implementation
+ * that cacheable、 annotation aware and support operation compare.<br />
+ * Overwrite {@link #parseAssembleOperations} and {@link #parseDisassembleOperations}
+ * to implement custom parsing logic.
  *
  * @author huangchengxing
  * @since 1.2.0
@@ -69,12 +72,14 @@ public abstract class AbstractCacheableOperationResolver implements BeanOperatio
     /**
      * Parse assemble operations for class.
      *
-     * @param context context
+     * @param context  context
      * @param beanType bean type
      * @return {@link AssembleOperation}
      * @see #parseAnnotationForDeclaredFields
      */
-    protected abstract List<AssembleOperation> parseAssembleOperations(OperationParseContext context, Class<?> beanType);
+    protected List<AssembleOperation> parseAssembleOperations(OperationParseContext context, Class<?> beanType) {
+        return Collections.emptyList();
+    }
 
     /**
      * Parse disassemble operations for class.
@@ -84,7 +89,9 @@ public abstract class AbstractCacheableOperationResolver implements BeanOperatio
      * @return {@link DisassembleOperation}
      * @see #parseAnnotationForDeclaredFields
      */
-    protected abstract List<DisassembleOperation> parseDisassembleOperations(OperationParseContext context, Class<?> beanType);
+    protected List<DisassembleOperation> parseDisassembleOperations(OperationParseContext context, Class<?> beanType) {
+        return Collections.emptyList();
+    }
 
     /**
      * Parse annotations for declared fields of {@code beanType}.

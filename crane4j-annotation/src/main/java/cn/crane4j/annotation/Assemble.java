@@ -76,12 +76,12 @@ import java.lang.annotation.Target;
  *
  * @author huangchengxing
  * @see cn.crane4j.core.executor.handler.AssembleOperationHandler;
- * @see cn.crane4j.core.parser.DefaultAnnotationOperationsResolver;
+ * @see cn.crane4j.core.parser.AssembleAnnotationOperationsResolver;
  * @see cn.crane4j.core.parser.AssembleOperation;
  */
 @Repeatable(value = Assemble.List.class)
 @Documented
-@Target({ElementType.ANNOTATION_TYPE, ElementType.FIELD})
+@Target({ElementType.ANNOTATION_TYPE, ElementType.FIELD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Assemble {
 

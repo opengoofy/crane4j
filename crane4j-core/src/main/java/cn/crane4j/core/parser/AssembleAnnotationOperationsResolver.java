@@ -1,13 +1,10 @@
 package cn.crane4j.core.parser;
 
 import cn.crane4j.annotation.Assemble;
-import cn.crane4j.annotation.Disassemble;
 import cn.crane4j.annotation.Operations;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerProvider;
-import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
-import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.Sorted;
@@ -21,42 +18,39 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * <p>Annotation-based {@link BeanOperationsResolver} implementation.<br />
- * Support the construction of operation configuration
- * by resolving annotations based on {@link Assemble}, {@link Disassemble}
- * and {@link Operations} on classes and attributes.<br />
- *
- * <p>The parser will ensure the sorting between assembly and disassembly operations
- * in {@link BeanOperations} according to the configured sorting value,
- * which can be changed by specifying a comparator when the constructor calls.<br />
- * It should be noted that this order does not represent the order in which the final operation will be executed.
- * This order is guaranteed by the executor {@link BeanOperationExecutor}.
+ * <p>Annotation-based {@link BeanOperationsResolver} implementation
+ * that the construction of operation configuration
+ * by resolving annotations based on {@link Assemble}
+ * and {@link Operations} on classes and attributes.
  *
  * @author huangchengxing
+ * @see Operations
+ * @see Assemble
  * @since 1.2.0
  */
 @Slf4j
-public class DefaultAnnotationOperationsResolver extends AbstractCacheableOperationResolver {
+public class AssembleAnnotationOperationsResolver extends AbstractCacheableOperationResolver {
 
     protected static final String ANNOTATION_KEY_ATTRIBUTE = "key";
     protected final Crane4jGlobalConfiguration globalConfiguration;
 
     /**
-     * Create an operation parser that supports annotation configuration.
+     * Create a {@link AssembleAnnotationOperationsResolver} instance.
      *
      * @param annotationFinder annotation finder
      * @param globalConfiguration global configuration
      * @param operationComparator operation comparator
      */
-    public DefaultAnnotationOperationsResolver(
+    public AssembleAnnotationOperationsResolver(
         AnnotationFinder annotationFinder,
         Crane4jGlobalConfiguration globalConfiguration,
         Comparator<KeyTriggerOperation> operationComparator) {
@@ -65,18 +59,16 @@ public class DefaultAnnotationOperationsResolver extends AbstractCacheableOperat
     }
 
     /**
-     * <p>Create an operation parser that supports annotation configuration.<br />
+     * <p>Create a {@link AssembleAnnotationOperationsResolver} instance.<br />
      * The order of operation configurations is {@link Sorted#getSort} from small to large.
      *
      * @param annotationFinder annotation finder
      * @param globalConfiguration global configuration
      */
-    public DefaultAnnotationOperationsResolver(
+    public AssembleAnnotationOperationsResolver(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration globalConfiguration) {
         this(annotationFinder, globalConfiguration, Sorted.comparator());
     }
-
-    // ======================= assemble operations =======================
 
     /**
      * Parse {@link Assemble} annotations for class.
@@ -85,7 +77,7 @@ public class DefaultAnnotationOperationsResolver extends AbstractCacheableOperat
      * @return {@link Assemble}
      * @see #parseAnnotationForDeclaredFields
      */
-    protected List<Assemble> parseAssembleAnnotations(Class<?> beanType) {
+    protected List<Assemble> resolveFieldLevelAnnotations(Class<?> beanType) {
         return parseAnnotationForDeclaredFields(beanType, Assemble.class, (a, f) -> {
             // force value to be set to the annotated attribute name
             ReflectUtils.setAttributeValue(a, ANNOTATION_KEY_ATTRIBUTE, f.getName());
@@ -103,17 +95,14 @@ public class DefaultAnnotationOperationsResolver extends AbstractCacheableOperat
      */
     @Override
     protected List<AssembleOperation> parseAssembleOperations(OperationParseContext context, Class<?> beanType) {
-        Collection<Assemble> assembles = parseAssembleAnnotations(beanType);
-        Operations operations = parseOperationsAnnotation(beanType);
-        if (Objects.nonNull(operations)) {
-            CollUtil.addAll(assembles, operations.assembles());
-        }
-        return assembles.stream()
+        Collection<Assemble> fieldLevelAssembles = resolveFieldLevelAnnotations(beanType);
+        Collection<Assemble> classLevelOperations = resolveClassLevelAnnotations(beanType);
+        return Stream.of(fieldLevelAssembles, classLevelOperations)
+            .flatMap(Collection::stream)
             .map(this::createAssembleOperation)
             .sorted(operationComparator)
             .collect(Collectors.toList());
     }
-
 
     /**
      * Create {@link AssembleOperation} instance from annotation.
@@ -172,91 +161,19 @@ public class DefaultAnnotationOperationsResolver extends AbstractCacheableOperat
         return container;
     }
 
-    // ======================= disassemble operations =======================
-
     /**
-     * Parse {@link Disassemble} annotations for class.
+     * Parse {@link Operations} and {@link Assemble} annotations for class.
      *
      * @param beanType bean type
-     * @return {@link Disassemble}
-     * @see #parseAnnotationForDeclaredFields
+     * @return {@link Assemble}
      */
-    protected List<Disassemble> parseDisassembleAnnotations(Class<?> beanType) {
-        return parseAnnotationForDeclaredFields(beanType, Disassemble.class, (a, f) -> {
-            // force value to be set to the annotated attribute name
-            ReflectUtils.setAttributeValue(a, ANNOTATION_KEY_ATTRIBUTE, f.getName());
-            return a;
-        });
-    }
-
-    /**
-     * Parse assemble operations from {@link Disassemble} annotations on class.
-     *
-     * @param context  context
-     * @param beanType bean type
-     * @return {@link DisassembleOperation}
-     * @see #parseAnnotationForDeclaredFields
-     */
-    @Override
-    protected List<DisassembleOperation> parseDisassembleOperations(OperationParseContext context, Class<?> beanType) {
-        Collection<Disassemble> disassembles = parseDisassembleAnnotations(beanType);
-        Operations operations = parseOperationsAnnotation(beanType);
-        if (Objects.nonNull(operations)) {
-            CollUtil.addAll(disassembles, operations.disassembles());
-        }
-        return disassembles.stream()
-            .map(annotation -> createDisassembleOperation(beanType, annotation, context))
-            .sorted(operationComparator)
-            .collect(Collectors.toList());
-    }
-
-    /**
-     * Create {@link DisassembleOperation} instance from annotation.
-     *
-     * @param type type
-     * @param annotation annotation
-     * @return {@link DisassembleOperation}
-     */
-    protected DisassembleOperation createDisassembleOperation(Class<?> type, Disassemble annotation, OperationParseContext context) {
-        // get handler
-        DisassembleOperationHandler disassembleOperationHandler = ConfigurationUtil.getDisassembleOperationHandler(
-            globalConfiguration, annotation.handlerName(), annotation.handler()
-        );
-        Assert.notNull(disassembleOperationHandler, throwException("disassemble handler [{}]({}) not found", annotation.handlerName(), annotation.handler()));
-
-        // wait until runtime to dynamically determine the actual type if no type is specified
-        DisassembleOperation operation;
-        BeanOperationParser parser = context.getParser();
-        if (Objects.equals(Object.class, annotation.type()) || Objects.equals(Void.TYPE, annotation.type())) {
-            operation = new TypeDynamitedDisassembleOperation(
-                annotation.key(), annotation.sort(),
-                type, disassembleOperationHandler, parser,
-                globalConfiguration.getTypeResolver()
-            );
-        }
-        // complete the parsing now if the type has been specified in the annotation
-        else {
-            BeanOperations operations = parser.parse(annotation.type());
-            operation = new TypeFixedDisassembleOperation(
-                annotation.key(), annotation.sort(),
-                type, operations, disassembleOperationHandler
-            );
-        }
-
-        // set group
-        operation.getGroups().addAll(Arrays.asList(annotation.groups()));
-        return operation;
-    }
-
-    // ======================= common operations =======================
-
-    /**
-     * Parse {@link Operations} annotations for class.
-     *
-     * @param beanType bean type
-     * @return {@link Operations}
-     */
-    protected Operations parseOperationsAnnotation(Class<?> beanType) {
-        return annotationFinder.findAnnotation(beanType, Operations.class);
+    protected Collection<Assemble> resolveClassLevelAnnotations(Class<?> beanType) {
+        Set<Assemble> assembles = annotationFinder.findAllAnnotations(beanType, Assemble.class);
+        List<Assemble> operations = Optional.ofNullable(annotationFinder.findAnnotation(beanType, Operations.class))
+            .map(Operations::assembles)
+            .map(Arrays::asList)
+            .orElseGet(Collections::emptyList);
+        assembles.addAll(operations);
+        return assembles;
     }
 }

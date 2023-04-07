@@ -1,10 +1,9 @@
 package cn.crane4j.extension.spring;
 
 import cn.crane4j.annotation.Assemble;
-import cn.crane4j.annotation.Disassemble;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerProvider;
-import cn.crane4j.core.parser.DefaultAnnotationOperationsResolver;
+import cn.crane4j.core.parser.AssembleAnnotationOperationsResolver;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.Sorted;
@@ -27,7 +26,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * <p>Extension implementation of {@link SpringAnnotationOperationsResolver},
+ * <p>Extension implementation of {@link AssembleAnnotationOperationsResolver},
  * On the basis of the former, some spring annotations are additionally supported.
  * <ul>
  *     <li>support to sort operations according to the rules of Spring {@link Order} annotation priority;</li>
@@ -39,8 +38,8 @@ import java.util.Objects;
  * @since 1.2.0
  */
 @Slf4j
-public class SpringAnnotationOperationsResolver
-    extends DefaultAnnotationOperationsResolver implements EmbeddedValueResolverAware {
+public class SpringAssembleAnnotationOperationsResolver
+    extends AssembleAnnotationOperationsResolver implements EmbeddedValueResolverAware {
 
     private final ExpressionEvaluator evaluator;
     private final BeanResolver beanResolver;
@@ -53,7 +52,7 @@ public class SpringAnnotationOperationsResolver
      * @param annotationFinder    annotation finder
      * @param globalConfiguration global configuration
      */
-    public SpringAnnotationOperationsResolver(
+    public SpringAssembleAnnotationOperationsResolver(
         AnnotationFinder annotationFinder,
         Crane4jGlobalConfiguration globalConfiguration,
         ExpressionEvaluator evaluator, BeanResolver beanResolver) {
@@ -103,22 +102,9 @@ public class SpringAnnotationOperationsResolver
      * @return {@link Assemble}
      */
     @Override
-    protected List<Assemble> parseAssembleAnnotations(Class<?> beanType) {
+    protected List<Assemble> resolveFieldLevelAnnotations(Class<?> beanType) {
         return parseAnnotationForDeclaredFields(
-            beanType, Assemble.class, SpringAnnotationOperationsResolver::processAnnotation
-        );
-    }
-
-    /**
-     * Parse {@link Disassemble} annotations for class.
-     *
-     * @param beanType bean type
-     * @return {@link Disassemble}
-     */
-    @Override
-    protected List<Disassemble> parseDisassembleAnnotations(Class<?> beanType) {
-        return parseAnnotationForDeclaredFields(
-            beanType, Disassemble.class, SpringAnnotationOperationsResolver::processAnnotation
+            beanType, Assemble.class, SpringAssembleAnnotationOperationsResolver::processAnnotation
         );
     }
 

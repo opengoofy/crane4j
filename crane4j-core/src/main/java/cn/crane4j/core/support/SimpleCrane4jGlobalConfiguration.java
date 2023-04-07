@@ -14,8 +14,9 @@ import cn.crane4j.core.executor.handler.ManyToManyReflexAssembleOperationHandler
 import cn.crane4j.core.executor.handler.OneToManyReflexAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.OneToOneReflexAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
+import cn.crane4j.core.parser.AssembleAnnotationOperationsResolver;
 import cn.crane4j.core.parser.BeanOperationParser;
-import cn.crane4j.core.parser.DefaultAnnotationOperationsResolver;
+import cn.crane4j.core.parser.DisassembleAnnotationOperationsResolver;
 import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
 import cn.crane4j.core.support.callback.ContainerRegisterAware;
 import cn.crane4j.core.support.callback.ContainerRegisteredLogger;
@@ -33,7 +34,7 @@ import lombok.Setter;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,7 +88,10 @@ public class SimpleCrane4jGlobalConfiguration implements Crane4jGlobalConfigurat
         // operation parser
         AnnotationFinder annotationFinder = new SimpleAnnotationFinder();
         BeanOperationParser beanOperationParser = new TypeHierarchyBeanOperationParser(
-            Collections.singletonList(new DefaultAnnotationOperationsResolver(annotationFinder, configuration))
+            Arrays.asList(
+                new AssembleAnnotationOperationsResolver(annotationFinder, configuration),
+                new DisassembleAnnotationOperationsResolver(annotationFinder, configuration)
+            )
         );
         configuration.getBeanOperationParserMap().put(BeanOperationParser.class.getName(), beanOperationParser);
         configuration.getBeanOperationParserMap().put(beanOperationParser.getClass().getName(), beanOperationParser);

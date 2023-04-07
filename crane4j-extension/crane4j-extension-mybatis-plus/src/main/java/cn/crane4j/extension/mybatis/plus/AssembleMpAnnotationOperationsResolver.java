@@ -3,7 +3,13 @@ package cn.crane4j.extension.mybatis.plus;
 import cn.crane4j.annotation.AssembleMp;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
-import cn.crane4j.core.parser.*;
+import cn.crane4j.core.parser.AbstractCacheableOperationResolver;
+import cn.crane4j.core.parser.AssembleOperation;
+import cn.crane4j.core.parser.BeanOperationsResolver;
+import cn.crane4j.core.parser.KeyTriggerOperation;
+import cn.crane4j.core.parser.OperationParseContext;
+import cn.crane4j.core.parser.PropertyMapping;
+import cn.crane4j.core.parser.SimpleAssembleOperation;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.Sorted;
@@ -11,7 +17,10 @@ import cn.crane4j.core.util.ConfigurationUtil;
 import cn.crane4j.core.util.ReflectUtils;
 import cn.hutool.core.lang.Assert;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -26,19 +35,19 @@ import java.util.stream.Stream;
  * @see MpBaseMapperContainerRegister
  * @since 1.2.0
  */
-public class MpAnnotationOperationsResolver extends AbstractCacheableOperationResolver {
+public class AssembleMpAnnotationOperationsResolver extends AbstractCacheableOperationResolver {
 
     private final MpBaseMapperContainerRegister mapperContainerRegister;
     private final Crane4jGlobalConfiguration globalConfiguration;
 
     /**
-     * Create a {@link MpAnnotationOperationsResolver} instance.
+     * Create a {@link AssembleMpAnnotationOperationsResolver} instance.
      *
      * @param annotationFinder annotation finder
      * @param mapperContainerRegister mp method container provider
      * @param globalConfiguration global configuration
      */
-    public MpAnnotationOperationsResolver(
+    public AssembleMpAnnotationOperationsResolver(
         AnnotationFinder annotationFinder,
         MpBaseMapperContainerRegister mapperContainerRegister,
         Crane4jGlobalConfiguration globalConfiguration) {
@@ -46,14 +55,14 @@ public class MpAnnotationOperationsResolver extends AbstractCacheableOperationRe
     }
 
     /**
-     * Create a {@link MpAnnotationOperationsResolver} instance.
+     * Create a {@link AssembleMpAnnotationOperationsResolver} instance.
      *
      * @param annotationFinder annotation finder
      * @param operationComparator operation comparator
      * @param mapperContainerRegister mp method container provider
      * @param globalConfiguration global configuration
      */
-    public MpAnnotationOperationsResolver(
+    public AssembleMpAnnotationOperationsResolver(
         AnnotationFinder annotationFinder, Comparator<KeyTriggerOperation> operationComparator,
         MpBaseMapperContainerRegister mapperContainerRegister,
         Crane4jGlobalConfiguration globalConfiguration) {
@@ -107,18 +116,5 @@ public class MpAnnotationOperationsResolver extends AbstractCacheableOperationRe
         // add groups
         operation.getGroups().addAll(Arrays.asList(annotation.groups()));
         return operation;
-    }
-
-    /**
-     * Parse disassemble operations for class.
-     *
-     * @param context  context
-     * @param beanType bean type
-     * @return {@link DisassembleOperation}
-     * @see #parseAnnotationForDeclaredFields
-     */
-    @Override
-    protected List<DisassembleOperation> parseDisassembleOperations(OperationParseContext context, Class<?> beanType) {
-        return Collections.emptyList();
     }
 }

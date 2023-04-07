@@ -11,8 +11,13 @@ import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
 import cn.crane4j.core.parser.AssembleOperation;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.BeanOperationsResolver;
+import cn.crane4j.core.parser.DisassembleAnnotationOperationsResolver;
 import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
-import cn.crane4j.core.support.*;
+import cn.crane4j.core.support.AnnotationFinder;
+import cn.crane4j.core.support.Crane4jGlobalConfiguration;
+import cn.crane4j.core.support.OperateTemplate;
+import cn.crane4j.core.support.SimpleTypeResolver;
+import cn.crane4j.core.support.TypeResolver;
 import cn.crane4j.core.support.aop.AutoOperateMethodAnnotatedElementResolver;
 import cn.crane4j.core.support.callback.ContainerRegisterAware;
 import cn.crane4j.core.support.callback.ContainerRegisteredLogger;
@@ -103,12 +108,17 @@ public class Crane4jSpringTestConfiguration {
         return new BeanFactoryResolver(applicationContext);
     }
 
-    @Primary
     @Bean
-    public SpringAnnotationOperationsResolver springAnnotationOperationsResolver(
+    public SpringAssembleAnnotationOperationsResolver springAnnotationOperationsResolver(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration,
         ExpressionEvaluator evaluator, BeanResolver beanResolver) {
-        return new SpringAnnotationOperationsResolver(annotationFinder, configuration, evaluator, beanResolver);
+        return new SpringAssembleAnnotationOperationsResolver(annotationFinder, configuration, evaluator, beanResolver);
+    }
+
+    @Bean
+    public DisassembleAnnotationOperationsResolver disassembleAnnotationOperationsResolver(
+        AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration) {
+        return new DisassembleAnnotationOperationsResolver(annotationFinder, configuration);
     }
 
     @Primary

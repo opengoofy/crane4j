@@ -1,12 +1,21 @@
 package cn.crane4j.core.parser;
 
 import cn.crane4j.core.exception.OperationParseException;
+import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.support.Sorted;
 import cn.hutool.core.collection.CollUtil;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -20,6 +29,14 @@ import java.util.stream.Collectors;
  * <p>After the parsing is completed, the {@link BeanOperations} instance
  * corresponding to the {@link Class} will be cached,
  * and the cache will be used preferentially for the next access.
+ *
+ * <p>The sequence of operations obtained through the parser follows:
+ * <ul>
+ *     <li>The calling order of {@link BeanOperationsResolver};</li>
+ *     <li>their order in link {@link BeanOperationsResolver};</li>
+ * </ul>
+ * It should be noted that this order does not represent the order in which the final operation will be executed.
+ * This order is guaranteed by the executor {@link BeanOperationExecutor}.
  *
  * @author huangchengxing
  * @see BeanOperationsResolver
