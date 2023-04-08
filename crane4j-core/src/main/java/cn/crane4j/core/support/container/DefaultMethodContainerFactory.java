@@ -80,9 +80,9 @@ public class DefaultMethodContainerFactory implements MethodContainerFactory {
             MethodInvoker keyGetter = findKeyGetter(annotation);
             keyExtractor = keyGetter::invoke;
         }
-        // is proxy object?
+        // is proxy object and not declaring by proxy class?
         MethodInvoker methodInvoker;
-        if (Proxy.isProxyClass(target.getClass())) {
+        if (Proxy.isProxyClass(target.getClass()) && !Proxy.isProxyClass(method.getDeclaringClass())) {
             InvocationHandler handler = Proxy.getInvocationHandler(target);
             methodInvoker = new JdkProxyMethodInvoker(handler, method);
         } else {
