@@ -47,7 +47,8 @@ public class OneToManyReflexAssembleOperationHandler extends GenericReflexAssemb
             Collection<?> sourceValues = mapping.hasSource() ?
                 sources.stream().map(s -> propertyOperator.readProperty(s.getClass(), s, mapping.getSource()))
                     .collect(Collectors.toList()) : sources;
-            propertyOperator.writeProperty(target.getExecution().getTargetType(), target.getOrigin(), mapping.getReference(), sourceValues);
+            Object origin = target.getOrigin();
+            propertyOperator.writeProperty(origin.getClass(), origin, mapping.getReference(), sourceValues);
         }
     }
 }

@@ -3,9 +3,7 @@ package cn.crane4j.core.executor.handler;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.executor.AssembleExecution;
 import cn.crane4j.core.parser.PropertyMapping;
-import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.support.reflect.PropertyOperator;
-import cn.hutool.core.text.CharSequenceUtil;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
@@ -40,14 +38,9 @@ public class GenericReflexAssembleOperationHandler extends AbstractAssembleOpera
     protected Collection<AssembleOperationTarget> collectToEntities(Collection<AssembleExecution> executions) {
         List<AssembleOperationTarget> targets = new ArrayList<>();
         for (AssembleExecution execution : executions) {
-            Class<?> targetType = execution.getTargetType();
             String key = execution.getOperation().getKey();
-            MethodInvoker getter = propertyOperator.findGetter(targetType, key);
-            Objects.requireNonNull(getter, () -> CharSequenceUtil.format(
-                "cannot find getter [{}] for [{}]", key, targetType
-            ));
             execution.getTargets().stream()
-                .map(t -> createTarget(execution, t, getter.invoke(t)))
+                .map(t -> createTarget(execution, t, propertyOperator.readProperty(t.getClass(), t, key)))
                 .forEach(targets::add);
         }
         return targets;
@@ -103,18 +96,18 @@ public class GenericReflexAssembleOperationHandler extends AbstractAssembleOpera
     @Override
     protected void completeMapping(Object source, AssembleOperationTarget target) {
         AssembleExecution execution = target.getExecution();
-        Class<?> targetType = execution.getTargetType();
         Set<PropertyMapping> mappings = execution.getOperation().getPropertyMappings();
         for (PropertyMapping mapping : mappings) {
-            mappingProperty(target, source, targetType, mapping);
+            mappingProperty(target, source, mapping);
         }
     }
 
-    private void mappingProperty(AssembleOperationTarget entity, Object source, Class<?> targetType, PropertyMapping mapping) {
+    private void mappingProperty(AssembleOperationTarget entity, Object source,PropertyMapping mapping) {
         Object sourceValue = mapping.hasSource() ?
             propertyOperator.readProperty(source.getClass(), source, mapping.getSource()) : source;
         if (Objects.nonNull(sourceValue)) {
-            propertyOperator.writeProperty(targetType, entity.getOrigin(), mapping.getReference(), sourceValue);
+            Object target = entity.getOrigin();
+            propertyOperator.writeProperty(target.getClass(), target, mapping.getReference(), sourceValue);
         }
     }
 }

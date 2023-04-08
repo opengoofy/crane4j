@@ -126,8 +126,13 @@ public class Crane4jAutoConfiguration {
     public PropertyOperator propertyOperator(Properties properties) {
         PropertyOperator operator = properties.isEnableAsmReflect() ?
             new AsmReflectPropertyOperator() : new ReflectPropertyOperator();
-        operator = new MapAccessiblePropertyOperator(operator);
-        return new ChainAccessiblePropertyOperator(operator);
+        if (properties.isEnableMapOperate()) {
+            operator = new MapAccessiblePropertyOperator(operator);
+        }
+        if (properties.isEnableChainOperate()) {
+            operator = new ChainAccessiblePropertyOperator(operator);
+        }
+        return operator;
     }
 
     @Bean
@@ -355,9 +360,25 @@ public class Crane4jAutoConfiguration {
     public static class Properties {
 
         /**
+         * <p>Whether to enable objects of type {@link Map} be used as target objects or data source objects.<br />
+         * <b><NOTE</b>:If the customized {@link PropertyOperator} is registered, the configuration will be overwritten.
+         *
+         * @see MapAccessiblePropertyOperator
+         */
+        private boolean enableMapOperate = true;
+
+        /**
+         * <p>Whether to enable accessing object properties through chain operators.<br />
+         * <b><NOTE</b>:If the customized {@link PropertyOperator} is registered, the configuration will be overwritten.
+         *
+         * @see MapAccessiblePropertyOperator
+         */
+        private boolean enableChainOperate = true;
+
+        /**
          * <p>Whether to enable reflection enhancement based on {@link com.esotericsoftware.reflectasm}.
          * Enabling can improve performance to some extent, but may increase additional memory usage.<br />
-         * If the customized {@link PropertyOperator} is registered, the configuration will be overwritten.
+         * <b><NOTE</b>:If the customized {@link PropertyOperator} is registered, the configuration will be overwritten.
          *
          * @see AsmReflectPropertyOperator
          */
