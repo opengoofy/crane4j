@@ -1,5 +1,6 @@
 package cn.crane4j.core.util;
 
+import com.google.common.collect.Iterators;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -24,5 +25,7 @@ public class CollectionUtilsTest {
         Assert.assertTrue(CollectionUtils.adaptObjectToCollection(Collections.emptyList()).isEmpty());
         Assert.assertEquals(1, CollectionUtils.adaptObjectToCollection(Collections.emptyMap()).size());
         Assert.assertEquals(1, CollectionUtils.adaptObjectToCollection(new Object()).size());
+        Assert.assertEquals(1, CollectionUtils.adaptObjectToCollection(Iterators.singletonIterator(1)).size());
+        Assert.assertEquals(1, CollectionUtils.adaptObjectToCollection((Iterable<?>)() -> Iterators.singletonIterator(1)).size());
     }
 }

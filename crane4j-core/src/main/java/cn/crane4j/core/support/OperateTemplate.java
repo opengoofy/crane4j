@@ -84,6 +84,32 @@ public class OperateTemplate {
      * Execute the fill operation.
      *
      * @param target target
+     * @param beanOperations bean operations
+     */
+    public void execute(Object target, BeanOperations beanOperations) {
+        defaultExecutor.execute(
+            CollectionUtils.adaptObjectToCollection(target),
+            beanOperations, Grouped.alwaysMatch()
+        );
+    }
+
+    /**
+     * Execute the fill operation.
+     *
+     * @param target target
+     * @param beanOperations bean operations
+     */
+    public void execute(Object target, BeanOperations beanOperations, Predicate<? super KeyTriggerOperation> filter) {
+        defaultExecutor.execute(
+            CollectionUtils.adaptObjectToCollection(target),
+            beanOperations, filter
+        );
+    }
+
+    /**
+     * Execute the fill operation.
+     *
+     * @param target target
      * @param filter filter
      */
     public void execute(Object target, Predicate<? super KeyTriggerOperation> filter) {

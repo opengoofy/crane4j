@@ -8,6 +8,7 @@ import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
 import cn.crane4j.core.parser.AssembleOperation;
 import cn.crane4j.core.parser.BeanOperationParser;
+import cn.crane4j.core.parser.BeanOperations;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.junit.Assert;
@@ -28,12 +29,14 @@ import java.util.Map;
 
 public class OperateTemplateTest {
 
+    private BeanOperationParser parser;
     private BeanOperationExecutor beanOperationExecutor;
     private OperateTemplate template;
 
     @Before
     public void init() {
         SimpleCrane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create(Collections.emptyMap());
+        parser = configuration.getBeanOperationsParser(BeanOperationParser.class);
         beanOperationExecutor = new DisorderedBeanOperationExecutor();
         template = new OperateTemplate(
             configuration.getBeanOperationsParser(BeanOperationParser.class),
@@ -77,6 +80,15 @@ public class OperateTemplateTest {
         fooList = getFooList();
         template.executeIfMatchAllGroups(fooList, "id");
         checkBean(fooList.get(0), "1", null, null);
+
+        BeanOperations beanOperations = parser.parse(Foo.class);
+        fooList = getFooList();
+        template.execute(fooList, beanOperations, op -> op instanceof AssembleOperation);
+        checkBean(fooList.get(0), "1", null, null);
+
+        fooList = getFooList();
+        template.execute(fooList, beanOperations);
+        checkBean(fooList.get(0), "1", "1", "1");
     }
 
     private static void checkBean(Foo foo, String name, String nestedName, String value) {

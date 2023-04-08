@@ -1,10 +1,12 @@
 package cn.crane4j.core.util;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.MapMaker;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentMap;
 
@@ -45,6 +47,12 @@ public class CollectionUtils {
         }
         if (obj.getClass().isArray()) {
             return Arrays.asList((Object[])obj);
+        }
+        if (obj instanceof Iterable) {
+            return Lists.newArrayList((Iterable<?>)obj);
+        }
+        if (obj instanceof Iterator) {
+            return Lists.newArrayList((Iterator<?>)obj);
         }
         return Collections.singletonList(obj);
     }
