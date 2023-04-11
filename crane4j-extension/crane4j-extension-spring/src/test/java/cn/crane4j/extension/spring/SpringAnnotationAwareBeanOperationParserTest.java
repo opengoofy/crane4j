@@ -65,7 +65,7 @@ public class SpringAnnotationAwareBeanOperationParserTest {
         public Container<String> testContainer() {
             Map<String, Object> map = new HashMap<>();
             map.put("1", 1);
-            return ConstantContainer.forMap("test", map);
+            return ConstantContainer.forMap("testContainer", map);
         }
     }
 

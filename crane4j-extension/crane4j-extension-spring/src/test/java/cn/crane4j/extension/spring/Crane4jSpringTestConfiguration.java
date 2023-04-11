@@ -66,7 +66,9 @@ public class Crane4jSpringTestConfiguration {
         List<ContainerRegisterAware> awareList = applicationContext
             .getBeanNamesForType(ContainerRegisterAware.class).length > 0 ?
             new ArrayList<>(applicationContext.getBeansOfType(ContainerRegisterAware.class).values()) : new ArrayList<>();
-        return new Crane4jApplicationContext(applicationContext, awareList);
+        Crane4jApplicationContext context = new Crane4jApplicationContext(applicationContext);
+        awareList.forEach(context::addContainerRegisterAware);
+        return context;
     }
 
     @Bean

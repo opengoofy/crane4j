@@ -50,7 +50,7 @@ public class ManyToManyReflexAssembleOperationHandlerTest extends BaseExecutorTe
             sources.put(String.valueOf(i), source);
         }
         Container<String> container = ConstantContainer.forMap("test", sources);
-        configuration.getContainerMap().put("test", container);
+        configuration.registerContainer(container);
     }
 
     @Test

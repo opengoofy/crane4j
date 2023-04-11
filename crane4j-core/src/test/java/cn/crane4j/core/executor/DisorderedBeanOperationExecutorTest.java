@@ -36,7 +36,7 @@ public class DisorderedBeanOperationExecutorTest extends BaseExecutorTest {
         sources.put(1, new Source(1, "one"));
         sources.put(2, new Source(2, "two"));
         Container<Integer> container = ConstantContainer.forMap("test", sources);
-        configuration.getContainerMap().put("test", container);
+        configuration.registerContainer(container);
     }
 
     @SuppressWarnings("all")

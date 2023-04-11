@@ -2,12 +2,14 @@ package cn.crane4j.extension.spring;
 
 import cn.crane4j.core.container.ConstantContainer;
 import cn.crane4j.core.container.Container;
+import cn.crane4j.core.container.LambdaContainer;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.support.callback.ContainerRegisterAware;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.ReflectUtil;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,6 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * test for {@link Crane4jApplicationContext}
@@ -50,9 +55,11 @@ public class Crane4jApplicationContextTest {
         context.addContainerRegisterAware(aware);
         Assert.assertEquals(size + 1, context.getContainerRegisterAwareList().size());
 
-        Assert.assertFalse(context.getRegisteredContainers().isEmpty());
+        @SuppressWarnings("unchecked")
+        Map<String, Container<?>> containerMap = (Map<String, Container<?>>)ReflectUtil.getFieldValue(context, "containerMap");
+        Assert.assertFalse(containerMap.isEmpty());
         context.destroy();
-        Assert.assertTrue(context.getRegisteredContainers().isEmpty());
+        Assert.assertTrue(containerMap.isEmpty());
     }
 
     @Test
@@ -66,7 +73,7 @@ public class Crane4jApplicationContextTest {
         Assert.assertFalse(context.containsContainer("no registered"));
         Container<?> container1 = context.replaceContainer("no registered", container -> {
             Assert.assertNull(container);
-            return Container.empty();
+            return LambdaContainer.forLambda("no registered", ids -> Collections.emptyMap());
         });
         Assert.assertNull(container1);
         Assert.assertTrue(context.containsContainer("no registered"));

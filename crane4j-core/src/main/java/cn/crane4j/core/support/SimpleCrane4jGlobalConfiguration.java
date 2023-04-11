@@ -2,8 +2,8 @@ package cn.crane4j.core.support;
 
 import cn.crane4j.core.cache.CacheManager;
 import cn.crane4j.core.cache.ConcurrentMapCacheManager;
-import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerProvider;
+import cn.crane4j.core.container.SimpleConfigurableContainerProvider;
 import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
@@ -18,7 +18,6 @@ import cn.crane4j.core.parser.AssembleAnnotationOperationsResolver;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.DisassembleAnnotationOperationsResolver;
 import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
-import cn.crane4j.core.support.callback.ContainerRegisterAware;
 import cn.crane4j.core.support.callback.ContainerRegisteredLogger;
 import cn.crane4j.core.support.callback.DefaultCacheableContainerProcessor;
 import cn.crane4j.core.support.reflect.ChainAccessiblePropertyOperator;
@@ -26,21 +25,15 @@ import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
 import cn.crane4j.core.util.CollectionUtils;
-import cn.crane4j.core.util.ConfigurationUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.map.MapUtil;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.UnaryOperator;
 
 /**
  * Basic implementation of {@link Crane4jGlobalConfiguration}.
@@ -48,15 +41,13 @@ import java.util.function.UnaryOperator;
  * @author huangchengxing
  */
 @Getter
-public class SimpleCrane4jGlobalConfiguration implements Crane4jGlobalConfiguration {
+public class SimpleCrane4jGlobalConfiguration
+    extends SimpleConfigurableContainerProvider implements Crane4jGlobalConfiguration {
 
     @Setter
     private TypeResolver typeResolver;
     @Setter
     private PropertyOperator propertyOperator;
-    @Getter
-    private final List<ContainerRegisterAware> containerRegisterAwareList = new ArrayList<>(4);
-    private final Map<String, Container<?>> containerMap = new ConcurrentHashMap<>(16);
     private final Map<String, BeanOperationParser> beanOperationParserMap = new HashMap<>(16);
     private final Map<String, AssembleOperationHandler> assembleOperationHandlerMap = new HashMap<>(4);
     private final Map<String, DisassembleOperationHandler> disassembleOperationHandlerMap = new HashMap<>(4);
@@ -118,79 +109,6 @@ public class SimpleCrane4jGlobalConfiguration implements Crane4jGlobalConfigurat
         configuration.getContainerProviderMap().put(configuration.getClass().getName(), configuration);
         configuration.getContainerProviderMap().put(ContainerProvider.class.getName(), configuration);
         return configuration;
-    }
-
-    /**
-     * Get data source container.
-     *
-     * @param namespace namespace
-     * @return container
-     */
-    @Override
-    public Container<?> getContainer(String namespace) {
-        return Assert.notNull(
-            containerMap.get(namespace),
-            () -> new Crane4jException("cannot find container [{}]", namespace)
-        );
-    }
-
-    /**
-     * Add a {@link ContainerRegisterAware} callback.
-     *
-     * @param containerRegisterAware callback
-     */
-    @Override
-    public void addContainerRegisterAware(ContainerRegisterAware containerRegisterAware) {
-        containerRegisterAwareList.remove(containerRegisterAware);
-        containerRegisterAwareList.add(containerRegisterAware);
-    }
-
-    /**
-     * Whether the container has been registered.
-     *
-     * @param namespace namespace
-     * @return boolean
-     */
-    @Override
-    public boolean containsContainer(String namespace) {
-        return containerMap.containsKey(namespace);
-    }
-
-    /**
-     * Replace the registered container.
-     * <ul>
-     *     <li>if the container is not registered, it will be added;</li>
-     *     <li>if {@code replacer} return {@code null}, the old container will be deleted;</li>
-     * </ul>
-     *
-     * @param namespace namespace
-     * @param replacer  replacer
-     * @return old container
-     */
-    @Nullable
-    @Override
-    public Container<?> replaceContainer(String namespace, UnaryOperator<Container<?>> replacer) {
-        Container<?> prev = containerMap.remove(namespace);
-        Container<?> next = replacer.apply(prev);
-        if (Objects.nonNull(next)) {
-            containerMap.put(namespace, next);
-        }
-        return prev;
-    }
-
-    /**
-     * Register container.
-     *
-     * @param container container
-     * @throws Crane4jException thrown when the namespace of the container has been registered
-     */
-    @Override
-    public void registerContainer(Container<?> container) {
-        String namespace = container.getNamespace();
-        Assert.isFalse(containerMap.containsKey(namespace), () -> new Crane4jException("the container [{}] has been registered", namespace));
-        ConfigurationUtil.invokeRegisterAware(
-            this, container, getContainerRegisterAwareList(), c -> containerMap.put(namespace, c)
-        );
     }
 
     /**

@@ -57,7 +57,7 @@ public class TypeHierarchyBeanOperationParserTest {
             )
         );
         configuration.setTypeResolver(new SimpleTypeResolver());
-        configuration.getContainerMap().put(CONTAINER.getNamespace(), CONTAINER);
+        configuration.registerContainer(CONTAINER);
 
         configuration.getBeanOperationParserMap().put(parser.getClass().getName(), parser);
         configuration.getBeanOperationParserMap().put(BeanOperationParser.class.getName(), parser);

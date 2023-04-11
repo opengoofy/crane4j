@@ -49,7 +49,7 @@ public class OneToManyReflexAssembleOperationHandlerTest extends BaseExecutorTes
             sources.put(i, beanList);
         }
         Container<Integer> container = ConstantContainer.forMap("test", sources);
-        configuration.getContainerMap().put("test", container);
+        configuration.registerContainer(container);
     }
 
     @Test

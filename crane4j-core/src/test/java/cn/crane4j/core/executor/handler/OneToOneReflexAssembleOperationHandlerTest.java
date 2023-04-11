@@ -42,7 +42,7 @@ public class OneToOneReflexAssembleOperationHandlerTest extends BaseExecutorTest
                 Function.identity(), id -> new Bean(id, "name" + id)
             ))
         );
-        configuration.getContainerMap().put("test", container);
+        configuration.registerContainer(container);
     }
 
     @Test

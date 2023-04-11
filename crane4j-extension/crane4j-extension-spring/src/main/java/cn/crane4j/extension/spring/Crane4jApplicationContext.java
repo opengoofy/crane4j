@@ -1,7 +1,9 @@
 package cn.crane4j.extension.spring;
 
+import cn.crane4j.core.container.ConfigurableContainerProvider;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerProvider;
+import cn.crane4j.core.container.SimpleConfigurableContainerProvider;
 import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
@@ -11,21 +13,14 @@ import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.TypeResolver;
 import cn.crane4j.core.support.callback.ContainerRegisterAware;
 import cn.crane4j.core.support.reflect.PropertyOperator;
-import cn.crane4j.core.util.ConfigurationUtil;
-import cn.hutool.core.lang.Assert;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.context.ApplicationContext;
 
-import javax.annotation.Nullable;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.UnaryOperator;
 
 /**
  * <p>The global configuration class implemented based on the Spring context,
@@ -37,36 +32,13 @@ import java.util.function.UnaryOperator;
  */
 @Slf4j
 @RequiredArgsConstructor
-public class Crane4jApplicationContext
-    implements Crane4jGlobalConfiguration, SmartInitializingSingleton, DisposableBean {
+public class Crane4jApplicationContext extends SimpleConfigurableContainerProvider
+    implements Crane4jGlobalConfiguration, SmartInitializingSingleton, DisposableBean, InitializingBean {
 
     /**
      * application context
      */
     private final ApplicationContext applicationContext;
-
-    /**
-     * registered containers
-     */
-    @Getter
-    private final Map<String, Container<?>> registeredContainers = new ConcurrentHashMap<>();
-
-    /**
-     * registered callback
-     */
-    @Getter
-    private final List<ContainerRegisterAware> containerRegisterAwareList;
-
-    /**
-     * Add a {@link ContainerRegisterAware} callback.
-     *
-     * @param containerRegisterAware callback
-     */
-    @Override
-    public void addContainerRegisterAware(ContainerRegisterAware containerRegisterAware) {
-        containerRegisterAwareList.remove(containerRegisterAware);
-        containerRegisterAwareList.add(containerRegisterAware);
-    }
 
     /**
      * Whether the container has been registered.
@@ -76,30 +48,21 @@ public class Crane4jApplicationContext
      */
     @Override
     public boolean containsContainer(String namespace) {
-        return registeredContainers.containsKey(namespace)
+        return super.containsContainer(namespace)
             || applicationContext.containsBean(namespace);
     }
 
     /**
-     * Replace the registered container.
-     * <ul>
-     *     <li>if the container is not registered, it will be added;</li>
-     *     <li>if {@code replacer} return {@code null}, the old container will be deleted;</li>
-     * </ul>
+     * Get data source container.
      *
      * @param namespace namespace
-     * @param replacer  replacer
-     * @return old container
+     * @return container
+     * @throws Crane4jException thrown when the container is not registered
      */
-    @Nullable
     @Override
-    public Container<?> replaceContainer(String namespace, UnaryOperator<Container<?>> replacer) {
-        Container<?> prev = registeredContainers.remove(namespace);
-        Container<?> next = replacer.apply(prev);
-        if (Objects.nonNull(next)) {
-            registeredContainers.put(namespace, next);
-        }
-        return prev;
+    public Container<?> getContainer(String namespace) {
+        return super.containsContainer(namespace) ?
+            super.getContainer(namespace) : applicationContext.getBean(namespace, Container.class);
     }
 
     /**
@@ -142,21 +105,6 @@ public class Crane4jApplicationContext
     @Override
     public ContainerProvider getContainerProvider(String providerName) {
         return applicationContext.getBean(providerName, ContainerProvider.class);
-    }
-
-    /**
-     * Get data source container.
-     *
-     * @param namespace namespace
-     * @return container
-     */
-    @Override
-    public Container<?> getContainer(String namespace) {
-        Container<?> container = registeredContainers.get(namespace);
-        if (Objects.isNull(container)) {
-            container = applicationContext.getBean(namespace, Container.class);
-        }
-        return Assert.notNull(container, () -> new Crane4jException("cannot find container [{}]", namespace));
     }
 
     /**
@@ -247,19 +195,20 @@ public class Crane4jApplicationContext
         return applicationContext.getBean(handlerName, DisassembleOperationHandler.class);
     }
 
+    // ============================ life cycle ============================
+
     /**
-     * Register container.
-     *
-     * @param container container
-     * @throws Crane4jException thrown when the namespace of the container has been registered
+     * Load all {@link ContainerRegisterAware} from spring context.
      */
     @Override
-    public void registerContainer(Container<?> container) {
-        String namespace = container.getNamespace();
-        Assert.isFalse(registeredContainers.containsKey(namespace), () -> new Crane4jException("the container [{}] has been registered", namespace));
-        ConfigurationUtil.invokeRegisterAware(
-            this, container, getContainerRegisterAwareList(), c -> registeredContainers.put(namespace, c)
-        );
+    public void afterPropertiesSet() {
+        Map<String, ConfigurableContainerProvider> containerProviderMap = applicationContext
+            .getBeansOfType(ConfigurableContainerProvider.class);
+        applicationContext.getBeansOfType(ContainerRegisterAware.class).forEach((name, aware) -> {
+            log.info("install container register aware [{}]", name);
+            this.addContainerRegisterAware(aware);
+            containerProviderMap.values().forEach(provider -> provider.addContainerRegisterAware(aware));
+        });
     }
 
     /**
@@ -278,6 +227,6 @@ public class Crane4jApplicationContext
     @Override
     public void destroy() {
         log.info("global configuration has been destroyed.");
-        registeredContainers.clear();
+        containerMap.clear();
     }
 }

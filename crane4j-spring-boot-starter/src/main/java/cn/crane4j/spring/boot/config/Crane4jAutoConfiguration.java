@@ -80,7 +80,6 @@ import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.expression.BeanResolver;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -115,10 +114,10 @@ public class Crane4jAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public Crane4jApplicationContext crane4jApplicationContext(ApplicationContext applicationContext) {
-        List<ContainerRegisterAware> awareList = applicationContext
-            .getBeanNamesForType(ContainerRegisterAware.class).length > 0 ?
-            new ArrayList<>(applicationContext.getBeansOfType(ContainerRegisterAware.class).values()) : new ArrayList<>();
-        return new Crane4jApplicationContext(applicationContext, awareList);
+        Crane4jApplicationContext context = new Crane4jApplicationContext(applicationContext);
+        applicationContext.getBeansOfType(ContainerRegisterAware.class)
+            .values().forEach(context::addContainerRegisterAware);
+        return context;
     }
 
     @Bean

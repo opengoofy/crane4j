@@ -33,7 +33,7 @@ public class OrderedBeanOperationExecutorTest extends BaseExecutorTest {
         sources.put(1, "two");
         sources.put("two", "three");
         Container<Object> container = ConstantContainer.forMap("test", sources);
-        configuration.getContainerMap().put("test", container);
+        configuration.registerContainer(container);
     }
 
     @Test

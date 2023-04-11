@@ -33,7 +33,7 @@ public class SimpleCrane4jGlobalConfigurationTest {
 
     @Before
     public void init() {
-        configuration.getContainerMap().put("test", Container.empty());
+        configuration.registerContainer(LambdaContainer.forLambda("test", ids -> Collections.emptyMap()));
         configuration.setTypeResolver(new SimpleTypeResolver());
         configuration.setPropertyOperator(new ReflectPropertyOperator());
 
@@ -80,7 +80,7 @@ public class SimpleCrane4jGlobalConfigurationTest {
         Assert.assertFalse(configuration.containsContainer("no registered"));
         Container<?> container1 = configuration.replaceContainer("no registered", container -> {
             Assert.assertNull(container);
-            return Container.empty();
+            return LambdaContainer.forLambda("no registered", ids -> Collections.emptyMap());
         });
         Assert.assertNull(container1);
         Assert.assertTrue(configuration.containsContainer("no registered"));

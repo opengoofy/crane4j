@@ -1,8 +1,7 @@
 package cn.crane4j.core.support;
 
-import cn.crane4j.core.container.Container;
+import cn.crane4j.core.container.ConfigurableContainerProvider;
 import cn.crane4j.core.container.ContainerProvider;
-import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
@@ -10,25 +9,14 @@ import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.support.callback.ContainerRegisterAware;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
-import java.util.function.UnaryOperator;
 
 /**
  * Framework global configuration.
  *
  * @author huangchengxing
  */
-public interface Crane4jGlobalConfiguration extends ContainerProvider {
-
-    // ================= container apis =================
-
-    /**
-     * Add a {@link ContainerRegisterAware} callback.
-     *
-     * @param containerRegisterAware callback
-     */
-    void addContainerRegisterAware(ContainerRegisterAware containerRegisterAware);
+public interface Crane4jGlobalConfiguration extends ConfigurableContainerProvider {
 
     /**
      * Get all registered {@link ContainerRegisterAware} callback.
@@ -36,38 +24,6 @@ public interface Crane4jGlobalConfiguration extends ContainerProvider {
      * @return {@link ContainerRegisterAware} instances
      */
     Collection<ContainerRegisterAware> getContainerRegisterAwareList();
-
-    /**
-     * Whether the container has been registered.
-     *
-     * @param namespace namespace
-     * @return boolean
-     */
-    boolean containsContainer(String namespace);
-
-    /**
-     * Replace the registered container.
-     * <ul>
-     *     <li>if the container is not registered, it will be added;</li>
-     *     <li>if {@code replacer} return {@code null}, the old container will be deleted;</li>
-     * </ul>
-     *
-     * @param namespace namespace
-     * @param replacer replacer
-     * @return old container
-     */
-    @Nullable
-    Container<?> replaceContainer(String namespace, UnaryOperator<Container<?>> replacer);
-
-    /**
-     * Register container.
-     *
-     * @param container container
-     * @throws Crane4jException thrown when the namespace of the container has been registered
-     */
-    void registerContainer(Container<?> container);
-
-    // ================= component apis =================
 
     /**
      * Get property operator.
