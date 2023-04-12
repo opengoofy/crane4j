@@ -23,7 +23,7 @@ import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.OperateTemplate;
 import cn.crane4j.core.support.SimpleTypeResolver;
 import cn.crane4j.core.support.TypeResolver;
-import cn.crane4j.core.support.aop.AutoOperateMethodAnnotatedElementResolver;
+import cn.crane4j.core.support.aop.AutoOperateAnnotatedElementResolver;
 import cn.crane4j.core.support.callback.ContainerRegisterAware;
 import cn.crane4j.core.support.callback.ContainerRegisteredLogger;
 import cn.crane4j.core.support.callback.DefaultCacheableContainerProcessor;
@@ -272,8 +272,8 @@ public class Crane4jAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public AutoOperateMethodAnnotatedElementResolver autoOperateMethodAnnotatedElementResolver(Crane4jGlobalConfiguration crane4jGlobalConfiguration) {
-        return new AutoOperateMethodAnnotatedElementResolver(crane4jGlobalConfiguration);
+    public AutoOperateAnnotatedElementResolver autoOperateMethodAnnotatedElementResolver(Crane4jGlobalConfiguration crane4jGlobalConfiguration) {
+        return new AutoOperateAnnotatedElementResolver(crane4jGlobalConfiguration);
     }
 
     @Bean
@@ -297,9 +297,9 @@ public class Crane4jAutoConfiguration {
         havingValue = "true", matchIfMissing = true
     )
     public MethodResultAutoOperateAspect methodResultAutoOperateAspect(
-        AutoOperateMethodAnnotatedElementResolver autoOperateMethodAnnotatedElementResolver,
+        AutoOperateAnnotatedElementResolver autoOperateAnnotatedElementResolver,
         ResolvableExpressionEvaluator resolvableExpressionEvaluator) {
-        return new MethodResultAutoOperateAspect(autoOperateMethodAnnotatedElementResolver, resolvableExpressionEvaluator);
+        return new MethodResultAutoOperateAspect(autoOperateAnnotatedElementResolver, resolvableExpressionEvaluator);
     }
 
     @Bean
@@ -311,10 +311,9 @@ public class Crane4jAutoConfiguration {
     )
     public MethodArgumentAutoOperateAspect methodArgumentAutoOperateAspect(
         MethodBaseExpressionExecuteDelegate methodBaseExpressionExecuteDelegate,
-        AutoOperateMethodAnnotatedElementResolver autoOperateMethodAnnotatedElementResolver,
+        AutoOperateAnnotatedElementResolver autoOperateAnnotatedElementResolver,
         ParameterNameDiscoverer parameterNameDiscoverer, AnnotationFinder annotationFinder) {
-        return new MethodArgumentAutoOperateAspect(
-            autoOperateMethodAnnotatedElementResolver,
+        return new MethodArgumentAutoOperateAspect(autoOperateAnnotatedElementResolver,
             methodBaseExpressionExecuteDelegate,
             parameterNameDiscoverer, annotationFinder
         );

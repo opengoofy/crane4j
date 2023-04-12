@@ -1,7 +1,7 @@
 package cn.crane4j.extension.spring.aop;
 
 import cn.crane4j.annotation.AutoOperate;
-import cn.crane4j.core.support.aop.AutoOperateMethodAnnotatedElementResolver;
+import cn.crane4j.core.support.aop.AutoOperateAnnotatedElementResolver;
 import cn.crane4j.core.support.aop.MethodResultAutoOperateSupport;
 import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,7 @@ import java.util.Objects;
 public class MethodResultAutoOperateAspect extends MethodResultAutoOperateSupport implements DisposableBean {
 
     public MethodResultAutoOperateAspect(
-        AutoOperateMethodAnnotatedElementResolver elementResolver,
+        AutoOperateAnnotatedElementResolver elementResolver,
         MethodBaseExpressionExecuteDelegate expressionExecuteDelegate) {
         super(elementResolver, expressionExecuteDelegate);
         log.info("enable automatic filling of method result");

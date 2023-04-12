@@ -12,19 +12,17 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Objects;
 
-import static cn.crane4j.core.support.aop.AutoOperateMethodAnnotatedElementResolver.ResolvedElement;
-
 /**
  * Method result auto operate support.
  *
  * @author huangchengxing
- * @see AutoOperateMethodAnnotatedElementResolver
+ * @see AutoOperateAnnotatedElementResolver
  */
 @Slf4j
 public class MethodResultAutoOperateSupport {
 
-    protected final Map<String, ResolvedElement> methodCaches = CollectionUtils.newWeakConcurrentMap();
-    protected final AutoOperateMethodAnnotatedElementResolver elementResolver;
+    protected final Map<String, AutoOperateAnnotatedElement> methodCaches = CollectionUtils.newWeakConcurrentMap();
+    protected final AutoOperateAnnotatedElementResolver elementResolver;
     protected final MethodBaseExpressionExecuteDelegate expressionExecuteDelegate;
 
     /**
@@ -34,7 +32,7 @@ public class MethodResultAutoOperateSupport {
      * @param expressionExecuteDelegate method base expression evaluator delegate
      */
     public MethodResultAutoOperateSupport(
-        AutoOperateMethodAnnotatedElementResolver elementResolver, MethodBaseExpressionExecuteDelegate expressionExecuteDelegate) {
+        AutoOperateAnnotatedElementResolver elementResolver, MethodBaseExpressionExecuteDelegate expressionExecuteDelegate) {
         this.elementResolver = elementResolver;
         this.expressionExecuteDelegate = expressionExecuteDelegate;
     }
@@ -55,7 +53,7 @@ public class MethodResultAutoOperateSupport {
         }
         // get and build method cache
         log.debug("process result for [{}]", method.getName());
-        ResolvedElement element = MapUtil.computeIfAbsent(methodCaches, method.getName(), m -> elementResolver.resolve(method, annotation));
+        AutoOperateAnnotatedElement element = MapUtil.computeIfAbsent(methodCaches, method.getName(), m -> elementResolver.resolve(method, annotation));
         // whether to apply the operation?
         String condition = element.getAnnotation().condition();
         if (support(method, result, args, condition)) {

@@ -43,7 +43,7 @@ public class MethodResultAutoOperateSupportTest {
         MethodBaseExpressionExecuteDelegate expressionExecuteDelegate = new MethodBaseExpressionExecuteDelegate(
             parameterNameFinder, new OgnlExpressionEvaluator(), method -> new OgnlExpressionContext()
         );
-        AutoOperateMethodAnnotatedElementResolver resolver = new AutoOperateMethodAnnotatedElementResolver(configuration);
+        AutoOperateAnnotatedElementResolver resolver = new AutoOperateAnnotatedElementResolver(configuration);
         support = new MethodResultAutoOperateSupport(resolver, expressionExecuteDelegate);
 
         configuration.registerContainer(LambdaContainer.<Integer>forLambda(

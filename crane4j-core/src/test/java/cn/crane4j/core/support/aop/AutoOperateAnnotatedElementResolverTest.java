@@ -20,27 +20,25 @@ import org.junit.Test;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * test for {@link AutoOperateMethodAnnotatedElementResolver}.
+ * test for {@link AutoOperateAnnotatedElementResolver}.
  *
  * @author huangchengxing
  */
-public class AutoOperateMethodAnnotatedElementResolverTest {
+public class AutoOperateAnnotatedElementResolverTest {
 
     private Crane4jGlobalConfiguration configuration;
-    private AutoOperateMethodAnnotatedElementResolver resolver;
+    private AutoOperateAnnotatedElementResolver resolver;
 
     @Before
     public void init() {
         configuration = SimpleCrane4jGlobalConfiguration.create(Collections.emptyMap());
-        resolver = new AutoOperateMethodAnnotatedElementResolver(configuration);
+        resolver = new AutoOperateAnnotatedElementResolver(configuration);
         configuration.registerContainer(LambdaContainer.<Integer>forLambda(
             "test", ids -> ids.stream().map(id -> new Foo(id, "name" + id))
                 .collect(Collectors.toMap(Foo::getId, Function.identity()))
@@ -53,7 +51,7 @@ public class AutoOperateMethodAnnotatedElementResolverTest {
         Assert.assertNotNull(method);
         AutoOperate annotation = method.getAnnotation(AutoOperate.class);
         Assert.assertNotNull(annotation);
-        AutoOperateMethodAnnotatedElementResolver.ResolvedElement element = resolver.resolve(method, annotation);
+        AutoOperateAnnotatedElement element = resolver.resolve(method, annotation);
 
         checkElement(method, annotation, element);
 
@@ -71,7 +69,7 @@ public class AutoOperateMethodAnnotatedElementResolverTest {
         Parameter parameter = method.getParameters()[0];
         AutoOperate annotation = parameter.getAnnotation(AutoOperate.class);
         Assert.assertNotNull(annotation);
-        AutoOperateMethodAnnotatedElementResolver.ResolvedElement element = resolver.resolve(parameter, annotation);
+        AutoOperateAnnotatedElement element = resolver.resolve(parameter, annotation);
 
         checkElement(parameter, annotation, element);
 
@@ -80,10 +78,9 @@ public class AutoOperateMethodAnnotatedElementResolverTest {
         Assert.assertEquals("name1", foo.getData().getName());
     }
 
-    private void checkElement(AnnotatedElement ele, AutoOperate annotation, AutoOperateMethodAnnotatedElementResolver.ResolvedElement element) {
+    private void checkElement(AnnotatedElement ele, AutoOperate annotation, AutoOperateAnnotatedElement element) {
         Assert.assertSame(annotation, element.getAnnotation());
         Assert.assertSame(ele, element.getElement());
-        Assert.assertEquals(Arrays.asList("a", "b"), new ArrayList<>(element.getGroups()));
         Assert.assertEquals(Foo.class, element.getBeanOperations().getTargetType());
         Assert.assertEquals(configuration.getBeanOperationExecutor(BeanOperationExecutor.class), element.getExecutor());
         MethodInvoker extractor = element.getExtractor();

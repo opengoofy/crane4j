@@ -6,14 +6,12 @@ import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.KeyTriggerOperation;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
+import cn.crane4j.core.support.Grouped;
 import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.support.reflect.PropertyOperator;
-import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.ConfigurationUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.text.CharSequenceUtil;
-import cn.hutool.core.util.ArrayUtil;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.lang.reflect.AnnotatedElement;
@@ -22,8 +20,6 @@ import java.lang.reflect.Parameter;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Common template class for automatic operation based on {@link AutoOperate} annotation on method or method parameters.
@@ -32,27 +28,27 @@ import java.util.stream.Stream;
  * @see AutoOperate
  */
 @RequiredArgsConstructor
-public class AutoOperateMethodAnnotatedElementResolver {
+public class AutoOperateAnnotatedElementResolver {
 
     private final Crane4jGlobalConfiguration configuration;
 
     /**
      * Resolve the {@link AutoOperate} annotation on the element
-     * and build {@link ResolvedElement} for it according to its configuration.
+     * and build {@link AutoOperateAnnotatedElement} for it according to its configuration.
      *
      * @param element element
      * @param annotation annotation
-     * @return {@link ResolvedElement}
+     * @return {@link AutoOperateAnnotatedElement}
      */
-    public ResolvedElement resolve(AnnotatedElement element, AutoOperate annotation) {
+    public AutoOperateAnnotatedElement resolve(AnnotatedElement element, AutoOperate annotation) {
         MethodInvoker extractor = resolveExtractor(element, annotation);
         // prepare components for use
         BeanOperationParser parser = ConfigurationUtil.getParser(configuration, annotation.parserName(), annotation.parser());
         BeanOperations beanOperations = parser.parse(annotation.type());
         BeanOperationExecutor executor = ConfigurationUtil.getOperationExecutor(configuration, annotation.executorName(), annotation.executor());
         // check groups
-        Set<String> groups = resolveGroups(annotation);
-        return new ResolvedElement(annotation, element, extractor, groups, beanOperations, executor);
+        Predicate<? super KeyTriggerOperation> filter = resolveFilter(annotation);
+        return new AutoOperateAnnotatedElement(annotation, element, extractor, filter, beanOperations, executor);
     }
 
     private MethodInvoker resolveExtractor(AnnotatedElement element, AutoOperate annotation) {
@@ -83,33 +79,20 @@ public class AutoOperateMethodAnnotatedElementResolver {
      * @param annotation annotation
      * @return actual include groups
      */
-    protected static Set<String> resolveGroups(AutoOperate annotation) {
-        String[] includes = annotation.includes();
-        String[] excludes = annotation.excludes();
-        return Stream.of(includes)
-            .filter(in -> !ArrayUtil.contains(excludes, in))
-            .collect(Collectors.toSet());
-    }
-
-    /**
-     * Resolved annotated element.
-     */
-    @Getter
-    @RequiredArgsConstructor
-    public static class ResolvedElement {
-        private final AutoOperate annotation;
-        private final AnnotatedElement element;
-        private final MethodInvoker extractor;
-        private final Set<String> groups;
-        private final BeanOperations beanOperations;
-        private final BeanOperationExecutor executor;
-        public void execute(Object data) {
-            Object target = extractor.invoke(data);
-            if (Objects.nonNull(target)) {
-                Predicate<? super KeyTriggerOperation> filter = op ->
-                    groups.isEmpty() || CollUtil.containsAny(groups, op.getGroups());
-                executor.execute(CollectionUtils.adaptObjectToCollection(target), beanOperations, filter);
-            }
+    protected static Predicate<? super KeyTriggerOperation> resolveFilter(AutoOperate annotation) {
+        Set<String> excludes = CollUtil.newHashSet(annotation.excludes());
+        Set<String> includes = CollUtil.newHashSet(annotation.includes());
+        includes.removeAll(excludes);
+        // nothing includes
+        if (includes.isEmpty()) {
+            return Grouped.noneMatch(annotation.excludes());
         }
+        // nothing excludes
+        if (excludes.isEmpty()) {
+            return Grouped.anyMatch(annotation.includes());
+        }
+        // include or not exclude
+        return t -> CollUtil.containsAny(includes, t.getGroups())
+            || !CollUtil.containsAny(excludes, t.getGroups());
     }
 }

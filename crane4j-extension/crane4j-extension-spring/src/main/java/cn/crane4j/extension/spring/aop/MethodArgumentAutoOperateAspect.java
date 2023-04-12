@@ -3,7 +3,8 @@ package cn.crane4j.extension.spring.aop;
 import cn.crane4j.annotation.ArgAutoOperate;
 import cn.crane4j.annotation.AutoOperate;
 import cn.crane4j.core.support.AnnotationFinder;
-import cn.crane4j.core.support.aop.AutoOperateMethodAnnotatedElementResolver;
+import cn.crane4j.core.support.aop.AutoOperateAnnotatedElement;
+import cn.crane4j.core.support.aop.AutoOperateAnnotatedElementResolver;
 import cn.crane4j.core.support.aop.MethodArgumentAutoOperateSupport;
 import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
 import lombok.extern.slf4j.Slf4j;
@@ -18,8 +19,6 @@ import org.springframework.core.annotation.AnnotatedElementUtils;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
-import static cn.crane4j.core.support.aop.AutoOperateMethodAnnotatedElementResolver.ResolvedElement;
-
 /**
  * Method input parameter automatic filling Aspect based on Spring AOP implementation.
  *
@@ -33,7 +32,7 @@ import static cn.crane4j.core.support.aop.AutoOperateMethodAnnotatedElementResol
 public class MethodArgumentAutoOperateAspect extends MethodArgumentAutoOperateSupport implements DisposableBean {
 
     public MethodArgumentAutoOperateAspect(
-        AutoOperateMethodAnnotatedElementResolver elementResolver,
+        AutoOperateAnnotatedElementResolver elementResolver,
         MethodBaseExpressionExecuteDelegate expressionExecuteDelegate,
         ParameterNameDiscoverer parameterNameDiscoverer, AnnotationFinder annotationFinder) {
         super(elementResolver, expressionExecuteDelegate, parameterNameDiscoverer::getParameterNames, annotationFinder);
@@ -53,7 +52,7 @@ public class MethodArgumentAutoOperateAspect extends MethodArgumentAutoOperateSu
      */
     @Override
     public void destroy() {
-        for (ResolvedElement[] elements : methodParameterCaches.values()) {
+        for (AutoOperateAnnotatedElement[] elements : methodParameterCaches.values()) {
             Arrays.fill(elements, null);
         }
         methodParameterCaches.clear();

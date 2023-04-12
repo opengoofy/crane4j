@@ -4,7 +4,6 @@ import cn.crane4j.annotation.ArgAutoOperate;
 import cn.crane4j.annotation.AutoOperate;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.ParameterNameFinder;
-import static cn.crane4j.core.support.aop.AutoOperateMethodAnnotatedElementResolver.ResolvedElement;
 import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.MethodUtils;
@@ -26,15 +25,15 @@ import java.util.stream.Stream;
  * Method argument auto operate support.
  *
  * @author huangchengxing
- * @see AutoOperateMethodAnnotatedElementResolver
+ * @see AutoOperateAnnotatedElementResolver
  * @see MethodBaseExpressionExecuteDelegate
  */
 @Slf4j
 public class MethodArgumentAutoOperateSupport {
 
-    protected static final ResolvedElement[] EMPTY_ELEMENTS = new ResolvedElement[0];
-    protected final AutoOperateMethodAnnotatedElementResolver elementResolver;
-    protected final Map<String, ResolvedElement[]> methodParameterCaches = CollectionUtils.newWeakConcurrentMap();
+    protected static final AutoOperateAnnotatedElement[] EMPTY_ELEMENTS = new AutoOperateAnnotatedElement[0];
+    protected final AutoOperateAnnotatedElementResolver elementResolver;
+    protected final Map<String, AutoOperateAnnotatedElement[]> methodParameterCaches = CollectionUtils.newWeakConcurrentMap();
     protected final ParameterNameFinder parameterNameFinder;
     protected final AnnotationFinder annotationFinder;
     protected final MethodBaseExpressionExecuteDelegate expressionExecuteDelegate;
@@ -48,7 +47,7 @@ public class MethodArgumentAutoOperateSupport {
      * @param annotationFinder annotation finder
      */
     public MethodArgumentAutoOperateSupport(
-        AutoOperateMethodAnnotatedElementResolver elementResolver,
+        AutoOperateAnnotatedElementResolver elementResolver,
         MethodBaseExpressionExecuteDelegate expressionExecuteDelegate,
         ParameterNameFinder parameterNameFinder, AnnotationFinder annotationFinder) {
         this.elementResolver = elementResolver;
@@ -75,7 +74,7 @@ public class MethodArgumentAutoOperateSupport {
             return;
         }
         // cache resolved parameters
-        ResolvedElement[] elements = MapUtil.computeIfAbsent(
+        AutoOperateAnnotatedElement[] elements = MapUtil.computeIfAbsent(
             methodParameterCaches, method.getName(), name -> resolveParameters(annotation, method)
         );
         if (elements == EMPTY_ELEMENTS) {
@@ -90,13 +89,13 @@ public class MethodArgumentAutoOperateSupport {
      *
      * @param method method
      * @param args args
-     * @param resolvedElements resolved elements
+     * @param autoOperateAnnotatedElements resolved elements
      */
-    protected void processArguments(Method method, Object[] args, ResolvedElement[] resolvedElements) {
+    protected void processArguments(Method method, Object[] args, AutoOperateAnnotatedElement[] autoOperateAnnotatedElements) {
         for (int i = 0; i < args.length; i++) {
             Object arg = args[i];
             // maybe not annotated element
-            ResolvedElement element = resolvedElements[i];
+            AutoOperateAnnotatedElement element = autoOperateAnnotatedElements[i];
             if (Objects.nonNull(element) && support(method, args, element.getAnnotation().condition())) {
                 element.execute(arg);
             }
@@ -111,12 +110,12 @@ public class MethodArgumentAutoOperateSupport {
      * @param method method
      * @return operation configuration of method parameters
      */
-    protected ResolvedElement[] resolveParameters(ArgAutoOperate argAutoOperate, Method method) {
+    protected AutoOperateAnnotatedElement[] resolveParameters(ArgAutoOperate argAutoOperate, Method method) {
         Map<String, Parameter> parameterMap = MethodUtils.resolveParameterNames(parameterNameFinder, method);
         Map<String, AutoOperate> methodLevelAnnotations = Stream.of(argAutoOperate.value())
             .collect(Collectors.toMap(AutoOperate::value, Function.identity()));
 
-        ResolvedElement[] results = new ResolvedElement[parameterMap.size()];
+        AutoOperateAnnotatedElement[] results = new AutoOperateAnnotatedElement[parameterMap.size()];
         int index = 0;
         for (Map.Entry<String, Parameter> entry : parameterMap.entrySet()) {
             // find the parameter first, then the method

@@ -5,7 +5,11 @@ import cn.crane4j.annotation.Assemble;
 import cn.crane4j.annotation.AutoOperate;
 import cn.crane4j.annotation.Mapping;
 import cn.crane4j.core.container.LambdaContainer;
-import cn.crane4j.core.support.*;
+import cn.crane4j.core.support.Crane4jGlobalConfiguration;
+import cn.crane4j.core.support.ParameterNameFinder;
+import cn.crane4j.core.support.SimpleAnnotationFinder;
+import cn.crane4j.core.support.SimpleCrane4jGlobalConfiguration;
+import cn.crane4j.core.support.SimpleParameterNameFinder;
 import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
 import cn.crane4j.core.support.expression.OgnlExpressionContext;
 import cn.crane4j.core.support.expression.OgnlExpressionEvaluator;
@@ -40,7 +44,7 @@ public class MethodArgumentAutoOperateSupportTest {
         MethodBaseExpressionExecuteDelegate expressionExecuteDelegate = new MethodBaseExpressionExecuteDelegate(
             parameterNameFinder, new OgnlExpressionEvaluator(), method -> new OgnlExpressionContext()
         );
-        AutoOperateMethodAnnotatedElementResolver resolver = new AutoOperateMethodAnnotatedElementResolver(configuration);
+        AutoOperateAnnotatedElementResolver resolver = new AutoOperateAnnotatedElementResolver(configuration);
         support = new MethodArgumentAutoOperateSupport(resolver, expressionExecuteDelegate, parameterNameFinder, new SimpleAnnotationFinder());
 
         configuration.registerContainer(LambdaContainer.<Integer>forLambda(
