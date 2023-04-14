@@ -1,7 +1,7 @@
 package cn.crane4j.core.cache;
 
+import cn.crane4j.core.util.CollectionUtils;
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.map.MapUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -64,7 +64,7 @@ public class ConcurrentMapCacheManager implements CacheManager {
     @SuppressWarnings("unchecked")
     @Override
     public <K> Cache<K> getCache(String cacheName) {
-        return (Cache<K>) MapUtil.computeIfAbsent(caches, cacheName, n -> {
+        return (Cache<K>) CollectionUtils.computeIfAbsent(caches, cacheName, n -> {
             ConcurrentMap<K, Object> map = (ConcurrentMap<K, Object>)mapFactory.get();
             log.info("create cache [{}]", cacheName);
             return new CacheImpl<>(map);

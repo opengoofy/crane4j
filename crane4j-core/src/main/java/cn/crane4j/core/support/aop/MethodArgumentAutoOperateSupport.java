@@ -8,7 +8,6 @@ import static cn.crane4j.core.support.aop.AutoOperateMethodAnnotatedElementResol
 import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.MethodUtils;
-import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ArrayUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -75,7 +74,7 @@ public class MethodArgumentAutoOperateSupport {
             return;
         }
         // cache resolved parameters
-        ResolvedElement[] elements = MapUtil.computeIfAbsent(
+        ResolvedElement[] elements = CollectionUtils.computeIfAbsent(
             methodParameterCaches, method.getName(), name -> resolveParameters(annotation, method)
         );
         if (elements == EMPTY_ELEMENTS) {

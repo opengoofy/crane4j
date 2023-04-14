@@ -1,6 +1,6 @@
 package cn.crane4j.core.cache;
 
-import cn.hutool.core.map.MapUtil;
+import cn.crane4j.core.util.CollectionUtils;
 import com.google.common.cache.LoadingCache;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -55,7 +55,7 @@ public class GuavaCacheManager implements CacheManager {
     @SuppressWarnings("unchecked")
     @Override
     public <K> Cache<K> getCache(String cacheName) {
-        return (Cache<K>) MapUtil.computeIfAbsent(caches, cacheName, n -> {
+        return (Cache<K>) CollectionUtils.computeIfAbsent(caches, cacheName, n -> {
             com.google.common.cache.Cache<K, Object> cache = (com.google.common.cache.Cache<K, Object>)cacheFactory.get();
             log.info("create cache [{}]", cacheName);
             return new CacheImpl<>(cache);

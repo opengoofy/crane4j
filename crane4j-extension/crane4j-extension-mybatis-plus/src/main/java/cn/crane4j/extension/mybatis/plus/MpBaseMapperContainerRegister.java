@@ -5,10 +5,10 @@ import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.support.reflect.PropertyOperator;
+import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.ConfigurationUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Assert;
-import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ReflectUtil;
@@ -26,8 +26,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.*;
-import java.util.*;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Proxy;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -62,7 +70,7 @@ public class MpBaseMapperContainerRegister {
     public final void registerMapper(String name, BaseMapper<?> baseMapper) {
         Objects.requireNonNull(name);
         Objects.requireNonNull(baseMapper);
-        MapUtil.computeIfAbsent(registerMappers, name, n -> {
+        CollectionUtils.computeIfAbsent(registerMappers, name, n -> {
             TableInfo tableInfo = TableInfoHelper.getTableInfo(n);
             if (Objects.isNull(tableInfo)) {
                 tableInfo = Optional.ofNullable(Proxy.getInvocationHandler(baseMapper))
@@ -92,7 +100,7 @@ public class MpBaseMapperContainerRegister {
             name, CharSequenceUtil.emptyToNull(keyProperty),
             CollUtil.defaultIfEmpty(properties, Collections.emptyList())
         );
-        return MapUtil.computeIfAbsent(containerCaches, cacheKey, this::doGetContainer);
+        return CollectionUtils.computeIfAbsent(containerCaches, cacheKey, this::doGetContainer);
     }
 
     /**

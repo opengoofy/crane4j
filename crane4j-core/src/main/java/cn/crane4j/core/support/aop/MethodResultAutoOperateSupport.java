@@ -2,17 +2,15 @@ package cn.crane4j.core.support.aop;
 
 import cn.crane4j.annotation.ArgAutoOperate;
 import cn.crane4j.annotation.AutoOperate;
+import static cn.crane4j.core.support.aop.AutoOperateMethodAnnotatedElementResolver.ResolvedElement;
 import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
 import cn.crane4j.core.util.CollectionUtils;
-import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Objects;
-
-import static cn.crane4j.core.support.aop.AutoOperateMethodAnnotatedElementResolver.ResolvedElement;
 
 /**
  * Method result auto operate support.
@@ -55,7 +53,7 @@ public class MethodResultAutoOperateSupport {
         }
         // get and build method cache
         log.debug("process result for [{}]", method.getName());
-        ResolvedElement element = MapUtil.computeIfAbsent(methodCaches, method.getName(), m -> elementResolver.resolve(method, annotation));
+        ResolvedElement element = CollectionUtils.computeIfAbsent(methodCaches, method.getName(), m -> elementResolver.resolve(method, annotation));
         // whether to apply the operation?
         String condition = element.getAnnotation().condition();
         if (support(method, result, args, condition)) {

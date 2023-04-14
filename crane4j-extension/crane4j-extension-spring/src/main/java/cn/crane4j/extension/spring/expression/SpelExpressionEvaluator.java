@@ -3,7 +3,6 @@ package cn.crane4j.extension.spring.expression;
 import cn.crane4j.core.support.expression.ExpressionContext;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
 import cn.crane4j.core.util.CollectionUtils;
-import cn.hutool.core.map.MapUtil;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.beans.factory.DisposableBean;
@@ -50,6 +49,6 @@ public class SpelExpressionEvaluator implements ExpressionEvaluator, DisposableB
     }
 
     private Expression parseExpression(String expression) {
-        return MapUtil.computeIfAbsent(expressionCaches, expression, expressionParser::parseExpression);
+        return CollectionUtils.computeIfAbsent(expressionCaches, expression, expressionParser::parseExpression);
     }
 }
