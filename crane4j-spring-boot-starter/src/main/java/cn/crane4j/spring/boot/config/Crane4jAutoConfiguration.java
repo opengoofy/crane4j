@@ -65,6 +65,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.expression.BeanFactoryResolver;
@@ -102,6 +103,7 @@ import java.util.stream.Stream;
  * @author huangchengxing
  * @see cn.crane4j.extension.spring
  */
+@Configuration
 @EnableAspectJAutoProxy
 @RequiredArgsConstructor
 @EnableConfigurationProperties(Crane4jAutoConfiguration.Properties.class)
@@ -137,32 +139,32 @@ public class Crane4jAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public AnnotationFinder annotationFinder() {
+    public MergedAnnotationFinder mergedAnnotationFinder() {
         return new MergedAnnotationFinder();
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public TypeResolver typeResolver() {
+    public SimpleTypeResolver simpleTypeResolver() {
         return new SimpleTypeResolver();
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public ExpressionEvaluator expressionEvaluator() {
+    public SpelExpressionEvaluator spelExpressionEvaluator() {
         return new SpelExpressionEvaluator(new SpelExpressionParser());
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public CacheManager cacheManager() {
+    public ConcurrentMapCacheManager concurrentMapCacheManager() {
         return new ConcurrentMapCacheManager(CollectionUtils::newWeakConcurrentMap);
     }
 
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnBean(CacheManager.class)
-    public DefaultCacheableContainerProcessor cacheableContainerRegistrar(CacheManager cacheManager, Properties properties) {
+    public DefaultCacheableContainerProcessor defaultCacheableContainerProcessor(CacheManager cacheManager, Properties properties) {
         Map<String, String> containerConfigs = new HashMap<>(16);
         properties.getCacheContainers().forEach((cacheName, namespaces) ->
             namespaces.forEach(namespace -> containerConfigs.put(namespace, cacheName))
@@ -180,7 +182,7 @@ public class Crane4jAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public BeanResolver beanFactoryResolver(ApplicationContext applicationContext) {
+    public BeanFactoryResolver beanFactoryResolver(ApplicationContext applicationContext) {
         return new BeanFactoryResolver(applicationContext);
     }
 
@@ -201,7 +203,7 @@ public class Crane4jAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public BeanOperationParser typeHierarchyBeanOperationParser(Collection<BeanOperationsResolver> resolvers) {
+    public TypeHierarchyBeanOperationParser typeHierarchyBeanOperationParser(Collection<BeanOperationsResolver> resolvers) {
         return new TypeHierarchyBeanOperationParser(resolvers);
     }
 
@@ -267,7 +269,7 @@ public class Crane4jAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ParameterNameDiscoverer parameterNameDiscoverer() {
+    public DefaultParameterNameDiscoverer defaultParameterNameDiscoverer() {
         return new DefaultParameterNameDiscoverer();
     }
 

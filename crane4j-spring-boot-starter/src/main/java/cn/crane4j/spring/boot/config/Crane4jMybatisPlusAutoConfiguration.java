@@ -26,6 +26,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.expression.BeanResolver;
 
 import java.util.HashSet;
@@ -39,6 +40,7 @@ import java.util.function.BiPredicate;
  * @author huangchengxing
  * @see cn.crane4j.extension.mybatis.plus
  */
+@Configuration
 @EnableConfigurationProperties(Crane4jMybatisPlusAutoConfiguration.Properties.class)
 @ConditionalOnClass(MybatisPlusAutoConfiguration.class)
 @AutoConfigureAfter({MybatisPlusAutoConfiguration.class, Crane4jAutoConfiguration.class})
