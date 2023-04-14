@@ -3,6 +3,7 @@ package cn.crane4j.core.support.container;
 import cn.crane4j.annotation.Bind;
 import cn.crane4j.annotation.ContainerMethod;
 import cn.crane4j.core.container.Container;
+import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.util.ReflectUtils;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.text.CharSequenceUtil;
@@ -14,7 +15,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -31,9 +38,15 @@ import java.util.stream.Stream;
  *
  * @author huangchengxing
  * @see ContainerMethod
+ * @see MethodContainerFactory
  */
 @Slf4j
-public abstract class AbstractMethodContainerAnnotationProcessor {
+public class ContainerMethodAnnotationProcessor {
+
+    /**
+     * annotation finder
+     */
+    protected final AnnotationFinder annotationFinder;
 
     /**
      * method container factories
@@ -46,15 +59,17 @@ public abstract class AbstractMethodContainerAnnotationProcessor {
     protected final Set<Class<?>> nonAnnotatedClasses = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
 
     /**
-     * Create a {@link AbstractMethodContainerAnnotationProcessor} instance.
+     * Create a {@link ContainerMethodAnnotationProcessor} instance.
      *
      * @param methodContainerFactories method container factories
+     * @param annotationFinder annotation finder
      */
-    protected AbstractMethodContainerAnnotationProcessor(
-        Collection<MethodContainerFactory> methodContainerFactories) {
+    public ContainerMethodAnnotationProcessor(
+        Collection<MethodContainerFactory> methodContainerFactories, AnnotationFinder annotationFinder) {
         this.methodContainerFactories = methodContainerFactories.stream()
             .sorted(Comparator.comparing(MethodContainerFactory::getSort))
             .collect(Collectors.toList());
+        this.annotationFinder = annotationFinder;
     }
 
     /**
@@ -75,7 +90,7 @@ public abstract class AbstractMethodContainerAnnotationProcessor {
             nonAnnotatedClasses.add(type);
             return Collections.emptyList();
         }
-        return processAnnotatedMethod(target, type, annotatedMethods);
+        return processAnnotatedMethod(target, annotatedMethods);
     }
 
     /**
@@ -133,10 +148,9 @@ public abstract class AbstractMethodContainerAnnotationProcessor {
      * process annotated method.
      *
      * @param target target
-     * @param type type
      * @param annotatedMethods annotated methods
      */
-    protected Collection<Container<Object>> processAnnotatedMethod(Object target, Class<?> type, Multimap<Method, ContainerMethod> annotatedMethods) {
+    protected Collection<Container<Object>> processAnnotatedMethod(Object target, Multimap<Method, ContainerMethod> annotatedMethods) {
         return annotatedMethods.keys().stream()
             .map(method -> createMethodContainer(target, method))
             .filter(CollUtil::isNotEmpty)
@@ -150,7 +164,9 @@ public abstract class AbstractMethodContainerAnnotationProcessor {
      * @param type type
      * @return annotations
      */
-    protected abstract Collection<ContainerMethod> resolveAnnotationsForClass(Class<?> type);
+    protected Collection<ContainerMethod> resolveAnnotationsForClass(Class<?> type) {
+        return annotationFinder.findAllAnnotations(type, ContainerMethod.class);
+    }
 
     /**
      * Resolve annotations for class.
@@ -158,7 +174,9 @@ public abstract class AbstractMethodContainerAnnotationProcessor {
      * @param method method
      * @return annotations
      */
-    protected abstract Collection<ContainerMethod> resolveAnnotationsForMethod(Method method);
+    protected Collection<ContainerMethod> resolveAnnotationsForMethod(Method method) {
+        return annotationFinder.findAllAnnotations(method, ContainerMethod.class);
+    }
 
     private Collection<Container<Object>> createMethodContainer(Object bean, Method method) {
         return methodContainerFactories.stream()

@@ -19,19 +19,23 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * test for {@link AnnotationFinderMethodContainerPostProcessor}
+ * test for {@link ContainerMethodAnnotationProcessor}
  *
  * @author huangchengxing
  */
-public class AnnotationFinderMethodContainerPostProcessorTest {
+public class ContainerMethodAnnotationProcessorTest {
 
-    private AnnotationFinderMethodContainerPostProcessor processor;
+    private ContainerMethodAnnotationProcessor processor;
 
     @Before
     public void init() {
@@ -41,7 +45,7 @@ public class AnnotationFinderMethodContainerPostProcessorTest {
             new DefaultMethodContainerFactory(propertyOperator, annotationFinder),
             new CacheableMethodContainerFactory(propertyOperator, annotationFinder, new ConcurrentMapCacheManager(ConcurrentHashMap::new))
         );
-        processor = new AnnotationFinderMethodContainerPostProcessor(factories, new SimpleAnnotationFinder());
+        processor = new ContainerMethodAnnotationProcessor(factories, new SimpleAnnotationFinder());
     }
 
     @Test

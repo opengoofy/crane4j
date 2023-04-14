@@ -2,18 +2,17 @@ package cn.crane4j.extension.spring;
 
 import cn.crane4j.annotation.ContainerMethod;
 import cn.crane4j.core.container.Container;
+import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
-import cn.crane4j.core.support.container.AbstractMethodContainerAnnotationProcessor;
+import cn.crane4j.core.support.container.ContainerMethodAnnotationProcessor;
 import cn.crane4j.core.support.container.MethodContainerFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.Order;
 
-import java.lang.reflect.Method;
 import java.util.Collection;
 
 /**
@@ -26,12 +25,11 @@ import java.util.Collection;
  * @see ContainerMethod
  * @see MethodContainerFactory
  * @see Crane4jGlobalConfiguration
- * @see AnnotatedElementUtils#findAllMergedAnnotations
  */
 @Order
 @Slf4j
-public class MergedAnnotationMethodContainerPostProcessor
-    extends AbstractMethodContainerAnnotationProcessor implements BeanPostProcessor, DisposableBean {
+public class BeanMethodContainerRegistrar
+    extends ContainerMethodAnnotationProcessor implements BeanPostProcessor, DisposableBean {
 
     /**
      * configuration
@@ -39,14 +37,15 @@ public class MergedAnnotationMethodContainerPostProcessor
     private final Crane4jGlobalConfiguration configuration;
 
     /**
-     * Create an {@link MergedAnnotationMethodContainerPostProcessor} instance.
+     * Create an {@link BeanMethodContainerRegistrar} instance.
      *
      * @param factories factories
+     * @param annotationFinder annotation finder
      * @param configuration configuration
      */
-    public MergedAnnotationMethodContainerPostProcessor(
-        Collection<MethodContainerFactory> factories, Crane4jGlobalConfiguration configuration) {
-        super(factories);
+    public BeanMethodContainerRegistrar(
+        Collection<MethodContainerFactory> factories, AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration) {
+        super(factories, annotationFinder);
         this.configuration = configuration;
     }
 
@@ -85,27 +84,5 @@ public class MergedAnnotationMethodContainerPostProcessor
         log.debug("process [{}] annotated methods for bean [{}]", containers.size(), beanName);
         containers.forEach(configuration::registerContainer);
         return bean;
-    }
-
-    /**
-     * Resolve annotations for class.
-     *
-     * @param type type
-     * @return annotations
-     */
-    @Override
-    protected Collection<ContainerMethod> resolveAnnotationsForClass(Class<?> type) {
-        return AnnotatedElementUtils.findMergedRepeatableAnnotations(type, ContainerMethod.class);
-    }
-
-    /**
-     * Resolve annotations for class.
-     *
-     * @param method method
-     * @return annotations
-     */
-    @Override
-    protected Collection<ContainerMethod> resolveAnnotationsForMethod(Method method) {
-        return AnnotatedElementUtils.findMergedRepeatableAnnotations(method, ContainerMethod.class);
     }
 }

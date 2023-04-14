@@ -122,7 +122,7 @@ public class MethodArgumentAutoOperateSupport {
             String paramName = entry.getKey();
             Parameter param = entry.getValue();
             AutoOperate annotation = Optional
-                .ofNullable(annotationFinder.findAnnotation(param, AutoOperate.class))
+                .ofNullable(annotationFinder.getAnnotation(param, AutoOperate.class))
                 .orElse(methodLevelAnnotations.get(paramName));
             results[index++] = Objects.isNull(annotation) ? null : elementResolver.resolve(param, annotation);
         }

@@ -105,7 +105,7 @@ public abstract class AbstractCacheableOperationResolver implements BeanOperatio
         Field[] fields = ReflectUtils.getDeclaredFields(beanType);
         List<R> results = new ArrayList<>(fields.length);
         for (Field field : fields) {
-            Set<T> annotation = annotationFinder.findAllAnnotations(field, annotationType);
+            Set<T> annotation = annotationFinder.getAllAnnotations(field, annotationType);
             if (CollUtil.isEmpty(annotation)) {
                 continue;
             }

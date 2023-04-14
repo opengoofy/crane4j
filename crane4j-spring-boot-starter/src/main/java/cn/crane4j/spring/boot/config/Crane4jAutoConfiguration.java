@@ -38,9 +38,9 @@ import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
 import cn.crane4j.core.util.CollectionUtils;
+import cn.crane4j.extension.spring.BeanMethodContainerRegistrar;
 import cn.crane4j.extension.spring.Crane4jApplicationContext;
 import cn.crane4j.extension.spring.MergedAnnotationFinder;
-import cn.crane4j.extension.spring.MergedAnnotationMethodContainerPostProcessor;
 import cn.crane4j.extension.spring.ResolvableExpressionEvaluator;
 import cn.crane4j.extension.spring.SpringAssembleAnnotationOperationsResolver;
 import cn.crane4j.extension.spring.aop.MethodArgumentAutoOperateAspect;
@@ -330,9 +330,9 @@ public class Crane4jAutoConfiguration {
         name = "enable-method-container",
         havingValue = "true", matchIfMissing = true
     )
-    public MergedAnnotationMethodContainerPostProcessor mergedAnnotationMethodContainerPostProcessor(
-        Collection<MethodContainerFactory> factories, Crane4jGlobalConfiguration configuration) {
-        return new MergedAnnotationMethodContainerPostProcessor(factories, configuration);
+    public BeanMethodContainerRegistrar beanMethodContainerPostProcessor(
+        AnnotationFinder annotationFinder, Collection<MethodContainerFactory> factories, Crane4jGlobalConfiguration configuration) {
+        return new BeanMethodContainerRegistrar(factories, annotationFinder, configuration);
     }
 
     @Bean
@@ -444,7 +444,7 @@ public class Crane4jAutoConfiguration {
          * Whether to automatically scan and register the method
          * annotated by {@link ContainerMethod} as the data source container.
          *
-         * @see MergedAnnotationMethodContainerPostProcessor
+         * @see BeanMethodContainerRegistrar
          */
         private boolean enableMethodContainer = true;
 

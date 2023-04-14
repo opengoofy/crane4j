@@ -24,18 +24,18 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * test for {@link MergedAnnotationMethodContainerPostProcessor}
+ * test for {@link BeanMethodContainerRegistrar}
  *
  * @author huangchengxing
  */
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {Crane4jSpringTestConfiguration.class, MergedAnnotationMethodContainerPostProcessorTest.Service.class})
-public class MergedAnnotationMethodContainerPostProcessorTest {
+@ContextConfiguration(classes = {Crane4jSpringTestConfiguration.class, BeanMethodContainerRegistrarTest.Service.class})
+public class BeanMethodContainerRegistrarTest {
 
     @Autowired
     private Crane4jApplicationContext context;
     @Autowired
-    private MergedAnnotationMethodContainerPostProcessor mergedAnnotationMethodContainerPostProcessor;
+    private BeanMethodContainerRegistrar beanMethodContainerRegistrar;
 
     @Test
     public void test() {
@@ -58,7 +58,7 @@ public class MergedAnnotationMethodContainerPostProcessorTest {
         Assert.assertTrue(oneToManyMethod instanceof CacheableContainer);
         Assert.assertEquals("oneToManyMethod", oneToManyMethod.getNamespace());
 
-        mergedAnnotationMethodContainerPostProcessor.destroy();
+        beanMethodContainerRegistrar.destroy();
     }
 
     protected static class BaseService {

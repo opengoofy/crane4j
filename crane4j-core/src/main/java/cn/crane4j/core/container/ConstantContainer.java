@@ -90,7 +90,7 @@ public class ConstantContainer<K> implements Container<K> {
         Objects.requireNonNull(enumType);
         Objects.requireNonNull(annotationFinder);
         // enumeration is not annotated
-        ContainerEnum annotation = annotationFinder.findAnnotation(enumType, ContainerEnum.class);
+        ContainerEnum annotation = annotationFinder.getAnnotation(enumType, ContainerEnum.class);
         if (Objects.isNull(annotation)) {
             return (ConstantContainer<K>)forEnum(enumType.getSimpleName(), enumType, Enum::name);
         }
@@ -132,7 +132,7 @@ public class ConstantContainer<K> implements Container<K> {
     public static ConstantContainer<?> forConstantClass(
         Class<?> constantClass, AnnotationFinder annotationFinder) {
         Objects.requireNonNull(constantClass);
-        ContainerConstant annotation = annotationFinder.findAnnotation(constantClass, ContainerConstant.class);
+        ContainerConstant annotation = annotationFinder.getAnnotation(constantClass, ContainerConstant.class);
         Assert.notNull(annotation, "cannot find @ContainerConstant from [{}]", constantClass);
         boolean onlyPublic = annotation.onlyPublic();
         boolean onlyExplicitlyIncluded = annotation.onlyExplicitlyIncluded();
@@ -146,7 +146,7 @@ public class ConstantContainer<K> implements Container<K> {
             .filter(field -> !annotationFinder.hasAnnotation(field, ContainerConstant.Exclude.class))
             .forEach(field -> {
                 Object value = ReflectUtil.getStaticFieldValue(field);
-                ContainerConstant.Name name = annotationFinder.findAnnotation(field, ContainerConstant.Name.class);
+                ContainerConstant.Name name = annotationFinder.getAnnotation(field, ContainerConstant.Name.class);
                 String key = Objects.isNull(name) ? field.getName() : name.value();
                 data.put(key, value);
             });

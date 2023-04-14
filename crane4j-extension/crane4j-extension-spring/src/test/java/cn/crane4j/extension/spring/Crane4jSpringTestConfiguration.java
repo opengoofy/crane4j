@@ -225,8 +225,8 @@ public class Crane4jSpringTestConfiguration {
     }
 
     @Bean
-    public MergedAnnotationMethodContainerPostProcessor mergedAnnotationMethodContainerPostProcessor(
-        Collection<MethodContainerFactory> factories, Crane4jGlobalConfiguration configuration) {
-        return new MergedAnnotationMethodContainerPostProcessor(factories, configuration);
+    public BeanMethodContainerRegistrar beanMethodContainerPostProcessor(
+        Collection<MethodContainerFactory> factories, AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration) {
+        return new BeanMethodContainerRegistrar(factories, annotationFinder, configuration);
     }
 }

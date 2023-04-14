@@ -23,8 +23,8 @@ public class SimpleAnnotationFinder implements AnnotationFinder {
      * @return annotation
      */
     @Override
-    public <A extends Annotation> A findAnnotation(@Nonnull AnnotatedElement element, Class<A> annotationType) {
-        return element.getAnnotation(annotationType);
+    public <A extends Annotation> A getAnnotation(@Nonnull AnnotatedElement element, Class<A> annotationType) {
+        return element.getDeclaredAnnotation(annotationType);
     }
 
     /**
@@ -33,6 +33,31 @@ public class SimpleAnnotationFinder implements AnnotationFinder {
      * @param element element
      * @param annotationType annotation type
      * @param <A> annotation type
+     * @return annotations
+     */
+    @Override
+    public <A extends Annotation> Set<A> getAllAnnotations(@Nonnull AnnotatedElement element, Class<A> annotationType) {
+        return Stream.of(element.getDeclaredAnnotationsByType(annotationType))
+            .collect(Collectors.toSet());
+    }
+
+    /**
+     * Get the specified annotation from the element.
+     *
+     * @param element        element
+     * @param annotationType annotation type
+     * @return annotation
+     */
+    @Override
+    public <A extends Annotation> A findAnnotation(@Nonnull AnnotatedElement element, Class<A> annotationType) {
+        return element.getAnnotation(annotationType);
+    }
+
+    /**
+     * Get all specified annotations from the element.
+     *
+     * @param element        element
+     * @param annotationType annotation type
      * @return annotations
      */
     @Override
