@@ -87,10 +87,12 @@ public class OperateTemplate {
      * @param beanOperations bean operations
      */
     public void execute(Object target, BeanOperations beanOperations) {
-        defaultExecutor.execute(
-            CollectionUtils.adaptObjectToCollection(target),
-            beanOperations, Grouped.alwaysMatch()
-        );
+        if (Objects.nonNull(target) && Objects.nonNull(beanOperations)) {
+            defaultExecutor.execute(
+                CollectionUtils.adaptObjectToCollection(target),
+                beanOperations, Grouped.alwaysMatch()
+            );
+        }
     }
 
     /**
@@ -100,10 +102,12 @@ public class OperateTemplate {
      * @param beanOperations bean operations
      */
     public void execute(Object target, BeanOperations beanOperations, Predicate<? super KeyTriggerOperation> filter) {
-        defaultExecutor.execute(
-            CollectionUtils.adaptObjectToCollection(target),
-            beanOperations, filter
-        );
+        if (Objects.nonNull(target) && Objects.nonNull(beanOperations)) {
+            defaultExecutor.execute(
+                CollectionUtils.adaptObjectToCollection(target),
+                beanOperations, filter
+            );
+        }
     }
 
     /**
@@ -168,7 +172,6 @@ public class OperateTemplate {
     @SuppressWarnings("unchecked")
     private <T> Class<T> resolveType(Object target) {
         Class<?> type = typeResolver.resolve(target);
-        Objects.requireNonNull(type, "cannot resolve type for targets");
-        return (Class<T>)type;
+        return Objects.isNull(type) ? null : (Class<T>)type;
     }
 }
