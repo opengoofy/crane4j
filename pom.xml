@@ -60,7 +60,8 @@
     <mybatis-plus.version>3.4.2</mybatis-plus.version>
     <ognl.version>3.1.19</ognl.version>
     <!--plugins-->
-    <jacoco-maven-plugin.version>0.8.9</jacoco-maven-plugin.version>
+    <!--todo: upgrade to 0.8.9 (GitHub pr#43) -->
+    <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
     <maven-javadoc-plugin>3.2.0</maven-javadoc-plugin>
     <maven-source-plugin>3.2.1</maven-source-plugin>
     <maven-compiler-plugin>3.8.0</maven-compiler-plugin>
