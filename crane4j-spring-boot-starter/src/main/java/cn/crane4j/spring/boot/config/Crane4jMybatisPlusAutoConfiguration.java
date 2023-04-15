@@ -4,11 +4,7 @@ import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
 import cn.crane4j.core.support.reflect.PropertyOperator;
-import cn.crane4j.extension.mybatis.plus.AssembleMpAnnotationOperationsResolver;
-import cn.crane4j.extension.mybatis.plus.LazyLoadMpBaseMapperContainerRegister;
-import cn.crane4j.extension.mybatis.plus.MpBaseMapperContainerRegister;
-import cn.crane4j.extension.mybatis.plus.MpMethodContainer;
-import cn.crane4j.extension.mybatis.plus.MpMethodContainerProvider;
+import cn.crane4j.extension.mybatis.plus.*;
 import cn.crane4j.extension.spring.expression.SpelExpressionContext;
 import com.baomidou.mybatisplus.autoconfigure.MybatisPlusAutoConfiguration;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -55,9 +51,9 @@ public class Crane4jMybatisPlusAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public AssembleMpAnnotationOperationsResolver mpAnnotationOperationsResolver(
+    public AssembleMpAnnotationResolver assembleMpAnnotationResolver(
         AnnotationFinder annotationFinder, MpBaseMapperContainerRegister mapperContainerRegister, Crane4jGlobalConfiguration globalConfiguration) {
-        return new AssembleMpAnnotationOperationsResolver(
+        return new AssembleMpAnnotationResolver(
             annotationFinder, mapperContainerRegister, globalConfiguration
         );
     }

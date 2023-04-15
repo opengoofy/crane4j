@@ -8,15 +8,10 @@ import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
 import cn.crane4j.core.executor.OrderedBeanOperationExecutor;
-import cn.crane4j.core.executor.handler.AssembleOperationHandler;
-import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
-import cn.crane4j.core.executor.handler.ManyToManyReflexAssembleOperationHandler;
-import cn.crane4j.core.executor.handler.OneToManyReflexAssembleOperationHandler;
-import cn.crane4j.core.executor.handler.OneToOneReflexAssembleOperationHandler;
-import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
-import cn.crane4j.core.parser.AssembleAnnotationOperationsResolver;
+import cn.crane4j.core.executor.handler.*;
+import cn.crane4j.core.parser.AssembleAnnotationResolver;
 import cn.crane4j.core.parser.BeanOperationParser;
-import cn.crane4j.core.parser.DisassembleAnnotationOperationsResolver;
+import cn.crane4j.core.parser.DisassembleAnnotationResolver;
 import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
 import cn.crane4j.core.support.callback.ContainerRegisteredLogger;
 import cn.crane4j.core.support.callback.DefaultCacheableContainerProcessor;
@@ -80,8 +75,8 @@ public class SimpleCrane4jGlobalConfiguration
         AnnotationFinder annotationFinder = new SimpleAnnotationFinder();
         BeanOperationParser beanOperationParser = new TypeHierarchyBeanOperationParser(
             Arrays.asList(
-                new AssembleAnnotationOperationsResolver(annotationFinder, configuration),
-                new DisassembleAnnotationOperationsResolver(annotationFinder, configuration)
+                new AssembleAnnotationResolver(annotationFinder, configuration),
+                new DisassembleAnnotationResolver(annotationFinder, configuration)
             )
         );
         configuration.getBeanOperationParserMap().put(BeanOperationParser.class.getName(), beanOperationParser);

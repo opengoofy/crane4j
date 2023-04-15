@@ -8,16 +8,8 @@ import cn.crane4j.core.executor.handler.ManyToManyReflexAssembleOperationHandler
 import cn.crane4j.core.executor.handler.OneToManyReflexAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.OneToOneReflexAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
-import cn.crane4j.core.parser.AssembleOperation;
-import cn.crane4j.core.parser.BeanOperationParser;
-import cn.crane4j.core.parser.BeanOperationsResolver;
-import cn.crane4j.core.parser.DisassembleAnnotationOperationsResolver;
-import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
-import cn.crane4j.core.support.AnnotationFinder;
-import cn.crane4j.core.support.Crane4jGlobalConfiguration;
-import cn.crane4j.core.support.OperateTemplate;
-import cn.crane4j.core.support.SimpleTypeResolver;
-import cn.crane4j.core.support.TypeResolver;
+import cn.crane4j.core.parser.*;
+import cn.crane4j.core.support.*;
 import cn.crane4j.core.support.aop.AutoOperateAnnotatedElementResolver;
 import cn.crane4j.core.support.callback.ContainerRegisterAware;
 import cn.crane4j.core.support.callback.ContainerRegisteredLogger;
@@ -111,22 +103,22 @@ public class Crane4jSpringTestConfiguration {
     }
 
     @Bean
-    public SpringAssembleAnnotationOperationsResolver springAnnotationOperationsResolver(
+    public SpringAssembleAnnotationResolver springAnnotationOperationsResolver(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration,
         ExpressionEvaluator evaluator, BeanResolver beanResolver) {
-        return new SpringAssembleAnnotationOperationsResolver(annotationFinder, configuration, evaluator, beanResolver);
+        return new SpringAssembleAnnotationResolver(annotationFinder, configuration, evaluator, beanResolver);
     }
 
     @Bean
-    public DisassembleAnnotationOperationsResolver disassembleAnnotationOperationsResolver(
+    public DisassembleAnnotationResolver disassembleAnnotationResolver(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration) {
-        return new DisassembleAnnotationOperationsResolver(annotationFinder, configuration);
+        return new DisassembleAnnotationResolver(annotationFinder, configuration);
     }
 
     @Primary
     @Bean
-    public BeanOperationParser typeHierarchyBeanOperationParser(Collection<BeanOperationsResolver> beanOperationsResolver) {
-        return new TypeHierarchyBeanOperationParser(beanOperationsResolver);
+    public BeanOperationParser typeHierarchyBeanOperationParser(Collection<OperationAnnotationResolver> operationAnnotationResolver) {
+        return new TypeHierarchyBeanOperationParser(operationAnnotationResolver);
     }
 
     @Primary

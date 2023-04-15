@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * <p>The implementation of {@link BeanOperationsResolver}.<br />
+ * <p>The implementation of {@link OperationAnnotationResolver}.<br />
  * It's used to scan the {@link AssembleMp} annotations on classes and their attributes,
  * And generate {@link AssembleOperation} for it
  * using {@link MpMethodContainer} as the data source container.
@@ -27,19 +27,19 @@ import java.util.stream.Stream;
  * @see MpBaseMapperContainerRegister
  * @since 1.2.0
  */
-public class AssembleMpAnnotationOperationsResolver extends AbstractCacheableOperationResolver {
+public class AssembleMpAnnotationResolver extends AbstractCacheableOperationAnnotationResolver {
 
     private final MpBaseMapperContainerRegister mapperContainerRegister;
     private final Crane4jGlobalConfiguration globalConfiguration;
 
     /**
-     * Create a {@link AssembleMpAnnotationOperationsResolver} instance.
+     * Create a {@link AssembleMpAnnotationResolver} instance.
      *
      * @param annotationFinder annotation finder
      * @param mapperContainerRegister mp method container provider
      * @param globalConfiguration global configuration
      */
-    public AssembleMpAnnotationOperationsResolver(
+    public AssembleMpAnnotationResolver(
         AnnotationFinder annotationFinder,
         MpBaseMapperContainerRegister mapperContainerRegister,
         Crane4jGlobalConfiguration globalConfiguration) {
@@ -47,14 +47,14 @@ public class AssembleMpAnnotationOperationsResolver extends AbstractCacheableOpe
     }
 
     /**
-     * Create a {@link AssembleMpAnnotationOperationsResolver} instance.
+     * Create a {@link AssembleMpAnnotationResolver} instance.
      *
      * @param annotationFinder annotation finder
      * @param operationComparator operation comparator
      * @param mapperContainerRegister mp method container provider
      * @param globalConfiguration global configuration
      */
-    public AssembleMpAnnotationOperationsResolver(
+    public AssembleMpAnnotationResolver(
         AnnotationFinder annotationFinder, Comparator<KeyTriggerOperation> operationComparator,
         MpBaseMapperContainerRegister mapperContainerRegister,
         Crane4jGlobalConfiguration globalConfiguration) {
@@ -98,7 +98,7 @@ public class AssembleMpAnnotationOperationsResolver extends AbstractCacheableOpe
         AssembleOperationHandler handler = ConfigurationUtil.getAssembleOperationHandler(
             globalConfiguration, annotation.handlerName(), annotation.handler()
         );
-        Assert.notNull(handler, AbstractCacheableOperationResolver.throwException("assemble operation handler [{}]({}) not found", annotation.handlerName(), annotation.handler()));
+        Assert.notNull(handler, AbstractCacheableOperationAnnotationResolver.throwException("assemble operation handler [{}]({}) not found", annotation.handlerName(), annotation.handler()));
         // get container
         Container<?> container = mapperContainerRegister.getContainer(
             annotation.mapper(), annotation.where(), Arrays.asList(annotation.selects())

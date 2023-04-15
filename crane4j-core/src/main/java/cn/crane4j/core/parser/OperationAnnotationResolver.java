@@ -9,11 +9,11 @@ import java.lang.reflect.AnnotatedElement;
  * used to obtain all operation configurations in a single parsing of a class.
  *
  * @author huangchengxing
- * @see AssembleAnnotationOperationsResolver
- * @see DisassembleAnnotationOperationsResolver
+ * @see AssembleAnnotationResolver
+ * @see DisassembleAnnotationResolver
  * @since 1.2.0
  */
-public interface BeanOperationsResolver extends Sorted {
+public interface OperationAnnotationResolver extends Sorted {
 
     /**
      * Resolve operations from type

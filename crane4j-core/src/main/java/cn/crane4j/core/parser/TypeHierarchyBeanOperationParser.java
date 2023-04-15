@@ -7,15 +7,7 @@ import cn.hutool.core.collection.CollUtil;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Collection;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -23,7 +15,7 @@ import java.util.stream.Collectors;
  * <p>General implementation of {@link BeanOperationParser}.
  *
  * <p>When parsing the configuration, the parser will create a {@link OperationParseContext}
- * as the context for this execution, Then successively call all registered {@link BeanOperationsResolver}
+ * as the context for this execution, Then successively call all registered {@link OperationAnnotationResolver}
  * to collect the configuration information into the {@link BeanOperations} in context.
  *
  * <p>After the parsing is completed, the {@link BeanOperations} instance
@@ -32,32 +24,32 @@ import java.util.stream.Collectors;
  *
  * <p>The sequence of operations obtained through the parser follows:
  * <ul>
- *     <li>The calling order of {@link BeanOperationsResolver};</li>
- *     <li>their order in link {@link BeanOperationsResolver};</li>
+ *     <li>The calling order of {@link OperationAnnotationResolver};</li>
+ *     <li>their order in link {@link OperationAnnotationResolver};</li>
  * </ul>
  * It should be noted that this order does not represent the order in which the final operation will be executed.
  * This order is guaranteed by the executor {@link BeanOperationExecutor}.
  *
  * @author huangchengxing
- * @see BeanOperationsResolver
+ * @see OperationAnnotationResolver
  * @see OperationParseContext
  * @since 1.2.0
  */
 @Slf4j
 public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
 
-    protected Set<BeanOperationsResolver> beanOperationsResolvers;
+    protected Set<OperationAnnotationResolver> operationAnnotationResolvers;
     private final Map<Class<?>, BeanOperations> resolvedTypes = new ConcurrentHashMap<>(32);
     private final Map<Class<?>, BeanOperations> currentlyInParsing = new LinkedHashMap<>(16);
 
     /**
      * Create a {@link TypeHierarchyBeanOperationParser} instance.
      *
-     * @param beanOperationsResolvers beanOperationsResolvers
+     * @param operationAnnotationResolvers operationAnnotationResolvers
      */
     public TypeHierarchyBeanOperationParser(
-        Collection<BeanOperationsResolver> beanOperationsResolvers) {
-        this.beanOperationsResolvers = beanOperationsResolvers.stream()
+        Collection<OperationAnnotationResolver> operationAnnotationResolvers) {
+        this.operationAnnotationResolvers = operationAnnotationResolvers.stream()
             .sorted(Sorted.comparator())
             .collect(Collectors.toCollection(LinkedHashSet::new));
     }
@@ -67,11 +59,11 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
      *
      * @param resolver resolver
      */
-    public void addBeanOperationsResolver(BeanOperationsResolver resolver) {
+    public void addBeanOperationsResolver(OperationAnnotationResolver resolver) {
         Objects.requireNonNull(resolver);
-        if (!beanOperationsResolvers.contains(resolver)) {
-            beanOperationsResolvers.add(resolver);
-            this.beanOperationsResolvers = beanOperationsResolvers.stream()
+        if (!operationAnnotationResolvers.contains(resolver)) {
+            operationAnnotationResolvers.add(resolver);
+            this.operationAnnotationResolvers = operationAnnotationResolvers.stream()
                 .sorted(Sorted.comparator())
                 .collect(Collectors.toCollection(LinkedHashSet::new));
         }
@@ -156,6 +148,6 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
     }
 
     private void resolveBeanOperations(OperationParseContext context, Class<?> type) {
-        beanOperationsResolvers.forEach(resolver -> resolver.resolve(context, type));
+        operationAnnotationResolvers.forEach(resolver -> resolver.resolve(context, type));
     }
 }

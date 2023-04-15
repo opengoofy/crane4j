@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * <p>Annotation-based {@link BeanOperationsResolver} implementation
+ * <p>Annotation-based {@link OperationAnnotationResolver} implementation
  * that the construction of operation configuration
  * by resolving annotations based on {@link Disassemble}
  * and {@link Operations} on classes and attributes.
@@ -26,19 +26,19 @@ import java.util.stream.Stream;
  * @see Disassemble
  * @since 1.2.0
  */
-public class DisassembleAnnotationOperationsResolver extends AbstractCacheableOperationResolver {
+public class DisassembleAnnotationResolver extends AbstractCacheableOperationAnnotationResolver {
 
     protected static final String ANNOTATION_KEY_ATTRIBUTE = "key";
     protected final Crane4jGlobalConfiguration globalConfiguration;
 
     /**
-     * Create a {@link DisassembleAnnotationOperationsResolver} instance.
+     * Create a {@link DisassembleAnnotationResolver} instance.
      *
      * @param annotationFinder annotation finder
      * @param globalConfiguration global configuration
      * @param operationComparator operation comparator
      */
-    public DisassembleAnnotationOperationsResolver(
+    public DisassembleAnnotationResolver(
         AnnotationFinder annotationFinder,
         Crane4jGlobalConfiguration globalConfiguration,
         Comparator<KeyTriggerOperation> operationComparator) {
@@ -47,13 +47,13 @@ public class DisassembleAnnotationOperationsResolver extends AbstractCacheableOp
     }
 
     /**
-     * <p>Create a {@link DisassembleAnnotationOperationsResolver} instance.<br />
+     * <p>Create a {@link DisassembleAnnotationResolver} instance.<br />
      * The order of operation configurations is {@link Sorted#getSort} from small to large.
      *
      * @param annotationFinder annotation finder
      * @param globalConfiguration global configuration
      */
-    public DisassembleAnnotationOperationsResolver(
+    public DisassembleAnnotationResolver(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration globalConfiguration) {
         this(annotationFinder, globalConfiguration, Sorted.comparator());
     }

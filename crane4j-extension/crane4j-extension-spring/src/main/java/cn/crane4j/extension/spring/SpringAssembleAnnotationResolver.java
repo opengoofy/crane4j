@@ -3,7 +3,7 @@ package cn.crane4j.extension.spring;
 import cn.crane4j.annotation.Assemble;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerProvider;
-import cn.crane4j.core.parser.AssembleAnnotationOperationsResolver;
+import cn.crane4j.core.parser.AssembleAnnotationResolver;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.Sorted;
@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * <p>Extension implementation of {@link AssembleAnnotationOperationsResolver},
+ * <p>Extension implementation of {@link AssembleAnnotationResolver},
  * On the basis of the former, some spring annotations are additionally supported.
  * <ul>
  *     <li>support to sort operations according to the rules of Spring {@link Order} annotation priority;</li>
@@ -38,8 +38,8 @@ import java.util.Objects;
  * @since 1.2.0
  */
 @Slf4j
-public class SpringAssembleAnnotationOperationsResolver
-    extends AssembleAnnotationOperationsResolver implements EmbeddedValueResolverAware {
+public class SpringAssembleAnnotationResolver
+    extends AssembleAnnotationResolver implements EmbeddedValueResolverAware {
 
     private final ExpressionEvaluator evaluator;
     private final BeanResolver beanResolver;
@@ -52,7 +52,7 @@ public class SpringAssembleAnnotationOperationsResolver
      * @param annotationFinder    annotation finder
      * @param globalConfiguration global configuration
      */
-    public SpringAssembleAnnotationOperationsResolver(
+    public SpringAssembleAnnotationResolver(
         AnnotationFinder annotationFinder,
         Crane4jGlobalConfiguration globalConfiguration,
         ExpressionEvaluator evaluator, BeanResolver beanResolver) {
@@ -104,7 +104,7 @@ public class SpringAssembleAnnotationOperationsResolver
     @Override
     protected List<Assemble> resolveFieldLevelAnnotations(Class<?> beanType) {
         return ReflectUtils.parseAnnotationForDeclaredFields(
-            annotationFinder, beanType, Assemble.class, SpringAssembleAnnotationOperationsResolver::processAnnotation
+            annotationFinder, beanType, Assemble.class, SpringAssembleAnnotationResolver::processAnnotation
         );
     }
 

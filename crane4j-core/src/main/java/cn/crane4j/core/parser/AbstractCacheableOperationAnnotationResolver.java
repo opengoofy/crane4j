@@ -16,7 +16,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
- * <p>An abstract {@link BeanOperationsResolver} implementation
+ * <p>An abstract {@link OperationAnnotationResolver} implementation
  * that cacheable、 annotation aware and support operation compare.<br />
  * Overwrite {@link #parseAssembleOperations} and {@link #parseDisassembleOperations}
  * to implement custom parsing logic.
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @RequiredArgsConstructor
-public abstract class AbstractCacheableOperationResolver implements BeanOperationsResolver {
+public abstract class AbstractCacheableOperationAnnotationResolver implements OperationAnnotationResolver {
 
     private final Map<AnnotatedElement, OperationMetadata> metadataCaches = CollectionUtils.newWeakConcurrentMap();
     protected final AnnotationFinder annotationFinder;
