@@ -143,8 +143,8 @@ public class DisassembleAnnotationOperationsResolver extends AbstractCacheableOp
      * @return {@link Disassemble}
      */
     protected Collection<Disassemble> resolveClassLevelAnnotations(Class<?> beanType) {
-        Set<Disassemble> disassembles = annotationFinder.findAllAnnotations(beanType, Disassemble.class);
-        List<Disassemble> operations = Optional.ofNullable(annotationFinder.findAnnotation(beanType, Operations.class))
+        Set<Disassemble> disassembles = annotationFinder.getAllAnnotations(beanType, Disassemble.class);
+        List<Disassemble> operations = Optional.ofNullable(annotationFinder.getAnnotation(beanType, Operations.class))
             .map(Operations::disassembles)
             .map(Arrays::asList)
             .orElseGet(Collections::emptyList);

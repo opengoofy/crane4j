@@ -168,8 +168,8 @@ public class AssembleAnnotationOperationsResolver extends AbstractCacheableOpera
      * @return {@link Assemble}
      */
     protected Collection<Assemble> resolveClassLevelAnnotations(Class<?> beanType) {
-        Set<Assemble> assembles = annotationFinder.findAllAnnotations(beanType, Assemble.class);
-        List<Assemble> operations = Optional.ofNullable(annotationFinder.findAnnotation(beanType, Operations.class))
+        Set<Assemble> assembles = annotationFinder.getAllAnnotations(beanType, Assemble.class);
+        List<Assemble> operations = Optional.ofNullable(annotationFinder.getAnnotation(beanType, Operations.class))
             .map(Operations::assembles)
             .map(Arrays::asList)
             .orElseGet(Collections::emptyList);

@@ -4,7 +4,6 @@ import cn.crane4j.annotation.ArgAutoOperate;
 import cn.crane4j.annotation.AutoOperate;
 import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
 import cn.crane4j.core.util.CollectionUtils;
-import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -53,7 +52,7 @@ public class MethodResultAutoOperateSupport {
         }
         // get and build method cache
         log.debug("process result for [{}]", method.getName());
-        AutoOperateAnnotatedElement element = MapUtil.computeIfAbsent(methodCaches, method.getName(), m -> elementResolver.resolve(method, annotation));
+        AutoOperateAnnotatedElement element = CollectionUtils.computeIfAbsent(methodCaches, method.getName(), m -> elementResolver.resolve(method, annotation));
         // whether to apply the operation?
         String condition = element.getAnnotation().condition();
         if (support(method, result, args, condition)) {

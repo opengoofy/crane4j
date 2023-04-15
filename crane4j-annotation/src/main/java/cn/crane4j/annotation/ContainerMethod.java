@@ -1,6 +1,11 @@
 package cn.crane4j.annotation;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.Collection;
 import java.util.Map;
 
@@ -40,8 +45,8 @@ import java.util.Map;
  * When the id set is entered into the container, the Foo set grouped by <i>"id"</i> will be returned.
  *
  * @author huangchengxing
- * @see cn.crane4j.core.container.MethodInvokerContainer
- * @see cn.crane4j.core.container.MethodContainerFactory
+ * @see cn.crane4j.core.support.container.MethodContainerFactory
+ * @see cn.crane4j.core.support.container.ContainerMethodAnnotationProcessor
  */
 @Repeatable(ContainerMethod.List.class)
 @Documented

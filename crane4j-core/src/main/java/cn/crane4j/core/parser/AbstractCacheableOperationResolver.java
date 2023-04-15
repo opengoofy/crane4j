@@ -6,7 +6,6 @@ import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.ReflectUtils;
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.map.MapUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -51,7 +50,7 @@ public abstract class AbstractCacheableOperationResolver implements BeanOperatio
     public void resolve(OperationParseContext context, Class<?> type) {
         BeanOperations target = context.getRootOperations();
         log.debug("resolve operations from [{}]", type);
-        TypeOperationMetadata cache = MapUtil.computeIfAbsent(
+        TypeOperationMetadata cache = CollectionUtils.computeIfAbsent(
             metadataCaches, type, t -> createMetaDataCache(context, t)
         );
         cache.append(target);
@@ -106,7 +105,7 @@ public abstract class AbstractCacheableOperationResolver implements BeanOperatio
         Field[] fields = ReflectUtils.getDeclaredFields(beanType);
         List<R> results = new ArrayList<>(fields.length);
         for (Field field : fields) {
-            Set<T> annotation = annotationFinder.findAllAnnotations(field, annotationType);
+            Set<T> annotation = annotationFinder.getAllAnnotations(field, annotationType);
             if (CollUtil.isEmpty(annotation)) {
                 continue;
             }

@@ -3,7 +3,6 @@ package cn.crane4j.core.support.reflect;
 import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.ReflectUtils;
-import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ReflectUtil;
 
 import javax.annotation.Nullable;
@@ -119,14 +118,14 @@ public abstract class CacheablePropertyOperator implements PropertyOperator {
     protected abstract MethodInvoker createInvoker(Class<?> targetType, String propertyName, Method method);
 
     private MethodInvoker getCachedGetter(Class<?> type, String methodName, Supplier<MethodInvoker> invokerSupplier) {
-        Map<String, Object> caches = MapUtil.computeIfAbsent(getterCaches, type, t -> new ConcurrentHashMap<>(8));
-        Object target = MapUtil.computeIfAbsent(caches, methodName, m -> createInvoker(invokerSupplier.get()));
+        Map<String, Object> caches = CollectionUtils.computeIfAbsent(getterCaches, type, t -> new ConcurrentHashMap<>(8));
+        Object target = CollectionUtils.computeIfAbsent(caches, methodName, m -> createInvoker(invokerSupplier.get()));
         return getInvoker(target);
     }
 
     private MethodInvoker getCachedSetter(Class<?> type, String methodName, Supplier<MethodInvoker> invokerSupplier) {
-        Map<String, Object> caches = MapUtil.computeIfAbsent(setterCaches, type, t -> new ConcurrentHashMap<>(8));
-        Object target = MapUtil.computeIfAbsent(caches, methodName, m -> createInvoker(invokerSupplier.get()));
+        Map<String, Object> caches = CollectionUtils.computeIfAbsent(setterCaches, type, t -> new ConcurrentHashMap<>(8));
+        Object target = CollectionUtils.computeIfAbsent(caches, methodName, m -> createInvoker(invokerSupplier.get()));
         return getInvoker(target);
     }
 

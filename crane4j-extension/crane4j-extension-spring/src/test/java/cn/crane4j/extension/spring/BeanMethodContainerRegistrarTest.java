@@ -1,54 +1,47 @@
-package cn.crane4j.core.support.container;
+package cn.crane4j.extension.spring;
 
 import cn.crane4j.annotation.Bind;
 import cn.crane4j.annotation.ContainerCache;
 import cn.crane4j.annotation.ContainerMethod;
 import cn.crane4j.annotation.MappingType;
-import cn.crane4j.core.cache.ConcurrentMapCacheManager;
 import cn.crane4j.core.container.CacheableContainer;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.MethodInvokerContainer;
-import cn.crane4j.core.support.AnnotationFinder;
-import cn.crane4j.core.support.SimpleAnnotationFinder;
-import cn.crane4j.core.support.reflect.PropertyOperator;
-import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
+import cn.hutool.core.util.ReflectUtil;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * test for {@link AnnotationFinderMethodContainerPostProcessor}
+ * test for {@link BeanMethodContainerRegistrar}
  *
  * @author huangchengxing
  */
-public class AnnotationFinderMethodContainerPostProcessorTest {
+@RunWith(SpringRunner.class)
+@ContextConfiguration(classes = {Crane4jSpringTestConfiguration.class, BeanMethodContainerRegistrarTest.Service.class})
+public class BeanMethodContainerRegistrarTest {
 
-    private AnnotationFinderMethodContainerPostProcessor processor;
-
-    @Before
-    public void init() {
-        PropertyOperator propertyOperator = new ReflectPropertyOperator();
-        AnnotationFinder annotationFinder = new SimpleAnnotationFinder();
-        Collection<MethodContainerFactory> factories = Arrays.asList(
-            new DefaultMethodContainerFactory(propertyOperator, annotationFinder),
-            new CacheableMethodContainerFactory(propertyOperator, annotationFinder, new ConcurrentMapCacheManager(ConcurrentHashMap::new))
-        );
-        processor = new AnnotationFinderMethodContainerPostProcessor(factories, new SimpleAnnotationFinder());
-    }
+    @Autowired
+    private Crane4jApplicationContext context;
+    @Autowired
+    private BeanMethodContainerRegistrar beanMethodContainerRegistrar;
 
     @Test
     public void test() {
-        Service target = new Service();
-        Map<String, Container<?>> containerMap = processor.process(target, target.getClass()).stream()
-            .collect(Collectors.toMap(Container::getNamespace, Function.identity()));
+        @SuppressWarnings("unchecked")
+        Map<String, Container<?>> containerMap = (Map<String, Container<?>>)ReflectUtil.getFieldValue(context, "containerMap");
         Assert.assertEquals(3, containerMap.size());
         Assert.assertFalse(containerMap.containsKey("noneResultMethod"));
 
@@ -67,9 +60,7 @@ public class AnnotationFinderMethodContainerPostProcessorTest {
         Assert.assertTrue(oneToManyMethod instanceof CacheableContainer);
         Assert.assertEquals("oneToManyMethod", oneToManyMethod.getNamespace());
 
-        // unnecessary type
-        Assert.assertTrue(processor.process(new Object(), Object.class).isEmpty());
-        Assert.assertTrue(processor.process(new Object(), Object.class).isEmpty());
+        beanMethodContainerRegistrar.destroy();
     }
 
     protected static class BaseService {

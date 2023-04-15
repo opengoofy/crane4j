@@ -87,7 +87,7 @@ public class AssembleMpAnnotationOperationsResolver extends AbstractCacheableOpe
                 return annotation;
             }
         );
-        Set<AssembleMp> classLevelAnnotations = annotationFinder.findAllAnnotations(beanType, AssembleMp.class);
+        Set<AssembleMp> classLevelAnnotations = annotationFinder.getAllAnnotations(beanType, AssembleMp.class);
         fieldLevelAnnotations.addAll(classLevelAnnotations);
         return fieldLevelAnnotations.stream()
             .map(this::createAssembleOperation)

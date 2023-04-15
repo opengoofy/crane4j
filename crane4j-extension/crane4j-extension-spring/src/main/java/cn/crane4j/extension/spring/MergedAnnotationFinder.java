@@ -5,6 +5,7 @@ import lombok.NonNull;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.MergedAnnotation;
 
+import javax.annotation.Nonnull;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.util.Set;
@@ -27,7 +28,7 @@ public class MergedAnnotationFinder implements AnnotationFinder {
      * @return annotation
      */
     @Override
-    public <A extends Annotation> A findAnnotation(@NonNull AnnotatedElement element, Class<A> annotationType) {
+    public <A extends Annotation> A getAnnotation(@NonNull AnnotatedElement element, Class<A> annotationType) {
         return AnnotatedElementUtils.getMergedAnnotation(element, annotationType);
     }
 
@@ -40,7 +41,31 @@ public class MergedAnnotationFinder implements AnnotationFinder {
      * @return annotations
      */
     @Override
-    public <A extends Annotation> Set<A> findAllAnnotations(@NonNull AnnotatedElement element, Class<A> annotationType) {
+    public <A extends Annotation> Set<A> getAllAnnotations(@NonNull AnnotatedElement element, Class<A> annotationType) {
         return AnnotatedElementUtils.getMergedRepeatableAnnotations(element, annotationType);
+    }
+
+    /**
+     * Get the specified annotation from the element.
+     *
+     * @param element        element
+     * @param annotationType annotation type
+     * @return annotation
+     */
+    @Override
+    public <A extends Annotation> A findAnnotation(@Nonnull AnnotatedElement element, Class<A> annotationType) {
+        return AnnotatedElementUtils.findMergedAnnotation(element, annotationType);
+    }
+
+    /**
+     * Get all specified annotations from the element.
+     *
+     * @param element        element
+     * @param annotationType annotation type
+     * @return annotations
+     */
+    @Override
+    public <A extends Annotation> Set<A> findAllAnnotations(@Nonnull AnnotatedElement element, Class<A> annotationType) {
+        return AnnotatedElementUtils.findMergedRepeatableAnnotations(element, annotationType);
     }
 }

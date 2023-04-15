@@ -20,6 +20,11 @@ public class SimpleAnnotationFinderTest {
     private final AnnotationFinder finder = new SimpleAnnotationFinder();
 
     @Test
+    public void isAnnotated() {
+        Assert.assertTrue(finder.isAnnotated(Foo.class, Annotation.class));
+    }
+
+    @Test
     public void findAnnotation() {
         Assert.assertNotNull(finder.findAnnotation(Foo.class, Annotation.class));
     }
@@ -27,6 +32,23 @@ public class SimpleAnnotationFinderTest {
     @Test
     public void findAllAnnotations() {
         Set<Annotation> annotations = finder.findAllAnnotations(Foo.class, Annotation.class);
+        Assert.assertNotNull(annotations);
+        Assert.assertEquals(3, annotations.size());
+    }
+
+    @Test
+    public void hasAnnotation() {
+        Assert.assertTrue(finder.hasAnnotation(Foo.class, Annotation.class));
+    }
+
+    @Test
+    public void getAnnotation() {
+        Assert.assertNotNull(finder.getAnnotation(Foo.class, Annotation.class));
+    }
+
+    @Test
+    public void getAllAnnotations() {
+        Set<Annotation> annotations = finder.getAllAnnotations(Foo.class, Annotation.class);
         Assert.assertNotNull(annotations);
         Assert.assertEquals(3, annotations.size());
     }

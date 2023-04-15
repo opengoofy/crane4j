@@ -2,7 +2,6 @@ package cn.crane4j.core.support.expression;
 
 import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.util.CollectionUtils;
-import cn.hutool.core.map.MapUtil;
 import lombok.SneakyThrows;
 import ognl.Ognl;
 import ognl.OgnlContext;
@@ -32,7 +31,7 @@ public class OgnlExpressionEvaluator implements ExpressionEvaluator {
     @SuppressWarnings("unchecked")
     @Override
     public <T> @Nullable T execute(String expression, Class<T> resultType, ExpressionContext context) {
-        Object exp = MapUtil.computeIfAbsent(expressionCaches, expression, ex -> {
+        Object exp = CollectionUtils.computeIfAbsent(expressionCaches, expression, ex -> {
             Object result;
             try {
                 result = Ognl.parseExpression(ex);

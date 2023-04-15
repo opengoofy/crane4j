@@ -2,7 +2,6 @@ package cn.crane4j.core.support.reflect;
 
 import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.util.CollectionUtils;
-import cn.hutool.core.map.MapUtil;
 import lombok.RequiredArgsConstructor;
 
 import javax.annotation.Nullable;
@@ -154,7 +153,7 @@ public class ChainAccessiblePropertyOperator implements PropertyOperator {
         private final Map<String, String[]> caches = CollectionUtils.newWeakConcurrentMap();
         @Override
         public String[] apply(String propertyName) {
-            return MapUtil.computeIfAbsent(
+            return CollectionUtils.computeIfAbsent(
                 caches, propertyName, p -> propertyName.split("\\" + separator)
             );
         }

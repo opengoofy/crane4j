@@ -7,7 +7,6 @@ import cn.crane4j.core.support.ParameterNameFinder;
 import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.MethodUtils;
-import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ArrayUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -74,7 +73,7 @@ public class MethodArgumentAutoOperateSupport {
             return;
         }
         // cache resolved parameters
-        AutoOperateAnnotatedElement[] elements = MapUtil.computeIfAbsent(
+        AutoOperateAnnotatedElement[] elements = CollectionUtils.computeIfAbsent(
             methodParameterCaches, method.getName(), name -> resolveParameters(annotation, method)
         );
         if (elements == EMPTY_ELEMENTS) {
@@ -122,7 +121,7 @@ public class MethodArgumentAutoOperateSupport {
             String paramName = entry.getKey();
             Parameter param = entry.getValue();
             AutoOperate annotation = Optional
-                .ofNullable(annotationFinder.findAnnotation(param, AutoOperate.class))
+                .ofNullable(annotationFinder.getAnnotation(param, AutoOperate.class))
                 .orElse(methodLevelAnnotations.get(paramName));
             results[index++] = Objects.isNull(annotation) ? null : elementResolver.resolve(param, annotation);
         }

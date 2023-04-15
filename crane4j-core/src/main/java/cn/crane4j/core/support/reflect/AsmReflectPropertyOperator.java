@@ -1,7 +1,7 @@
 package cn.crane4j.core.support.reflect;
 
 import cn.crane4j.core.support.MethodInvoker;
-import cn.hutool.core.map.MapUtil;
+import cn.crane4j.core.util.CollectionUtils;
 import com.esotericsoftware.reflectasm.MethodAccess;
 import lombok.RequiredArgsConstructor;
 
@@ -32,7 +32,7 @@ public class AsmReflectPropertyOperator extends CacheablePropertyOperator {
      */
     @Override
     protected MethodInvoker createInvoker(Class<?> targetType, String propertyName, Method method) {
-        MethodAccess access = MapUtil.computeIfAbsent(methodAccessCaches, targetType, MethodAccess::get);
+        MethodAccess access = CollectionUtils.computeIfAbsent(methodAccessCaches, targetType, MethodAccess::get);
         int methodIndex = access.getIndex(method.getName(), method.getParameterTypes());
         return new ReflectAsmMethodInvoker(methodIndex, access);
     }

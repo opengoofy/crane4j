@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
  *
  * @author huangchengxing
  * @see ContainerMethod
+ * @see MethodInvokerContainer
  */
 @Slf4j
 @RequiredArgsConstructor
@@ -72,7 +73,7 @@ public class DefaultMethodContainerFactory implements MethodContainerFactory {
             .collect(Collectors.toList());
     }
 
-    private MethodInvokerContainer createContainer(Object target, Method method, ContainerMethod annotation) {
+    protected final MethodInvokerContainer createContainer(Object target, Method method, ContainerMethod annotation) {
         log.debug("create method container from [{}]", method);
         // get key extractor of result object if necessary
         MethodInvokerContainer.KeyExtractor keyExtractor = null;
