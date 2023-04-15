@@ -6,7 +6,7 @@ import cn.crane4j.core.container.ConstantContainer;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.BeanOperations;
-import cn.crane4j.core.parser.BeanOperationsResolver;
+import cn.crane4j.core.parser.OperationAnnotationResolver;
 import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
 import cn.crane4j.extension.spring.Crane4jApplicationContext;
 import cn.crane4j.spring.boot.config.Crane4jAutoConfiguration;
@@ -59,8 +59,8 @@ public class Crane4jInitializerTest {
 
         // 配置解析器
         if (beanOperationParser instanceof TypeHierarchyBeanOperationParser) {
-            Set<BeanOperationsResolver> resolvers = (Set<BeanOperationsResolver>)ReflectUtil.getFieldValue(beanOperationParser, "beanOperationsResolvers");
-            Assert.assertEquals(2, applicationContext.getBeanNamesForType(BeanOperationsResolver.class).length);
+            Set<OperationAnnotationResolver> resolvers = (Set<OperationAnnotationResolver>)ReflectUtil.getFieldValue(beanOperationParser, "operationAnnotationResolvers");
+            Assert.assertEquals(2, applicationContext.getBeanNamesForType(OperationAnnotationResolver.class).length);
         }
 
         // 注册枚举容器

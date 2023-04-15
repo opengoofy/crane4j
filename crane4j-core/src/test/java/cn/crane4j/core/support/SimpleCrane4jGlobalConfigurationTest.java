@@ -9,9 +9,9 @@ import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
 import cn.crane4j.core.executor.handler.ManyToManyReflexAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
-import cn.crane4j.core.parser.AssembleAnnotationOperationsResolver;
+import cn.crane4j.core.parser.AssembleAnnotationResolver;
 import cn.crane4j.core.parser.BeanOperationParser;
-import cn.crane4j.core.parser.BeanOperationsResolver;
+import cn.crane4j.core.parser.OperationAnnotationResolver;
 import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
 import cn.crane4j.core.support.callback.ContainerRegisterAware;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
@@ -41,7 +41,7 @@ public class SimpleCrane4jGlobalConfigurationTest {
         configuration.getBeanOperationExecutorMap().put(executor.getClass().getName(), executor);
         configuration.getBeanOperationExecutorMap().put(BeanOperationExecutor.class.getName(), executor);
 
-        BeanOperationsResolver resolver = new AssembleAnnotationOperationsResolver(new SimpleAnnotationFinder(), configuration);
+        OperationAnnotationResolver resolver = new AssembleAnnotationResolver(new SimpleAnnotationFinder(), configuration);
         BeanOperationParser parser = new TypeHierarchyBeanOperationParser(Collections.singletonList(resolver));
         configuration.getBeanOperationParserMap().put(parser.getClass().getName(), parser);
         configuration.getBeanOperationParserMap().put(BeanOperationParser.class.getName(), parser);

@@ -1,10 +1,6 @@
 package cn.crane4j.core.executor;
 
-import cn.crane4j.core.parser.AssembleAnnotationOperationsResolver;
-import cn.crane4j.core.parser.BeanOperationParser;
-import cn.crane4j.core.parser.BeanOperations;
-import cn.crane4j.core.parser.DisassembleAnnotationOperationsResolver;
-import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
+import cn.crane4j.core.parser.*;
 import cn.crane4j.core.support.SimpleAnnotationFinder;
 import cn.crane4j.core.support.SimpleCrane4jGlobalConfiguration;
 import org.junit.Assert;
@@ -31,8 +27,8 @@ public class BaseExecutorTest {
     public void initParser() {
         configuration = SimpleCrane4jGlobalConfiguration.create(Collections.emptyMap());
         parser = new TypeHierarchyBeanOperationParser(Arrays.asList(
-            new AssembleAnnotationOperationsResolver(new SimpleAnnotationFinder(), configuration),
-            new DisassembleAnnotationOperationsResolver(new SimpleAnnotationFinder(), configuration)
+            new AssembleAnnotationResolver(new SimpleAnnotationFinder(), configuration),
+            new DisassembleAnnotationResolver(new SimpleAnnotationFinder(), configuration)
         ));
     }
 

@@ -1,10 +1,6 @@
 package cn.crane4j.core.parser;
 
-import cn.crane4j.annotation.Assemble;
-import cn.crane4j.annotation.Disassemble;
-import cn.crane4j.annotation.Mapping;
-import cn.crane4j.annotation.MappingTemplate;
-import cn.crane4j.annotation.Operations;
+import cn.crane4j.annotation.*;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.LambdaContainer;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
@@ -20,11 +16,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -52,8 +44,8 @@ public class TypeHierarchyBeanOperationParserTest {
         SimpleCrane4jGlobalConfiguration configuration = new SimpleCrane4jGlobalConfiguration();
         parser = new TypeHierarchyBeanOperationParser(
             Arrays.asList(
-                new AssembleAnnotationOperationsResolver(new SimpleAnnotationFinder(), configuration),
-                new DisassembleAnnotationOperationsResolver(new SimpleAnnotationFinder(), configuration)
+                new AssembleAnnotationResolver(new SimpleAnnotationFinder(), configuration),
+                new DisassembleAnnotationResolver(new SimpleAnnotationFinder(), configuration)
             )
         );
         configuration.setTypeResolver(new SimpleTypeResolver());

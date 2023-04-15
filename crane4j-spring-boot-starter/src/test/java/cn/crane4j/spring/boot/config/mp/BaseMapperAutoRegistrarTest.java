@@ -1,7 +1,7 @@
 package cn.crane4j.spring.boot.config.mp;
 
 import cn.crane4j.core.parser.BeanOperationParser;
-import cn.crane4j.core.parser.BeanOperationsResolver;
+import cn.crane4j.core.parser.OperationAnnotationResolver;
 import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
 import cn.crane4j.extension.mybatis.plus.MpBaseMapperContainerRegister;
 import cn.crane4j.spring.boot.config.Crane4jAutoConfiguration;
@@ -41,8 +41,8 @@ public class BaseMapperAutoRegistrarTest {
     @Test
     public void test() {
         if (beanOperationParser instanceof TypeHierarchyBeanOperationParser) {
-            Set<BeanOperationsResolver> resolvers = (Set<BeanOperationsResolver>)ReflectUtil.getFieldValue(beanOperationParser, "beanOperationsResolvers");
-            Assert.assertEquals(resolvers.size(), applicationContext.getBeanNamesForType(BeanOperationsResolver.class).length);
+            Set<OperationAnnotationResolver> resolvers = (Set<OperationAnnotationResolver>)ReflectUtil.getFieldValue(beanOperationParser, "operationAnnotationResolvers");
+            Assert.assertEquals(resolvers.size(), applicationContext.getBeanNamesForType(OperationAnnotationResolver.class).length);
         }
 
         Map<String, MpBaseMapperContainerRegister.MapperInfo> mapperInfoMap = mapperContainerRegister.getRegisterMappers();

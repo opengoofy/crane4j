@@ -1,11 +1,6 @@
 package cn.crane4j.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Repeatable;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * <p>Declare a disassembly operation.<br />
@@ -43,7 +38,7 @@ import java.lang.annotation.Target;
  *
  * @author huangchengxing
  * @see cn.crane4j.core.executor.handler.DisassembleOperationHandler;
- * @see cn.crane4j.core.parser.DisassembleAnnotationOperationsResolver;
+ * @see cn.crane4j.core.parser.DisassembleAnnotationResolver;
  * @see cn.crane4j.core.parser.DisassembleOperation;
  */
 @Repeatable(value = Disassemble.List.class)

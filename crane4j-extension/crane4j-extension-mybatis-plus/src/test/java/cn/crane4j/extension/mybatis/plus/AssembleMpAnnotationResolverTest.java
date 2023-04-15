@@ -21,13 +21,13 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * test for {@link AssembleMpAnnotationOperationsResolver}
+ * test for {@link AssembleMpAnnotationResolver}
  *
  * @author huangchengxing
  */
-public class AssembleMpAnnotationOperationsResolverTest extends MpBaseTest {
+public class AssembleMpAnnotationResolverTest extends MpBaseTest {
 
-    private AssembleMpAnnotationOperationsResolver operationsResolver;
+    private AssembleMpAnnotationResolver operationsResolver;
 
     @Before
     public void afterInit() {
@@ -35,7 +35,7 @@ public class AssembleMpAnnotationOperationsResolverTest extends MpBaseTest {
         Crane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create(Collections.emptyMap());
         MpBaseMapperContainerRegister register = new MpBaseMapperContainerRegister(configuration, new ReflectPropertyOperator());
         register.registerMapper("fooMapper", fooMapper);
-        operationsResolver = new AssembleMpAnnotationOperationsResolver(annotationFinder, register, configuration);
+        operationsResolver = new AssembleMpAnnotationResolver(annotationFinder, register, configuration);
     }
 
     @Test
