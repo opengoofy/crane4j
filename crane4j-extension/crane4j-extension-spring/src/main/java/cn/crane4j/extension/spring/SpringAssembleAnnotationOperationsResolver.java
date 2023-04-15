@@ -103,8 +103,8 @@ public class SpringAssembleAnnotationOperationsResolver
      */
     @Override
     protected List<Assemble> resolveFieldLevelAnnotations(Class<?> beanType) {
-        return parseAnnotationForDeclaredFields(
-            beanType, Assemble.class, SpringAssembleAnnotationOperationsResolver::processAnnotation
+        return ReflectUtils.parseAnnotationForDeclaredFields(
+            annotationFinder, beanType, Assemble.class, SpringAssembleAnnotationOperationsResolver::processAnnotation
         );
     }
 

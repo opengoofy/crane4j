@@ -16,13 +16,8 @@ import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ObjectUtil;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.lang.reflect.AnnotatedElement;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -71,37 +66,40 @@ public class AssembleAnnotationOperationsResolver extends AbstractCacheableOpera
     }
 
     /**
+     * Parse assemble operations from {@link Assemble} annotations on class.
+     *
+     * @param context  context
+     * @param element annotated element
+     * @return {@link AssembleOperation}
+     */
+    @Override
+    protected List<AssembleOperation> parseAssembleOperations(OperationParseContext context, AnnotatedElement element) {
+        List<Assemble> annotations = new ArrayList<>();
+        if (element instanceof Class<?>) {
+            Class<?> beanType = (Class<?>) element;
+            annotations.addAll(resolveFieldLevelAnnotations(beanType));
+            annotations.addAll(resolveClassLevelAnnotations(beanType));
+        } else {
+            annotations.addAll(annotationFinder.findAllAnnotations(element, Assemble.class));
+        }
+        return annotations.stream()
+            .map(this::createAssembleOperation)
+            .sorted(operationComparator)
+            .collect(Collectors.toList());
+    }
+
+    /**
      * Parse {@link Assemble} annotations for class.
      *
      * @param beanType bean type
      * @return {@link Assemble}
-     * @see #parseAnnotationForDeclaredFields
      */
     protected List<Assemble> resolveFieldLevelAnnotations(Class<?> beanType) {
-        return parseAnnotationForDeclaredFields(beanType, Assemble.class, (a, f) -> {
+        return ReflectUtils.parseAnnotationForDeclaredFields(annotationFinder, beanType, Assemble.class, (a, f) -> {
             // force value to be set to the annotated attribute name
             ReflectUtils.setAttributeValue(a, ANNOTATION_KEY_ATTRIBUTE, f.getName());
             return a;
         });
-    }
-
-    /**
-     * Parse assemble operations from {@link Assemble} annotations on class.
-     *
-     * @param context  context
-     * @param beanType bean type
-     * @return {@link AssembleOperation}
-     * @see #parseAnnotationForDeclaredFields
-     */
-    @Override
-    protected List<AssembleOperation> parseAssembleOperations(OperationParseContext context, Class<?> beanType) {
-        Collection<Assemble> fieldLevelAssembles = resolveFieldLevelAnnotations(beanType);
-        Collection<Assemble> classLevelOperations = resolveClassLevelAnnotations(beanType);
-        return Stream.of(fieldLevelAssembles, classLevelOperations)
-            .flatMap(Collection::stream)
-            .map(this::createAssembleOperation)
-            .sorted(operationComparator)
-            .collect(Collectors.toList());
     }
 
     /**

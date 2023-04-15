@@ -4,20 +4,14 @@ import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.exception.OperationParseException;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.util.CollectionUtils;
-import cn.crane4j.core.util.ReflectUtils;
-import cn.hutool.core.collection.CollUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.lang.reflect.AnnotatedElement;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -34,7 +28,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public abstract class AbstractCacheableOperationResolver implements BeanOperationsResolver {
 
-    private final Map<Class<?>, TypeOperationMetadata> metadataCaches = CollectionUtils.newWeakConcurrentMap();
+    private final Map<AnnotatedElement, OperationMetadata> metadataCaches = CollectionUtils.newWeakConcurrentMap();
     protected final AnnotationFinder annotationFinder;
     protected final Comparator<KeyTriggerOperation> operationComparator;
 
@@ -43,40 +37,39 @@ public abstract class AbstractCacheableOperationResolver implements BeanOperatio
      * If there is a cache, it will be obtained from the cache first.
      *
      * @param context context in parsing
-     * @param type bean type
+     * @param annotatedElement annotated element
      * @throws OperationParseException thrown when configuration resolution exception
      */
     @Override
-    public void resolve(OperationParseContext context, Class<?> type) {
+    public void resolve(OperationParseContext context, AnnotatedElement annotatedElement) {
         BeanOperations target = context.getRootOperations();
-        log.debug("resolve operations from [{}]", type);
-        TypeOperationMetadata cache = CollectionUtils.computeIfAbsent(
-            metadataCaches, type, t -> createMetaDataCache(context, t)
+        log.debug("resolve operations from [{}]", annotatedElement);
+        OperationMetadata cache = CollectionUtils.computeIfAbsent(
+            metadataCaches, annotatedElement, t -> createMetaDataCache(context, t)
         );
         cache.append(target);
     }
 
-    private TypeOperationMetadata createMetaDataCache(OperationParseContext context, Class<?> type) {
-        List<AssembleOperation> assembleOperations = parseAssembleOperations(context, type)
+    private OperationMetadata createMetaDataCache(OperationParseContext context, AnnotatedElement annotatedElement) {
+        List<AssembleOperation> assembleOperations = parseAssembleOperations(context, annotatedElement)
             .stream()
             .sorted(operationComparator)
             .collect(Collectors.toList());
-        List<DisassembleOperation> disassembleOperations = parseDisassembleOperations(context, type)
+        List<DisassembleOperation> disassembleOperations = parseDisassembleOperations(context, annotatedElement)
             .stream()
             .sorted(operationComparator)
             .collect(Collectors.toList());
-        return new TypeOperationMetadata(assembleOperations, disassembleOperations);
+        return new OperationMetadata(assembleOperations, disassembleOperations);
     }
 
     /**
      * Parse assemble operations for class.
      *
      * @param context  context
-     * @param beanType bean type
+     * @param element annotated element
      * @return {@link AssembleOperation}
-     * @see #parseAnnotationForDeclaredFields
      */
-    protected List<AssembleOperation> parseAssembleOperations(OperationParseContext context, Class<?> beanType) {
+    protected List<AssembleOperation> parseAssembleOperations(OperationParseContext context, AnnotatedElement element) {
         return Collections.emptyList();
     }
 
@@ -84,37 +77,11 @@ public abstract class AbstractCacheableOperationResolver implements BeanOperatio
      * Parse disassemble operations for class.
      *
      * @param context context
-     * @param beanType bean type
+     * @param element annotated element
      * @return {@link DisassembleOperation}
-     * @see #parseAnnotationForDeclaredFields
      */
-    protected List<DisassembleOperation> parseDisassembleOperations(OperationParseContext context, Class<?> beanType) {
+    protected List<DisassembleOperation> parseDisassembleOperations(OperationParseContext context, AnnotatedElement element) {
         return Collections.emptyList();
-    }
-
-    /**
-     * Parse annotations for declared fields of {@code beanType}.
-     *
-     * @param beanType bean type
-     * @param annotationType annotation type
-     * @param mapper mapper for annotation and field
-     * @return annotations
-     */
-    protected final <T extends Annotation, R> List<R> parseAnnotationForDeclaredFields(
-        Class<?> beanType, Class<T> annotationType, BiFunction<T, Field, R> mapper) {
-        Field[] fields = ReflectUtils.getDeclaredFields(beanType);
-        List<R> results = new ArrayList<>(fields.length);
-        for (Field field : fields) {
-            Set<T> annotation = annotationFinder.getAllAnnotations(field, annotationType);
-            if (CollUtil.isEmpty(annotation)) {
-                continue;
-            }
-            for (T t : annotation) {
-                R r = mapper.apply(t, field);
-                results.add(r);
-            }
-        }
-        return results;
     }
 
     /**
@@ -132,7 +99,7 @@ public abstract class AbstractCacheableOperationResolver implements BeanOperatio
      * Annotation metadata cache on class.
      */
     @RequiredArgsConstructor
-    protected static class TypeOperationMetadata {
+    protected static class OperationMetadata {
         private final List<AssembleOperation> assembleOperations;
         private final List<DisassembleOperation> disassembleOperations;
         public void append(BeanOperations beanOperations) {

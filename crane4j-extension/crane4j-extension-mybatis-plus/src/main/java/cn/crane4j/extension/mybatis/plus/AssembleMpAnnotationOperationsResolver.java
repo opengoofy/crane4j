@@ -3,13 +3,7 @@ package cn.crane4j.extension.mybatis.plus;
 import cn.crane4j.annotation.AssembleMp;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
-import cn.crane4j.core.parser.AbstractCacheableOperationResolver;
-import cn.crane4j.core.parser.AssembleOperation;
-import cn.crane4j.core.parser.BeanOperationsResolver;
-import cn.crane4j.core.parser.KeyTriggerOperation;
-import cn.crane4j.core.parser.OperationParseContext;
-import cn.crane4j.core.parser.PropertyMapping;
-import cn.crane4j.core.parser.SimpleAssembleOperation;
+import cn.crane4j.core.parser.*;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.Sorted;
@@ -17,10 +11,8 @@ import cn.crane4j.core.util.ConfigurationUtil;
 import cn.crane4j.core.util.ReflectUtils;
 import cn.hutool.core.lang.Assert;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
+import java.lang.reflect.AnnotatedElement;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -75,24 +67,30 @@ public class AssembleMpAnnotationOperationsResolver extends AbstractCacheableOpe
      * Parse assemble operations for class.
      *
      * @param context  context
-     * @param beanType bean type
+     * @param element annotated element
      * @return {@link AssembleOperation}
-     * @see #parseAnnotationForDeclaredFields
      */
     @Override
-    protected List<AssembleOperation> parseAssembleOperations(OperationParseContext context, Class<?> beanType) {
-        List<AssembleMp> fieldLevelAnnotations = parseAnnotationForDeclaredFields(
-            beanType, AssembleMp.class, (annotation, field) -> {
-                ReflectUtils.setAttributeValue(annotation, "key", field.getName());
-                return annotation;
-            }
-        );
-        Set<AssembleMp> classLevelAnnotations = annotationFinder.getAllAnnotations(beanType, AssembleMp.class);
-        fieldLevelAnnotations.addAll(classLevelAnnotations);
-        return fieldLevelAnnotations.stream()
+    protected List<AssembleOperation> parseAssembleOperations(OperationParseContext context, AnnotatedElement element) {
+        List<AssembleMp> annotations = new ArrayList<>();
+        if (element instanceof Class<?>) {
+            Class<?> beanType = (Class<?>)element;
+            annotations.addAll(parseAnnotationForDeclaredFields(beanType));
+            annotations.addAll(annotationFinder.getAllAnnotations(beanType, AssembleMp.class));
+        } else {
+            annotations.addAll(annotationFinder.findAllAnnotations(element, AssembleMp.class));
+        }
+        return annotations.stream()
             .map(this::createAssembleOperation)
             .sorted(operationComparator)
             .collect(Collectors.toList());
+    }
+
+    private List<AssembleMp> parseAnnotationForDeclaredFields(Class<?> beanType) {
+        return ReflectUtils.parseAnnotationForDeclaredFields(annotationFinder, beanType, AssembleMp.class, (annotation, field) -> {
+            ReflectUtils.setAttributeValue(annotation, "key", field.getName());
+            return annotation;
+        });
     }
 
     private AssembleOperation createAssembleOperation(AssembleMp annotation) {

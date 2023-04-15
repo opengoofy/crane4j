@@ -1,5 +1,7 @@
 package cn.crane4j.core.util;
 
+import cn.crane4j.core.support.AnnotationFinder;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ReflectUtil;
@@ -11,11 +13,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.BiFunction;
 
 /**
  * ReflectUtils
@@ -37,6 +36,32 @@ public class ReflectUtils {
      * declared field cache
      */
     private static final Map<Class<?>, Field[]> DECLARED_FIELD_CACHE = CollectionUtils.newWeakConcurrentMap();
+
+    /**
+     * Get annotation for declared fields.
+     *
+     * @param annotationFinder annotation finder
+     * @param beanType bean type
+     * @param annotationType annotation type
+     * @param mapper mapper
+     * @return result list
+     */
+    public static <T extends Annotation, R> List<R> parseAnnotationForDeclaredFields(
+        AnnotationFinder annotationFinder, Class<?> beanType, Class<T> annotationType, BiFunction<T, Field, R> mapper) {
+        Field[] fields = ReflectUtils.getDeclaredFields(beanType);
+        List<R> results = new ArrayList<>(fields.length);
+        for (Field field : fields) {
+            Set<T> annotation = annotationFinder.getAllAnnotations(field, annotationType);
+            if (CollUtil.isEmpty(annotation)) {
+                continue;
+            }
+            for (T t : annotation) {
+                R r = mapper.apply(t, field);
+                results.add(r);
+            }
+        }
+        return results;
+    }
 
     /**
      * Set annotation attribute value.
