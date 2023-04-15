@@ -10,14 +10,8 @@ import cn.crane4j.core.util.ConfigurationUtil;
 import cn.crane4j.core.util.ReflectUtils;
 import cn.hutool.core.lang.Assert;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.lang.reflect.AnnotatedElement;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -68,12 +62,15 @@ public class DisassembleAnnotationOperationsResolver extends AbstractCacheableOp
      * Parse assemble operations from {@link Disassemble} annotations on class.
      *
      * @param context  context
-     * @param beanType bean type
+     * @param element annotated element
      * @return {@link DisassembleOperation}
-     * @see #parseAnnotationForDeclaredFields
      */
     @Override
-    protected List<DisassembleOperation> parseDisassembleOperations(OperationParseContext context, Class<?> beanType) {
+    protected List<DisassembleOperation> parseDisassembleOperations(OperationParseContext context, AnnotatedElement element) {
+        if (!(element instanceof Class)) {
+            return Collections.emptyList();
+        }
+        Class<?> beanType = (Class<?>)element;
         Collection<Disassemble> fieldLevelAnnotation = resolveFieldLevelAnnotations(beanType);
         Collection<Disassemble> classLevelAnnotations = resolveClassLevelAnnotations(beanType);
         return Stream.of(fieldLevelAnnotation, classLevelAnnotations)
@@ -88,10 +85,9 @@ public class DisassembleAnnotationOperationsResolver extends AbstractCacheableOp
      *
      * @param beanType bean type
      * @return {@link Disassemble}
-     * @see #parseAnnotationForDeclaredFields
      */
     protected List<Disassemble> resolveFieldLevelAnnotations(Class<?> beanType) {
-        return parseAnnotationForDeclaredFields(beanType, Disassemble.class, (a, f) -> {
+        return ReflectUtils.parseAnnotationForDeclaredFields(annotationFinder, beanType, Disassemble.class, (a, f) -> {
             // force value to be set to the annotated attribute name
             ReflectUtils.setAttributeValue(a, ANNOTATION_KEY_ATTRIBUTE, f.getName());
             return a;
