@@ -35,7 +35,7 @@ public class SimpleAssembleExecutionTest {
 
     @Test
     public void getTargetType() {
-        Assert.assertEquals(BEAN_OPERATIONS.getTargetType(), EXECUTION.getTargetType());
+        Assert.assertEquals(BEAN_OPERATIONS.getSource(), EXECUTION.getSource());
     }
 
     @Test

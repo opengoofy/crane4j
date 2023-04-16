@@ -81,7 +81,7 @@ public class AutoOperateAnnotatedElementResolverTest {
     private void checkElement(AnnotatedElement ele, AutoOperate annotation, AutoOperateAnnotatedElement element) {
         Assert.assertSame(annotation, element.getAnnotation());
         Assert.assertSame(ele, element.getElement());
-        Assert.assertEquals(Foo.class, element.getBeanOperations().getTargetType());
+        Assert.assertEquals(Foo.class, element.getBeanOperations().getSource());
         Assert.assertEquals(configuration.getBeanOperationExecutor(BeanOperationExecutor.class), element.getExecutor());
         MethodInvoker extractor = element.getExtractor();
         Assert.assertEquals(extractor, extractor.invoke(new Result<>(extractor)));

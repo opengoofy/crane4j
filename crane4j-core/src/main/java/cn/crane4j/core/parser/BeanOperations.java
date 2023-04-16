@@ -3,6 +3,7 @@ package cn.crane4j.core.parser;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.support.Sorted;
 
+import java.lang.reflect.AnnotatedElement;
 import java.util.Collection;
 
 /**
@@ -31,11 +32,11 @@ import java.util.Collection;
 public interface BeanOperations {
 
     /**
-     * Get the object type corresponding to the current operation.
+     * Get the source object corresponding to the current operation.
      *
      * @return type
      */
-    Class<?> getTargetType();
+    AnnotatedElement getSource();
 
     /**
      * Get assembly operations.

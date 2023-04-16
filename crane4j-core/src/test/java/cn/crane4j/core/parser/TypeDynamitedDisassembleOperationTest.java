@@ -34,8 +34,8 @@ public class TypeDynamitedDisassembleOperationTest {
 
     @Test
     public void getInternalBeanOperations() {
-        Assert.assertEquals(BigDecimal.class, operation.getInternalBeanOperations(BigDecimal.ONE).getTargetType());
-        Assert.assertEquals(String.class, operation.getInternalBeanOperations("str").getTargetType());
+        Assert.assertEquals(BigDecimal.class, operation.getInternalBeanOperations(BigDecimal.ONE).getSource());
+        Assert.assertEquals(String.class, operation.getInternalBeanOperations("str").getSource());
     }
 
     @Test

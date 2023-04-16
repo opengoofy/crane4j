@@ -3,10 +3,12 @@ package cn.crane4j.core.parser;
 import cn.crane4j.core.exception.OperationParseException;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 
+import java.lang.reflect.AnnotatedElement;
+
 /**
  * <p>The configuration parser of {@link BeanOperations},
  * it used to obtain all assembly and handling configurations
- * for a specific type according to the type.
+ * for a specific type according to the {@link AnnotatedElement}.
  *
  * @author huangchengxing
  * @see TypeHierarchyBeanOperationParser
@@ -15,11 +17,12 @@ import cn.crane4j.core.executor.BeanOperationExecutor;
 public interface BeanOperationParser {
 
     /**
-     * Parse the class and class attribute information, and generate the corresponding {@link BeanOperations} instance.
+     * Parse the {@link AnnotatedElement} annotation information,
+     * and generate the corresponding {@link BeanOperations} instance.
      *
-     * @param beanType bean type
+     * @param element element to parse
      * @return {@link BeanOperations}
      * @throws OperationParseException thrown when configuration resolution exception
      */
-    BeanOperations parse(Class<?> beanType) throws OperationParseException;
+    BeanOperations parse(AnnotatedElement element) throws OperationParseException;
 }
