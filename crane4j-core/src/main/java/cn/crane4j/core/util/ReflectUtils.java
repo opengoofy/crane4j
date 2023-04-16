@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +58,21 @@ public class ReflectUtils {
     private static final Map<Class<?>, Method[]> DECLARED_METHOD_CACHE = CollectionUtils.newWeakConcurrentMap();
 
     /**
+     * declared super class with interface
+     */
+    private static final Map<Class<?>, Set<Class<?>>> DECLARED_SUPER_CLASS_WITH_INTERFACE = CollectionUtils.newWeakConcurrentMap();
+
+    /**
+     * Get declared methods of type.
+     *
+     * @param type type
+     * @return method list
+     */
+    public static Method[] getDeclaredMethods(Class<?> type) {
+        return CollectionUtils.computeIfAbsent(DECLARED_METHOD_CACHE, type, k -> ReflectUtil.getMethods(type));
+    }
+
+    /**
      * Get method by name and parameter types.
      *
      * @param type type
@@ -67,10 +83,22 @@ public class ReflectUtils {
     @Nullable
     public static Method getDeclaredMethod(
         Class<?> type, String methodName, Class<?>... parameterTypes) {
-        return Stream.of(CollectionUtils.computeIfAbsent(DECLARED_METHOD_CACHE, type, k -> ReflectUtil.getMethods(type)))
+        return Stream.of(getDeclaredMethods(type))
             .filter(method -> method.getName().equals(methodName) && Arrays.equals(method.getParameterTypes(), parameterTypes))
             .findFirst()
             .orElse(null);
+    }
+
+    public static Set<Class<?>> getDeclaredSuperClassWithInterface(Class<?> type) {
+        return CollectionUtils.computeIfAbsent(DECLARED_SUPER_CLASS_WITH_INTERFACE, type, k -> {
+            Set<Class<?>> result = new LinkedHashSet<>();
+            Class<?> superClass = type.getSuperclass();
+            if (superClass != null) {
+                result.add(superClass);
+            }
+            result.addAll(Arrays.asList(type.getInterfaces()));
+            return result;
+        });
     }
 
     /**
@@ -89,11 +117,10 @@ public class ReflectUtils {
             // do something for current type
             consumer.accept(type);
             // then find superclass and interfaces
-            Class<?> superclass = type.getSuperclass();
-            if (Objects.nonNull(superclass) && !Objects.equals(superclass, Object.class) && !accessed.contains(superclass)) {
-                typeQueue.add(superclass);
-            }
-            CollUtil.addAll(typeQueue, type.getInterfaces());
+            Set<Class<?>> declaredSuperClassWithInterface = getDeclaredSuperClassWithInterface(type);
+            declaredSuperClassWithInterface.remove(Object.class);
+            declaredSuperClassWithInterface.removeAll(accessed);
+            CollUtil.addAll(typeQueue, declaredSuperClassWithInterface);
         }
     }
 
