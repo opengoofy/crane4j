@@ -120,7 +120,7 @@ public class ConfigurationUtil {
         );
     }
 
-    public static BeanOperationParser getParser(
+    public static BeanOperationParser getOperationParser(
         Crane4jGlobalConfiguration configuration, String name, Class<?> type) {
         return getPlugin(
             configuration, BeanOperationParser.class,

@@ -43,7 +43,7 @@ public class AutoOperateAnnotatedElementResolver {
     public AutoOperateAnnotatedElement resolve(AnnotatedElement element, AutoOperate annotation) {
         MethodInvoker extractor = resolveExtractor(element, annotation);
         // prepare components for use
-        BeanOperationParser parser = ConfigurationUtil.getParser(configuration, annotation.parserName(), annotation.parser());
+        BeanOperationParser parser = ConfigurationUtil.getOperationParser(configuration, annotation.parserName(), annotation.parser());
         BeanOperations beanOperations = parser.parse(annotation.type());
         BeanOperationExecutor executor = ConfigurationUtil.getOperationExecutor(configuration, annotation.executorName(), annotation.executor());
         // check groups
