@@ -3,11 +3,18 @@ package cn.crane4j.core.parser;
 import cn.crane4j.core.exception.OperationParseException;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.support.Sorted;
-import cn.hutool.core.collection.CollUtil;
+import cn.crane4j.core.util.ReflectUtils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.*;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -19,8 +26,15 @@ import java.util.stream.Collectors;
  * to collect the configuration information into the {@link BeanOperations} in context.
  *
  * <p>After the parsing is completed, the {@link BeanOperations} instance
- * corresponding to the {@link Class} will be cached,
+ * corresponding to the {@link AnnotatedElement} will be cached,
  * and the cache will be used preferentially for the next access.
+ *
+ * <p>When parsing element, if it is a:
+ * <ul>
+ *     <li>{@link Class}: it will check all parent classes and interfaces in its hierarchy;</li>
+ *     <li>{@link Method}: it will check for methods with the same method signature in all parent classes and interfaces in its hierarchy;</li>
+ *     <li>other: only the itself will be checked;</li>
+ * </ul>
  *
  * <p>The sequence of operations obtained through the parser follows:
  * <ul>
@@ -39,8 +53,8 @@ import java.util.stream.Collectors;
 public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
 
     protected Set<OperationAnnotationResolver> operationAnnotationResolvers;
-    private final Map<Class<?>, BeanOperations> resolvedTypes = new ConcurrentHashMap<>(32);
-    private final Map<Class<?>, BeanOperations> currentlyInParsing = new LinkedHashMap<>(16);
+    private final Map<AnnotatedElement, BeanOperations> resolvedTypes = new ConcurrentHashMap<>(32);
+    private final Map<AnnotatedElement, BeanOperations> currentlyInParsing = new LinkedHashMap<>(16);
 
     /**
      * Create a {@link TypeHierarchyBeanOperationParser} instance.
@@ -77,16 +91,16 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
      * <p><b>NOTE:</b>The {@link BeanOperations} obtained may still be being parsed.
      * Please confirm whether it is ready through {@link BeanOperations#isActive()}.
      *
-     * @param beanType bean type
+     * @param element element to parse
      * @return {@link BeanOperations}
      * @throws OperationParseException thrown when configuration resolution exception
      */
     @NonNull
     @Override
-    public BeanOperations parse(Class<?> beanType) throws OperationParseException {
-        Objects.requireNonNull(beanType);
+    public BeanOperations parse(AnnotatedElement element) throws OperationParseException {
+        Objects.requireNonNull(element);
         try {
-            return parseIfNecessary(beanType);
+            return parseIfNecessary(element);
         } catch (Exception e) {
             throw new OperationParseException(e);
         }
@@ -95,30 +109,30 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
     /**
      * Create {@link BeanOperations} instance
      *
-     * @param beanType bean type
+     * @param element element
      * @return {@link BeanOperations}
      */
-    protected BeanOperations createBeanOperations(Class<?> beanType) {
-        return new SimpleBeanOperations(beanType);
+    protected BeanOperations createBeanOperations(AnnotatedElement element) {
+        return new SimpleBeanOperations(element);
     }
 
-    private BeanOperations parseIfNecessary(Class<?> beanType) {
-        BeanOperations beanOperations = resolvedTypes.get(beanType);
+    private BeanOperations parseIfNecessary(AnnotatedElement element) {
+        BeanOperations beanOperations = resolvedTypes.get(element);
         if (Objects.isNull(beanOperations)) {
             synchronized (this) {
                 // target is parsed ?
-                beanOperations = resolvedTypes.get(beanType);
+                beanOperations = resolvedTypes.get(element);
                 if (Objects.isNull(beanOperations)) {
                     // target is in parsing?
-                    beanOperations = currentlyInParsing.get(beanType);
+                    beanOperations = currentlyInParsing.get(element);
                     // target need parse, do it!
                     if (Objects.isNull(beanOperations)) {
-                        beanOperations = createBeanOperations(beanType);
+                        beanOperations = createBeanOperations(element);
                         OperationParseContext context = new OperationParseContext(beanOperations, this);
                         beanOperations.setActive(false);
-                        currentlyInParsing.put(beanType, beanOperations);
-                        doParse(beanType, context);
-                        resolvedTypes.put(beanType, currentlyInParsing.remove(beanType));
+                        currentlyInParsing.put(element, beanOperations);
+                        doParse(element, context);
+                        resolvedTypes.put(element, currentlyInParsing.remove(element));
                         beanOperations.setActive(true);
                     }
                 }
@@ -127,27 +141,38 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
         return beanOperations;
     }
 
-    private void doParse(Class<?> beanType, OperationParseContext context) {
-        log.debug("parse operations from [{}]", beanType);
-        Set<Class<?>> accessed = new HashSet<>();
-        Deque<Class<?>> typeQueue = new LinkedList<>();
-        typeQueue.add(beanType);
-
-        while (!typeQueue.isEmpty()) {
-            Class<?> type = typeQueue.removeFirst();
-            accessed.add(type);
-            // resolve operations for current type
-            resolveBeanOperations(context, type);
-            // then find superclass and interfaces
-            Class<?> superclass = type.getSuperclass();
-            if (Objects.nonNull(superclass) && !Objects.equals(superclass, Object.class) && !accessed.contains(superclass)) {
-                typeQueue.add(superclass);
-            }
-            CollUtil.addAll(typeQueue, type.getInterfaces());
+    private void doParse(AnnotatedElement element, OperationParseContext context) {
+        log.debug("parse operations from element [{}]", element);
+        // parse from type hierarchy
+        if (element instanceof Class) {
+            doParseForType((Class<?>)element, context);
+        }
+        // parse method and overwrite method from type hierarchy
+        else if (element instanceof Method){
+            doParseForMethod((Method)element, context);
+        }
+        // parse for other type
+        else {
+            operationAnnotationResolvers.forEach(resolver -> resolver.resolve(context, element));
         }
     }
 
-    private void resolveBeanOperations(OperationParseContext context, Class<?> type) {
-        operationAnnotationResolvers.forEach(resolver -> resolver.resolve(context, type));
+    private void doParseForType(Class<?> beanType, OperationParseContext context) {
+        ReflectUtils.traverseTypeHierarchy(
+            beanType, type -> operationAnnotationResolvers.forEach(resolver -> resolver.resolve(context, type))
+        );
+    }
+
+    private void doParseForMethod(Method method, OperationParseContext context) {
+        String methodName = method.getName();
+        Class<?>[] parameterTypes = method.getParameterTypes();
+        ReflectUtils.traverseTypeHierarchy(
+            method.getDeclaringClass(), type -> {
+                Method targetMethod = ReflectUtils.getDeclaredMethod(type, methodName, parameterTypes);
+                if (Objects.nonNull(targetMethod)) {
+                    operationAnnotationResolvers.forEach(resolver -> resolver.resolve(context, targetMethod));
+                }
+            }
+        );
     }
 }

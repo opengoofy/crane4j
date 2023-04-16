@@ -23,7 +23,7 @@ public class SimpleBeanOperationsTest {
 
     @Test
     public void getTargetType() {
-        Assert.assertEquals(Object.class, operations.getTargetType());
+        Assert.assertEquals(Object.class, operations.getSource());
     }
 
     @Test

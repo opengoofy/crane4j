@@ -8,13 +8,27 @@ import cn.hutool.core.util.ReflectUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 /**
  * ReflectUtils
@@ -36,6 +50,52 @@ public class ReflectUtils {
      * declared field cache
      */
     private static final Map<Class<?>, Field[]> DECLARED_FIELD_CACHE = CollectionUtils.newWeakConcurrentMap();
+
+    /**
+     * declared method cache
+     */
+    private static final Map<Class<?>, Method[]> DECLARED_METHOD_CACHE = CollectionUtils.newWeakConcurrentMap();
+
+    /**
+     * Get method by name and parameter types.
+     *
+     * @param type type
+     * @param methodName method name
+     * @param parameterTypes parameter types
+     * @return method if found, otherwise null
+     */
+    @Nullable
+    public static Method getDeclaredMethod(
+        Class<?> type, String methodName, Class<?>... parameterTypes) {
+        return Stream.of(CollectionUtils.computeIfAbsent(DECLARED_METHOD_CACHE, type, k -> ReflectUtil.getMethods(type)))
+            .filter(method -> method.getName().equals(methodName) && Arrays.equals(method.getParameterTypes(), parameterTypes))
+            .findFirst()
+            .orElse(null);
+    }
+
+    /**
+     * Traverse type hierarchy.
+     *
+     * @param beanType bean type
+     * @param consumer operation for each type
+     */
+    public static void traverseTypeHierarchy(Class<?> beanType, Consumer<Class<?>> consumer) {
+        Set<Class<?>> accessed = new HashSet<>();
+        Deque<Class<?>> typeQueue = new LinkedList<>();
+        typeQueue.add(beanType);
+        while (!typeQueue.isEmpty()) {
+            Class<?> type = typeQueue.removeFirst();
+            accessed.add(type);
+            // do something for current type
+            consumer.accept(type);
+            // then find superclass and interfaces
+            Class<?> superclass = type.getSuperclass();
+            if (Objects.nonNull(superclass) && !Objects.equals(superclass, Object.class) && !accessed.contains(superclass)) {
+                typeQueue.add(superclass);
+            }
+            CollUtil.addAll(typeQueue, type.getInterfaces());
+        }
+    }
 
     /**
      * Get annotation for declared fields.

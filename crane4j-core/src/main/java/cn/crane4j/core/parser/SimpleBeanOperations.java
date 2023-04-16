@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -20,7 +21,7 @@ public class SimpleBeanOperations implements BeanOperations {
 
     @Setter
     private boolean active = false;
-    private final Class<?> targetType;
+    private final AnnotatedElement source;
     private final List<AssembleOperation> assembleOperations = new ArrayList<>();
     private final List<DisassembleOperation> disassembleOperations = new ArrayList<>();
 

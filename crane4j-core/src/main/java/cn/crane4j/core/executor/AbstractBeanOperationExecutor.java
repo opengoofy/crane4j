@@ -42,7 +42,7 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
             return;
         }
         Assert.isTrue(operations.isActive(), () -> new OperationExecuteException(
-            "bean operation of [{}] is not activated", operations.getTargetType()
+            "bean operation of [{}] is not activated", operations.getSource()
         ));
         // complete the disassembly first if necessary
         Multimap<BeanOperations, Object> collector = LinkedListMultimap.create();

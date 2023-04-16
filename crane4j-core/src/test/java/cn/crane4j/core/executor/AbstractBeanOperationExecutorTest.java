@@ -67,7 +67,7 @@ public class AbstractBeanOperationExecutorTest extends BaseExecutorTest {
     private static void checkAssembleOperation(
         AssembleExecution executionForId, Class<?> targetType, int targetSize, String key) {
         Assert.assertNotNull(executionForId);
-        Assert.assertEquals(targetType, executionForId.getTargetType());
+        Assert.assertEquals(targetType, executionForId.getSource());
         Assert.assertEquals(targetSize, executionForId.getTargets().size());
         AssembleOperation operationForId = executionForId.getOperation();
         Assert.assertEquals(key, operationForId.getKey());

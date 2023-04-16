@@ -5,6 +5,7 @@ import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.parser.AssembleOperation;
 import cn.crane4j.core.parser.BeanOperations;
 
+import java.lang.reflect.AnnotatedElement;
 import java.util.Collection;
 
 /**
@@ -34,8 +35,8 @@ public interface AssembleExecution {
      *
      * @return type
      */
-    default Class<?> getTargetType() {
-        return getBeanOperations().getTargetType();
+    default AnnotatedElement getSource() {
+        return getBeanOperations().getSource();
     }
 
     /**
