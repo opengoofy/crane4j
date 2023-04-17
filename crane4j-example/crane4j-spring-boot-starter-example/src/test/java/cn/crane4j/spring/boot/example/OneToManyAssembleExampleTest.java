@@ -17,7 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 演示如何使用一对多装配处理器：
@@ -39,7 +43,7 @@ public class OneToManyAssembleExampleTest {
     @Before
     public void init() {
         Container<Integer> container = LambdaContainer.forLambda("customer-group", groupIds -> {
-            Map<Integer, List<Customer>> result = new HashMap<>();
+            Map<Integer, Object> result = new HashMap<>();
             groupIds.forEach(gid -> {
                 List<Customer> customers = new ArrayList<>(groupIds.size());
                 for (int i = 0; i < gid; i++) {
