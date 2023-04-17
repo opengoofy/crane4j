@@ -11,6 +11,7 @@ import java.util.Set;
  *
  * @author huangchengxing
  * @see SimpleAssembleOperation
+ * @see LazyAssembleOperation
  * @see TypeFixedDisassembleOperation
  * @see TypeDynamitedDisassembleOperation
  */
