@@ -242,6 +242,37 @@ public class Crane4jAutoConfiguration {
         return new ReflectDisassembleOperationHandler(propertyOperator);
     }
 
+    // ============== operator interface components ==============
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SharedContextContainerProvider sharedContextContainerProvider() {
+        return new SharedContextContainerProvider();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SharedContextProxyMethodFactory sharedContextProxyMethodFactory(
+        AnnotationFinder annotationFinder, ParameterNameFinder parameterNameFinder,
+        SharedContextContainerProvider provider, Properties properties) {
+        return new SharedContextProxyMethodFactory(
+            annotationFinder, parameterNameFinder, provider, properties.isClearContextAfterInvoke()
+        );
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public DefaultProxyMethodFactory defaultProxyMethodFactory() {
+        return new DefaultProxyMethodFactory();
+    }
+
+    @ConditionalOnMissingBean
+    public OperatorProxyFactory operatorProxyFactory(
+        AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration,
+        Collection<OperatorProxyFactory.ProxyMethodFactory> factories) {
+        return new OperatorProxyFactory(configuration, annotationFinder, factories);
+    }
+
     // ============== extension components ==============
 
     @Bean
@@ -443,6 +474,13 @@ public class Crane4jAutoConfiguration {
          * @see AssembleMpAnnotationResolver#setLazyLoadAssembleContainer
          */
         private boolean lazyLoadAssembleContainer = true;
+
+        /**
+         * Whether to clear the context after the method is invoked.
+         *
+         * @see cn.crane4j.core.support.operator.SharedContextProxyMethodFactory
+         */
+        private boolean clearContextAfterInvoke = true;
     }
 
     /**

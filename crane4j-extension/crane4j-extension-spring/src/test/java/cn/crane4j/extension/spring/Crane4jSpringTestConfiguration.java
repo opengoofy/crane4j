@@ -176,6 +176,34 @@ public class Crane4jSpringTestConfiguration {
         return new ReflectDisassembleOperationHandler(propertyOperator);
     }
 
+    // ============== operator interface components ==============
+
+    @Bean
+    public SharedContextContainerProvider sharedContextContainerProvider() {
+        return new SharedContextContainerProvider();
+    }
+
+    @Bean
+    public SharedContextProxyMethodFactory sharedContextProxyMethodFactory(
+        AnnotationFinder annotationFinder, ParameterNameFinder parameterNameFinder,
+        SharedContextContainerProvider sharedContextContainerProvider) {
+        return new SharedContextProxyMethodFactory(
+            annotationFinder, parameterNameFinder, sharedContextContainerProvider, true
+        );
+    }
+
+    @Bean
+    public DefaultProxyMethodFactory defaultProxyMethodFactory() {
+        return new DefaultProxyMethodFactory();
+    }
+
+    @Bean
+    public OperatorProxyFactory operatorProxyFactory(
+        AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration,
+        Collection<OperatorProxyFactory.ProxyMethodFactory> factories) {
+        return new OperatorProxyFactory(configuration, annotationFinder, factories);
+    }
+
     // ============== extension components ==============
 
     @Bean

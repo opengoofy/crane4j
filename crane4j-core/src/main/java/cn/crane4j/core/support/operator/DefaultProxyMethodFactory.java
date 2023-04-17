@@ -11,6 +11,8 @@ import java.lang.reflect.Method;
 import java.util.Objects;
 
 /**
+ * A Default factory that creates proxy method.
+ *
  * @author huangchengxing
  * @since  1.3.0
  */
@@ -43,9 +45,6 @@ public class DefaultProxyMethodFactory implements OperatorProxyFactory.ProxyMeth
 
         @Override
         public Object invoke(Object target, Object... args) {
-            if (args == null || args.length == 0) {
-                return null;
-            }
             Object arg = args[0];
             if (Objects.nonNull(arg)) {
                 beanOperationExecutor.execute(CollectionUtils.adaptObjectToCollection(arg), operations);

@@ -3,6 +3,7 @@ package cn.crane4j.core.support;
 import cn.crane4j.core.cache.CacheManager;
 import cn.crane4j.core.cache.ConcurrentMapCacheManager;
 import cn.crane4j.core.container.ContainerProvider;
+import cn.crane4j.core.container.SharedContextContainerProvider;
 import cn.crane4j.core.container.SimpleConfigurableContainerProvider;
 import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.executor.BeanOperationExecutor;
@@ -103,6 +104,8 @@ public class SimpleCrane4jGlobalConfiguration
 
         configuration.getContainerProviderMap().put(configuration.getClass().getName(), configuration);
         configuration.getContainerProviderMap().put(ContainerProvider.class.getName(), configuration);
+        SharedContextContainerProvider sharedContextContainerProvider = new SharedContextContainerProvider();
+        configuration.getContainerProviderMap().put(sharedContextContainerProvider.getClass().getName(), sharedContextContainerProvider);
         return configuration;
     }
 
@@ -112,9 +115,10 @@ public class SimpleCrane4jGlobalConfiguration
      * @param providerType provider type
      * @return provider
      */
+    @SuppressWarnings("unchecked")
     @Override
-    public ContainerProvider getContainerProvider(Class<? extends ContainerProvider> providerType) {
-        return getContainerProvider(providerType.getName());
+    public <T extends ContainerProvider> T getContainerProvider(Class<T> providerType) {
+        return (T)getContainerProvider(providerType.getName());
     }
 
     /**

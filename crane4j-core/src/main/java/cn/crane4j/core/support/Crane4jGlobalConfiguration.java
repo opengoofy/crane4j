@@ -45,7 +45,7 @@ public interface Crane4jGlobalConfiguration extends ConfigurableContainerProvide
      * @param providerType provider type
      * @return provider
      */
-    ContainerProvider getContainerProvider(Class<? extends ContainerProvider> providerType);
+    <T extends ContainerProvider> T getContainerProvider(Class<T> providerType);
 
     /**
      * Get container provider.

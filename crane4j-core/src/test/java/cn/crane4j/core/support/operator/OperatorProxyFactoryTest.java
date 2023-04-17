@@ -1,14 +1,15 @@
-package cn.crane4j.core.support;
+package cn.crane4j.core.support.operator;
 
 import cn.crane4j.annotation.Assemble;
 import cn.crane4j.annotation.Mapping;
 import cn.crane4j.annotation.Operator;
 import cn.crane4j.core.container.LambdaContainer;
 import cn.crane4j.core.exception.Crane4jException;
-import cn.crane4j.core.support.operator.DefaultProxyMethodFactory;
-import cn.crane4j.core.support.operator.OperatorProxyFactory;
+import cn.crane4j.core.support.AnnotationFinder;
+import cn.crane4j.core.support.Crane4jGlobalConfiguration;
+import cn.crane4j.core.support.SimpleAnnotationFinder;
+import cn.crane4j.core.support.SimpleCrane4jGlobalConfiguration;
 import org.junit.Assert;
-import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,6 +19,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * test for {@link OperatorProxyFactory}.
