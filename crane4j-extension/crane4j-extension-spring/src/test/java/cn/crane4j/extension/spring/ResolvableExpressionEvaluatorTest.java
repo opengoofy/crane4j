@@ -20,7 +20,7 @@ public class ResolvableExpressionEvaluatorTest {
     @Test
     public void testExecute() {
         ResolvableExpressionEvaluator evaluator = new ResolvableExpressionEvaluator(
-            new DefaultParameterNameDiscoverer(),
+            new SpringParameterNameFinder(new DefaultParameterNameDiscoverer()),
             new SpelExpressionEvaluator(new SpelExpressionParser()),
             method -> new SpelExpressionContext()
         );

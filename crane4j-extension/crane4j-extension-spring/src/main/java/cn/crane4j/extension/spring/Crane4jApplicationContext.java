@@ -92,7 +92,7 @@ public class Crane4jApplicationContext extends SimpleConfigurableContainerProvid
      * @return provider
      */
     @Override
-    public ContainerProvider getContainerProvider(Class<? extends ContainerProvider> providerType) {
+    public <T extends ContainerProvider> T getContainerProvider(Class<T> providerType) {
         return applicationContext.getBean(providerType);
     }
 

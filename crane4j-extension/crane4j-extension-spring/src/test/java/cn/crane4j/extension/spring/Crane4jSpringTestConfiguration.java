@@ -9,17 +9,8 @@ import cn.crane4j.core.executor.handler.ManyToManyReflexAssembleOperationHandler
 import cn.crane4j.core.executor.handler.OneToManyReflexAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.OneToOneReflexAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
-import cn.crane4j.core.parser.AssembleOperation;
-import cn.crane4j.core.parser.BeanOperationParser;
-import cn.crane4j.core.parser.DisassembleAnnotationResolver;
-import cn.crane4j.core.parser.OperationAnnotationResolver;
-import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
-import cn.crane4j.core.support.AnnotationFinder;
-import cn.crane4j.core.support.Crane4jGlobalConfiguration;
-import cn.crane4j.core.support.OperateTemplate;
-import cn.crane4j.core.support.ParameterNameFinder;
-import cn.crane4j.core.support.SimpleTypeResolver;
-import cn.crane4j.core.support.TypeResolver;
+import cn.crane4j.core.parser.*;
+import cn.crane4j.core.support.*;
 import cn.crane4j.core.support.aop.AutoOperateAnnotatedElementResolver;
 import cn.crane4j.core.support.callback.ContainerRegisterAware;
 import cn.crane4j.core.support.callback.ContainerRegisteredLogger;
@@ -30,6 +21,7 @@ import cn.crane4j.core.support.expression.ExpressionEvaluator;
 import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
 import cn.crane4j.core.support.operator.DefaultProxyMethodFactory;
 import cn.crane4j.core.support.operator.OperatorProxyFactory;
+import cn.crane4j.core.support.operator.SharedContextProxyMethodFactory;
 import cn.crane4j.core.support.reflect.ChainAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.PropertyOperator;
@@ -47,7 +39,6 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.context.expression.BeanFactoryResolver;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.Ordered;
-import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.core.annotation.Order;
 import org.springframework.expression.BeanResolver;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
@@ -83,23 +74,28 @@ public class Crane4jSpringTestConfiguration {
     }
 
     @Bean
-    public AnnotationFinder annotationFinder() {
+    public MergedAnnotationFinder mergedAnnotationFinder() {
         return new MergedAnnotationFinder();
     }
 
     @Bean
-    public TypeResolver typeResolver() {
+    public SimpleTypeResolver simpleTypeResolver() {
         return new SimpleTypeResolver();
     }
 
     @Bean
-    public ExpressionEvaluator expressionEvaluator() {
+    public SpelExpressionEvaluator spelExpressionEvaluator() {
         return new SpelExpressionEvaluator(new SpelExpressionParser());
     }
 
     @Bean
-    public CacheManager cacheManager() {
+    public ConcurrentMapCacheManager concurrentMapCacheManager() {
         return new ConcurrentMapCacheManager(CollectionUtils::newWeakConcurrentMap);
+    }
+
+    @Bean
+    public SpringParameterNameFinder springParameterNameFinder() {
+        return new SpringParameterNameFinder(new DefaultParameterNameDiscoverer());
     }
 
     @Bean
@@ -110,7 +106,7 @@ public class Crane4jSpringTestConfiguration {
     // ============== execute components ==============
 
     @Bean
-    public BeanResolver beanFactoryResolver(ApplicationContext applicationContext) {
+    public BeanFactoryResolver beanFactoryResolver(ApplicationContext applicationContext) {
         return new BeanFactoryResolver(applicationContext);
     }
 
@@ -129,7 +125,7 @@ public class Crane4jSpringTestConfiguration {
 
     @Primary
     @Bean
-    public BeanOperationParser typeHierarchyBeanOperationParser(Collection<OperationAnnotationResolver> operationAnnotationResolver) {
+    public TypeHierarchyBeanOperationParser typeHierarchyBeanOperationParser(Collection<OperationAnnotationResolver> operationAnnotationResolver) {
         return new TypeHierarchyBeanOperationParser(operationAnnotationResolver);
     }
 
@@ -189,18 +185,13 @@ public class Crane4jSpringTestConfiguration {
     }
 
     @Bean
-    public ParameterNameDiscoverer parameterNameDiscoverer() {
-        return new DefaultParameterNameDiscoverer();
-    }
-
-    @Bean
     public AutoOperateAnnotatedElementResolver autoOperateMethodAnnotatedElementResolver(Crane4jGlobalConfiguration crane4jGlobalConfiguration) {
         return new AutoOperateAnnotatedElementResolver(crane4jGlobalConfiguration);
     }
 
     @Bean
     public ResolvableExpressionEvaluator resolvableExpressionEvaluator(
-        ExpressionEvaluator expressionEvaluator, ParameterNameDiscoverer parameterNameDiscoverer, BeanResolver beanResolver) {
+        ExpressionEvaluator expressionEvaluator, ParameterNameFinder parameterNameDiscoverer, BeanResolver beanResolver) {
         return new ResolvableExpressionEvaluator(
             parameterNameDiscoverer, expressionEvaluator,
             method -> {
@@ -222,33 +213,11 @@ public class Crane4jSpringTestConfiguration {
     public MethodArgumentAutoOperateAspect methodArgumentAutoOperateAspect(
         MethodBaseExpressionExecuteDelegate methodBaseExpressionExecuteDelegate,
         AutoOperateAnnotatedElementResolver autoOperateAnnotatedElementResolver,
-        ParameterNameDiscoverer parameterNameDiscoverer, AnnotationFinder annotationFinder) {
+        ParameterNameFinder parameterNameDiscoverer, AnnotationFinder annotationFinder) {
         return new MethodArgumentAutoOperateAspect(autoOperateAnnotatedElementResolver,
             methodBaseExpressionExecuteDelegate,
             parameterNameDiscoverer, annotationFinder
         );
-    }
-
-    @Bean
-    public ParameterNameFinder parameterNameFinder(ParameterNameDiscoverer parameterNameDiscoverer) {
-        return parameterNameDiscoverer::getParameterNames;
-    }
-
-    @Bean
-    public SharedContextContainerProvider sharedContextContainerProvider() {
-        return new SharedContextContainerProvider();
-    }
-
-    @Bean
-    public DefaultProxyMethodFactory defaultProxyMethodFactory() {
-        return new DefaultProxyMethodFactory();
-    }
-
-    @Bean
-    public OperatorProxyFactory operatorProxyFactory(
-        AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration,
-        Collection<OperatorProxyFactory.ProxyMethodFactory> factories) {
-        return new OperatorProxyFactory(configuration, annotationFinder, factories);
     }
 
     @Bean
