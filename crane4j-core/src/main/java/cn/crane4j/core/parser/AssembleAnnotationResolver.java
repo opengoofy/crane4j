@@ -9,15 +9,25 @@ import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.Sorted;
 import cn.crane4j.core.util.ConfigurationUtil;
+import cn.crane4j.core.util.Lazy;
 import cn.crane4j.core.util.ReflectUtils;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ObjectUtil;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.AnnotatedElement;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -32,11 +42,14 @@ import java.util.stream.Stream;
  * @see Assemble
  * @since 1.2.0
  */
+@Accessors(chain = true)
 @Slf4j
 public class AssembleAnnotationResolver extends AbstractCacheableOperationAnnotationResolver {
 
     protected static final String ANNOTATION_KEY_ATTRIBUTE = "key";
     protected final Crane4jGlobalConfiguration globalConfiguration;
+    @Setter
+    private boolean lazyLoadAssembleContainer = true;
 
     /**
      * Create a {@link AssembleAnnotationResolver} instance.
@@ -125,14 +138,20 @@ public class AssembleAnnotationResolver extends AbstractCacheableOperationAnnota
             propertyMappings.addAll(templateMappings);
         }
 
-        // get container
-        Container<?> container = getContainer(annotation);
-
         // create operation
-        AssembleOperation operation = new SimpleAssembleOperation(
-            annotation.key(), annotation.sort(),
-            propertyMappings, container, assembleOperationHandler
-        );
+        AssembleOperation operation;
+        if (lazyLoadAssembleContainer) {
+            operation = new LazyAssembleOperation(
+                annotation.key(), annotation.sort(),
+                propertyMappings, new Lazy<>(() -> getContainer(annotation)), assembleOperationHandler
+            );
+        } else {
+            Container<?> container = getContainer(annotation);
+            operation = new SimpleAssembleOperation(
+                annotation.key(), annotation.sort(),
+                propertyMappings, container, assembleOperationHandler
+            );
+        }
         operation.getGroups().addAll(Arrays.asList(annotation.groups()));
         return operation;
     }

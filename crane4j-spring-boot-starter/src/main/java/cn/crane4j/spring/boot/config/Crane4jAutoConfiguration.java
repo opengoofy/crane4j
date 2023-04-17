@@ -166,8 +166,12 @@ public class Crane4jAutoConfiguration {
     @ConditionalOnMissingBean
     public SpringAssembleAnnotationResolver springAssembleAnnotationResolver(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration,
-        ExpressionEvaluator evaluator, BeanResolver beanResolver) {
-        return new SpringAssembleAnnotationResolver(annotationFinder, configuration, evaluator, beanResolver);
+        ExpressionEvaluator evaluator, BeanResolver beanResolver, Properties properties) {
+        SpringAssembleAnnotationResolver resolver = new SpringAssembleAnnotationResolver(
+            annotationFinder, configuration, evaluator, beanResolver
+        );
+        resolver.setLazyLoadAssembleContainer(properties.isLazyLoadAssembleContainer());
+        return resolver;
     }
 
     @Bean
@@ -427,6 +431,14 @@ public class Crane4jAutoConfiguration {
          * Declare which data sources need to be packaged as caches in the format {@code cache name: namespace of container}.
          */
         private Map<String, Set<String>> cacheContainers = new LinkedHashMap<>();
+
+        /**
+         * Whether allow delayed loading of containers during assembly operations.
+         *
+         * @see AssembleAnnotationResolver#setLazyLoadAssembleContainer
+         * @see AssembleMpAnnotationResolver#setLazyLoadAssembleContainer
+         */
+        private boolean lazyLoadAssembleContainer = true;
     }
 
     /**
