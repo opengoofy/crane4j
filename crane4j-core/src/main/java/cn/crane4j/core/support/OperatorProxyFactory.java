@@ -28,6 +28,7 @@ import java.util.stream.Stream;
  *
  * @author huangchengxing
  * @see Operator
+ * @since 1.3.0
  */
 @Slf4j
 @RequiredArgsConstructor
