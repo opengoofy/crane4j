@@ -1,5 +1,6 @@
 package cn.crane4j.core.container;
 
+import cn.crane4j.core.support.DataProvider;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -7,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
 
 /**
  * <p>A data source container implemented by lambda expression
@@ -22,7 +22,7 @@ public class LambdaContainer<K> implements Container<K> {
 
     @Getter
     private final String namespace;
-    private final Function<Collection<K>, Map<K, ?>> dataSource;
+    private final DataProvider<K, ?> dataSource;
 
     /**
      * Build a data source container based on an input key set
@@ -33,7 +33,7 @@ public class LambdaContainer<K> implements Container<K> {
      * @param <K> key type
      * @return container
      */
-    public static <K> LambdaContainer<K> forLambda(String namespace, Function<Collection<K>, Map<K, ?>> lambda) {
+    public static <K> LambdaContainer<K> forLambda(String namespace, DataProvider<K, ?> lambda) {
         Objects.requireNonNull(namespace);
         Objects.requireNonNull(lambda);
         return new LambdaContainer<>(namespace, lambda);
