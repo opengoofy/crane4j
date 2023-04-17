@@ -11,6 +11,7 @@ import java.lang.annotation.Target;
  *
  * @author huangchengxing
  * @see cn.crane4j.core.support.OperatorProxyFactory
+ * @since 1.3.0
  */
 @Documented
 @Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
