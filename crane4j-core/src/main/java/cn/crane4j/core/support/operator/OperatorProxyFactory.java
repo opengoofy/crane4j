@@ -1,10 +1,14 @@
-package cn.crane4j.core.support;
+package cn.crane4j.core.support.operator;
 
 import cn.crane4j.annotation.Operator;
 import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.BeanOperations;
+import cn.crane4j.core.support.AnnotationFinder;
+import cn.crane4j.core.support.Crane4jGlobalConfiguration;
+import cn.crane4j.core.support.MethodInvoker;
+import cn.crane4j.core.support.Sorted;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.ConfigurationUtil;
 import cn.crane4j.core.util.ReflectUtils;
@@ -16,10 +20,12 @@ import javax.annotation.Nullable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -28,16 +34,35 @@ import java.util.stream.Stream;
  *
  * @author huangchengxing
  * @see Operator
+ * @see ProxyMethodFactory
  * @since 1.3.0
  */
 @Slf4j
-@RequiredArgsConstructor
 public class OperatorProxyFactory {
 
     private static final Object NULL = new Object();
     private final Crane4jGlobalConfiguration globalConfiguration;
     private final AnnotationFinder annotationFinder;
+    private final Collection<ProxyMethodFactory> proxyMethodFactories;
     private final Map<Class<?>, Object> proxyCaches = new ConcurrentHashMap<>(8);
+
+    /**
+     * Create an {@link OperatorProxyFactory} instance.
+     *
+     * @param globalConfiguration global configuration
+     * @param annotationFinder annotation finder
+     * @param proxyMethodFactories proxy method factories
+     */
+    public OperatorProxyFactory(
+        Crane4jGlobalConfiguration globalConfiguration, AnnotationFinder annotationFinder,
+        Collection<ProxyMethodFactory> proxyMethodFactories) {
+        this.globalConfiguration = globalConfiguration;
+        this.annotationFinder = annotationFinder;
+        this.proxyMethodFactories = proxyMethodFactories.stream()
+            .distinct()
+            .sorted(Sorted.comparator())
+            .collect(Collectors.toList());
+    }
 
     /**
      * Get the proxy object of the specified operator interface that annotated by {@link Operator}.
@@ -81,55 +106,78 @@ public class OperatorProxyFactory {
 
     private <T> OperatorProxy createOperatorProxy(
         Class<T> operatorType, BeanOperationParser beanOperationParser, BeanOperationExecutor beanOperationExecutor) {
-        Map<String, BeanOperations> beanOperationsMap = new HashMap<>(8);
+        Map<String, MethodInvoker> beanOperationsMap = new HashMap<>(8);
         ReflectUtils.traverseTypeHierarchy(operatorType, type -> Stream
             .of(ReflectUtils.getDeclaredMethods(type))
+            .filter(method -> !method.isDefault())
             .map(beanOperationParser::parse)
-            .peek(this::checkOperationOfMethod)
-            .forEach(operations -> beanOperationsMap.put(((Method)operations.getSource()).getName(), operations))
+            .forEach(operations -> {
+                checkOperationOfMethod(operations);
+                Method method = (Method)operations.getSource();
+                MethodInvoker invoker = createOperatorMethod(operations, method, beanOperationExecutor);
+                beanOperationsMap.put(method.getName(), invoker);
+            })
         );
-        return new OperatorProxy(beanOperationsMap, beanOperationExecutor);
+        return new OperatorProxy(beanOperationsMap);
     }
 
     private void checkOperationOfMethod(BeanOperations operations) {
         Method method = (Method)operations.getSource();
-        if (method.isDefault()) {
-            return;
-        }
         if (method.getParameterCount() < 1) {
             throw new Crane4jException(
-                "the method [{}] is not a default method, but the parameter count is less than 1.", method.getName()
+                "the method [{}] parameter count is less than 1.", method.getName()
             );
         }
         if (operations.getDisassembleOperations().isEmpty()
             && operations.getAssembleOperations().isEmpty()) {
             throw new Crane4jException(
-                "the method [{}] is not a default method, but there are no executable operations found.", method.getName()
+                "the method [{}] are no executable operations found.", method.getName()
             );
         }
     }
 
+    private MethodInvoker createOperatorMethod(
+        BeanOperations beanOperations, Method method, BeanOperationExecutor beanOperationExecutor) {
+        return proxyMethodFactories.stream()
+            .map(factory ->factory.get(beanOperations, method, beanOperationExecutor))
+            .filter(Objects::nonNull)
+            .findFirst()
+            .orElseThrow(() -> new Crane4jException("cannot create proxy for method [{}]", method));
+    }
+
+    /**
+     * Operator proxy.
+     *
+     * @author huangchengxing
+     * @since  1.3.0
+     */
     @RequiredArgsConstructor
     private static class OperatorProxy implements InvocationHandler {
-
-        private final Map<String, BeanOperations> operationsOfMethod;
-        private final BeanOperationExecutor beanOperationExecutor;
-
+        private final Map<String, MethodInvoker> proxiedMethods;
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            BeanOperations operations = operationsOfMethod.get(method.getName());
-            return Objects.isNull(operations) ? method.invoke(proxy, args) : operate(operations, args);
+            MethodInvoker invoker = proxiedMethods.get(method.getName());
+            return Objects.isNull(invoker) ? method.invoke(proxy, args) : invoker.invoke(proxy, args);
         }
+    }
 
-        private Object operate(BeanOperations beanOperations, Object[] args) {
-            if (args == null || args.length == 0) {
-                return null;
-            }
-            Object target = args[0];
-            if (Objects.nonNull(target)) {
-                beanOperationExecutor.execute(CollectionUtils.adaptObjectToCollection(target), beanOperations);
-            }
-            return target;
-        }
+    /**
+     * Operator proxy method factory.
+     *
+     * @author huangchengxing
+     * @since  1.3.0
+     */
+    public interface ProxyMethodFactory extends Sorted {
+
+        /**
+         * Get operator proxy method.
+         *
+         * @param beanOperations bean operations
+         * @param method method
+         * @param beanOperationExecutor bean operation executor
+         * @return operator proxy method if supported, null otherwise
+         */
+        @Nullable
+        MethodInvoker get(BeanOperations beanOperations, Method method, BeanOperationExecutor beanOperationExecutor);
     }
 }

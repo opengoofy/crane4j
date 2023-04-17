@@ -5,6 +5,8 @@ import cn.crane4j.annotation.Mapping;
 import cn.crane4j.annotation.Operator;
 import cn.crane4j.core.container.LambdaContainer;
 import cn.crane4j.core.exception.Crane4jException;
+import cn.crane4j.core.support.operator.DefaultProxyMethodFactory;
+import cn.crane4j.core.support.operator.OperatorProxyFactory;
 import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import org.junit.Before;
@@ -30,7 +32,7 @@ public class OperatorProxyFactoryTest {
     public void init() {
         Crane4jGlobalConfiguration globalConfiguration = SimpleCrane4jGlobalConfiguration.create(Collections.emptyMap());
         AnnotationFinder annotationFinder = new SimpleAnnotationFinder();
-        this.operatorProxyFactory = new OperatorProxyFactory(globalConfiguration, annotationFinder);
+        this.operatorProxyFactory = new OperatorProxyFactory(globalConfiguration, annotationFinder, Collections.singletonList(new DefaultProxyMethodFactory()));
 
         LambdaContainer<Integer> container = LambdaContainer.forLambda(
             "test", ids -> ids.stream().collect(Collectors.toMap(id -> id, id -> "name" + id))
