@@ -37,7 +37,7 @@ public class MethodUtils {
         int nameLength = ArrayUtil.length(parameterNames);
         for (int i = 0; i < parameters.length; i++) {
             Parameter parameter = parameters[i];
-            String parameterName = nameLength < i ? parameter.getName() : parameterNames[i];
+            String parameterName = nameLength <= i ? parameter.getName() : parameterNames[i];
             parameterMap.put(parameterName, parameter);
         }
         return parameterMap;

@@ -165,6 +165,8 @@ public class OperatorProxyFactory {
      * Operator proxy method factory.
      *
      * @author huangchengxing
+     * @see SharedContextProxyMethodFactory
+     * @see DefaultProxyMethodFactory
      * @since  1.3.0
      */
     public interface ProxyMethodFactory extends Sorted {

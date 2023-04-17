@@ -1,7 +1,6 @@
 package cn.crane4j.core.container;
 
-import cn.crane4j.annotation.SharedContextContainer;
-import cn.crane4j.core.support.DataProvider;
+import cn.crane4j.annotation.ProvideData;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -16,7 +15,7 @@ import java.util.Objects;
  * thereby causing the container to return user specified data.
  *
  * @author huangchengxing
- * @see SharedContextContainer
+ * @see ProvideData
  * @see SharedContextContainerProvider
  */
 public class SharedContextContainerProvider implements ContainerProvider {
@@ -24,7 +23,7 @@ public class SharedContextContainerProvider implements ContainerProvider {
     /**
      * context
      */
-    private final ThreadLocal<Map<String, DataProvider<?, ?>>> context = new InheritableThreadLocal<>();
+    private final ThreadLocal<Map<String, cn.crane4j.core.support.DataProvider<?, ?>>> context = new ThreadLocal<>();
 
     /**
      * Get data source container.
@@ -45,9 +44,9 @@ public class SharedContextContainerProvider implements ContainerProvider {
      */
     @SuppressWarnings("unchecked")
     @Nullable
-    public <K, V> DataProvider<K, V> removeDataProvider(String namespace) {
-        Map<String, DataProvider<?, ?>> table = getDataProviders();
-        return (DataProvider<K, V>)table.remove(namespace);
+    public <K, V> cn.crane4j.core.support.DataProvider<K, V> removeDataProvider(String namespace) {
+        Map<String, cn.crane4j.core.support.DataProvider<?, ?>> table = getDataProviders();
+        return (cn.crane4j.core.support.DataProvider<K, V>)table.remove(namespace);
     }
 
     /**
@@ -59,11 +58,11 @@ public class SharedContextContainerProvider implements ContainerProvider {
      */
     @SuppressWarnings("unchecked")
     @Nullable
-    public Map<Object, Object> setDataProvider(String namespace, DataProvider<?, ?> dataProvider) {
-        Map<String, DataProvider<?, ?>> table = getDataProviders();
-        DataProvider<?, ?> old = table.remove(namespace);
+    public <K, V> cn.crane4j.core.support.DataProvider<K, V> setDataProvider(String namespace, cn.crane4j.core.support.DataProvider<?, ?> dataProvider) {
+        Map<String, cn.crane4j.core.support.DataProvider<?, ?>> table = getDataProviders();
+        cn.crane4j.core.support.DataProvider<?, ?> old = table.remove(namespace);
         table.put(namespace, dataProvider);
-        return (Map<Object, Object>)old;
+        return (cn.crane4j.core.support.DataProvider<K, V>)old;
     }
 
     /**
@@ -74,9 +73,9 @@ public class SharedContextContainerProvider implements ContainerProvider {
      */
     @SuppressWarnings("unchecked")
     @Nonnull
-    public <K, V> DataProvider<K, V> getDataProvider(String namespace) {
-        Map<String, DataProvider<?, ?>> table =  getDataProviders();
-        return (DataProvider<K, V>)table.getOrDefault(namespace, DataProvider.empty());
+    public <K, V> cn.crane4j.core.support.DataProvider<K, V> getDataProvider(String namespace) {
+        Map<String, cn.crane4j.core.support.DataProvider<?, ?>> table =  getDataProviders();
+        return (cn.crane4j.core.support.DataProvider<K, V>)table.getOrDefault(namespace, cn.crane4j.core.support.DataProvider.empty());
     }
 
     /**
@@ -86,10 +85,10 @@ public class SharedContextContainerProvider implements ContainerProvider {
         context.remove();
     }
 
-    private Map<String, DataProvider<?, ?>> getDataProviders() {
-        Map<String, DataProvider<?, ?>> providers = context.get();
+    private Map<String, cn.crane4j.core.support.DataProvider<?, ?>> getDataProviders() {
+        Map<String, cn.crane4j.core.support.DataProvider<?, ?>> providers = context.get();
         if (Objects.isNull(providers)) {
-            providers = new HashMap<>();
+            providers = new HashMap<>(8);
             context.set(providers);
         }
         return providers;
