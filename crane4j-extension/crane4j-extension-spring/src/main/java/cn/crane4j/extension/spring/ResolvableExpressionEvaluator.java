@@ -1,11 +1,11 @@
 package cn.crane4j.extension.spring;
 
+import cn.crane4j.core.support.ParameterNameFinder;
 import cn.crane4j.core.support.expression.ExpressionContext;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
 import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.context.EmbeddedValueResolverAware;
-import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.util.StringValueResolver;
 
 import java.lang.reflect.Method;
@@ -33,10 +33,10 @@ public class ResolvableExpressionEvaluator
      * @param contextFactory context factory
      */
     public ResolvableExpressionEvaluator(
-        ParameterNameDiscoverer parameterNameDiscoverer,
+        ParameterNameFinder parameterNameDiscoverer,
         ExpressionEvaluator expressionEvaluator,
         Function<Method, ExpressionContext> contextFactory) {
-        super(parameterNameDiscoverer::getParameterNames, expressionEvaluator, contextFactory);
+        super(parameterNameDiscoverer, expressionEvaluator, contextFactory);
     }
 
     /**
