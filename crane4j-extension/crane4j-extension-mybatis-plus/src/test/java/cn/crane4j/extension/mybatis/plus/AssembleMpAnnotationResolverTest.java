@@ -36,6 +36,7 @@ public class AssembleMpAnnotationResolverTest extends MpBaseTest {
         MpBaseMapperContainerRegister register = new MpBaseMapperContainerRegister(configuration, new ReflectPropertyOperator());
         register.registerMapper("fooMapper", fooMapper);
         operationsResolver = new AssembleMpAnnotationResolver(annotationFinder, register, configuration);
+        operationsResolver.setLazyLoadAssembleContainer(false);
     }
 
     @Test
