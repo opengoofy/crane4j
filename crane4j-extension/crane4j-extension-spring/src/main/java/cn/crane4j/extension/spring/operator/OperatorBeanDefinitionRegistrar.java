@@ -1,7 +1,7 @@
 package cn.crane4j.extension.spring.operator;
 
 import cn.crane4j.annotation.Operator;
-import cn.crane4j.core.support.OperatorProxyFactory;
+import cn.crane4j.core.support.operator.OperatorProxyFactory;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ClassUtil;

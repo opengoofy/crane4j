@@ -2,6 +2,7 @@ package cn.crane4j.extension.spring;
 
 import cn.crane4j.core.cache.CacheManager;
 import cn.crane4j.core.cache.ConcurrentMapCacheManager;
+import cn.crane4j.core.container.SharedContextContainerProvider;
 import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
 import cn.crane4j.core.executor.OrderedBeanOperationExecutor;
 import cn.crane4j.core.executor.handler.ManyToManyReflexAssembleOperationHandler;
@@ -16,7 +17,7 @@ import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.OperateTemplate;
-import cn.crane4j.core.support.OperatorProxyFactory;
+import cn.crane4j.core.support.ParameterNameFinder;
 import cn.crane4j.core.support.SimpleTypeResolver;
 import cn.crane4j.core.support.TypeResolver;
 import cn.crane4j.core.support.aop.AutoOperateAnnotatedElementResolver;
@@ -27,6 +28,8 @@ import cn.crane4j.core.support.container.DefaultMethodContainerFactory;
 import cn.crane4j.core.support.container.MethodContainerFactory;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
 import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
+import cn.crane4j.core.support.operator.DefaultProxyMethodFactory;
+import cn.crane4j.core.support.operator.OperatorProxyFactory;
 import cn.crane4j.core.support.reflect.ChainAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.PropertyOperator;
@@ -227,9 +230,25 @@ public class Crane4jSpringTestConfiguration {
     }
 
     @Bean
+    public ParameterNameFinder parameterNameFinder(ParameterNameDiscoverer parameterNameDiscoverer) {
+        return parameterNameDiscoverer::getParameterNames;
+    }
+
+    @Bean
+    public SharedContextContainerProvider sharedContextContainerProvider() {
+        return new SharedContextContainerProvider();
+    }
+
+    @Bean
+    public DefaultProxyMethodFactory defaultProxyMethodFactory() {
+        return new DefaultProxyMethodFactory();
+    }
+
+    @Bean
     public OperatorProxyFactory operatorProxyFactory(
-        AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration) {
-        return new OperatorProxyFactory(configuration, annotationFinder);
+        AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration,
+        Collection<OperatorProxyFactory.ProxyMethodFactory> factories) {
+        return new OperatorProxyFactory(configuration, annotationFinder, factories);
     }
 
     @Bean
