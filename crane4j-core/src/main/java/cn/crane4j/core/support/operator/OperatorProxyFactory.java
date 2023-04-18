@@ -165,7 +165,7 @@ public class OperatorProxyFactory {
      * Operator proxy method factory.
      *
      * @author huangchengxing
-     * @see SharedContextProxyMethodFactory
+     * @see DynamicSourceProxyMethodFactory
      * @see DefaultProxyMethodFactory
      * @since  1.3.0
      */

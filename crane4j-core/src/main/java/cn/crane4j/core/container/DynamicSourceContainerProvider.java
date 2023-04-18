@@ -1,9 +1,13 @@
 package cn.crane4j.core.container;
 
 import cn.crane4j.annotation.ProvideData;
+import cn.crane4j.core.support.DataProvider;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -16,14 +20,14 @@ import java.util.Objects;
  *
  * @author huangchengxing
  * @see ProvideData
- * @see SharedContextContainerProvider
+ * @see DynamicSourceContainerProvider
  */
-public class SharedContextContainerProvider implements ContainerProvider {
+public class DynamicSourceContainerProvider implements ContainerProvider {
 
     /**
      * context
      */
-    private final ThreadLocal<Map<String, cn.crane4j.core.support.DataProvider<?, ?>>> context = new ThreadLocal<>();
+    private final ThreadLocal<Map<String, DataProvider<?, ?>>> context = new ThreadLocal<>();
 
     /**
      * Get data source container.
@@ -33,7 +37,7 @@ public class SharedContextContainerProvider implements ContainerProvider {
      */
     @Override
     public Container<?> getContainer(String namespace) {
-        return LambdaContainer.forLambda(namespace, ids -> getDataProvider(namespace).apply(ids));
+        return new DynamicSourceContainer<>(namespace, this);
     }
 
     /**
@@ -44,9 +48,9 @@ public class SharedContextContainerProvider implements ContainerProvider {
      */
     @SuppressWarnings("unchecked")
     @Nullable
-    public <K, V> cn.crane4j.core.support.DataProvider<K, V> removeDataProvider(String namespace) {
-        Map<String, cn.crane4j.core.support.DataProvider<?, ?>> table = getDataProviders();
-        return (cn.crane4j.core.support.DataProvider<K, V>)table.remove(namespace);
+    public <K, V> DataProvider<K, V> removeDataProvider(String namespace) {
+        Map<String, DataProvider<?, ?>> table = getDataProviders();
+        return (DataProvider<K, V>)table.remove(namespace);
     }
 
     /**
@@ -58,11 +62,11 @@ public class SharedContextContainerProvider implements ContainerProvider {
      */
     @SuppressWarnings("unchecked")
     @Nullable
-    public <K, V> cn.crane4j.core.support.DataProvider<K, V> setDataProvider(String namespace, cn.crane4j.core.support.DataProvider<?, ?> dataProvider) {
-        Map<String, cn.crane4j.core.support.DataProvider<?, ?>> table = getDataProviders();
-        cn.crane4j.core.support.DataProvider<?, ?> old = table.remove(namespace);
+    public <K, V> DataProvider<K, V> setDataProvider(String namespace, DataProvider<?, ?> dataProvider) {
+        Map<String, DataProvider<?, ?>> table = getDataProviders();
+        DataProvider<?, ?> old = table.remove(namespace);
         table.put(namespace, dataProvider);
-        return (cn.crane4j.core.support.DataProvider<K, V>)old;
+        return (DataProvider<K, V>)old;
     }
 
     /**
@@ -73,9 +77,9 @@ public class SharedContextContainerProvider implements ContainerProvider {
      */
     @SuppressWarnings("unchecked")
     @Nonnull
-    public <K, V> cn.crane4j.core.support.DataProvider<K, V> getDataProvider(String namespace) {
-        Map<String, cn.crane4j.core.support.DataProvider<?, ?>> table =  getDataProviders();
-        return (cn.crane4j.core.support.DataProvider<K, V>)table.getOrDefault(namespace, cn.crane4j.core.support.DataProvider.empty());
+    public <K, V> DataProvider<K, V> getDataProvider(String namespace) {
+        Map<String, DataProvider<?, ?>> table =  getDataProviders();
+        return (DataProvider<K, V>)table.getOrDefault(namespace, DataProvider.empty());
     }
 
     /**
@@ -85,12 +89,36 @@ public class SharedContextContainerProvider implements ContainerProvider {
         context.remove();
     }
 
-    private Map<String, cn.crane4j.core.support.DataProvider<?, ?>> getDataProviders() {
-        Map<String, cn.crane4j.core.support.DataProvider<?, ?>> providers = context.get();
+    private Map<String, DataProvider<?, ?>> getDataProviders() {
+        Map<String, DataProvider<?, ?>> providers = context.get();
         if (Objects.isNull(providers)) {
             providers = new HashMap<>(8);
             context.set(providers);
         }
         return providers;
+    }
+
+    /**
+     * Dynamic source container.
+     *
+     * @author huancghengxing
+     */
+    @RequiredArgsConstructor
+    private static class DynamicSourceContainer<K> implements Container<K> {
+
+        @Getter
+        private final String namespace;
+        private final DynamicSourceContainerProvider provider;
+
+        /**
+         * Enter a batch of key values to return data source objects grouped by key values.
+         *
+         * @param keys keys
+         * @return data source objects grouped by key value
+         */
+        @Override
+        public Map<K, ?> get(Collection<K> keys) {
+            return provider.<K, Object>getDataProvider(namespace).apply(keys);
+        }
     }
 }

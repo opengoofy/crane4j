@@ -1,7 +1,7 @@
 package cn.crane4j.core.support.operator;
 
 import cn.crane4j.annotation.ProvideData;
-import cn.crane4j.core.container.SharedContextContainerProvider;
+import cn.crane4j.core.container.DynamicSourceContainerProvider;
 import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.parser.BeanOperations;
@@ -27,16 +27,16 @@ import java.util.function.Function;
  *
  * @author huangchengxing
  * @see ProvideData
- * @see SharedContextContainerProvider
+ * @see DynamicSourceContainerProvider
  * @since  1.3.0
  */
 @RequiredArgsConstructor
-public class SharedContextProxyMethodFactory implements OperatorProxyFactory.ProxyMethodFactory {
+public class DynamicSourceProxyMethodFactory implements OperatorProxyFactory.ProxyMethodFactory {
 
     public static final int ORDER = 0;
     private final AnnotationFinder annotationFinder;
     private final ParameterNameFinder parameterNameFinder;
-    private final SharedContextContainerProvider sharedContextContainerProvider;
+    private final DynamicSourceContainerProvider dynamicSourceContainerProvider;
     private final boolean clearContextAfterInvoke;
 
     /**
@@ -79,7 +79,7 @@ public class SharedContextProxyMethodFactory implements OperatorProxyFactory.Pro
             paramIndex++;
         }
         return noneContainerParameters ? null : new ProxyMethod(
-            beanOperations, beanOperationExecutor, dataProviderFactories, sharedContextContainerProvider, clearContextAfterInvoke
+            beanOperations, beanOperationExecutor, dataProviderFactories, dynamicSourceContainerProvider, clearContextAfterInvoke
         );
     }
 
@@ -113,7 +113,7 @@ public class SharedContextProxyMethodFactory implements OperatorProxyFactory.Pro
         private final BeanOperations operations;
         private final BeanOperationExecutor beanOperationExecutor;
         private final DataProviderFactory[] dataProviderFactories;
-        private final SharedContextContainerProvider sharedContextContainerProvider;
+        private final DynamicSourceContainerProvider dynamicSourceContainerProvider;
         private final boolean clearContextAfterInvoke;
 
         @Override
@@ -131,7 +131,7 @@ public class SharedContextProxyMethodFactory implements OperatorProxyFactory.Pro
                 Object arg = args[i];
                 DataProviderFactory parameter = dataProviderFactories[i];
                 if (Objects.nonNull(parameter) && Objects.nonNull(arg)) {
-                    sharedContextContainerProvider.setDataProvider(
+                    dynamicSourceContainerProvider.setDataProvider(
                         parameter.getNamespace(), parameter.getFactory().apply(arg)
                     );
                 }
@@ -142,7 +142,7 @@ public class SharedContextProxyMethodFactory implements OperatorProxyFactory.Pro
             if (clearContextAfterInvoke) {
                 for (DataProviderFactory parameter : dataProviderFactories) {
                     if (Objects.nonNull(parameter)) {
-                        sharedContextContainerProvider.removeDataProvider(parameter.getNamespace());
+                        dynamicSourceContainerProvider.removeDataProvider(parameter.getNamespace());
                     }
                 }
             }

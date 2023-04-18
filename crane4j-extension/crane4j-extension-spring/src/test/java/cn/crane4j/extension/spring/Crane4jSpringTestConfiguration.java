@@ -2,15 +2,24 @@ package cn.crane4j.extension.spring;
 
 import cn.crane4j.core.cache.CacheManager;
 import cn.crane4j.core.cache.ConcurrentMapCacheManager;
-import cn.crane4j.core.container.SharedContextContainerProvider;
+import cn.crane4j.core.container.DynamicSourceContainerProvider;
 import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
 import cn.crane4j.core.executor.OrderedBeanOperationExecutor;
 import cn.crane4j.core.executor.handler.ManyToManyReflexAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.OneToManyReflexAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.OneToOneReflexAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
-import cn.crane4j.core.parser.*;
-import cn.crane4j.core.support.*;
+import cn.crane4j.core.parser.AssembleOperation;
+import cn.crane4j.core.parser.BeanOperationParser;
+import cn.crane4j.core.parser.DisassembleAnnotationResolver;
+import cn.crane4j.core.parser.OperationAnnotationResolver;
+import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
+import cn.crane4j.core.support.AnnotationFinder;
+import cn.crane4j.core.support.Crane4jGlobalConfiguration;
+import cn.crane4j.core.support.OperateTemplate;
+import cn.crane4j.core.support.ParameterNameFinder;
+import cn.crane4j.core.support.SimpleTypeResolver;
+import cn.crane4j.core.support.TypeResolver;
 import cn.crane4j.core.support.aop.AutoOperateAnnotatedElementResolver;
 import cn.crane4j.core.support.callback.ContainerRegisterAware;
 import cn.crane4j.core.support.callback.ContainerRegisteredLogger;
@@ -20,8 +29,8 @@ import cn.crane4j.core.support.container.MethodContainerFactory;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
 import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
 import cn.crane4j.core.support.operator.DefaultProxyMethodFactory;
+import cn.crane4j.core.support.operator.DynamicSourceProxyMethodFactory;
 import cn.crane4j.core.support.operator.OperatorProxyFactory;
-import cn.crane4j.core.support.operator.SharedContextProxyMethodFactory;
 import cn.crane4j.core.support.reflect.ChainAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.PropertyOperator;
@@ -179,16 +188,16 @@ public class Crane4jSpringTestConfiguration {
     // ============== operator interface components ==============
 
     @Bean
-    public SharedContextContainerProvider sharedContextContainerProvider() {
-        return new SharedContextContainerProvider();
+    public DynamicSourceContainerProvider dynamicSourceContainerProvider() {
+        return new DynamicSourceContainerProvider();
     }
 
     @Bean
-    public SharedContextProxyMethodFactory sharedContextProxyMethodFactory(
+    public DynamicSourceProxyMethodFactory dynamicSourceProxyMethodFactory(
         AnnotationFinder annotationFinder, ParameterNameFinder parameterNameFinder,
-        SharedContextContainerProvider sharedContextContainerProvider) {
-        return new SharedContextProxyMethodFactory(
-            annotationFinder, parameterNameFinder, sharedContextContainerProvider, true
+        DynamicSourceContainerProvider dynamicSourceContainerProvider) {
+        return new DynamicSourceProxyMethodFactory(
+            annotationFinder, parameterNameFinder, dynamicSourceContainerProvider, true
         );
     }
 
