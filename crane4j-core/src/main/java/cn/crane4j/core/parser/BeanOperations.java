@@ -81,4 +81,14 @@ public interface BeanOperations {
      * @param active active state
      */
     void setActive(boolean active);
+    
+    /**
+     * Whether the current operation is empty.
+     *
+     * @return boolean
+     */
+    default boolean isEmpty() {
+        return getAssembleOperations().isEmpty()
+            && getDisassembleOperations().isEmpty();
+    }
 }

@@ -11,7 +11,14 @@ import cn.crane4j.core.util.ReflectUtils;
 import cn.hutool.core.lang.Assert;
 
 import java.lang.reflect.AnnotatedElement;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -26,7 +33,7 @@ import java.util.stream.Stream;
  * @see Disassemble
  * @since 1.2.0
  */
-public class DisassembleAnnotationResolver extends AbstractCacheableOperationAnnotationResolver {
+public class DisassembleAnnotationResolver extends AbstractOperationAnnotationResolver {
 
     protected static final String ANNOTATION_KEY_ATTRIBUTE = "key";
     protected final Crane4jGlobalConfiguration globalConfiguration;
@@ -61,21 +68,22 @@ public class DisassembleAnnotationResolver extends AbstractCacheableOperationAnn
     /**
      * Parse assemble operations from {@link Disassemble} annotations on class.
      *
-     * @param context  context
-     * @param element annotated element
+     * @param parser parser
+     * @param beanOperations operations of current to resolve
      * @return {@link DisassembleOperation}
      */
     @Override
-    protected List<DisassembleOperation> parseDisassembleOperations(OperationParseContext context, AnnotatedElement element) {
-        if (!(element instanceof Class)) {
+    protected List<DisassembleOperation> parseDisassembleOperations(BeanOperationParser parser, BeanOperations beanOperations) {
+        AnnotatedElement source = beanOperations.getSource();
+        if (!(source instanceof Class)) {
             return Collections.emptyList();
         }
-        Class<?> beanType = (Class<?>)element;
+        Class<?> beanType = (Class<?>)source;
         Collection<Disassemble> fieldLevelAnnotation = resolveFieldLevelAnnotations(beanType);
         Collection<Disassemble> classLevelAnnotations = resolveClassLevelAnnotations(beanType);
         return Stream.of(fieldLevelAnnotation, classLevelAnnotations)
             .flatMap(Collection::stream)
-            .map(annotation -> createDisassembleOperation(beanType, annotation, context))
+            .map(annotation -> createDisassembleOperation(beanType, annotation, parser))
             .sorted(operationComparator)
             .collect(Collectors.toList());
     }
@@ -101,7 +109,7 @@ public class DisassembleAnnotationResolver extends AbstractCacheableOperationAnn
      * @param annotation annotation
      * @return {@link DisassembleOperation}
      */
-    protected DisassembleOperation createDisassembleOperation(Class<?> type, Disassemble annotation, OperationParseContext context) {
+    protected DisassembleOperation createDisassembleOperation(Class<?> type, Disassemble annotation, BeanOperationParser parser) {
         // get handler
         DisassembleOperationHandler disassembleOperationHandler = ConfigurationUtil.getDisassembleOperationHandler(
             globalConfiguration, annotation.handlerName(), annotation.handler()
@@ -110,7 +118,6 @@ public class DisassembleAnnotationResolver extends AbstractCacheableOperationAnn
 
         // wait until runtime to dynamically determine the actual type if no type is specified
         DisassembleOperation operation;
-        BeanOperationParser parser = context.getParser();
         if (Objects.equals(Object.class, annotation.type()) || Objects.equals(Void.TYPE, annotation.type())) {
             operation = new TypeDynamitedDisassembleOperation(
                 annotation.key(), annotation.sort(),

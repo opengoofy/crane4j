@@ -4,8 +4,8 @@ import cn.crane4j.annotation.AssembleMp;
 import cn.crane4j.annotation.Mapping;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.parser.AssembleOperation;
+import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.BeanOperations;
-import cn.crane4j.core.parser.OperationParseContext;
 import cn.crane4j.core.parser.SimpleBeanOperations;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
@@ -28,11 +28,13 @@ import java.util.Collections;
 public class AssembleMpAnnotationResolverTest extends MpBaseTest {
 
     private AssembleMpAnnotationResolver operationsResolver;
+    private BeanOperationParser beanOperationParser;
 
     @Before
     public void afterInit() {
         AnnotationFinder annotationFinder = new SimpleAnnotationFinder();
         Crane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create(Collections.emptyMap());
+        beanOperationParser = configuration.getBeanOperationsParser(BeanOperationParser.class);
         MpBaseMapperContainerRegister register = new MpBaseMapperContainerRegister(configuration, new ReflectPropertyOperator());
         register.registerMapper("fooMapper", fooMapper);
         operationsResolver = new AssembleMpAnnotationResolver(annotationFinder, register, configuration);
@@ -42,8 +44,7 @@ public class AssembleMpAnnotationResolverTest extends MpBaseTest {
     @Test
     public void resolve() {
         BeanOperations operations = new SimpleBeanOperations(Foo.class);
-        OperationParseContext context = new OperationParseContext(operations, t -> operations);
-        operationsResolver.resolve(context, Foo.class);
+        operationsResolver.resolve(beanOperationParser, operations);
 
         Collection<AssembleOperation> assembleOperations = operations.getAssembleOperations();
         Assert.assertEquals(2, assembleOperations.size());
