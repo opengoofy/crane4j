@@ -3,13 +3,18 @@ package cn.crane4j.core.support;
 import cn.crane4j.core.cache.CacheManager;
 import cn.crane4j.core.cache.ConcurrentMapCacheManager;
 import cn.crane4j.core.container.ContainerProvider;
-import cn.crane4j.core.container.SharedContextContainerProvider;
+import cn.crane4j.core.container.DynamicSourceContainerProvider;
 import cn.crane4j.core.container.SimpleConfigurableContainerProvider;
 import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
 import cn.crane4j.core.executor.OrderedBeanOperationExecutor;
-import cn.crane4j.core.executor.handler.*;
+import cn.crane4j.core.executor.handler.AssembleOperationHandler;
+import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
+import cn.crane4j.core.executor.handler.ManyToManyReflexAssembleOperationHandler;
+import cn.crane4j.core.executor.handler.OneToManyReflexAssembleOperationHandler;
+import cn.crane4j.core.executor.handler.OneToOneReflexAssembleOperationHandler;
+import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
 import cn.crane4j.core.parser.AssembleAnnotationResolver;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.DisassembleAnnotationResolver;
@@ -104,8 +109,8 @@ public class SimpleCrane4jGlobalConfiguration
 
         configuration.getContainerProviderMap().put(configuration.getClass().getName(), configuration);
         configuration.getContainerProviderMap().put(ContainerProvider.class.getName(), configuration);
-        SharedContextContainerProvider sharedContextContainerProvider = new SharedContextContainerProvider();
-        configuration.getContainerProviderMap().put(sharedContextContainerProvider.getClass().getName(), sharedContextContainerProvider);
+        DynamicSourceContainerProvider dynamicSourceContainerProvider = new DynamicSourceContainerProvider();
+        configuration.getContainerProviderMap().put(dynamicSourceContainerProvider.getClass().getName(), dynamicSourceContainerProvider);
         return configuration;
     }
 

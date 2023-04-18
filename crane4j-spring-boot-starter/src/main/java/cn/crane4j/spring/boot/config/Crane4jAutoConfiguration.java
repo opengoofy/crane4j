@@ -7,15 +7,25 @@ import cn.crane4j.core.cache.CacheManager;
 import cn.crane4j.core.cache.ConcurrentMapCacheManager;
 import cn.crane4j.core.container.ConstantContainer;
 import cn.crane4j.core.container.Container;
-import cn.crane4j.core.container.SharedContextContainerProvider;
+import cn.crane4j.core.container.DynamicSourceContainerProvider;
 import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
 import cn.crane4j.core.executor.OrderedBeanOperationExecutor;
 import cn.crane4j.core.executor.handler.ManyToManyReflexAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.OneToManyReflexAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.OneToOneReflexAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
-import cn.crane4j.core.parser.*;
-import cn.crane4j.core.support.*;
+import cn.crane4j.core.parser.AssembleAnnotationResolver;
+import cn.crane4j.core.parser.AssembleOperation;
+import cn.crane4j.core.parser.BeanOperationParser;
+import cn.crane4j.core.parser.DisassembleAnnotationResolver;
+import cn.crane4j.core.parser.OperationAnnotationResolver;
+import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
+import cn.crane4j.core.support.AnnotationFinder;
+import cn.crane4j.core.support.Crane4jGlobalConfiguration;
+import cn.crane4j.core.support.OperateTemplate;
+import cn.crane4j.core.support.ParameterNameFinder;
+import cn.crane4j.core.support.SimpleTypeResolver;
+import cn.crane4j.core.support.TypeResolver;
 import cn.crane4j.core.support.aop.AutoOperateAnnotatedElementResolver;
 import cn.crane4j.core.support.callback.ContainerRegisterAware;
 import cn.crane4j.core.support.callback.ContainerRegisteredLogger;
@@ -26,12 +36,21 @@ import cn.crane4j.core.support.container.MethodContainerFactory;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
 import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
 import cn.crane4j.core.support.operator.DefaultProxyMethodFactory;
+import cn.crane4j.core.support.operator.DynamicSourceProxyMethodFactory;
 import cn.crane4j.core.support.operator.OperatorProxyFactory;
-import cn.crane4j.core.support.operator.SharedContextProxyMethodFactory;
-import cn.crane4j.core.support.reflect.*;
+import cn.crane4j.core.support.reflect.AsmReflectPropertyOperator;
+import cn.crane4j.core.support.reflect.ChainAccessiblePropertyOperator;
+import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
+import cn.crane4j.core.support.reflect.PropertyOperator;
+import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.extension.mybatis.plus.AssembleMpAnnotationResolver;
-import cn.crane4j.extension.spring.*;
+import cn.crane4j.extension.spring.BeanMethodContainerRegistrar;
+import cn.crane4j.extension.spring.Crane4jApplicationContext;
+import cn.crane4j.extension.spring.MergedAnnotationFinder;
+import cn.crane4j.extension.spring.ResolvableExpressionEvaluator;
+import cn.crane4j.extension.spring.SpringAssembleAnnotationResolver;
+import cn.crane4j.extension.spring.SpringParameterNameFinder;
 import cn.crane4j.extension.spring.aop.MethodArgumentAutoOperateAspect;
 import cn.crane4j.extension.spring.aop.MethodResultAutoOperateAspect;
 import cn.crane4j.extension.spring.expression.SpelExpressionContext;
@@ -69,7 +88,14 @@ import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.expression.BeanResolver;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -246,16 +272,16 @@ public class Crane4jAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public SharedContextContainerProvider sharedContextContainerProvider() {
-        return new SharedContextContainerProvider();
+    public DynamicSourceContainerProvider dynamicSourceContainerProvider() {
+        return new DynamicSourceContainerProvider();
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public SharedContextProxyMethodFactory sharedContextProxyMethodFactory(
+    public DynamicSourceProxyMethodFactory dynamicSourceProxyMethodFactory(
         AnnotationFinder annotationFinder, ParameterNameFinder parameterNameFinder,
-        SharedContextContainerProvider provider, Properties properties) {
-        return new SharedContextProxyMethodFactory(
+        DynamicSourceContainerProvider provider, Properties properties) {
+        return new DynamicSourceProxyMethodFactory(
             annotationFinder, parameterNameFinder, provider, properties.isClearContextAfterInvoke()
         );
     }
@@ -478,7 +504,7 @@ public class Crane4jAutoConfiguration {
         /**
          * Whether to clear the context after the method is invoked.
          *
-         * @see cn.crane4j.core.support.operator.SharedContextProxyMethodFactory
+         * @see DynamicSourceProxyMethodFactory
          */
         private boolean clearContextAfterInvoke = true;
     }
