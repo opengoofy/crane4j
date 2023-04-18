@@ -4,14 +4,17 @@ import cn.crane4j.core.support.AnnotationFinder;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.text.CharSequenceUtil;
+import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.ReflectUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
@@ -61,6 +64,22 @@ public class ReflectUtils {
      * declared super class with interface
      */
     private static final Map<Class<?>, Set<Class<?>>> DECLARED_SUPER_CLASS_WITH_INTERFACE = CollectionUtils.newWeakConcurrentMap();
+
+    /**
+     * Whether the {@code element} is from jdk.
+     *
+     * @param element element
+     * @return boolean
+     */
+    public static boolean isJdkElement(AnnotatedElement element) {
+        Class<?> checkedClass = element.getClass();
+        if (element instanceof Class) {
+            checkedClass = (Class<?>)element;
+        } else if (element instanceof Member) {
+            checkedClass = ((Member)element).getDeclaringClass();
+        }
+        return ClassUtil.isJdkClass(checkedClass);
+    }
 
     /**
      * Get declared methods of type.

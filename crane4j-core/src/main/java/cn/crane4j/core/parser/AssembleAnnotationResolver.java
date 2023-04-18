@@ -44,7 +44,7 @@ import java.util.stream.Stream;
  */
 @Accessors(chain = true)
 @Slf4j
-public class AssembleAnnotationResolver extends AbstractCacheableOperationAnnotationResolver {
+public class AssembleAnnotationResolver extends AbstractOperationAnnotationResolver {
 
     protected static final String ANNOTATION_KEY_ATTRIBUTE = "key";
     protected final Crane4jGlobalConfiguration globalConfiguration;
@@ -81,19 +81,19 @@ public class AssembleAnnotationResolver extends AbstractCacheableOperationAnnota
     /**
      * Parse assemble operations from {@link Assemble} annotations on class.
      *
-     * @param context  context
-     * @param element annotated element
+     * @param beanOperations operations of current to resolve
      * @return {@link AssembleOperation}
      */
     @Override
-    protected List<AssembleOperation> parseAssembleOperations(OperationParseContext context, AnnotatedElement element) {
+    protected List<AssembleOperation> parseAssembleOperations(BeanOperations beanOperations) {
+        AnnotatedElement source = beanOperations.getSource();
         List<Assemble> annotations = new ArrayList<>();
-        if (element instanceof Class<?>) {
-            Class<?> beanType = (Class<?>) element;
+        if (source instanceof Class<?>) {
+            Class<?> beanType = (Class<?>) source;
             annotations.addAll(resolveFieldLevelAnnotations(beanType));
             annotations.addAll(resolveClassLevelAnnotations(beanType));
         } else {
-            annotations.addAll(annotationFinder.findAllAnnotations(element, Assemble.class));
+            annotations.addAll(annotationFinder.findAllAnnotations(source, Assemble.class));
         }
         return annotations.stream()
             .map(this::createAssembleOperation)

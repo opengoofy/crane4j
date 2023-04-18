@@ -3,15 +3,19 @@ package cn.crane4j.core.parser;
 import cn.crane4j.core.exception.OperationParseException;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.support.Sorted;
+import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.ReflectUtils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -21,7 +25,7 @@ import java.util.stream.Collectors;
 /**
  * <p>General implementation of {@link BeanOperationParser}.
  *
- * <p>When parsing the configuration, the parser will create a {@link OperationParseContext}
+ * <p>When parsing the configuration, the parser will create a root {@link BeanOperations}
  * as the context for this execution, Then successively call all registered {@link OperationAnnotationResolver}
  * to collect the configuration information into the {@link BeanOperations} in context.
  *
@@ -46,15 +50,30 @@ import java.util.stream.Collectors;
  *
  * @author huangchengxing
  * @see OperationAnnotationResolver
- * @see OperationParseContext
  * @since 1.2.0
  */
 @Slf4j
 public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
 
+    /**
+     * temp cache for operations of element that currently in parsing
+     */
+    protected final Map<AnnotatedElement, BeanOperations> currentlyInParsing = new LinkedHashMap<>(8);
+    
+    /**
+     * temp cache for operations of resolved element where in type hierarchy.
+     */
+    protected Map<AnnotatedElement, BeanOperations> resolvedHierarchyElements = CollectionUtils.newWeakConcurrentMap();
+
+    /**
+     *  finally cache for operations of resolved element.
+     */
+    protected final Map<AnnotatedElement, BeanOperations> resolvedElements = new ConcurrentHashMap<>(64);
+
+    /**
+     * registered operation annotation resolvers.
+     */
     protected Set<OperationAnnotationResolver> operationAnnotationResolvers;
-    private final Map<AnnotatedElement, BeanOperations> resolvedTypes = new ConcurrentHashMap<>(32);
-    private final Map<AnnotatedElement, BeanOperations> currentlyInParsing = new LinkedHashMap<>(16);
 
     /**
      * Create a {@link TypeHierarchyBeanOperationParser} instance.
@@ -106,6 +125,55 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
         }
     }
 
+    private BeanOperations parseIfNecessary(AnnotatedElement element) {
+        BeanOperations result = resolvedElements.get(element);
+        if (Objects.isNull(result)) {
+            synchronized (this) {
+                // target is parsed ?
+                result = resolvedElements.get(element);
+                if (Objects.isNull(result)) {
+                    // target is in parsing?
+                    result = currentlyInParsing.get(element);
+                    // target need parse, do it!
+                    if (Objects.isNull(result)) {
+                        result = createBeanOperations(element);
+                        result.setActive(false);
+                        currentlyInParsing.put(element, result);
+                        doParse(result);
+                        resolvedElements.put(element, currentlyInParsing.remove(element));
+                        result.setActive(true);
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    private void doParse(BeanOperations root) {
+        AnnotatedElement source = root.getSource();
+        log.debug("parse operations from element [{}]", source);
+
+        // collected resolve operation from hierarchy of source
+        Collection<BeanOperations> resolvedOperations;
+        if (source instanceof Class) {
+            // parse from type hierarchy
+            resolvedOperations = doParseForType((Class<?>)source);
+        }
+        else if (source instanceof Method){
+            // parse method and overwrite method from type hierarchy
+            resolvedOperations = doParseForMethod((Method)source);
+        }
+        else {
+            // parse for other type
+            resolvedOperations = doParseForElement(source);
+        }
+        // TODO: all operations need sort again?
+        resolvedOperations.forEach(op -> {
+            op.getAssembleOperations().forEach(root::addAssembleOperations);
+            op.getDisassembleOperations().forEach(root::addDisassembleOperations);
+        });
+    }
+
     /**
      * Create {@link BeanOperations} instance
      *
@@ -116,63 +184,70 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
         return new SimpleBeanOperations(element);
     }
 
-    private BeanOperations parseIfNecessary(AnnotatedElement element) {
-        BeanOperations beanOperations = resolvedTypes.get(element);
-        if (Objects.isNull(beanOperations)) {
-            synchronized (this) {
-                // target is parsed ?
-                beanOperations = resolvedTypes.get(element);
-                if (Objects.isNull(beanOperations)) {
-                    // target is in parsing?
-                    beanOperations = currentlyInParsing.get(element);
-                    // target need parse, do it!
-                    if (Objects.isNull(beanOperations)) {
-                        beanOperations = createBeanOperations(element);
-                        OperationParseContext context = new OperationParseContext(beanOperations, this);
-                        beanOperations.setActive(false);
-                        currentlyInParsing.put(element, beanOperations);
-                        doParse(element, context);
-                        resolvedTypes.put(element, currentlyInParsing.remove(element));
-                        beanOperations.setActive(true);
-                    }
-                }
-            }
-        }
-        return beanOperations;
+    /**
+     * Parse operations form hierarchy of {@code element}.
+     *
+     * @param element element
+     * @return operations form hierarchy of {@code element}
+     * @see #resolveToOperations
+     */
+    protected Collection<BeanOperations> doParseForElement(AnnotatedElement element) {
+        BeanOperations current = resolveToOperations(element);
+        return Collections.singletonList(current);
     }
 
-    private void doParse(AnnotatedElement element, OperationParseContext context) {
-        log.debug("parse operations from element [{}]", element);
-        // parse from type hierarchy
-        if (element instanceof Class) {
-            doParseForType((Class<?>)element, context);
-        }
-        // parse method and overwrite method from type hierarchy
-        else if (element instanceof Method){
-            doParseForMethod((Method)element, context);
-        }
-        // parse for other type
-        else {
-            operationAnnotationResolvers.forEach(resolver -> resolver.resolve(context, element));
-        }
+    /**
+     * Parse operations form type hierarchy of {@code beanType}.
+     *
+     * @param beanType bean type
+     * @return operations form type hierarchy of {@code beanType}
+     * @see #resolveToOperations
+     */
+    protected Collection<BeanOperations> doParseForType(Class<?> beanType) {
+        List<BeanOperations> results = new ArrayList<>();
+        ReflectUtils.traverseTypeHierarchy(beanType, type -> {
+            // current type is already resolved?
+            BeanOperations current = resolveToOperations(type);
+            results.add(current);
+        });
+        return results;
     }
 
-    private void doParseForType(Class<?> beanType, OperationParseContext context) {
-        ReflectUtils.traverseTypeHierarchy(
-            beanType, type -> operationAnnotationResolvers.forEach(resolver -> resolver.resolve(context, type))
-        );
-    }
-
-    private void doParseForMethod(Method method, OperationParseContext context) {
+    /**
+     * Parse operations form method where in type hierarchy of {@code beanType}.
+     *
+     * @param method method
+     * @return operations form method where in type hierarchy of {@code beanType}
+     * @see #resolveToOperations
+     */
+    protected Collection<BeanOperations> doParseForMethod(Method method) {
         String methodName = method.getName();
         Class<?>[] parameterTypes = method.getParameterTypes();
-        ReflectUtils.traverseTypeHierarchy(
-            method.getDeclaringClass(), type -> {
-                Method targetMethod = ReflectUtils.getDeclaredMethod(type, methodName, parameterTypes);
-                if (Objects.nonNull(targetMethod)) {
-                    operationAnnotationResolvers.forEach(resolver -> resolver.resolve(context, targetMethod));
-                }
+        List<BeanOperations> results = new ArrayList<>();
+        ReflectUtils.traverseTypeHierarchy(method.getDeclaringClass(), type -> {
+            Method targetMethod = ReflectUtils.getDeclaredMethod(type, methodName, parameterTypes);
+            if (Objects.nonNull(targetMethod)) {
+                BeanOperations current = resolveToOperations(targetMethod);
+                results.add(current);
             }
-        );
+        });
+        return results;
+    }
+
+    /**
+     * Parse {@link BeanOperations} from {@code source} if necessary.
+     *
+     * @param source source
+     * @return operations from source, may come from cache
+     */
+    protected final BeanOperations resolveToOperations(AnnotatedElement source) {
+        return CollectionUtils.computeIfAbsent(resolvedHierarchyElements, source, s -> {
+            if (ReflectUtils.isJdkElement(s)) {
+                return EmptyBeanOperations.INSTANCE;
+            }
+            BeanOperations operations = createBeanOperations(source);
+            operationAnnotationResolvers.forEach(resolver -> resolver.resolve(this, operations));
+            return operations;
+        });
     }
 }

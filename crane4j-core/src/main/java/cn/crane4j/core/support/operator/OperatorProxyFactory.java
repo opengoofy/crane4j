@@ -128,8 +128,7 @@ public class OperatorProxyFactory {
                 "the method [{}] parameter count is less than 1.", method.getName()
             );
         }
-        if (operations.getDisassembleOperations().isEmpty()
-            && operations.getAssembleOperations().isEmpty()) {
+        if (operations.isEmpty()) {
             throw new Crane4jException(
                 "the method [{}] are no executable operations found.", method.getName()
             );

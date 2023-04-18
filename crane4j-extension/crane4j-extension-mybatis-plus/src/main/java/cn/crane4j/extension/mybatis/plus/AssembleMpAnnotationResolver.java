@@ -3,12 +3,12 @@ package cn.crane4j.extension.mybatis.plus;
 import cn.crane4j.annotation.AssembleMp;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
-import cn.crane4j.core.parser.AbstractCacheableOperationAnnotationResolver;
+import cn.crane4j.core.parser.AbstractOperationAnnotationResolver;
 import cn.crane4j.core.parser.AssembleOperation;
+import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.KeyTriggerOperation;
 import cn.crane4j.core.parser.LazyAssembleOperation;
 import cn.crane4j.core.parser.OperationAnnotationResolver;
-import cn.crane4j.core.parser.OperationParseContext;
 import cn.crane4j.core.parser.PropertyMapping;
 import cn.crane4j.core.parser.SimpleAssembleOperation;
 import cn.crane4j.core.support.AnnotationFinder;
@@ -43,7 +43,7 @@ import java.util.stream.Stream;
  * @since 1.2.0
  */
 @Accessors(chain = true)
-public class AssembleMpAnnotationResolver extends AbstractCacheableOperationAnnotationResolver {
+public class AssembleMpAnnotationResolver extends AbstractOperationAnnotationResolver {
 
     private final MpBaseMapperContainerRegister mapperContainerRegister;
     private final Crane4jGlobalConfiguration globalConfiguration;
@@ -84,19 +84,19 @@ public class AssembleMpAnnotationResolver extends AbstractCacheableOperationAnno
     /**
      * Parse assemble operations for class.
      *
-     * @param context  context
-     * @param element annotated element
+     * @param beanOperations operations of current to resolve
      * @return {@link AssembleOperation}
      */
     @Override
-    protected List<AssembleOperation> parseAssembleOperations(OperationParseContext context, AnnotatedElement element) {
+    protected List<AssembleOperation> parseAssembleOperations(BeanOperations beanOperations) {
+        AnnotatedElement source = beanOperations.getSource();
         List<AssembleMp> annotations = new ArrayList<>();
-        if (element instanceof Class<?>) {
-            Class<?> beanType = (Class<?>)element;
+        if (source instanceof Class<?>) {
+            Class<?> beanType = (Class<?>)source;
             annotations.addAll(parseAnnotationForDeclaredFields(beanType));
             annotations.addAll(annotationFinder.getAllAnnotations(beanType, AssembleMp.class));
         } else {
-            annotations.addAll(annotationFinder.findAllAnnotations(element, AssembleMp.class));
+            annotations.addAll(annotationFinder.findAllAnnotations(source, AssembleMp.class));
         }
         return annotations.stream()
             .map(this::createAssembleOperation)
@@ -116,7 +116,7 @@ public class AssembleMpAnnotationResolver extends AbstractCacheableOperationAnno
         AssembleOperationHandler handler = ConfigurationUtil.getAssembleOperationHandler(
             globalConfiguration, annotation.handlerName(), annotation.handler()
         );
-        Assert.notNull(handler, AbstractCacheableOperationAnnotationResolver.throwException("assemble operation handler [{}]({}) not found", annotation.handlerName(), annotation.handler()));
+        Assert.notNull(handler, AbstractOperationAnnotationResolver.throwException("assemble operation handler [{}]({}) not found", annotation.handlerName(), annotation.handler()));
 
         // parse property mapping
         Set<PropertyMapping> propertyMappings = Stream.of(annotation.props())
