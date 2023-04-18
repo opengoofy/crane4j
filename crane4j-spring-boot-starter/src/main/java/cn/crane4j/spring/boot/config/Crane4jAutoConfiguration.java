@@ -57,7 +57,6 @@ import cn.crane4j.extension.spring.expression.SpelExpressionContext;
 import cn.crane4j.extension.spring.expression.SpelExpressionEvaluator;
 import cn.crane4j.spring.boot.annotation.EnableCrane4j;
 import cn.hutool.core.text.CharSequenceUtil;
-import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ClassUtil;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -93,12 +92,9 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * <p>The automatic configuration class of crane.<br />
@@ -530,27 +526,12 @@ public class Crane4jAutoConfiguration {
         @Override
         public void run(ApplicationArguments args) {
             log.info("start initializing crane4j components......");
-            // load bean operations resolver
-            loadBeanOperationsResolver();
             // load enumeration and register it as a container
             loadContainerEnum();
             // load a constant class and register it as a container
             loadConstantClass();
             // pre resolution class operation configuration
             loadOperateEntity();
-        }
-
-        public void loadBeanOperationsResolver() {
-            String[] parserNames = applicationContext.getBeanNamesForType(TypeHierarchyBeanOperationParser.class);
-            String[] resolverNames = applicationContext.getBeanNamesForType(OperationAnnotationResolver.class);
-            if (ArrayUtil.isNotEmpty(parserNames) && ArrayUtil.isNotEmpty(resolverNames)) {
-                List<OperationAnnotationResolver> resolvers = Stream.of(resolverNames)
-                    .map(beanName -> applicationContext.getBean(beanName, OperationAnnotationResolver.class))
-                    .collect(Collectors.toList());
-                Stream.of(parserNames)
-                    .map(beanName -> applicationContext.getBean(beanName, TypeHierarchyBeanOperationParser.class))
-                    .forEach(parser -> resolvers.forEach(parser::addBeanOperationsResolver));
-            }
         }
 
         private void loadConstantClass() {
