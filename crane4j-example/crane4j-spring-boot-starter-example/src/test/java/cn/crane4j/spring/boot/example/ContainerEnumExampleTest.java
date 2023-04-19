@@ -42,11 +42,11 @@ public class ContainerEnumExampleTest {
     @Before
     public void init() {
         // 手动指定key为code属性，而value直接为枚举项本身
-        context.replaceContainer(
+        context.compute(
             "sex", c -> ObjectUtil.defaultIfNull(c, ConstantContainer.forEnum("sex", Sex.class, Sex::getCode))
         );
         // 通过注解，配置了key为code属性，而value为name属性
-        context.replaceContainer(
+        context.compute(
             "gender", c -> ObjectUtil.defaultIfNull(c, ConstantContainer.forEnum(Gender.class, annotationFinder))
         );
     }

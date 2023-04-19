@@ -47,7 +47,7 @@ public class AutoOperateTestExample {
             "student", ids -> ids.stream()
                 .collect(Collectors.toMap(Function.identity(), id -> "student" + id))
         );
-        context.replaceContainer("student", c -> ObjectUtil.defaultIfNull(c, supplier.get()));
+        context.compute("student", c -> ObjectUtil.defaultIfNull(c, supplier.get()));
     }
 
     @Test

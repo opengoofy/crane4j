@@ -25,6 +25,16 @@ public class SimpleConfigurableContainerProviderTest {
         containerProvider.registerContainer(container);
     }
 
+    public void getContainer() {
+        Container<?> container = containerProvider.getContainer("test");
+        Assert.assertNotNull(container);
+        Assert.assertEquals("test", container.getNamespace());
+        Assert.assertNull(containerProvider.getContainer("no registered"));
+
+        container = containerProvider.getContainer("create if null", () -> LambdaContainer.forLambda("create if null", ids -> Collections.emptyMap()));
+        Assert.assertNotNull(container);
+    }
+
     @Test
     public void addContainerRegisterAware() {
         Collection<ContainerRegisterAware> awareList = containerProvider.getContainerRegisterAwareList();
@@ -54,14 +64,14 @@ public class SimpleConfigurableContainerProviderTest {
         Container<?> container1 = LambdaContainer.forLambda("container", ids -> Collections.emptyMap());
 
         // container first add
-        Container<?> old = containerProvider.replaceContainer("container", container -> {
+        Container<?> old = containerProvider.compute("container", container -> {
             Assert.assertNull(container);
             return null;
         });
         Assert.assertNull(old);
 
         // container first add
-        old = containerProvider.replaceContainer("container", container -> {
+        old = containerProvider.compute("container", container -> {
             Assert.assertNull(container);
             return container1;
         });
@@ -69,7 +79,7 @@ public class SimpleConfigurableContainerProviderTest {
 
         // container replace
         Container<?> container2 = LambdaContainer.forLambda("container", ids -> Collections.emptyMap());
-        old = containerProvider.replaceContainer("container", container -> {
+        old = containerProvider.compute("container", container -> {
             Assert.assertSame(container1, container);
             return container2;
         });
@@ -79,7 +89,7 @@ public class SimpleConfigurableContainerProviderTest {
         Assert.assertFalse(containerProvider.containsContainer("no registered"));
 
         Assert.assertThrows(Crane4jException.class, () -> {
-            containerProvider.replaceContainer("container", container ->
+            containerProvider.compute("container", container ->
                 LambdaContainer.forLambda("otherName", ids -> Collections.emptyMap())
             );
         });

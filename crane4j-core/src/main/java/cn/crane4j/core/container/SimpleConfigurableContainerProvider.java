@@ -7,13 +7,10 @@ import cn.crane4j.core.util.ReadWriteLockSupport;
 import cn.hutool.core.lang.Assert;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.BiFunction;
+import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 /**
@@ -43,6 +40,43 @@ public class SimpleConfigurableContainerProvider implements ConfigurableContaine
     }
 
     /**
+     * Get container if exists, otherwise create a new container.
+     *
+     * @param namespace namespace
+     * @param containerFactory container factory
+     * @return container
+     */
+    @Nullable
+    @Override
+    public Container<?> getContainer(String namespace, Supplier<Container<?>> containerFactory) {
+        return lock.withReadLock(() -> {
+            Container<?> old = containerMap.get(namespace);
+            if (Objects.nonNull(old)) {
+                return old;
+            }
+            return lock.withWriteLock(() -> {
+                Container<?> container = containerMap.get(namespace);
+                if (Objects.nonNull(container)) {
+                    return container;
+                }
+                container = containerFactory.get();
+                Assert.notNull(container, () -> new Crane4jException("container factory returned null"));
+                String containerNamespace = container.getNamespace();
+                Assert.equals(
+                    containerNamespace, namespace, () -> new Crane4jException(
+                        "The namespace of the current container [{}] is inconsistent with that of the old container [{}]",
+                        containerNamespace, namespace
+                    )
+                );
+                ConfigurationUtil.invokeRegisterAware(
+                    this, container, getContainerRegisterAwareList(), c -> containerMap.put(namespace, c)
+                );
+                return container;
+            });
+        });
+    }
+
+    /**
      * Get all registered {@link ContainerRegisterAware} callback.
      *
      * @return registered {@link ContainerRegisterAware}
@@ -65,7 +99,7 @@ public class SimpleConfigurableContainerProvider implements ConfigurableContaine
      */
     @Nullable
     @Override
-    public Container<?> replaceContainer(String namespace, UnaryOperator<Container<?>> replacer) {
+    public Container<?> compute(String namespace, UnaryOperator<Container<?>> replacer) {
         return lock.withWriteLock(() -> {
             Container<?> prev = containerMap.remove(namespace);
             Container<?> next = replacer.apply(prev);
