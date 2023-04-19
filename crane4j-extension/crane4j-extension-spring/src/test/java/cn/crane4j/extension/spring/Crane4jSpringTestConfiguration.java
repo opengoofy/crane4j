@@ -2,7 +2,8 @@ package cn.crane4j.extension.spring;
 
 import cn.crane4j.core.cache.CacheManager;
 import cn.crane4j.core.cache.ConcurrentMapCacheManager;
-import cn.crane4j.core.container.DynamicSourceContainerProvider;
+import cn.crane4j.core.container.SharedContextContainerProvider;
+import cn.crane4j.core.container.ThreadContextContainerProvider;
 import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
 import cn.crane4j.core.executor.OrderedBeanOperationExecutor;
 import cn.crane4j.core.executor.handler.ManyToManyReflexAssembleOperationHandler;
@@ -185,17 +186,24 @@ public class Crane4jSpringTestConfiguration {
         return new ReflectDisassembleOperationHandler(propertyOperator);
     }
 
-    // ============== operator interface components ==============
+    // ============== container provider ==============
 
     @Bean
-    public DynamicSourceContainerProvider dynamicSourceContainerProvider() {
-        return new DynamicSourceContainerProvider();
+    public ThreadContextContainerProvider threadContextContainerProvider() {
+        return new ThreadContextContainerProvider();
     }
+
+    @Bean
+    public SharedContextContainerProvider sharedContextContainerProvider() {
+        return new SharedContextContainerProvider();
+    }
+
+    // ============== operator interface components ==============
 
     @Bean
     public DynamicSourceProxyMethodFactory dynamicSourceProxyMethodFactory(
         AnnotationFinder annotationFinder, ParameterNameFinder parameterNameFinder,
-        DynamicSourceContainerProvider dynamicSourceContainerProvider) {
+        ThreadContextContainerProvider dynamicSourceContainerProvider) {
         return new DynamicSourceProxyMethodFactory(
             annotationFinder, parameterNameFinder, dynamicSourceContainerProvider, true
         );

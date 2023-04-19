@@ -4,7 +4,9 @@ import cn.crane4j.core.cache.CacheManager;
 import cn.crane4j.core.cache.ConcurrentMapCacheManager;
 import cn.crane4j.core.container.ContainerProvider;
 import cn.crane4j.core.container.DynamicSourceContainerProvider;
+import cn.crane4j.core.container.SharedContextContainerProvider;
 import cn.crane4j.core.container.SimpleConfigurableContainerProvider;
+import cn.crane4j.core.container.ThreadContextContainerProvider;
 import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
@@ -109,8 +111,12 @@ public class SimpleCrane4jGlobalConfiguration
 
         configuration.getContainerProviderMap().put(configuration.getClass().getName(), configuration);
         configuration.getContainerProviderMap().put(ContainerProvider.class.getName(), configuration);
-        DynamicSourceContainerProvider dynamicSourceContainerProvider = new DynamicSourceContainerProvider();
-        configuration.getContainerProviderMap().put(dynamicSourceContainerProvider.getClass().getName(), dynamicSourceContainerProvider);
+        ThreadContextContainerProvider threadContextContainerProvider = new ThreadContextContainerProvider();
+        configuration.getContainerProviderMap().put(DynamicSourceContainerProvider.class.getName(), threadContextContainerProvider);
+        configuration.getContainerProviderMap().put(threadContextContainerProvider.getClass().getName(), threadContextContainerProvider);
+        SharedContextContainerProvider sharedContextContainerProvider = new SharedContextContainerProvider();
+        configuration.getContainerProviderMap().put(sharedContextContainerProvider.getClass().getName(), sharedContextContainerProvider);
+
         return configuration;
     }
 

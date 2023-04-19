@@ -1,6 +1,5 @@
 package cn.crane4j.core.container;
 
-import cn.crane4j.annotation.ProvideData;
 import cn.crane4j.core.support.DataProvider;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -8,9 +7,7 @@ import lombok.RequiredArgsConstructor;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>The implementation class of {@link ContainerProvider}.<br />
@@ -19,15 +16,10 @@ import java.util.Objects;
  * thereby causing the container to return user specified data.
  *
  * @author huangchengxing
- * @see ProvideData
- * @see DynamicSourceContainerProvider
+ * @see SharedContextContainerProvider
+ * @see ThreadContextContainerProvider
  */
-public class DynamicSourceContainerProvider implements ContainerProvider {
-
-    /**
-     * context
-     */
-    private final ThreadLocal<Map<String, DataProvider<?, ?>>> context = new ThreadLocal<>();
+public interface DynamicSourceContainerProvider extends ContainerProvider {
 
     /**
      * Get data source container.
@@ -36,67 +28,42 @@ public class DynamicSourceContainerProvider implements ContainerProvider {
      * @return container
      */
     @Override
-    public Container<?> getContainer(String namespace) {
+    default Container<?> getContainer(String namespace) {
         return new DynamicSourceContainer<>(namespace, this);
     }
 
     /**
-     * Clear container data provider in context of current thread.
+     * Clear container data provider in context.
      *
      * @param namespace namespace
-     * @return old container data provider in context of current thread
+     * @return old container data provider in context
      */
-    @SuppressWarnings("unchecked")
     @Nullable
-    public <K, V> DataProvider<K, V> removeDataProvider(String namespace) {
-        Map<String, DataProvider<?, ?>> table = getDataProviders();
-        return (DataProvider<K, V>)table.remove(namespace);
-    }
+    <K, V> DataProvider<K, V> removeDataProvider(String namespace);
 
     /**
-     * Set container data provider in context of current thread.
+     * Set container data provider in context.
      *
      * @param namespace namespace
      * @param dataProvider new data provider
-     * @return old container data provider in context of current thread
+     * @return old container data provider in context
      */
-    @SuppressWarnings("unchecked")
     @Nullable
-    public <K, V> DataProvider<K, V> setDataProvider(String namespace, DataProvider<?, ?> dataProvider) {
-        Map<String, DataProvider<?, ?>> table = getDataProviders();
-        DataProvider<?, ?> old = table.remove(namespace);
-        table.put(namespace, dataProvider);
-        return (DataProvider<K, V>)old;
-    }
+    <K, V> DataProvider<K, V> setDataProvider(String namespace, DataProvider<?, ?> dataProvider);
 
     /**
-     * Get container data provider in context of current thread.
+     * Get container data provider in context.
      *
      * @param namespace namespace
-     * @return old container data provider in context of current thread
+     * @return old container data provider in context
      */
-    @SuppressWarnings("unchecked")
     @Nonnull
-    public <K, V> DataProvider<K, V> getDataProvider(String namespace) {
-        Map<String, DataProvider<?, ?>> table =  getDataProviders();
-        return (DataProvider<K, V>)table.getOrDefault(namespace, DataProvider.empty());
-    }
+    <K, V> DataProvider<K, V> getDataProvider(String namespace);
 
     /**
-     * Clear all container data in context of current thread.
+     * Clear all container data in context.
      */
-    public void clear() {
-        context.remove();
-    }
-
-    private Map<String, DataProvider<?, ?>> getDataProviders() {
-        Map<String, DataProvider<?, ?>> providers = context.get();
-        if (Objects.isNull(providers)) {
-            providers = new HashMap<>(8);
-            context.set(providers);
-        }
-        return providers;
-    }
+    void clear();
 
     /**
      * Dynamic source container.
@@ -104,7 +71,7 @@ public class DynamicSourceContainerProvider implements ContainerProvider {
      * @author huancghengxing
      */
     @RequiredArgsConstructor
-    private static class DynamicSourceContainer<K> implements Container<K> {
+    class DynamicSourceContainer<K> implements Container<K> {
 
         @Getter
         private final String namespace;

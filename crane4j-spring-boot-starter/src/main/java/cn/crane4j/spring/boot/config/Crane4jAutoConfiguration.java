@@ -7,7 +7,8 @@ import cn.crane4j.core.cache.CacheManager;
 import cn.crane4j.core.cache.ConcurrentMapCacheManager;
 import cn.crane4j.core.container.ConstantContainer;
 import cn.crane4j.core.container.Container;
-import cn.crane4j.core.container.DynamicSourceContainerProvider;
+import cn.crane4j.core.container.SharedContextContainerProvider;
+import cn.crane4j.core.container.ThreadContextContainerProvider;
 import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
 import cn.crane4j.core.executor.OrderedBeanOperationExecutor;
 import cn.crane4j.core.executor.handler.ManyToManyReflexAssembleOperationHandler;
@@ -264,19 +265,27 @@ public class Crane4jAutoConfiguration {
         return new ReflectDisassembleOperationHandler(propertyOperator);
     }
 
-    // ============== operator interface components ==============
+    // ============== container provider ==============
 
     @Bean
     @ConditionalOnMissingBean
-    public DynamicSourceContainerProvider dynamicSourceContainerProvider() {
-        return new DynamicSourceContainerProvider();
+    public ThreadContextContainerProvider threadContextContainerProvider() {
+        return new ThreadContextContainerProvider();
     }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SharedContextContainerProvider sharedContextContainerProvider() {
+        return new SharedContextContainerProvider();
+    }
+
+    // ============== operator interface components ==============
 
     @Bean
     @ConditionalOnMissingBean
     public DynamicSourceProxyMethodFactory dynamicSourceProxyMethodFactory(
         AnnotationFinder annotationFinder, ParameterNameFinder parameterNameFinder,
-        DynamicSourceContainerProvider provider, Properties properties) {
+        ThreadContextContainerProvider provider, Properties properties) {
         return new DynamicSourceProxyMethodFactory(
             annotationFinder, parameterNameFinder, provider, properties.isClearContextAfterInvoke()
         );
