@@ -71,14 +71,14 @@ public class Crane4jApplicationContextTest {
     @Test
     public void replaceContainer() {
         Assert.assertFalse(context.containsContainer("no registered"));
-        Container<?> container1 = context.replaceContainer("no registered", container -> {
+        Container<?> container1 = context.compute("no registered", container -> {
             Assert.assertNull(container);
             return LambdaContainer.forLambda("no registered", ids -> Collections.emptyMap());
         });
         Assert.assertNull(container1);
         Assert.assertTrue(context.containsContainer("no registered"));
 
-        Container<?> container2 = context.replaceContainer("no registered", container -> {
+        Container<?> container2 = context.compute("no registered", container -> {
             Assert.assertNotNull(container);
             return null;
         });

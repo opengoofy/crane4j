@@ -56,6 +56,7 @@ public abstract class StandardAssembleAnnotationResolver<T extends Annotation> i
      * @param annotationType annotation type
      * @param annotationFinder annotation finder
      * @param operationComparator operation comparator
+     * @param globalConfiguration global configuration
      */
     protected StandardAssembleAnnotationResolver(
         Class<T> annotationType, AnnotationFinder annotationFinder,

@@ -78,14 +78,14 @@ public class SimpleCrane4jGlobalConfigurationTest {
         Assert.assertTrue(configuration.containsContainer("test register"));
 
         Assert.assertFalse(configuration.containsContainer("no registered"));
-        Container<?> container1 = configuration.replaceContainer("no registered", container -> {
+        Container<?> container1 = configuration.compute("no registered", container -> {
             Assert.assertNull(container);
             return LambdaContainer.forLambda("no registered", ids -> Collections.emptyMap());
         });
         Assert.assertNull(container1);
         Assert.assertTrue(configuration.containsContainer("no registered"));
 
-        Container<?> container2 = configuration.replaceContainer("no registered", container -> {
+        Container<?> container2 = configuration.compute("no registered", container -> {
             Assert.assertNotNull(container);
             return null;
         });

@@ -4,6 +4,7 @@ import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.support.callback.ContainerRegisterAware;
 
 import javax.annotation.Nullable;
+import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 /**
@@ -22,6 +23,16 @@ public interface ConfigurableContainerProvider extends ContainerProvider {
     void addContainerRegisterAware(ContainerRegisterAware containerRegisterAware);
 
     /**
+     * Get container if exists, otherwise create a new container.
+     *
+     * @param namespace namespace
+     * @param containerFactory container factory
+     * @return container
+     */
+    @Nullable
+    Container<?> getContainer(String namespace, Supplier<Container<?>> containerFactory);
+
+    /**
      * Replace the registered container.
      * <ul>
      *     <li>if the container is not registered, it will be added;</li>
@@ -33,7 +44,7 @@ public interface ConfigurableContainerProvider extends ContainerProvider {
      * @return old container
      */
     @Nullable
-    Container<?> replaceContainer(String namespace, UnaryOperator<Container<?>> replacer);
+    Container<?> compute(String namespace, UnaryOperator<Container<?>> replacer);
 
     /**
      * Register container.

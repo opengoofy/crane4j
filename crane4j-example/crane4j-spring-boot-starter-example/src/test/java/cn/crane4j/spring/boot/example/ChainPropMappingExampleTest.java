@@ -43,7 +43,7 @@ public class ChainPropMappingExampleTest {
                 Function.identity(), id -> new Foo(id, null, new Foo(null, "name" + id, null))
             ))
         );
-        context.replaceContainer(oneToOne.getNamespace(), c -> oneToOne);
+        context.compute(oneToOne.getNamespace(), c -> oneToOne);
         Container<Integer> oneToMany = LambdaContainer.forLambda(
             "OneToMany", ids -> ids.stream().collect(Collectors.toMap(
                 Function.identity(), id -> Arrays.asList(
@@ -51,7 +51,7 @@ public class ChainPropMappingExampleTest {
                 )
             ))
         );
-        context.replaceContainer(oneToMany.getNamespace(), c -> oneToMany);
+        context.compute(oneToMany.getNamespace(), c -> oneToMany);
     }
 
     @Test

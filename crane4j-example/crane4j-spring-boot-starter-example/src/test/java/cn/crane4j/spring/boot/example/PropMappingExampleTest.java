@@ -49,7 +49,7 @@ public class PropMappingExampleTest {
             source.put("age", 18 + i);
             sources.put(i, source);
         }
-        context.replaceContainer(
+        context.compute(
             "student", c -> ObjectUtil.defaultIfNull(c, ConstantContainer.forMap("student", sources))
         );
     }
