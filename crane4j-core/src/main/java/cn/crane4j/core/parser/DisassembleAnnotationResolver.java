@@ -1,7 +1,7 @@
 package cn.crane4j.core.parser;
 
 import cn.crane4j.annotation.Disassemble;
-import cn.crane4j.annotation.Operations;
+import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
@@ -9,49 +9,31 @@ import cn.crane4j.core.support.Sorted;
 import cn.crane4j.core.util.ConfigurationUtil;
 import cn.crane4j.core.util.ReflectUtils;
 import cn.hutool.core.lang.Assert;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.AnnotatedElement;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
  * <p>Annotation-based {@link OperationAnnotationResolver} implementation
  * that the construction of operation configuration
- * by resolving annotations based on {@link Disassemble}
- * and {@link Operations} on classes and attributes.
+ * by resolving annotations based on {@link Disassemble} on classes and attributes.
  *
  * @author huangchengxing
- * @see Operations
  * @see Disassemble
  * @since 1.2.0
  */
-public class DisassembleAnnotationResolver extends AbstractOperationAnnotationResolver {
+@Slf4j
+@RequiredArgsConstructor
+public class DisassembleAnnotationResolver implements OperationAnnotationResolver {
 
     protected static final String ANNOTATION_KEY_ATTRIBUTE = "key";
+    protected final AnnotationFinder annotationFinder;
     protected final Crane4jGlobalConfiguration globalConfiguration;
-
-    /**
-     * Create a {@link DisassembleAnnotationResolver} instance.
-     *
-     * @param annotationFinder annotation finder
-     * @param globalConfiguration global configuration
-     * @param operationComparator operation comparator
-     */
-    public DisassembleAnnotationResolver(
-        AnnotationFinder annotationFinder,
-        Crane4jGlobalConfiguration globalConfiguration,
-        Comparator<KeyTriggerOperation> operationComparator) {
-        super(annotationFinder, operationComparator);
-        this.globalConfiguration = globalConfiguration;
-    }
+    protected final Comparator<KeyTriggerOperation> operationComparator;
 
     /**
      * <p>Create a {@link DisassembleAnnotationResolver} instance.<br />
@@ -66,13 +48,27 @@ public class DisassembleAnnotationResolver extends AbstractOperationAnnotationRe
     }
 
     /**
+     * Resolve operations from type
+     *
+     * @param parser         parser
+     * @param beanOperations bean operations to be resolver
+     */
+    @Override
+    public void resolve(BeanOperationParser parser, BeanOperations beanOperations) {
+        List<DisassembleOperation> disassembleOperations = parseDisassembleOperations(parser, beanOperations)
+            .stream()
+            .sorted(operationComparator)
+            .collect(Collectors.toList());
+        disassembleOperations.forEach(beanOperations::addDisassembleOperations);
+    }
+
+    /**
      * Parse assemble operations from {@link Disassemble} annotations on class.
      *
      * @param parser parser
      * @param beanOperations operations of current to resolve
      * @return {@link DisassembleOperation}
      */
-    @Override
     protected List<DisassembleOperation> parseDisassembleOperations(BeanOperationParser parser, BeanOperations beanOperations) {
         AnnotatedElement source = beanOperations.getSource();
         if (!(source instanceof Class)) {
@@ -114,7 +110,10 @@ public class DisassembleAnnotationResolver extends AbstractOperationAnnotationRe
         DisassembleOperationHandler disassembleOperationHandler = ConfigurationUtil.getDisassembleOperationHandler(
             globalConfiguration, annotation.handlerName(), annotation.handler()
         );
-        Assert.notNull(disassembleOperationHandler, throwException("disassemble handler [{}]({}) not found", annotation.handlerName(), annotation.handler()));
+        Assert.notNull(
+            disassembleOperationHandler,
+            () -> new Crane4jException("disassemble handler [{}]({}) not found", annotation.handlerName(), annotation.handler())
+        );
 
         // wait until runtime to dynamically determine the actual type if no type is specified
         DisassembleOperation operation;
@@ -140,18 +139,12 @@ public class DisassembleAnnotationResolver extends AbstractOperationAnnotationRe
     }
 
     /**
-     * Parse {@link Operations} and {@link Disassemble} annotations for class.
+     * Parse {@link Disassemble} annotations for class.
      *
      * @param beanType bean type
      * @return {@link Disassemble}
      */
     protected Collection<Disassemble> resolveClassLevelAnnotations(Class<?> beanType) {
-        Set<Disassemble> disassembles = annotationFinder.getAllAnnotations(beanType, Disassemble.class);
-        List<Disassemble> operations = Optional.ofNullable(annotationFinder.getAnnotation(beanType, Operations.class))
-            .map(Operations::disassembles)
-            .map(Arrays::asList)
-            .orElseGet(Collections::emptyList);
-        disassembles.addAll(operations);
-        return disassembles;
+        return annotationFinder.getAllAnnotations(beanType, Disassemble.class);
     }
 }

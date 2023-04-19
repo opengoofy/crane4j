@@ -3,6 +3,7 @@ package cn.crane4j.extension.spring;
 import cn.crane4j.annotation.Assemble;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerProvider;
+import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.parser.AssembleAnnotationResolver;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
@@ -13,6 +14,7 @@ import cn.crane4j.core.util.ReflectUtils;
 import cn.crane4j.extension.spring.expression.SpelExpressionContext;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.ObjectUtil;
+import com.google.common.collect.Multimap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.EmbeddedValueResolverAware;
 import org.springframework.core.annotation.AnnotatedElementUtils;
@@ -20,10 +22,9 @@ import org.springframework.core.annotation.Order;
 import org.springframework.expression.BeanResolver;
 import org.springframework.util.StringValueResolver;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.util.List;
+import java.lang.reflect.AnnotatedElement;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * <p>Extension implementation of {@link AssembleAnnotationResolver},
@@ -62,6 +63,22 @@ public class SpringAssembleAnnotationResolver
     }
 
     /**
+     * Parse annotation for fields
+     *
+     * @param beanType bean type
+     * @return element and annotation map
+     */
+    @Override
+    protected Multimap<AnnotatedElement, Assemble> parseAnnotationForFields(Class<?> beanType) {
+        Multimap<AnnotatedElement, Assemble> result = super.parseAnnotationForFields(beanType);
+        result.forEach((e, a) -> Optional
+            .ofNullable(AnnotatedElementUtils.findMergedAnnotation(e, Order.class))
+            .ifPresent(o -> ReflectUtils.setAttributeValue(a, "sort", o.value()))
+        );
+        return result;
+    }
+
+    /**
      * Get container.
      *
      * @param annotation annotation
@@ -89,23 +106,10 @@ public class SpringAssembleAnnotationResolver
         if (Objects.isNull(container)) {
             container = provider.getContainer(namespace);
         }
-        Assert.notNull(
-            container, throwException("cannot find container [{}] from provider [{}]", annotation.container(), provider.getClass())
-        );
+        Assert.notNull(container, () -> new Crane4jException(
+            "cannot find container [{}] from provider [{}]", annotation.container(), annotation.containerProvider()
+        ));
         return container;
-    }
-
-    /**
-     * Parse {@link Assemble} annotations for class.
-     *
-     * @param beanType bean type
-     * @return {@link Assemble}
-     */
-    @Override
-    protected List<Assemble> resolveFieldLevelAnnotations(Class<?> beanType) {
-        return ReflectUtils.parseAnnotationForDeclaredFields(
-            annotationFinder, beanType, Assemble.class, SpringAssembleAnnotationResolver::processAnnotation
-        );
     }
 
     private Container<?> getContainerByExpression(String expression, ContainerProvider provider) {
@@ -125,17 +129,6 @@ public class SpringAssembleAnnotationResolver
             return provider.getContainer((String)target);
         }
         return null;
-    }
-
-    private static <T extends Annotation> T processAnnotation(T a, Field f) {
-        // force value to be set to the annotated attribute name
-        ReflectUtils.setAttributeValue(a, ANNOTATION_KEY_ATTRIBUTE, f.getName());
-        // force sort if field annotated by @Order
-        Order annotation = AnnotatedElementUtils.findMergedAnnotation(f, Order.class);
-        if (Objects.nonNull(annotation)) {
-            ReflectUtils.setAttributeValue(a, "sort", annotation.value());
-        }
-        return a;
     }
 
     /**
