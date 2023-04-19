@@ -11,27 +11,11 @@ import lombok.NoArgsConstructor;
 
 import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Member;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.lang.reflect.*;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -64,6 +48,19 @@ public class ReflectUtils {
      * declared super class with interface
      */
     private static final Map<Class<?>, Set<Class<?>>> DECLARED_SUPER_CLASS_WITH_INTERFACE = CollectionUtils.newWeakConcurrentMap();
+
+    /**
+     * Get all attribute value of annotation.
+     *
+     * @param annotation annotation
+     * @return all attribute value of annotation
+     */
+    public static Map<String, Object> getAnnotationAttributes(Annotation annotation) {
+        return Stream.of(getDeclaredMethods(annotation.annotationType()))
+            .filter(m -> m.getParameterCount() == 0)
+            .filter(m -> !Objects.equals(m.getReturnType(), Void.TYPE))
+            .collect(Collectors.toMap(Method::getName, m -> ReflectUtil.invoke(annotation, m)));
+    }
 
     /**
      * Whether the {@code element} is from jdk.

@@ -4,7 +4,6 @@ import cn.crane4j.annotation.Assemble;
 import cn.crane4j.annotation.Disassemble;
 import cn.crane4j.annotation.Mapping;
 import cn.crane4j.annotation.MappingTemplate;
-import cn.crane4j.annotation.Operations;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.LambdaContainer;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
@@ -20,11 +19,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -103,7 +98,7 @@ public class TypeHierarchyBeanOperationParserTest {
     private void checkNestedBean(BeanOperations nestedBeanOperations, BeanOperations beanOperations) {
         Assert.assertNotNull(nestedBeanOperations);
         Collection<AssembleOperation> assembles = nestedBeanOperations.getAssembleOperations();
-        Assert.assertEquals(2, beanOperations.getAssembleOperations().size());
+        Assert.assertEquals(2, assembles.size());
 
         // assemble : key -> value
         AssembleOperation keyValue = CollUtil.get(assembles, 0);
@@ -202,22 +197,16 @@ public class TypeHierarchyBeanOperationParserTest {
      * 由于在@Assemble中指定排序值小于父类中@Assemble的排序值，
      * 因此子类的操作会更优先执行
      */
-    @Operations(
-        assembles = @Assemble(
-            key = "key",
-            container = CONTAINER_NAME, sort = SUB_SORT,
-            groups = GROUP,
-            propTemplates = MappingTemp.class
-        ),
-
-        // 拆卸操作
-        disassembles = {
-            // 此处嵌套对象类型为确定类型，并且构成循环引用
-            @Disassemble(key = "bean", type = Bean.class, sort = SUB_SORT, groups = GROUP),
-            // 此处嵌套对象类型为无法确定的泛型，故不指定类型而等到执行时再推断
-            @Disassemble(key = "dynamicBean", groups = GROUP)
-        }
+    @Assemble(
+        key = "key",
+        container = CONTAINER_NAME, sort = SUB_SORT,
+        groups = GROUP,
+        propTemplates = MappingTemp.class
     )
+    // 此处嵌套对象类型为确定类型，并且构成循环引用
+    @Disassemble(key = "bean", type = Bean.class, sort = SUB_SORT, groups = GROUP)
+    // 此处嵌套对象类型为无法确定的泛型，故不指定类型而等到执行时再推断
+    @Disassemble(key = "dynamicBean", groups = GROUP)
     private static class NestedBean<T> extends BaseBean {
         private String key;
         private String value;

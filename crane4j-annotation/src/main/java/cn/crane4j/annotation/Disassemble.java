@@ -43,7 +43,7 @@ import java.lang.annotation.*;
  */
 @Repeatable(value = Disassemble.List.class)
 @Documented
-@Target({ElementType.ANNOTATION_TYPE, ElementType.FIELD})
+@Target({ElementType.ANNOTATION_TYPE, ElementType.FIELD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Disassemble {
 
@@ -99,7 +99,7 @@ public @interface Disassemble {
      * @author huangchengxing
      */
     @Documented
-    @Target({ElementType.FIELD, ElementType.ANNOTATION_TYPE})
+    @Target({ElementType.FIELD, ElementType.ANNOTATION_TYPE, ElementType.TYPE})
     @Retention(RetentionPolicy.RUNTIME)
     @interface List {
         Disassemble[] value();
