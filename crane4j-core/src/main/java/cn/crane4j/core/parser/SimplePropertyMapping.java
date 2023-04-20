@@ -1,6 +1,7 @@
 package cn.crane4j.core.parser;
 
 import cn.hutool.core.text.CharSequenceUtil;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 /**
@@ -8,11 +9,14 @@ import lombok.Getter;
  *
  * @author huangchengxing
  */
+@EqualsAndHashCode
 public class SimplePropertyMapping implements PropertyMapping {
 
+    @EqualsAndHashCode.Include
     @Getter
     private final String source;
     private final boolean hasSource;
+    @EqualsAndHashCode.Include
     @Getter
     private final String reference;
 
