@@ -6,7 +6,7 @@ import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.ParameterNameFinder;
 import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
 import cn.crane4j.core.util.CollectionUtils;
-import cn.crane4j.core.util.MethodUtils;
+import cn.crane4j.core.util.ReflectUtils;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ArrayUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -110,7 +110,7 @@ public class MethodArgumentAutoOperateSupport {
      * @return operation configuration of method parameters
      */
     protected AutoOperateAnnotatedElement[] resolveParameters(ArgAutoOperate argAutoOperate, Method method) {
-        Map<String, Parameter> parameterMap = MethodUtils.resolveParameterNames(parameterNameFinder, method);
+        Map<String, Parameter> parameterMap = ReflectUtils.resolveParameterNames(parameterNameFinder, method);
         Map<String, AutoOperate> methodLevelAnnotations = Stream.of(argAutoOperate.value())
             .collect(Collectors.toMap(AutoOperate::value, Function.identity()));
 

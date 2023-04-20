@@ -5,6 +5,7 @@ import cn.crane4j.annotation.ContainerEnum;
 import cn.crane4j.annotation.ContainerMethod;
 import cn.crane4j.core.cache.CacheManager;
 import cn.crane4j.core.cache.ConcurrentMapCacheManager;
+import cn.crane4j.core.container.ConfigurableContainerProvider;
 import cn.crane4j.core.container.ConstantContainer;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.SharedContextContainerProvider;
@@ -16,6 +17,7 @@ import cn.crane4j.core.executor.handler.OneToManyReflexAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.OneToOneReflexAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
 import cn.crane4j.core.parser.AssembleAnnotationResolver;
+import cn.crane4j.core.parser.AssembleEnumAnnotationResolver;
 import cn.crane4j.core.parser.AssembleOperation;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.DisassembleAnnotationResolver;
@@ -210,6 +212,14 @@ public class Crane4jAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
+    public AssembleEnumAnnotationResolver assembleEnumAnnotationResolver(
+        AnnotationFinder annotationFinder, Crane4jGlobalConfiguration globalConfiguration,
+        PropertyOperator propertyOperator, ConfigurableContainerProvider containerProvider) {
+        return new AssembleEnumAnnotationResolver(annotationFinder, globalConfiguration, propertyOperator, containerProvider);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
     public TypeHierarchyBeanOperationParser typeHierarchyBeanOperationParser(Collection<OperationAnnotationResolver> resolvers) {
         return new TypeHierarchyBeanOperationParser(resolvers);
     }
@@ -383,10 +393,11 @@ public class Crane4jAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public Crane4jInitializer crane4jInitializer(
-        MetadataReaderFactory readerFactory, ResourcePatternResolver resolver, ApplicationContext applicationContext,
-        AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration, Properties properties) {
+        MetadataReaderFactory readerFactory, ResourcePatternResolver resolver, PropertyOperator propertyOperator,
+        ApplicationContext applicationContext, AnnotationFinder annotationFinder,
+        Crane4jGlobalConfiguration configuration, Properties properties) {
         return new Crane4jInitializer(
-            readerFactory, resolver, applicationContext, properties, annotationFinder, configuration
+            readerFactory, resolver, propertyOperator, applicationContext, properties, annotationFinder, configuration
         );
     }
 
@@ -526,6 +537,7 @@ public class Crane4jAutoConfiguration {
         private final MetadataReaderFactory readerFactory;
         private final ResourcePatternResolver resolver;
 
+        private final PropertyOperator propertyOperator;
         private final ApplicationContext applicationContext;
         private final Properties properties;
         private final AnnotationFinder annotationFinder;
@@ -562,7 +574,7 @@ public class Crane4jAutoConfiguration {
                 boolean supported = targetType.isEnum()
                     && (!properties.isOnlyLoadAnnotatedEnum() || AnnotatedElementUtils.isAnnotated(targetType, ContainerEnum.class));
                 if (supported) {
-                    Container<Enum<?>> container = ConstantContainer.forEnum((Class<Enum<?>>)targetType, annotationFinder);
+                    Container<Enum<?>> container = ConstantContainer.forEnum((Class<Enum<?>>)targetType, annotationFinder, propertyOperator);
                     configuration.registerContainer(container);
                 }
             }));

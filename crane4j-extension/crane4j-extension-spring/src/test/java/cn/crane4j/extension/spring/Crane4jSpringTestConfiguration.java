@@ -2,6 +2,7 @@ package cn.crane4j.extension.spring;
 
 import cn.crane4j.core.cache.CacheManager;
 import cn.crane4j.core.cache.ConcurrentMapCacheManager;
+import cn.crane4j.core.container.ConfigurableContainerProvider;
 import cn.crane4j.core.container.SharedContextContainerProvider;
 import cn.crane4j.core.container.ThreadContextContainerProvider;
 import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
@@ -10,6 +11,7 @@ import cn.crane4j.core.executor.handler.ManyToManyReflexAssembleOperationHandler
 import cn.crane4j.core.executor.handler.OneToManyReflexAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.OneToOneReflexAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
+import cn.crane4j.core.parser.AssembleEnumAnnotationResolver;
 import cn.crane4j.core.parser.AssembleOperation;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.DisassembleAnnotationResolver;
@@ -131,6 +133,13 @@ public class Crane4jSpringTestConfiguration {
     public DisassembleAnnotationResolver disassembleAnnotationResolver(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration) {
         return new DisassembleAnnotationResolver(annotationFinder, configuration);
+    }
+
+    @Bean
+    public AssembleEnumAnnotationResolver assembleEnumAnnotationResolver(
+        AnnotationFinder annotationFinder, Crane4jGlobalConfiguration globalConfiguration,
+        PropertyOperator propertyOperator, ConfigurableContainerProvider containerProvider) {
+        return new AssembleEnumAnnotationResolver(annotationFinder, globalConfiguration, propertyOperator, containerProvider);
     }
 
     @Primary

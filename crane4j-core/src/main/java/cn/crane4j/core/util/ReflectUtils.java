@@ -1,9 +1,11 @@
 package cn.crane4j.core.util;
 
 import cn.crane4j.core.support.AnnotationFinder;
+import cn.crane4j.core.support.ParameterNameFinder;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.text.CharSequenceUtil;
+import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.ReflectUtil;
 import lombok.AccessLevel;
@@ -11,8 +13,26 @@ import lombok.NoArgsConstructor;
 
 import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.*;
-import java.util.*;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.lang.reflect.Proxy;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -48,6 +68,30 @@ public class ReflectUtils {
      * declared super class with interface
      */
     private static final Map<Class<?>, Set<Class<?>>> DECLARED_SUPER_CLASS_WITH_INTERFACE = CollectionUtils.newWeakConcurrentMap();
+
+    /**
+     * Resolve method parameter names.
+     *
+     * @param finder discoverer
+     * @param method method
+     * @return collection of parameter name and parameter
+     */
+    @SuppressWarnings("all")
+    public static Map<String, Parameter> resolveParameterNames(ParameterNameFinder finder, Method method) {
+        Parameter[] parameters = method.getParameters();
+        String[] parameterNames = finder.getParameterNames(method);
+        if (ArrayUtil.isEmpty(parameters)) {
+            return Collections.emptyMap();
+        }
+        Map<String, Parameter> parameterMap = new LinkedHashMap<>(parameters.length);
+        int nameLength = ArrayUtil.length(parameterNames);
+        for (int i = 0; i < parameters.length; i++) {
+            Parameter parameter = parameters[i];
+            String parameterName = nameLength <= i ? parameter.getName() : parameterNames[i];
+            parameterMap.put(parameterName, parameter);
+        }
+        return parameterMap;
+    }
 
     /**
      * Get all attribute value of annotation.
@@ -105,6 +149,12 @@ public class ReflectUtils {
             .orElse(null);
     }
 
+    /**
+     * Get declared super class with interface.
+     *
+     * @param type type
+     * @return declared super class with interface
+     */
     public static Set<Class<?>> getDeclaredSuperClassWithInterface(Class<?> type) {
         return CollectionUtils.computeIfAbsent(DECLARED_SUPER_CLASS_WITH_INTERFACE, type, k -> {
             Set<Class<?>> result = new LinkedHashSet<>();

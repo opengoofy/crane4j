@@ -19,7 +19,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -45,12 +49,11 @@ public class TypeHierarchyBeanOperationParserTest {
     @Before
     public void init() {
         SimpleCrane4jGlobalConfiguration configuration = new SimpleCrane4jGlobalConfiguration();
-        parser = new TypeHierarchyBeanOperationParser(
-            Arrays.asList(
-                new AssembleAnnotationResolver(new SimpleAnnotationFinder(), configuration).setLazyLoadAssembleContainer(false),
-                new DisassembleAnnotationResolver(new SimpleAnnotationFinder(), configuration)
-            )
-        );
+        parser = new TypeHierarchyBeanOperationParser(Arrays.asList(
+            new AssembleAnnotationResolver(new SimpleAnnotationFinder(), configuration).setLazyLoadAssembleContainer(false),
+            new DisassembleAnnotationResolver(new SimpleAnnotationFinder(), configuration),
+            new AssembleEnumAnnotationResolver(new SimpleAnnotationFinder(), configuration, configuration.getPropertyOperator(), configuration)
+        ));
         configuration.setTypeResolver(new SimpleTypeResolver());
         configuration.registerContainer(CONTAINER);
 

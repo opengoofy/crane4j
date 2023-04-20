@@ -23,7 +23,11 @@ import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -34,6 +38,7 @@ import java.util.stream.Stream;
  * Overwrite {@link #createAssembleOperation} to implement custom parsing logic.
  *
  * @author huangchengxing
+ * @param <T> annotation type
  * @see StandardAssembleAnnotation
  * @since 1.3.0
  */
@@ -163,11 +168,11 @@ public abstract class StandardAssembleAnnotationResolver<T extends Annotation> i
         Map<String, Object> attributes = ReflectUtils.getAnnotationAttributes(annotation);
 
         // get configuration of standard assemble operation
-        String key = getKey(attributes);
-        AssembleOperationHandler assembleOperationHandler = getAssembleOperationHandler(attributes);
-        Set<PropertyMapping> propertyMappings = getPropertyMappings(attributes, key);
-        int sort = getSort(attributes);
-        Set<String> groups = getGroups(attributes);
+        String key = parseKey(annotation, attributes);
+        AssembleOperationHandler assembleOperationHandler = parseAssembleOperationHandler(annotation, attributes);
+        Set<PropertyMapping> propertyMappings = parsePropertyMappings(annotation, attributes, key);
+        int sort = parseSort(annotation, attributes);
+        Set<String> groups = parseGroups(annotation, attributes);
 
         // create operation
         AssembleOperation operation = createAssembleOperation(annotation, sort, key, assembleOperationHandler, propertyMappings);
@@ -205,7 +210,14 @@ public abstract class StandardAssembleAnnotationResolver<T extends Annotation> i
 
     // =============== process standard configuration ===============
 
-    private String getKey(Map<String, Object> attributes) {
+    /**
+     * Get groups from given {@code attributes}.
+     *
+     * @param annotation annotation
+     * @param attributes attributes
+     * @return groups
+     */
+    protected String parseKey(T annotation, Map<String, Object> attributes) {
         String key = (String)attributes.get(standardAssembleAnnotation.keyAttribute());
         Assert.isTrue(
             CharSequenceUtil.isNotBlank(key), () -> new Crane4jException("the key of assemble operation must not blank")
@@ -213,7 +225,14 @@ public abstract class StandardAssembleAnnotationResolver<T extends Annotation> i
         return key;
     }
 
-    private AssembleOperationHandler getAssembleOperationHandler(Map<String, Object> attributes) {
+    /**
+     * Get assemble operation groups from given {@code attributes}.
+     *
+     * @param annotation annotation
+     * @param attributes attributes
+     * @return assemble operation groups
+     */
+    protected AssembleOperationHandler parseAssembleOperationHandler(T annotation, Map<String, Object> attributes) {
         Class<?> handler = (Class<?>)attributes.get(standardAssembleAnnotation.handlerAttribute());
         String handlerName = (String)attributes.get(standardAssembleAnnotation.handlerNameAttribute());
         AssembleOperationHandler assembleOperationHandler = ConfigurationUtil.getAssembleOperationHandler(
@@ -226,7 +245,15 @@ public abstract class StandardAssembleAnnotationResolver<T extends Annotation> i
         return assembleOperationHandler;
     }
 
-    private Set<PropertyMapping> getPropertyMappings(Map<String, Object> attributes, String key) {
+    /**
+     * Get property mapping from given {@code attributes}.
+     *
+     * @param annotation annotation
+     * @param attributes attributes
+     * @param key key
+     * @return assemble operation groups
+     */
+    protected Set<PropertyMapping> parsePropertyMappings(T annotation, Map<String, Object> attributes, String key) {
         Mapping[] props = (Mapping[])attributes.get(standardAssembleAnnotation.propsAttribute());
         Set<PropertyMapping> propertyMappings = Stream.of(props)
             .map(m -> ConfigurationUtil.createPropertyMapping(m, key))
@@ -239,11 +266,25 @@ public abstract class StandardAssembleAnnotationResolver<T extends Annotation> i
         return propertyMappings;
     }
 
-    private int getSort(Map<String, Object> attributes) {
+    /**
+     * Get sort value from given {@code attributes}.
+     *
+     * @param annotation annotation
+     * @param attributes attributes
+     * @return assemble operation groups
+     */
+    protected int parseSort(T annotation, Map<String, Object> attributes) {
         return (int)attributes.get(standardAssembleAnnotation.sortAttribute());
     }
 
-    private Set<String> getGroups(Map<String, Object> attributes) {
+    /**
+     * Get groups from given {@code attributes}.
+     *
+     * @param annotation annotation
+     * @param attributes attributes
+     * @return groups
+     */
+    protected Set<String> parseGroups(T annotation, Map<String, Object> attributes) {
         return Stream.of((String[])attributes.get(standardAssembleAnnotation.groupsAttribute()))
             .collect(Collectors.toSet());
     }

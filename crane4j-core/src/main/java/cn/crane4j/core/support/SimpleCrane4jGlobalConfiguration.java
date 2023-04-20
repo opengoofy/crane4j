@@ -18,6 +18,7 @@ import cn.crane4j.core.executor.handler.OneToManyReflexAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.OneToOneReflexAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
 import cn.crane4j.core.parser.AssembleAnnotationResolver;
+import cn.crane4j.core.parser.AssembleEnumAnnotationResolver;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.DisassembleAnnotationResolver;
 import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
@@ -35,6 +36,7 @@ import lombok.Setter;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,6 +62,15 @@ public class SimpleCrane4jGlobalConfiguration
     /**
      * Create a {@link SimpleCrane4jGlobalConfiguration} using the default configuration.
      *
+     * @return configuration
+     */
+    public static SimpleCrane4jGlobalConfiguration create() {
+        return create(Collections.emptyMap());
+    }
+
+    /**
+     * Create a {@link SimpleCrane4jGlobalConfiguration} using the default configuration.
+     *
      * @param cacheConfig cacheConfig
      * @return configuration
      */
@@ -81,12 +92,11 @@ public class SimpleCrane4jGlobalConfiguration
 
         // operation parser
         AnnotationFinder annotationFinder = new SimpleAnnotationFinder();
-        BeanOperationParser beanOperationParser = new TypeHierarchyBeanOperationParser(
-            Arrays.asList(
-                new AssembleAnnotationResolver(annotationFinder, configuration),
-                new DisassembleAnnotationResolver(annotationFinder, configuration)
-            )
-        );
+        BeanOperationParser beanOperationParser = new TypeHierarchyBeanOperationParser(Arrays.asList(
+            new AssembleAnnotationResolver(annotationFinder, configuration),
+            new DisassembleAnnotationResolver(annotationFinder, configuration),
+            new AssembleEnumAnnotationResolver(annotationFinder, configuration, operator, configuration)
+        ));
         configuration.getBeanOperationParserMap().put(BeanOperationParser.class.getName(), beanOperationParser);
         configuration.getBeanOperationParserMap().put(beanOperationParser.getClass().getName(), beanOperationParser);
 
@@ -109,6 +119,7 @@ public class SimpleCrane4jGlobalConfiguration
         configuration.getDisassembleOperationHandlerMap().put(DisassembleOperationHandler.class.getName(), reflectDisassembleOperationHandler);
         configuration.getDisassembleOperationHandlerMap().put(reflectDisassembleOperationHandler.getClass().getName(), reflectDisassembleOperationHandler);
 
+        // container provider
         configuration.getContainerProviderMap().put(configuration.getClass().getName(), configuration);
         configuration.getContainerProviderMap().put(ContainerProvider.class.getName(), configuration);
         ThreadContextContainerProvider threadContextContainerProvider = new ThreadContextContainerProvider();

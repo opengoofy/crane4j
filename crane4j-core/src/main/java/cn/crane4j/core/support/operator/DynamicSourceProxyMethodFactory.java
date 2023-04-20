@@ -10,7 +10,7 @@ import cn.crane4j.core.support.DataProvider;
 import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.support.ParameterNameFinder;
 import cn.crane4j.core.util.CollectionUtils;
-import cn.crane4j.core.util.MethodUtils;
+import cn.crane4j.core.util.ReflectUtils;
 import cn.hutool.core.text.CharSequenceUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -61,7 +61,7 @@ public class DynamicSourceProxyMethodFactory implements OperatorProxyFactory.Pro
     @Nullable
     @Override
     public MethodInvoker get(BeanOperations beanOperations, Method method, BeanOperationExecutor beanOperationExecutor) {
-        Map<String, Parameter> parameterMap = MethodUtils.resolveParameterNames(parameterNameFinder, method);
+        Map<String, Parameter> parameterMap = ReflectUtils.resolveParameterNames(parameterNameFinder, method);
         DataProviderFactory[] dataProviderFactories = new DataProviderFactory[parameterMap.size()];
         int paramIndex = 0;
         boolean noneContainerParameters = true;

@@ -3,6 +3,7 @@ package cn.crane4j.core.container;
 import cn.crane4j.annotation.ContainerConstant;
 import cn.crane4j.annotation.ContainerEnum;
 import cn.crane4j.core.support.AnnotationFinder;
+import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.text.CharSequenceUtil;
@@ -79,14 +80,13 @@ public class ConstantContainer<K> implements Container<K> {
      *
      * @param enumType enum type
      * @param annotationFinder annotation finder
-     * @param <K> key type
-     * @param <T> enumeration type
+     * @param propertyOperator property operator
      * @return container
      * @see ContainerEnum
      */
     @SuppressWarnings("unchecked")
-    public static <K, T extends Enum<?>> ConstantContainer<K> forEnum(
-        Class<T> enumType, AnnotationFinder annotationFinder) {
+    public static <K> ConstantContainer<K> forEnum(
+        Class<? extends Enum<?>> enumType, AnnotationFinder annotationFinder, PropertyOperator propertyOperator) {
         Objects.requireNonNull(enumType);
         Objects.requireNonNull(annotationFinder);
         // enumeration is not annotated
@@ -94,32 +94,14 @@ public class ConstantContainer<K> implements Container<K> {
         if (Objects.isNull(annotation)) {
             return (ConstantContainer<K>)forEnum(enumType.getSimpleName(), enumType, Enum::name);
         }
-
-        // if the namespace is empty, it defaults to the class name itself
         String namespace = CharSequenceUtil.emptyToDefault(annotation.namespace(), enumType.getSimpleName());
-        // if the key field is empty, the default is enumeration name
-        Function<? super T, ? extends K> keyMapper = CharSequenceUtil.isEmpty(annotation.key()) ?
-            e -> (K)e.name() : e ->(K)ReflectUtil.getFieldValue(e, annotation.key());
-        // if the value field is empty, it defaults to the enumeration item itself
-        Function<? super T, ?> valueMapper = CharSequenceUtil.isEmpty(annotation.value()) ?
-            Function.identity() : e -> (K)ReflectUtil.getFieldValue(e, annotation.value());
-        Map<K, Object> data = Stream.of(enumType.getEnumConstants()).collect(Collectors.toMap(keyMapper, valueMapper));
-        return forMap(namespace, data);
-    }
-
-    /**
-     * <p>Create a key-value pair container based on the specified type enumeration.<br />
-     * The key value is the enumeration attribute value obtained by {@code keyGetter}.
-     *
-     * @param namespace namespace
-     * @param data data source objects grouped by key value
-     * @param <K> key type
-     * @return container
-     */
-    public static <K> ConstantContainer<K> forMap(String namespace, Map<K, ?> data) {
-        Objects.requireNonNull(namespace);
-        Assert.notEmpty(data, "data must not empty");
-        return new ConstantContainer<>(namespace, data);
+        boolean hasKey = CharSequenceUtil.isNotEmpty(annotation.key());
+        boolean hasValue = CharSequenceUtil.isNotEmpty(annotation.value());
+        Map<K, Object> map = Stream.of(enumType.getEnumConstants()).collect(Collectors.toMap(
+            e -> hasKey ? (K)Objects.requireNonNull(propertyOperator.readProperty(enumType, e, annotation.key())) : (K)e.name(),
+            e -> hasValue ? Objects.requireNonNull(propertyOperator.readProperty(enumType, e, annotation.value())) : e
+        ));
+        return forMap(namespace, map);
     }
 
     /**
@@ -153,6 +135,21 @@ public class ConstantContainer<K> implements Container<K> {
         // build container
         String namespace = CharSequenceUtil.emptyToDefault(annotation.namespace(), constantClass.getSimpleName());
         return forMap(namespace, annotation.reverse() ? MapUtil.reverse(data) : data);
+    }
+
+    /**
+     * <p>Create a key-value pair container based on the specified type enumeration.<br />
+     * The key value is the enumeration attribute value obtained by {@code keyGetter}.
+     *
+     * @param namespace namespace
+     * @param data data source objects grouped by key value
+     * @param <K> key type
+     * @return container
+     */
+    public static <K> ConstantContainer<K> forMap(String namespace, Map<K, ?> data) {
+        Objects.requireNonNull(namespace);
+        Assert.notEmpty(data, "data must not empty");
+        return new ConstantContainer<>(namespace, data);
     }
 
     /**
