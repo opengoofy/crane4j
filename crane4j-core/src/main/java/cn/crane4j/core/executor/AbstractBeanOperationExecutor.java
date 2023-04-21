@@ -41,7 +41,7 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
             return;
         }
         if (!operations.isActive()) {
-            log.warn("bean operation of [{}] is not activated", operations.getSource());
+            log.warn("bean operation of [{}] is still not ready, please try again", operations.getSource());
             return;
         }
         // complete the disassembly first if necessary

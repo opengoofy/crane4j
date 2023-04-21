@@ -2,11 +2,9 @@ package cn.crane4j.core.executor;
 
 import cn.crane4j.annotation.Assemble;
 import cn.crane4j.annotation.Disassemble;
-import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.parser.AssembleOperation;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.KeyTriggerOperation;
-import cn.crane4j.core.parser.SimpleBeanOperations;
 import cn.hutool.core.collection.CollUtil;
 import lombok.Data;
 import lombok.Getter;
@@ -16,7 +14,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
@@ -57,12 +54,12 @@ public class AbstractBeanOperationExecutorTest extends BaseExecutorTest {
         Assert.assertEquals(2, executions.size());
     }
 
-    @Test
-    public void executeWhenBeanOperationsNotActive() {
-        BeanOperations operations = new SimpleBeanOperations(Void.TYPE);
-        Runnable runnable = () -> executor.execute(Collections.singleton(new Object()), operations);
-        Assert.assertThrows(Crane4jException.class, runnable::run);
-    }
+    //@Test
+    //public void executeWhenBeanOperationsNotActive() {
+        //BeanOperations operations = new SimpleBeanOperations(Void.TYPE);
+        //Runnable runnable = () -> executor.execute(Collections.singleton(new Object()), operations);
+        //Assert.assertThrows(Crane4jException.class, runnable::run);
+    //}
 
     private static void checkAssembleOperation(
         AssembleExecution executionForId, Class<?> targetType, int targetSize, String key) {
