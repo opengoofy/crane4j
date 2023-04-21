@@ -7,7 +7,6 @@ import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.DisassembleOperation;
 import cn.crane4j.core.parser.KeyTriggerOperation;
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.lang.Assert;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import lombok.extern.slf4j.Slf4j;
@@ -41,9 +40,10 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
         if (CollUtil.isEmpty(targets) || Objects.isNull(operations)) {
             return;
         }
-        Assert.isTrue(operations.isActive(), () -> new OperationExecuteException(
-            "bean operation of [{}] is not activated", operations.getSource()
-        ));
+        if (!operations.isActive()) {
+            log.warn("bean operation of [{}] is not activated", operations.getSource());
+            return;
+        }
         // complete the disassembly first if necessary
         Multimap<BeanOperations, Object> collector = LinkedListMultimap.create();
         collector.putAll(operations, targets);
