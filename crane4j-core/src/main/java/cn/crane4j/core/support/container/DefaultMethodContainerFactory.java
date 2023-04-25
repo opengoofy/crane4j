@@ -1,21 +1,12 @@
 package cn.crane4j.core.support.container;
 
 import cn.crane4j.annotation.ContainerMethod;
-import cn.crane4j.annotation.MappingType;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.MethodInvokerContainer;
 import cn.crane4j.core.support.AnnotationFinder;
-import cn.crane4j.core.support.MethodInvoker;
-import cn.crane4j.core.support.reflect.PropertyOperator;
-import cn.hutool.core.text.CharSequenceUtil;
-import cn.hutool.core.util.ReflectUtil;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -27,14 +18,26 @@ import java.util.stream.Collectors;
  * @author huangchengxing
  * @see ContainerMethod
  * @see MethodInvokerContainer
+ * @see MethodInvokerContainerCreator
  */
 @Slf4j
-@RequiredArgsConstructor
 public class DefaultMethodContainerFactory implements MethodContainerFactory {
 
     public static final int ORDER = Integer.MAX_VALUE;
-    protected final PropertyOperator propertyOperator;
+    protected final MethodInvokerContainerCreator methodInvokerContainerCreator;
     protected final AnnotationFinder annotationFinder;
+
+    /**
+     * Create a {@link MethodContainerFactory} instance.
+     *
+     * @param methodInvokerContainerCreator method invoker container creator
+     * @param annotationFinder annotation finder
+     */
+    public DefaultMethodContainerFactory(
+        MethodInvokerContainerCreator methodInvokerContainerCreator, AnnotationFinder annotationFinder) {
+        this.methodInvokerContainerCreator = methodInvokerContainerCreator;
+        this.annotationFinder = annotationFinder;
+    }
 
     /**
      * <p>Gets the sorting value.<br />
@@ -69,50 +72,10 @@ public class DefaultMethodContainerFactory implements MethodContainerFactory {
     @Override
     public List<Container<Object>> get(Object source, Method method) {
         return annotationFinder.findAllAnnotations(method, ContainerMethod.class).stream()
-            .map(annotation -> createContainer(source, method, annotation))
+            .map(annotation -> methodInvokerContainerCreator.createContainer(
+                source, method, annotation.type(), annotation.namespace(),
+                annotation.resultType(), annotation.resultKey()
+            ))
             .collect(Collectors.toList());
-    }
-
-    protected final MethodInvokerContainer createContainer(Object target, Method method, ContainerMethod annotation) {
-        log.debug("create method container from [{}]", method);
-        // get key extractor of result object if necessary
-        MethodInvokerContainer.KeyExtractor keyExtractor = null;
-        if (annotation.type() != MappingType.MAPPED) {
-            MethodInvoker keyGetter = findKeyGetter(annotation);
-            keyExtractor = keyGetter::invoke;
-        }
-        // is proxy object and not declaring by proxy class?
-        MethodInvoker methodInvoker;
-        if (Proxy.isProxyClass(target.getClass()) && !Proxy.isProxyClass(method.getDeclaringClass())) {
-            InvocationHandler handler = Proxy.getInvocationHandler(target);
-            methodInvoker = new JdkProxyMethodInvoker(handler, method);
-        } else {
-            methodInvoker = (t, args) -> ReflectUtil.invoke(t, method, args);
-        }
-        return new MethodInvokerContainer(
-            CharSequenceUtil.emptyToDefault(annotation.namespace(), method.getName()),
-            methodInvoker, target, keyExtractor, annotation.type()
-        );
-    }
-
-    private MethodInvoker findKeyGetter(ContainerMethod annotation) {
-        Class<?> resultType = annotation.resultType();
-        String resultKey = annotation.resultKey();
-        MethodInvoker keyGetter = propertyOperator.findGetter(resultType, resultKey);
-        Objects.requireNonNull(keyGetter, CharSequenceUtil.format(
-            "cannot find getter method [{}] on [{}]", resultKey, resultType
-        ));
-        return keyGetter;
-    }
-
-    @RequiredArgsConstructor
-    private static class JdkProxyMethodInvoker implements MethodInvoker {
-        private final InvocationHandler handler;
-        private final Method method;
-        @SneakyThrows
-        @Override
-        public Object invoke(Object target, Object... args) {
-            return handler.invoke(target, method, args);
-        }
     }
 }
