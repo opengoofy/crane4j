@@ -2,7 +2,7 @@ package cn.crane4j.extension.mybatis.plus;
 
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
-import cn.crane4j.core.support.reflect.PropertyOperator;
+import cn.crane4j.core.support.container.MethodInvokerContainerCreator;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -12,29 +12,26 @@ import java.util.List;
 import java.util.function.Function;
 
 /**
- * <p>A implementation of {@link MpBaseMapperContainerRegister} that support lazy loading.<br />
- * When calling the {@link #getContainer} method,
- * if the Mapper interface used is not registered,
+ * <p>A implementation of {@link MybatisPlusQueryContainerRegister} that support lazy loading.<br />
+ * When calling the {@link #getContainer} method, if the Mapper interface used is not registered,
  * it will be automatically loaded from the Spring context.
  *
  * @author huangchengxing
- * @since 1.2.0
  */
-public class LazyLoadMpBaseMapperContainerRegister extends MpBaseMapperContainerRegister {
+public class LazyLoadMybatisPlusQueryContainerRegister extends MybatisPlusQueryContainerRegister {
 
     private final Function<String, BaseMapper<?>> mapperFactory;
 
     /**
-     * Create a {@link LazyLoadMpBaseMapperContainerRegister} instance.
+     * Create a {@link MybatisPlusQueryContainerRegister} instance
      *
-     * @param crane4jGlobalConfiguration crane4j global configuration
-     * @param propertyOperator property operator
-     * @param mapperFactory mapper factory
+     * @param methodInvokerContainerCreator method invoker container creator
+     * @param globalConfiguration           global configuration
      */
-    public LazyLoadMpBaseMapperContainerRegister(
-        Crane4jGlobalConfiguration crane4jGlobalConfiguration, PropertyOperator propertyOperator,
-        Function<String, BaseMapper<?>> mapperFactory) {
-        super(crane4jGlobalConfiguration, propertyOperator);
+    public LazyLoadMybatisPlusQueryContainerRegister(
+        MethodInvokerContainerCreator methodInvokerContainerCreator,
+        Crane4jGlobalConfiguration globalConfiguration, Function<String, BaseMapper<?>> mapperFactory) {
+        super(methodInvokerContainerCreator, globalConfiguration);
         this.mapperFactory = mapperFactory;
     }
 
@@ -52,9 +49,9 @@ public class LazyLoadMpBaseMapperContainerRegister extends MpBaseMapperContainer
      */
     @Override
     public Container<?> getContainer(String name, @Nullable String keyProperty, @Nullable List<String> properties) {
-        if (!registerMappers.containsKey(name)) {
-            synchronized (registerMappers) {
-                registerMapper(name, mapperFactory.apply(name));
+        if (!registerRepositories.containsKey(name)) {
+            synchronized (registerRepositories) {
+                super.registerRepository(name, mapperFactory.apply(name));
             }
         }
         return super.getContainer(name, keyProperty, properties);

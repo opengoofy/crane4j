@@ -1,12 +1,15 @@
 package cn.crane4j.extension.mybatis.plus;
 
 import cn.crane4j.core.container.Container;
+import cn.crane4j.core.container.MethodInvokerContainer;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.SimpleCrane4jGlobalConfiguration;
+import cn.crane4j.core.support.container.AbstractQueryContainerCreator;
+import cn.crane4j.core.support.container.MethodInvokerContainerCreator;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ArrayUtil;
-import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -16,56 +19,56 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * test for {@link MpBaseMapperContainerRegister}
+ * test for {@link MybatisPlusQueryContainerRegister}
  *
  * @author huangchengxing
  */
-public class MpBaseMapperContainerRegisterTest extends MpBaseTest {
+public class MybatisPlusQueryContainerRegisterTest extends MpBaseTest {
 
-    private MpBaseMapperContainerRegister mapperContainerRegister;
+    private MybatisPlusQueryContainerRegister mybatisPlusQueryContainerRegister;
 
     @Override
     public void afterInit() {
         Crane4jGlobalConfiguration crane4jGlobalConfiguration = SimpleCrane4jGlobalConfiguration.create(Collections.emptyMap());
-        mapperContainerRegister = new LazyLoadMpBaseMapperContainerRegister(crane4jGlobalConfiguration, new ReflectPropertyOperator(), name -> fooMapper);
-        mapperContainerRegister.registerMapper("fooMapper", fooMapper);
+        mybatisPlusQueryContainerRegister = new LazyLoadMybatisPlusQueryContainerRegister(
+            new MethodInvokerContainerCreator(new ReflectPropertyOperator()),
+            crane4jGlobalConfiguration, name -> fooMapper
+        );
+        mybatisPlusQueryContainerRegister.registerRepository("fooMapper", fooMapper);
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void checkMapperInfo() {
         // check mapper info cache
-        Map<String, MpBaseMapperContainerRegister.MapperInfo> infoMap = mapperContainerRegister.registerMappers;
+        Map<String, AbstractQueryContainerCreator.Repository<BaseMapper<?>>> infoMap
+            = mybatisPlusQueryContainerRegister.getRegisterRepositories();
         Assert.assertEquals(1, infoMap.size());
 
         // check mapper info
-        MpBaseMapperContainerRegister.MapperInfo fooMapperInfo = infoMap.get("fooMapper");
+        AbstractQueryContainerCreator.Repository<BaseMapper<?>> fooMapperInfo = infoMap.get("fooMapper");
         Assert.assertNotNull(fooMapperInfo);
-        Assert.assertSame(fooMapper, fooMapperInfo.getBaseMapper());
-        Assert.assertEquals("fooMapper", fooMapperInfo.getName());
-        Assert.assertEquals(TableInfoHelper.getTableInfo(Foo.class), fooMapperInfo.getTableInfo());
+        Assert.assertSame(fooMapper, fooMapperInfo.getTarget());
 
         // check destroy
-        mapperContainerRegister.destroy();
+        mybatisPlusQueryContainerRegister.destroy();
         Assert.assertTrue(infoMap.isEmpty());
 
         // check container
-        Container<Object> container = (Container<Object>)mapperContainerRegister.getContainer("fooMapper", null, null);
+        Container<Object> container = (Container<Object>)mybatisPlusQueryContainerRegister.getContainer("fooMapper", null, null);
 
         // check lazy load
-        MpBaseMapperContainerRegister.MapperInfo mapperInfo = infoMap.get("fooMapper");
+        AbstractQueryContainerCreator.Repository<BaseMapper<?>> mapperInfo = infoMap.get("fooMapper");
         Assert.assertNotNull(mapperInfo);
-        Assert.assertSame(fooMapper, mapperInfo.getBaseMapper());
-        Assert.assertEquals("fooMapper", mapperInfo.getName());
-        Assert.assertEquals(TableInfoHelper.getTableInfo(Foo.class), mapperInfo.getTableInfo());
+        Assert.assertSame(fooMapper, mapperInfo.getTarget());
 
         checkContainer(container, "id");
-        Assert.assertSame(container, mapperContainerRegister.getContainer("fooMapper", null, null));
-        container = (Container<Object>)mapperContainerRegister.getContainer("fooMapper", null, Arrays.asList("age", "name"));
+        Assert.assertSame(container, mybatisPlusQueryContainerRegister.getContainer("fooMapper", null, null));
+        container = (Container<Object>)mybatisPlusQueryContainerRegister.getContainer("fooMapper", null, Arrays.asList("age", "name"));
         checkContainer(container, "id", "age", "name", "id");
-        container = (Container<Object>)mapperContainerRegister.getContainer("fooMapper", "userName", null);
+        container = (Container<Object>)mybatisPlusQueryContainerRegister.getContainer("fooMapper", "userName", null);
         checkContainer(container, "name", Arrays.asList("小红", "小明", "小刚"));
-        container = (Container<Object>)mapperContainerRegister.getContainer("fooMapper", "id", Arrays.asList("name", "age"));
+        container = (Container<Object>)mybatisPlusQueryContainerRegister.getContainer("fooMapper", "id", Arrays.asList("name", "age"));
         checkContainer(container, "id", "name", "age");
     }
 
@@ -75,7 +78,7 @@ public class MpBaseMapperContainerRegisterTest extends MpBaseTest {
 
     private void checkContainer(Container<Object> container, String keyColumn, List<Object> keys, String... queryColumns) {
         Assert.assertNotNull(container);
-        Assert.assertTrue(container instanceof MpMethodContainer);
+        Assert.assertTrue(container instanceof MethodInvokerContainer);
 
         if (ArrayUtil.length(queryColumns) > 0 && !ArrayUtil.contains(queryColumns, keyColumn)) {
             queryColumns = ArrayUtil.append(queryColumns, keyColumn);

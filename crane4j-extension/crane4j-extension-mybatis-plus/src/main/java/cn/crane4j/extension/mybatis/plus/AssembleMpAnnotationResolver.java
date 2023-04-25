@@ -17,31 +17,30 @@ import java.util.Comparator;
 /**
  * <p>The implementation of {@link OperationAnnotationResolver}.<br />
  * It's used to scan the {@link AssembleMp} annotations on classes and their attributes,
- * And generate {@link AssembleOperation} for it
- * using {@link MpMethodContainer} as the data source container.
+ * And generate {@link AssembleOperation} for it using {@link MybatisPlusQueryContainerRegister.Query} as the data source container.
  *
  * @author huangchengxing
  * @see AssembleMp
- * @see MpBaseMapperContainerRegister
+ * @see MybatisPlusQueryContainerRegister
  * @since 1.2.0
  */
 @Accessors(chain = true)
 public class AssembleMpAnnotationResolver extends StandardAssembleAnnotationResolver<AssembleMp> {
 
-    private final MpBaseMapperContainerRegister mapperContainerRegister;
+    private final MybatisPlusQueryContainerRegister containerRegister;
 
     /**
      * Create a {@link AssembleMpAnnotationResolver} instance.
      *
      * @param annotationFinder annotation finder
-     * @param mapperContainerRegister mp method container provider
+     * @param containerRegister mybatis plus query container register
      * @param globalConfiguration global configuration
      */
     public AssembleMpAnnotationResolver(
         AnnotationFinder annotationFinder,
-        MpBaseMapperContainerRegister mapperContainerRegister,
+        MybatisPlusQueryContainerRegister containerRegister,
         Crane4jGlobalConfiguration globalConfiguration) {
-        this(annotationFinder, Sorted.comparator(), mapperContainerRegister, globalConfiguration);
+        this(annotationFinder, Sorted.comparator(), containerRegister, globalConfiguration);
     }
 
     /**
@@ -49,15 +48,15 @@ public class AssembleMpAnnotationResolver extends StandardAssembleAnnotationReso
      *
      * @param annotationFinder annotation finder
      * @param operationComparator operation comparator
-     * @param mapperContainerRegister mp method container provider
+     * @param containerRegister mybatis plus query container register
      * @param globalConfiguration global configuration
      */
     public AssembleMpAnnotationResolver(
         AnnotationFinder annotationFinder, Comparator<KeyTriggerOperation> operationComparator,
-        MpBaseMapperContainerRegister mapperContainerRegister,
+        MybatisPlusQueryContainerRegister containerRegister,
         Crane4jGlobalConfiguration globalConfiguration) {
         super(AssembleMp.class, annotationFinder, operationComparator, globalConfiguration);
-        this.mapperContainerRegister = mapperContainerRegister;
+        this.containerRegister = containerRegister;
     }
 
     /**
@@ -68,7 +67,7 @@ public class AssembleMpAnnotationResolver extends StandardAssembleAnnotationReso
      */
     @Override
     protected Container<?> getContainer(AssembleMp annotation) {
-        return mapperContainerRegister.getContainer(
+        return containerRegister.getContainer(
             annotation.mapper(), annotation.where(), Arrays.asList(annotation.selects())
         );
     }
