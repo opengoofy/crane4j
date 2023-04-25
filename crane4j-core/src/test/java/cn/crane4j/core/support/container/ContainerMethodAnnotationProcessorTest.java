@@ -10,7 +10,6 @@ import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.MethodInvokerContainer;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.SimpleAnnotationFinder;
-import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -39,11 +38,11 @@ public class ContainerMethodAnnotationProcessorTest {
 
     @Before
     public void init() {
-        PropertyOperator propertyOperator = new ReflectPropertyOperator();
+        MethodInvokerContainerCreator containerCreator = new MethodInvokerContainerCreator(new ReflectPropertyOperator());
         AnnotationFinder annotationFinder = new SimpleAnnotationFinder();
         Collection<MethodContainerFactory> factories = Arrays.asList(
-            new DefaultMethodContainerFactory(propertyOperator, annotationFinder),
-            new CacheableMethodContainerFactory(propertyOperator, annotationFinder, new ConcurrentMapCacheManager(ConcurrentHashMap::new))
+            new DefaultMethodContainerFactory(containerCreator, annotationFinder),
+            new CacheableMethodContainerFactory(containerCreator, annotationFinder, new ConcurrentMapCacheManager(ConcurrentHashMap::new))
         );
         processor = new ContainerMethodAnnotationProcessor(factories, new SimpleAnnotationFinder());
     }

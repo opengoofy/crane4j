@@ -44,8 +44,9 @@ public class DefaultMethodContainerFactoryTest {
 
     @Before
     public void initMethod() {
+        MethodInvokerContainerCreator containerCreator = new MethodInvokerContainerCreator(new ReflectPropertyOperator());
         factory = new DefaultMethodContainerFactory(
-            new ReflectPropertyOperator(), new SimpleAnnotationFinder()
+            containerCreator, new SimpleAnnotationFinder()
         );
         serviceImpl = new ServiceImpl();
         noneResultMethod = ReflectUtil.getMethod(ServiceImpl.class, "noneResultMethod");

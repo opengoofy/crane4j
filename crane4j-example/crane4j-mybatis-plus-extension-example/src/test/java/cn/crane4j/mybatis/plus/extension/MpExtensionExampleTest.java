@@ -6,7 +6,7 @@ import cn.crane4j.annotation.Mapping;
 import cn.crane4j.annotation.MappingTemplate;
 import cn.crane4j.annotation.extension.AssembleByMp;
 import cn.crane4j.core.support.OperateTemplate;
-import cn.crane4j.extension.mybatis.plus.MpMethodContainerProvider;
+import cn.crane4j.extension.mybatis.plus.MybatisPlusContainerProvider;
 import cn.crane4j.mybatis.plus.extension.example.Crane4jMybatisPlusExampleApplication;
 import cn.crane4j.mybatis.plus.extension.example.Foo;
 import cn.crane4j.mybatis.plus.extension.example.FooMapper;
@@ -171,7 +171,7 @@ public class MpExtensionExampleTest {
         )
         @Assemble(container = "container('fooMapper', {'name as userName'})",
             groups = "testPrimaryKeyAndCustomColumns",
-            containerProvider = MpMethodContainerProvider.class,
+            containerProvider = MybatisPlusContainerProvider.class,
             propTemplates = FooVO.class
         )
         private Integer id;

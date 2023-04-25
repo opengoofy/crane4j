@@ -36,8 +36,9 @@ public class CacheableMethodContainerFactoryTest {
 
     @Before
     public void init() {
+        MethodInvokerContainerCreator containerCreator = new MethodInvokerContainerCreator(new ReflectPropertyOperator());
         factory = new CacheableMethodContainerFactory(
-            new ReflectPropertyOperator(), new SimpleAnnotationFinder(), new ConcurrentMapCacheManager(ConcurrentHashMap::new)
+            containerCreator, new SimpleAnnotationFinder(), new ConcurrentMapCacheManager(ConcurrentHashMap::new)
         );
         service = new Service();
         annotatedMethod = ReflectUtil.getMethod(Service.class, "annotatedMethod", List.class);

@@ -36,6 +36,7 @@ import cn.crane4j.core.support.callback.DefaultCacheableContainerProcessor;
 import cn.crane4j.core.support.container.CacheableMethodContainerFactory;
 import cn.crane4j.core.support.container.DefaultMethodContainerFactory;
 import cn.crane4j.core.support.container.MethodContainerFactory;
+import cn.crane4j.core.support.container.MethodInvokerContainerCreator;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
 import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
 import cn.crane4j.core.support.operator.DefaultProxyMethodFactory;
@@ -237,19 +238,25 @@ public class Crane4jAutoConfiguration {
         return new OrderedBeanOperationExecutor(Comparator.comparing(AssembleOperation::getSort));
     }
 
+    @Bean
+    @ConditionalOnMissingBean
+    public MethodInvokerContainerCreator methodInvokerContainerCreator(PropertyOperator propertyOperator) {
+        return new MethodInvokerContainerCreator(propertyOperator);
+    }
+
     @Order
     @Bean
     public DefaultMethodContainerFactory defaultMethodContainerFactory(
-        PropertyOperator propertyOperator, AnnotationFinder annotationFinder) {
-        return new DefaultMethodContainerFactory(propertyOperator, annotationFinder);
+        MethodInvokerContainerCreator methodInvokerContainerCreator, AnnotationFinder annotationFinder) {
+        return new DefaultMethodContainerFactory(methodInvokerContainerCreator, annotationFinder);
     }
 
     @Order(Ordered.LOWEST_PRECEDENCE - 1)
     @Bean
     @ConditionalOnBean(CacheManager.class)
     public CacheableMethodContainerFactory cacheableMethodContainerFactory(
-        CacheManager cacheManager, PropertyOperator propertyOperator, AnnotationFinder annotationFinder) {
-        return new CacheableMethodContainerFactory(propertyOperator, annotationFinder, cacheManager);
+        CacheManager cacheManager, MethodInvokerContainerCreator methodInvokerContainerCreator, AnnotationFinder annotationFinder) {
+        return new CacheableMethodContainerFactory(methodInvokerContainerCreator, annotationFinder, cacheManager);
     }
 
     @Primary
@@ -307,6 +314,7 @@ public class Crane4jAutoConfiguration {
         return new DefaultProxyMethodFactory();
     }
 
+    @Bean
     @ConditionalOnMissingBean
     public OperatorProxyFactory operatorProxyFactory(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration,

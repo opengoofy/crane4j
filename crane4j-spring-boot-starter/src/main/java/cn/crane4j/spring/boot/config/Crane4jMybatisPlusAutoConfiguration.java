@@ -1,14 +1,14 @@
 package cn.crane4j.spring.boot.config;
 
+import cn.crane4j.core.container.MethodInvokerContainer;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
+import cn.crane4j.core.support.container.MethodInvokerContainerCreator;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
-import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.extension.mybatis.plus.AssembleMpAnnotationResolver;
-import cn.crane4j.extension.mybatis.plus.LazyLoadMpBaseMapperContainerRegister;
-import cn.crane4j.extension.mybatis.plus.MpBaseMapperContainerRegister;
-import cn.crane4j.extension.mybatis.plus.MpMethodContainer;
-import cn.crane4j.extension.mybatis.plus.MpMethodContainerProvider;
+import cn.crane4j.extension.mybatis.plus.LazyLoadMybatisPlusQueryContainerRegister;
+import cn.crane4j.extension.mybatis.plus.MybatisPlusContainerProvider;
+import cn.crane4j.extension.mybatis.plus.MybatisPlusQueryContainerRegister;
 import cn.crane4j.extension.spring.expression.SpelExpressionContext;
 import com.baomidou.mybatisplus.autoconfigure.MybatisPlusAutoConfiguration;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -48,18 +48,22 @@ public class Crane4jMybatisPlusAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public MpBaseMapperContainerRegister mpBaseMapperContainerRegister(
-        PropertyOperator propertyOperator, Crane4jGlobalConfiguration globalConfiguration, ApplicationContext applicationContext) {
-        return new LazyLoadMpBaseMapperContainerRegister(globalConfiguration, propertyOperator, mapperName -> applicationContext.getBean(mapperName, BaseMapper.class));
+    public MybatisPlusQueryContainerRegister mybatisPlusQueryContainerRegister(
+        MethodInvokerContainerCreator methodInvokerContainerCreator,
+        Crane4jGlobalConfiguration globalConfiguration, ApplicationContext applicationContext) {
+        return new LazyLoadMybatisPlusQueryContainerRegister(
+            methodInvokerContainerCreator, globalConfiguration,
+            mapperName -> applicationContext.getBean(mapperName, BaseMapper.class)
+        );
     }
 
     @Bean
     @ConditionalOnMissingBean
     public AssembleMpAnnotationResolver assembleMpAnnotationResolver(
-        AnnotationFinder annotationFinder, MpBaseMapperContainerRegister mapperContainerRegister,
+        AnnotationFinder annotationFinder, MybatisPlusQueryContainerRegister mybatisPlusQueryContainerRegister,
         Crane4jGlobalConfiguration globalConfiguration, Crane4jAutoConfiguration.Properties properties) {
         AssembleMpAnnotationResolver resolver = new AssembleMpAnnotationResolver(
-            annotationFinder, mapperContainerRegister, globalConfiguration
+            annotationFinder, mybatisPlusQueryContainerRegister, globalConfiguration
         );
         resolver.setLazyLoadAssembleContainer(properties.isLazyLoadAssembleContainer());
         return resolver;
@@ -67,11 +71,11 @@ public class Crane4jMybatisPlusAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public MpMethodContainerProvider mpMethodContainerProvider(
+    public MybatisPlusContainerProvider mpMethodContainerProvider(
         ExpressionEvaluator evaluator, BeanResolver beanResolver,
-        MpBaseMapperContainerRegister mpBaseMapperContainerRegister) {
-        return new MpMethodContainerProvider(
-            mpBaseMapperContainerRegister, evaluator, provider -> {
+        MybatisPlusQueryContainerRegister mybatisPlusQueryContainerRegister) {
+        return new MybatisPlusContainerProvider(
+            mybatisPlusQueryContainerRegister, evaluator, provider -> {
             SpelExpressionContext context = new SpelExpressionContext(provider);
             context.setBeanResolver(beanResolver);
             return context;
@@ -138,7 +142,7 @@ public class Crane4jMybatisPlusAutoConfiguration {
         /**
          * After initializing all singleton beans in the Spring context,
          * obtain and parse the beans that implement the {@link BaseMapper} interface,
-         * and then adapt them to {@link MpMethodContainer} and register them.
+         * and then adapt them to {@link MethodInvokerContainer} and register them.
          *
          * @param args incoming application arguments
          */
@@ -151,10 +155,10 @@ public class Crane4jMybatisPlusAutoConfiguration {
             BiPredicate<String, BaseMapper<?>> mapperFilter = includes.isEmpty() ?
                 (n, m) -> !excludes.contains(n) : (n, m) -> includes.contains(n) && !excludes.contains(n);
             Map<String, BaseMapper> mappers = applicationContext.getBeansOfType(BaseMapper.class);
-            MpBaseMapperContainerRegister register = applicationContext.getBean(MpBaseMapperContainerRegister.class);
+            MybatisPlusQueryContainerRegister register = applicationContext.getBean(MybatisPlusQueryContainerRegister.class);
             mappers.entrySet().stream()
                 .filter(e -> mapperFilter.test(e.getKey(), e.getValue()))
-                .forEach(e -> register.registerMapper(e.getKey(), e.getValue()));
+                .forEach(e -> register.registerRepository(e.getKey(), e.getValue()));
         }
     }
 
