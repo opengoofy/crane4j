@@ -69,14 +69,16 @@ public @interface ContainerMethod {
     MappingType type() default MappingType.ONE_TO_ONE;
 
     /**
-     * The key field of the data source object returned by the method.
+     * The key field of the data source object returned by the method.<br />
+     * If {@link #type()} is {@link MappingType#MAPPED}, this parameter is ignored.
      *
      * @return key field name
      */
     String resultKey() default "id";
 
     /**
-     * Data source object type returned by method.
+     * Data source object type returned by method.<br />
+     * If {@link #type()} is {@link MappingType#MAPPED}, this parameter is ignored.
      *
      * @return type
      */
