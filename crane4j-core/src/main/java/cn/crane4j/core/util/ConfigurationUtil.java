@@ -71,7 +71,7 @@ public class ConfigurationUtil {
     }
 
     public static PropertyMapping createPropertyMapping(Mapping annotation) {
-        return createPropertyMapping(annotation, null);
+        return createPropertyMapping(annotation, "");
     }
 
     public static PropertyMapping createPropertyMapping(Mapping annotation, String defaultReference) {

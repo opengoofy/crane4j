@@ -21,6 +21,7 @@ import org.junit.Test;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 
 /**
  * test for {@link SimpleCrane4jGlobalConfiguration}
@@ -29,10 +30,12 @@ import java.util.Collections;
  */
 public class SimpleCrane4jGlobalConfigurationTest {
 
-    private final SimpleCrane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create(Collections.emptyMap());
+    private SimpleCrane4jGlobalConfiguration configuration;
 
     @Before
     public void init() {
+        configuration =  SimpleCrane4jGlobalConfiguration.create();
+
         configuration.registerContainer(LambdaContainer.forLambda("test", ids -> Collections.emptyMap()));
         configuration.setTypeResolver(new SimpleTypeResolver());
         configuration.setPropertyOperator(new ReflectPropertyOperator());
@@ -61,6 +64,12 @@ public class SimpleCrane4jGlobalConfigurationTest {
     public void addContainerRegisterAware() {
         Collection<ContainerRegisterAware> awareList = configuration.getContainerRegisterAwareList();
         int size = awareList.size();
+
+        Crane4jGlobalConfiguration crane4jGlobalConfiguration = SimpleCrane4jGlobalConfiguration.create(
+            new HashMap<String, String>(){{ put("?", "?"); }}
+        );
+        Assert.assertEquals(size + 1, crane4jGlobalConfiguration.getContainerRegisterAwareList().size());
+
         ContainerRegisterAware aware = new ContainerRegisterAware() { };
         configuration.addContainerRegisterAware(aware);
         Assert.assertEquals(size + 1, awareList.size());

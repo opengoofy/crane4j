@@ -19,6 +19,7 @@ public class ReflectPropertyOperatorTest {
     @Test
     public void readProperty() {
         Foo foo = new Foo(12, true);
+        operator.readProperty(Foo.class, foo, "noneField");
         Assert.assertEquals(12, operator.readProperty(Foo.class, foo, "id"));
         Assert.assertEquals(true, operator.readProperty(Foo.class, foo, "flag"));
     }
@@ -34,6 +35,7 @@ public class ReflectPropertyOperatorTest {
     @Test
     public void writeProperty() {
         Foo foo = new Foo(1, true);
+        operator.writeProperty(Foo.class, foo, "noneField", null);
         operator.writeProperty(Foo.class, foo, "id", 2);
         Assert.assertEquals((Integer)2, foo.getId());
         operator.writeProperty(Foo.class, foo, "flag", false);

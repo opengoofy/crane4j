@@ -83,6 +83,8 @@ public class OperateTemplateTest {
 
         BeanOperations beanOperations = parser.parse(Foo.class);
         fooList = getFooList();
+        template.execute(Collections.emptyList(), beanOperations);
+        template.execute(null, beanOperations, op -> op instanceof AssembleOperation);
         template.execute(fooList, beanOperations, op -> op instanceof AssembleOperation);
         checkBean(fooList.get(0), "1", null, null);
 

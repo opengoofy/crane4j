@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
  * @see MappingTemplate
  */
 @Documented
-@Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
+@Target({ElementType.TYPE, ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Mapping {
 

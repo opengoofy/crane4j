@@ -13,11 +13,12 @@ import java.util.function.Supplier;
  * @author huangchengxing
  * @since 1.3.0
  */
-@Getter
 public class LazyAssembleOperation extends SimpleKeyTriggerOperation implements AssembleOperation {
 
+    @Getter
     private final Set<PropertyMapping> propertyMappings;
     private final Supplier<Container<?>> containerSupplier;
+    @Getter
     private final AssembleOperationHandler assembleOperationHandler;
 
     @Override

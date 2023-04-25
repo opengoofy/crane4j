@@ -61,9 +61,10 @@ public class MethodResultAutoOperateSupportTest {
         Result<Foo> foo = new Result<>(new Foo(1));
         support.afterMethodInvoke(annotation, method, foo, new Object[]{ Arrays.asList(1, 2) });
         Assert.assertEquals("name1", foo.getData().getName());
+        support.afterMethodInvoke(null, method, foo, new Object[]{ Arrays.asList(1, 2) });
     }
 
-    @AutoOperate(type = Foo.class, on = "data")
+    @AutoOperate(type = Foo.class, on = "data", condition = "true")
     private Result<Collection<Foo>> method(Collection<Integer> ids) {
         return new Result<>(ids.stream().map(Foo::new).collect(Collectors.toList()));
     }

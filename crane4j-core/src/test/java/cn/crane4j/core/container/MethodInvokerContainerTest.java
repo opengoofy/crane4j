@@ -1,6 +1,7 @@
 package cn.crane4j.core.container;
 
 import cn.crane4j.annotation.MappingType;
+import cn.crane4j.core.exception.Crane4jException;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -31,6 +32,12 @@ public class MethodInvokerContainerTest {
     @SuppressWarnings("unchecked")
     @Test
     public void getWhenMapped() {
+        Assert.assertThrows(Crane4jException.class, () -> new MethodInvokerContainer(
+            MethodInvokerContainer.class.getSimpleName(),
+            (t, arg) -> service.mappedMethod((Collection<String>)arg[0]),
+            service, null, MappingType.ONE_TO_MANY
+        ));
+
         MethodInvokerContainer container = new MethodInvokerContainer(
             MethodInvokerContainer.class.getSimpleName(),
             (t, arg) -> service.mappedMethod((Collection<String>)arg[0]),

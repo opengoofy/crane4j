@@ -116,6 +116,9 @@ public class ReflectUtils {
         Class<?> checkedClass = element.getClass();
         if (element instanceof Class) {
             checkedClass = (Class<?>)element;
+            if (checkedClass.isPrimitive()) {
+                return true;
+            }
         } else if (element instanceof Member) {
             checkedClass = ((Member)element).getDeclaringClass();
         }
@@ -129,7 +132,7 @@ public class ReflectUtils {
      * @return method list
      */
     public static Method[] getDeclaredMethods(Class<?> type) {
-        return CollectionUtils.computeIfAbsent(DECLARED_METHOD_CACHE, type, k -> ReflectUtil.getMethods(type));
+        return CollectionUtils.computeIfAbsent(DECLARED_METHOD_CACHE, type, k -> type.getDeclaredMethods());
     }
 
     /**

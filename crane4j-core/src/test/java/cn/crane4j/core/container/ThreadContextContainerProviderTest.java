@@ -24,6 +24,7 @@ public class ThreadContextContainerProviderTest {
     @Test
     public void test() {
         Container<?> container = threadContextContainerProvider.getContainer("test");
+        Assert.assertEquals("test", container.getNamespace());
         Assert.assertTrue(container.get(null).isEmpty());
 
         DataProvider<String, Object> provider = DataProvider.fixed(new HashMap<>());

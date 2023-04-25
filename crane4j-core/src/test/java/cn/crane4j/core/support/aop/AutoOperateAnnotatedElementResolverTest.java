@@ -4,9 +4,8 @@ import cn.crane4j.annotation.Assemble;
 import cn.crane4j.annotation.AutoOperate;
 import cn.crane4j.annotation.Mapping;
 import cn.crane4j.core.container.LambdaContainer;
-import cn.crane4j.core.executor.BeanOperationExecutor;
+import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
-import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.support.SimpleCrane4jGlobalConfiguration;
 import cn.hutool.core.util.ReflectUtil;
 import lombok.AllArgsConstructor;
@@ -59,7 +58,7 @@ public class AutoOperateAnnotatedElementResolverTest {
         element.execute(foo);
         Assert.assertEquals("name1", foo.getData().getName());
 
-        Assert.assertThrows(IllegalArgumentException.class, () -> resolver.resolve(Object.class, annotation));
+        Assert.assertThrows(Crane4jException.class, () -> resolver.resolve(Object.class, annotation));
     }
 
     @Test
@@ -78,13 +77,15 @@ public class AutoOperateAnnotatedElementResolverTest {
         Assert.assertEquals("name1", foo.getData().getName());
     }
 
+    @Test
+    public void resolveOther() {
+        Assert.assertThrows(Crane4jException.class, () -> resolver.resolve(Object.class, null));
+    }
+
     private void checkElement(AnnotatedElement ele, AutoOperate annotation, AutoOperateAnnotatedElement element) {
         Assert.assertSame(annotation, element.getAnnotation());
         Assert.assertSame(ele, element.getElement());
         Assert.assertEquals(Foo.class, element.getBeanOperations().getSource());
-        Assert.assertEquals(configuration.getBeanOperationExecutor(BeanOperationExecutor.class), element.getExecutor());
-        MethodInvoker extractor = element.getExtractor();
-        Assert.assertEquals(extractor, extractor.invoke(new Result<>(extractor)));
     }
 
     @AutoOperate(type = Foo.class, includes = {"a", "b", "c"}, excludes = "c", on = "data")

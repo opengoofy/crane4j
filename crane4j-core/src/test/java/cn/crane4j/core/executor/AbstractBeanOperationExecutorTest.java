@@ -14,6 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
@@ -34,6 +35,9 @@ public class AbstractBeanOperationExecutorTest extends BaseExecutorTest {
 
     @Test
     public void execute() {
+        executor.execute(null, BeanOperations.empty());
+        executor.execute(Collections.singleton(new Object()), null);
+
         List<AssembleExecution> executions = getExecutions((beans, beanOperations) -> executor.execute(beans, beanOperations));
 
         AssembleExecution executionForId = CollUtil.get(executions, 0);

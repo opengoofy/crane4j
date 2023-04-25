@@ -18,7 +18,7 @@ public class EmptyBeanOperations implements BeanOperations {
 
     private final boolean active = true;
     private final boolean empty = true;
-    private final AnnotatedElement source = Object.class;
+    private final AnnotatedElement source = null;
     private final List<AssembleOperation> assembleOperations = Collections.emptyList();
     private final List<DisassembleOperation> disassembleOperations = Collections.emptyList();
 
