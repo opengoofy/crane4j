@@ -2,11 +2,11 @@ package cn.crane4j.core.support.reflect;
 
 import cn.crane4j.core.support.MethodInvoker;
 import cn.hutool.core.util.ReflectUtil;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Method;
+import java.util.Objects;
 
 /**
  * A {@link PropertyOperator} implementation based on JDK reflection.
@@ -25,6 +25,7 @@ public class ReflectPropertyOperator extends CacheablePropertyOperator {
      */
     @Override
     protected MethodInvoker createInvoker(Class<?> targetType, String propertyName, Method method) {
+        Objects.requireNonNull(method);
         return new ReflectMethodInvoker(method);
     }
 
@@ -39,7 +40,6 @@ public class ReflectPropertyOperator extends CacheablePropertyOperator {
         /**
          * method
          */
-        @NonNull
         private final Method method;
 
         /**

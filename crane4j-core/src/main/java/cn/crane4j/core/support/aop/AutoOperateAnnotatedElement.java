@@ -20,13 +20,15 @@ import java.util.function.Predicate;
  * @see AutoOperateAnnotatedElementResolver
  * @see AutoOperate
  */
-@Getter
 @RequiredArgsConstructor
 public class AutoOperateAnnotatedElement {
+    @Getter
     private final AutoOperate annotation;
+    @Getter
     private final AnnotatedElement element;
     private final MethodInvoker extractor;
     private final Predicate<? super KeyTriggerOperation> filter;
+    @Getter
     private final BeanOperations beanOperations;
     private final BeanOperationExecutor executor;
 

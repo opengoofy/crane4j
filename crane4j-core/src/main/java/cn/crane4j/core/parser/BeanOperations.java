@@ -32,6 +32,15 @@ import java.util.Collection;
 public interface BeanOperations {
 
     /**
+     * Get an empty bean operations.
+     *
+     * @return empty bean operations
+     */
+    static BeanOperations empty() {
+        return EmptyBeanOperations.INSTANCE;
+    }
+
+    /**
      * Get the source object corresponding to the current operation.
      *
      * @return type

@@ -24,6 +24,7 @@ public class SharedContextContainerProviderTest {
     @Test
     public void test() {
         Container<?> container = sharedContextContainerProvider.getContainer("test");
+        Assert.assertEquals("test", container.getNamespace());
         Assert.assertTrue(container.get(null).isEmpty());
 
         DataProvider<String, Object> provider = DataProvider.fixed(new HashMap<>());

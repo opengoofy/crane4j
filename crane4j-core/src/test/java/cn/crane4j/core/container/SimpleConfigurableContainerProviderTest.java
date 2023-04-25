@@ -28,6 +28,7 @@ public class SimpleConfigurableContainerProviderTest {
     public void getContainer() {
         Container<?> container = containerProvider.getContainer("test");
         Assert.assertNotNull(container);
+        Assert.assertSame(container, containerProvider.getContainer("test"));
         Assert.assertEquals("test", container.getNamespace());
         Assert.assertNull(containerProvider.getContainer("no registered"));
 

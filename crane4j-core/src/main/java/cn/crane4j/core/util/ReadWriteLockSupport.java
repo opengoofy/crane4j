@@ -19,18 +19,6 @@ public class ReadWriteLockSupport {
     /**
      * Do something with read lock.
      *
-     * @param runnable runnable
-     */
-    public void withReadLock(Runnable runnable) {
-        withReadLock(() -> {
-            runnable.run();
-            return null;
-        });
-    }
-
-    /**
-     * Do something with read lock.
-     *
      * @param supplier supplier
      * @param <R>      result type
      * @return result

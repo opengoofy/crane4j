@@ -1,6 +1,7 @@
 package cn.crane4j.core.container;
 
 import cn.crane4j.annotation.MappingType;
+import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.support.container.MethodContainerFactory;
 import cn.crane4j.core.support.container.MethodInvokerContainerCreator;
@@ -65,7 +66,7 @@ public class MethodInvokerContainer implements Container<Object> {
         this.mappingType = Objects.requireNonNull(mappingType);
         Assert.isTrue(
             mappingType == MappingType.MAPPED || Objects.nonNull(keyExtractor),
-            "keyExtractor must not null"
+            () -> new Crane4jException("keyExtractor must not null")
         );
     }
 

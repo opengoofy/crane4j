@@ -18,6 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -38,7 +39,7 @@ public class OneToOneReflexAssembleOperationHandlerTest extends BaseExecutorTest
         configuration.getAssembleOperationHandlerMap().put(handler.getClass().getName(), handler);
         executor = new DisorderedBeanOperationExecutor();
         Container<Integer> container = LambdaContainer.forLambda(
-            "test", ids -> ids.stream().collect(Collectors.toMap(
+            "test", ids -> ids.stream().filter(id -> id != 0).collect(Collectors.toMap(
                 Function.identity(), id -> new Bean(id, "name" + id)
             ))
         );
@@ -53,6 +54,7 @@ public class OneToOneReflexAssembleOperationHandlerTest extends BaseExecutorTest
         for (int i = 0; i < beanList.size(); i++) {
             Assert.assertEquals("name" + (i + 1), beanList.get(i).getName());
         }
+        executor.execute(Collections.singletonList(new Bean(0)), operations);
     }
 
     @RequiredArgsConstructor

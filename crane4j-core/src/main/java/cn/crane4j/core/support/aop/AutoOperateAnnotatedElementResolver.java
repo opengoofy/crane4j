@@ -1,6 +1,7 @@
 package cn.crane4j.core.support.aop;
 
 import cn.crane4j.annotation.AutoOperate;
+import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.BeanOperations;
@@ -69,7 +70,7 @@ public class AutoOperateAnnotatedElementResolver {
         } else if (element instanceof Parameter) {
             return ((Parameter)element).getType();
         } else {
-            throw new IllegalArgumentException("element must be a method or parameter");
+            throw new Crane4jException("element must be a method or parameter");
         }
     }
 
