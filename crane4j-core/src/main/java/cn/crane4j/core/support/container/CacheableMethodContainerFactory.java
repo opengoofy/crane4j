@@ -5,7 +5,6 @@ import cn.crane4j.core.cache.CacheManager;
 import cn.crane4j.core.container.CacheableContainer;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.support.AnnotationFinder;
-import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.hutool.core.text.CharSequenceUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,8 +30,8 @@ public class CacheableMethodContainerFactory extends DefaultMethodContainerFacto
     private final CacheManager cacheManager;
 
     public CacheableMethodContainerFactory(
-        PropertyOperator propertyOperator, AnnotationFinder annotationFinder, CacheManager cacheManager) {
-        super(propertyOperator, annotationFinder);
+        MethodInvokerContainerCreator methodInvokerContainerCreator, AnnotationFinder annotationFinder, CacheManager cacheManager) {
+        super(methodInvokerContainerCreator, annotationFinder);
         this.cacheManager = cacheManager;
     }
 
