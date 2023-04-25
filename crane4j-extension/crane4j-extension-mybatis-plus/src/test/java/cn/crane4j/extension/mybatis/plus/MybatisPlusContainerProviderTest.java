@@ -4,6 +4,7 @@ import cn.crane4j.core.container.Container;
 import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.SimpleCrane4jGlobalConfiguration;
+import cn.crane4j.core.support.container.MethodInvokerContainerCreator;
 import cn.crane4j.core.support.expression.ExpressionContext;
 import cn.crane4j.core.support.expression.OgnlExpressionContext;
 import cn.crane4j.core.support.expression.OgnlExpressionEvaluator;
@@ -16,20 +17,22 @@ import org.junit.Test;
 import java.util.Collections;
 
 /**
- * test for {@link MpMethodContainerProvider}.
+ * test for {@link MybatisPlusContainerProvider}.
  *
  * @author huangchengxing
  */
-public class MpMethodContainerProviderTest extends MpBaseTest {
+public class MybatisPlusContainerProviderTest extends MpBaseTest {
 
-    private MpMethodContainerProvider provider;
+    private MybatisPlusContainerProvider provider;
 
     @Override
     public void afterInit() {
         Crane4jGlobalConfiguration crane4jGlobalConfiguration = SimpleCrane4jGlobalConfiguration.create(Collections.emptyMap());
-        MpBaseMapperContainerRegister mapperContainerRegister = new MpBaseMapperContainerRegister(crane4jGlobalConfiguration, new ReflectPropertyOperator());
-        mapperContainerRegister.registerMapper("fooMapper", fooMapper);
-        provider = new MpMethodContainerProvider(mapperContainerRegister, new OgnlExpressionEvaluator(), provider -> {
+        MybatisPlusQueryContainerRegister register = new MybatisPlusQueryContainerRegister(
+            new MethodInvokerContainerCreator(new ReflectPropertyOperator()), crane4jGlobalConfiguration
+        );
+        register.registerRepository("fooMapper", fooMapper);
+        provider = new MybatisPlusContainerProvider(register, new OgnlExpressionEvaluator(), provider -> {
             ExpressionContext context = new OgnlExpressionContext();
             context.setRoot(provider);
             return context;

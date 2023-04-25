@@ -3,6 +3,7 @@ package cn.crane4j.extension.mybatis.plus;
 import cn.crane4j.annotation.AssembleMp;
 import cn.crane4j.annotation.Mapping;
 import cn.crane4j.core.container.Container;
+import cn.crane4j.core.container.MethodInvokerContainer;
 import cn.crane4j.core.parser.AssembleOperation;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.BeanOperations;
@@ -11,6 +12,7 @@ import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.SimpleAnnotationFinder;
 import cn.crane4j.core.support.SimpleCrane4jGlobalConfiguration;
+import cn.crane4j.core.support.container.MethodInvokerContainerCreator;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
 import cn.hutool.core.collection.CollUtil;
 import org.junit.Assert;
@@ -35,8 +37,10 @@ public class AssembleMpAnnotationResolverTest extends MpBaseTest {
         AnnotationFinder annotationFinder = new SimpleAnnotationFinder();
         Crane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create(Collections.emptyMap());
         beanOperationParser = configuration.getBeanOperationsParser(BeanOperationParser.class);
-        MpBaseMapperContainerRegister register = new MpBaseMapperContainerRegister(configuration, new ReflectPropertyOperator());
-        register.registerMapper("fooMapper", fooMapper);
+        MybatisPlusQueryContainerRegister register = new MybatisPlusQueryContainerRegister(
+            new MethodInvokerContainerCreator(new ReflectPropertyOperator()), configuration
+        );
+        register.registerRepository("fooMapper", fooMapper);
         operationsResolver = new AssembleMpAnnotationResolver(annotationFinder, register, configuration);
         operationsResolver.setLazyLoadAssembleContainer(false);
     }
@@ -53,13 +57,13 @@ public class AssembleMpAnnotationResolverTest extends MpBaseTest {
         Assert.assertEquals("id", idOperation.getKey());
         Assert.assertEquals(1, idOperation.getPropertyMappings().size());
         Container<?> idContainer = idOperation.getContainer();
-        Assert.assertTrue(idContainer instanceof MpMethodContainer);
+        Assert.assertTrue(idContainer instanceof MethodInvokerContainer);
 
         AssembleOperation keyOperation = CollUtil.get(assembleOperations, 1);
         Assert.assertEquals("key", keyOperation.getKey());
         Assert.assertEquals(1, keyOperation.getPropertyMappings().size());
         Container<?> keyContainer = keyOperation.getContainer();
-        Assert.assertTrue(keyContainer instanceof MpMethodContainer);
+        Assert.assertTrue(keyContainer instanceof MethodInvokerContainer);
     }
 
     @AssembleMp(

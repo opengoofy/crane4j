@@ -2,6 +2,7 @@ package cn.crane4j.extension.mybatis.plus;
 
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerProvider;
+import cn.crane4j.core.container.MethodInvokerContainer;
 import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.support.expression.ExpressionContext;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
@@ -15,8 +16,8 @@ import java.util.List;
 import java.util.function.Function;
 
 /**
- * <p>Provider of {@link MpMethodContainer}. support obtain and call
- * the specified method in {@link BaseMapper}through incoming expression.
+ * <p>Provider of {@link MethodInvokerContainer} based on {@link MybatisPlusQueryContainerRegister.Query}.
+ * support obtain and call the specified method in {@link BaseMapper}through incoming expression.
  *
  * <p>The input expression supports the following notation:
  * <ul>
@@ -41,22 +42,22 @@ import java.util.function.Function;
  * the query columns must contain the column of entered key.
  *
  * @author huangchengxing
- * @see MpBaseMapperContainerRegister
+ * @see MybatisPlusQueryContainerRegister
  * @see ExpressionEvaluator
  */
 @RequiredArgsConstructor
-public class MpMethodContainerProvider implements ContainerProvider {
+public class MybatisPlusContainerProvider implements ContainerProvider {
 
-    private final MpBaseMapperContainerRegister register;
+    private final MybatisPlusQueryContainerRegister register;
     private final ExpressionEvaluator evaluator;
-    private final Function<MpMethodContainerProvider, ExpressionContext> expressionContextFactory;
+    private final Function<MybatisPlusContainerProvider, ExpressionContext> expressionContextFactory;
 
     /**
      * <p>Get data source container by expression.
      *
      * @param namespace namespace
      * @return container
-     * @see MpBaseMapperContainerRegister#getContainer
+     * @see MybatisPlusQueryContainerRegister#getContainer
      * @see #container
      */
     @Override
