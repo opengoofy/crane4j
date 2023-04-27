@@ -81,8 +81,8 @@ public class ReflectUtilsTest {
     @Test
     public void getDeclaredMethods() {
         Method[] methods = ReflectUtils.getDeclaredMethods(Foo.class);
-        Assert.assertEquals(6, methods.length);
         Assert.assertSame(methods, ReflectUtils.getDeclaredMethods(Foo.class));
+        Assert.assertEquals(Foo.class.getDeclaredMethods().length, methods.length);
     }
 
     @Test
