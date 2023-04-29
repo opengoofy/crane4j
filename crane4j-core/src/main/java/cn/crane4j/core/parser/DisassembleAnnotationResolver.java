@@ -1,19 +1,23 @@
 package cn.crane4j.core.parser;
 
 import cn.crane4j.annotation.Disassemble;
-import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.Sorted;
+import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.ConfigurationUtil;
 import cn.crane4j.core.util.ReflectUtils;
-import cn.hutool.core.lang.Assert;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.AnnotatedElement;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -110,9 +114,8 @@ public class DisassembleAnnotationResolver implements OperationAnnotationResolve
         DisassembleOperationHandler disassembleOperationHandler = ConfigurationUtil.getDisassembleOperationHandler(
             globalConfiguration, annotation.handlerName(), annotation.handler()
         );
-        Assert.notNull(
-            disassembleOperationHandler,
-            () -> new Crane4jException("disassemble handler [{}]({}) not found", annotation.handlerName(), annotation.handler())
+        Asserts.isNotNull(
+            disassembleOperationHandler, "disassemble handler [{}]({}) not found", annotation.handlerName(), annotation.handler()
         );
 
         // wait until runtime to dynamically determine the actual type if no type is specified

@@ -7,7 +7,6 @@ import cn.crane4j.core.container.DynamicSourceContainerProvider;
 import cn.crane4j.core.container.SharedContextContainerProvider;
 import cn.crane4j.core.container.SimpleConfigurableContainerProvider;
 import cn.crane4j.core.container.ThreadContextContainerProvider;
-import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
 import cn.crane4j.core.executor.OrderedBeanOperationExecutor;
@@ -28,8 +27,8 @@ import cn.crane4j.core.support.reflect.ChainAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
+import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.CollectionUtils;
-import cn.hutool.core.lang.Assert;
 import cn.hutool.core.map.MapUtil;
 import lombok.Getter;
 import lombok.Setter;
@@ -174,7 +173,7 @@ public class SimpleCrane4jGlobalConfiguration
     @Override
     public BeanOperationExecutor getBeanOperationExecutor(String executorName) {
         BeanOperationExecutor executor = beanOperationExecutorMap.get(executorName);
-        Assert.notNull(executor, () -> new Crane4jException("cannot find executor [{}]", executorName));
+        Asserts.isNotNull(executor, "cannot find executor [{}]", executorName);
         return executor;
     }
 
@@ -198,7 +197,7 @@ public class SimpleCrane4jGlobalConfiguration
     @Override
     public BeanOperationParser getBeanOperationsParser(String parserName) {
         BeanOperationParser parser = beanOperationParserMap.get(parserName);
-        Assert.notNull(parser, () -> new Crane4jException("cannot find parser [{}]", parserName));
+        Asserts.isNotNull(parser, "cannot find parser [{}]", parserName);
         return parser;
     }
 
@@ -222,7 +221,7 @@ public class SimpleCrane4jGlobalConfiguration
     @Override
     public AssembleOperationHandler getAssembleOperationHandler(String handlerName) {
         AssembleOperationHandler handler = assembleOperationHandlerMap.get(handlerName);
-        Assert.notNull(handler, () -> new Crane4jException("cannot find handler [{}]", handlerName));
+        Asserts.isNotNull(handler, "cannot find handler [{}]", handlerName);
         return handler;
     }
 
@@ -246,7 +245,7 @@ public class SimpleCrane4jGlobalConfiguration
     @Override
     public DisassembleOperationHandler getDisassembleOperationHandler(String handlerName) {
         DisassembleOperationHandler handler = disassembleOperationHandlerMap.get(handlerName);
-        Assert.notNull(handler, () -> new Crane4jException("cannot find handler [{}]", handlerName));
+        Asserts.isNotNull(handler, "cannot find handler [{}]", handlerName);
         return handler;
     }
 }

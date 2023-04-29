@@ -4,9 +4,9 @@ import cn.crane4j.annotation.MappingType;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.MethodInvokerContainer;
 import cn.crane4j.core.support.MethodInvoker;
+import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.lang.Assert;
 import cn.hutool.core.text.CharSequenceUtil;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -84,7 +84,7 @@ public abstract class AbstractQueryContainerCreator<T> {
         String keyProperty = cacheKey.getKeyProperty();
         List<String> properties = cacheKey.getProperties();
         Repository<T> repository = registerRepositories.get(name);
-        Assert.notNull(repository, "cannot find repository [{}]", name);
+        Asserts.isNotNull(repository, "cannot find repository [{}]", name);
 
         // resolve columns for query
         Set<String> queryColumns = CollUtil.defaultIfEmpty(properties, Collections.emptyList())

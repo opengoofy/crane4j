@@ -3,12 +3,11 @@ package cn.crane4j.core.parser;
 import cn.crane4j.annotation.Assemble;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerProvider;
-import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.Sorted;
+import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.ConfigurationUtil;
-import cn.hutool.core.lang.Assert;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ObjectUtil;
 import lombok.experimental.Accessors;
@@ -71,9 +70,7 @@ public class AssembleAnnotationResolver extends StandardAssembleAnnotationResolv
         // get from provider
         Container<?> container = CharSequenceUtil.isNotEmpty(annotation.container()) ?
             provider.getContainer(annotation.container()) : Container.empty();
-        Assert.notNull(container, () -> new Crane4jException(
-            "cannot find container [{}] from provider [{}]", annotation.container(), annotation.containerProvider()
-        ));
+        Asserts.isNotNull(container, "cannot find container [{}] from provider [{}]", annotation.container(), annotation.containerProvider());
         return container;
     }
 }

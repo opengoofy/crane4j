@@ -3,15 +3,14 @@ package cn.crane4j.core.parser;
 import cn.crane4j.annotation.Mapping;
 import cn.crane4j.annotation.StandardAssembleAnnotation;
 import cn.crane4j.core.container.Container;
-import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
+import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.ConfigurationUtil;
 import cn.crane4j.core.util.Lazy;
 import cn.crane4j.core.util.ReflectUtils;
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.lang.Assert;
 import cn.hutool.core.text.CharSequenceUtil;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
@@ -162,9 +161,9 @@ public abstract class StandardAssembleAnnotationResolver<T extends Annotation> i
     @Nullable
     protected AssembleOperation createAssembleOperation(
         BeanOperations beanOperations, AnnotatedElement element, T annotation) {
-        Assert.notNull(standardAssembleAnnotation, () -> new Crane4jException(
-            "cannot find @StandardAssembleAnnotation in annotation [{}], it is not an standard assemble annotation", annotationType
-        ));
+        Asserts.isNotNull(
+            standardAssembleAnnotation, "cannot find @StandardAssembleAnnotation in annotation [{}], it is not an standard assemble annotation", annotationType
+        );
         Map<String, Object> attributes = ReflectUtils.getAnnotationAttributes(annotation);
 
         // get configuration of standard assemble operation
@@ -219,9 +218,7 @@ public abstract class StandardAssembleAnnotationResolver<T extends Annotation> i
      */
     protected String parseKey(T annotation, Map<String, Object> attributes) {
         String key = (String)attributes.get(standardAssembleAnnotation.keyAttribute());
-        Assert.isTrue(
-            CharSequenceUtil.isNotBlank(key), () -> new Crane4jException("the key of assemble operation must not blank")
-        );
+        Asserts.isTrue(CharSequenceUtil.isNotBlank(key), "the key of assemble operation must not blank");
         return key;
     }
 
@@ -238,10 +235,7 @@ public abstract class StandardAssembleAnnotationResolver<T extends Annotation> i
         AssembleOperationHandler assembleOperationHandler = ConfigurationUtil.getAssembleOperationHandler(
             globalConfiguration, handlerName, handler
         );
-        Assert.notNull(
-            assembleOperationHandler,
-            () -> new Crane4jException("assemble operation handler [{}]({}) not found", handlerName, handler)
-        );
+        Asserts.isNotNull(assembleOperationHandler, "assemble operation handler [{}]({}) not found", handlerName, handler);
         return assembleOperationHandler;
     }
 

@@ -1,15 +1,20 @@
 package cn.crane4j.core.executor.handler;
 
-import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.parser.DisassembleOperation;
 import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.support.reflect.PropertyOperator;
+import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.lang.Assert;
 import lombok.RequiredArgsConstructor;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -35,9 +40,7 @@ public class ReflectDisassembleOperationHandler implements DisassembleOperationH
             return Collections.emptyList();
         }
         MethodInvoker getter = propertyOperator.findGetter(operation.getSourceType(), operation.getKey());
-        Assert.notNull(getter, () -> new Crane4jException(
-            "cannot find getter for [{}] on [{}]", operation.getKey(), operation.getSourceType()
-        ));
+        Asserts.isNotNull(getter, "cannot find getter for [{}] on [{}]", operation.getKey(), operation.getSourceType());
         Deque<Object> deque = targets.stream()
             .filter(Objects::nonNull)
             .map(getter::invoke)

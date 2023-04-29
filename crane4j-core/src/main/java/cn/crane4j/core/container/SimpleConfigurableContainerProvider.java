@@ -2,9 +2,9 @@ package cn.crane4j.core.container;
 
 import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.support.callback.ContainerRegisterAware;
+import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.ConfigurationUtil;
 import cn.crane4j.core.util.ReadWriteLockSupport;
-import cn.hutool.core.lang.Assert;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -63,13 +63,12 @@ public class SimpleConfigurableContainerProvider implements ConfigurableContaine
                 return container;
             }
             container = containerFactory.get();
-            Assert.notNull(container, () -> new Crane4jException("container factory returned null"));
+            Asserts.isNotNull(container, "container factory returned null");
             String containerNamespace = container.getNamespace();
-            Assert.equals(
-                containerNamespace, namespace, () -> new Crane4jException(
-                    "The namespace of the current container [{}] is inconsistent with that of the old container [{}]",
-                    containerNamespace, namespace
-                )
+            Asserts.isEquals(
+                containerNamespace, namespace,
+                "The namespace of the current container [{}] is inconsistent with that of the old container [{}]",
+                containerNamespace, namespace
             );
             ConfigurationUtil.invokeRegisterAware(
                 this, container, getContainerRegisterAwareList(), c -> containerMap.put(namespace, c)
@@ -135,7 +134,7 @@ public class SimpleConfigurableContainerProvider implements ConfigurableContaine
     public void registerContainer(Container<?> container) {
         lock.withWriteLock(() -> {
             String namespace = container.getNamespace();
-            Assert.isFalse(containerMap.containsKey(namespace), () -> new Crane4jException("the container [{}] has been registered", namespace));
+            Asserts.isFalse(containerMap.containsKey(namespace), "the container [{}] has been registered", namespace);
             ConfigurationUtil.invokeRegisterAware(
                 this, container, containerRegisterAwareList, c -> containerMap.put(namespace, c)
             );
@@ -163,7 +162,7 @@ public class SimpleConfigurableContainerProvider implements ConfigurableContaine
     @Override
     public Container<?> getContainer(String namespace) {
         Container<?> container = lock.withReadLock(() -> containerMap.get(namespace));
-        Assert.notNull(container, () -> new Crane4jException("the container [{}] is not registered", namespace));
+        Asserts.isNotNull(container, "the container [{}] is not registered", namespace);
         return container;
     }
 }

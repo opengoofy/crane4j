@@ -3,16 +3,15 @@ package cn.crane4j.extension.spring;
 import cn.crane4j.annotation.Assemble;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerProvider;
-import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.parser.AssembleAnnotationResolver;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.Sorted;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
+import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.ConfigurationUtil;
 import cn.crane4j.core.util.ReflectUtils;
 import cn.crane4j.extension.spring.expression.SpelExpressionContext;
-import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.ObjectUtil;
 import com.google.common.collect.Multimap;
 import lombok.extern.slf4j.Slf4j;
@@ -106,9 +105,7 @@ public class SpringAssembleAnnotationResolver
         if (Objects.isNull(container)) {
             container = provider.getContainer(namespace);
         }
-        Assert.notNull(container, () -> new Crane4jException(
-            "cannot find container [{}] from provider [{}]", annotation.container(), annotation.containerProvider()
-        ));
+        Asserts.isNotNull(container, "cannot find container [{}] from provider [{}]", annotation.container(), annotation.containerProvider());
         return container;
     }
 

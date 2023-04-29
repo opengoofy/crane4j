@@ -62,8 +62,9 @@ import cn.crane4j.extension.spring.expression.SpelExpressionEvaluator;
 import cn.crane4j.spring.boot.annotation.EnableCrane4j;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ClassUtil;
-import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
@@ -421,7 +422,8 @@ public class Crane4jAutoConfiguration {
      * @see Crane4jInitializer
      */
     @ConfigurationProperties(prefix = CRANE_PREFIX)
-    @Data
+    @Getter
+    @Setter
     @Accessors(chain = true)
     public static class Properties {
 

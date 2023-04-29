@@ -3,7 +3,6 @@ package cn.crane4j.core.util;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.ParameterNameFinder;
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.lang.Assert;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ClassUtil;
@@ -253,7 +252,7 @@ public class ReflectUtils {
             .map(map -> (Map<Class<? extends Annotation >, Annotation>)map)
             .map(LinkedHashMap::new)
             .ifPresent(map -> {
-                Assert.isFalse(
+                Asserts.isFalse(
                     map.containsKey(annotation.annotationType()),
                     "method has been annotated by [{}]", annotation.annotationType()
                 );

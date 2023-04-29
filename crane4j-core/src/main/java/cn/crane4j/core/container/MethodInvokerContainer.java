@@ -1,12 +1,11 @@
 package cn.crane4j.core.container;
 
 import cn.crane4j.annotation.MappingType;
-import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.support.container.MethodContainerFactory;
 import cn.crane4j.core.support.container.MethodInvokerContainerCreator;
+import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.CollectionUtils;
-import cn.hutool.core.lang.Assert;
 import lombok.Getter;
 
 import java.util.Collection;
@@ -64,9 +63,8 @@ public class MethodInvokerContainer implements Container<Object> {
         // if the return value is not Map, the key extractor is required
         this.keyExtractor = keyExtractor;
         this.mappingType = Objects.requireNonNull(mappingType);
-        Assert.isTrue(
-            mappingType == MappingType.MAPPED || Objects.nonNull(keyExtractor),
-            () -> new Crane4jException("keyExtractor must not null")
+        Asserts.isTrue(
+            mappingType == MappingType.MAPPED || Objects.nonNull(keyExtractor), "keyExtractor must not null"
         );
     }
 

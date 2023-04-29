@@ -4,7 +4,7 @@ import cn.crane4j.annotation.ContainerConstant;
 import cn.crane4j.annotation.ContainerEnum;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.reflect.PropertyOperator;
-import cn.hutool.core.lang.Assert;
+import cn.crane4j.core.util.Asserts;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ReflectUtil;
@@ -115,7 +115,7 @@ public class ConstantContainer<K> implements Container<K> {
         Class<?> constantClass, AnnotationFinder annotationFinder) {
         Objects.requireNonNull(constantClass);
         ContainerConstant annotation = annotationFinder.getAnnotation(constantClass, ContainerConstant.class);
-        Assert.notNull(annotation, "cannot find @ContainerConstant from [{}]", constantClass);
+        Asserts.isNotNull(annotation, "cannot find @ContainerConstant from [{}]", constantClass);
         boolean onlyPublic = annotation.onlyPublic();
         boolean onlyExplicitlyIncluded = annotation.onlyExplicitlyIncluded();
         // get attribute
@@ -148,7 +148,7 @@ public class ConstantContainer<K> implements Container<K> {
      */
     public static <K> ConstantContainer<K> forMap(String namespace, Map<K, ?> data) {
         Objects.requireNonNull(namespace);
-        Assert.notEmpty(data, "data must not empty");
+        Asserts.isNotEmpty(data, "data must not empty");
         return new ConstantContainer<>(namespace, data);
     }
 

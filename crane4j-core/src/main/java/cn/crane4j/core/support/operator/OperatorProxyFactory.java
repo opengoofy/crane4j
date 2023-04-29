@@ -9,10 +9,10 @@ import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.support.Sorted;
+import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.ConfigurationUtil;
 import cn.crane4j.core.util.ReflectUtils;
-import cn.hutool.core.lang.Assert;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -74,7 +74,7 @@ public class OperatorProxyFactory {
     @SuppressWarnings("unchecked")
     @Nullable
     public <T> T get(Class<T> operatorType) {
-        Assert.isTrue(
+        Asserts.isTrue(
             Objects.nonNull(operatorType) && operatorType.isInterface(),
             "the operator type [{}] must be an interface.", operatorType
         );
@@ -92,11 +92,11 @@ public class OperatorProxyFactory {
         BeanOperationExecutor executor = ConfigurationUtil.getOperationExecutor(
             globalConfiguration, annotation.executorName(), annotation.executor()
         );
-        Assert.notNull(executor, "the executor of the operator [{}] is not found.", operatorType.getName());
+        Asserts.isNotNull(executor, "the executor of the operator [{}] is not found.", operatorType.getName());
         BeanOperationParser parser = ConfigurationUtil.getOperationParser(
             globalConfiguration, annotation.parserName(), annotation.parser()
         );
-        Assert.notNull(parser, "the parser of the operator [{}] is not found.", operatorType.getName());
+        Asserts.isNotNull(parser, "the parser of the operator [{}] is not found.", operatorType.getName());
 
         // create proxy by executor and parser
         log.debug("create operator proxy for interface [{}].", operatorType);
