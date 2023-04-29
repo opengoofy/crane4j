@@ -5,7 +5,7 @@ import cn.crane4j.annotation.ContainerEnum;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.util.Asserts;
-import cn.hutool.core.map.MapUtil;
+import cn.crane4j.core.util.CollectionUtils;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ReflectUtil;
 import lombok.AccessLevel;
@@ -134,7 +134,7 @@ public class ConstantContainer<K> implements Container<K> {
             });
         // build container
         String namespace = CharSequenceUtil.emptyToDefault(annotation.namespace(), constantClass.getSimpleName());
-        return forMap(namespace, annotation.reverse() ? MapUtil.reverse(data) : data);
+        return forMap(namespace, annotation.reverse() ? CollectionUtils.reverse(data) : data);
     }
 
     /**

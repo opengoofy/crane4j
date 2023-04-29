@@ -8,7 +8,6 @@ import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.support.callback.ContainerRegisterAware;
-import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ReflectUtil;
 import org.junit.Assert;
 import org.junit.Test;
@@ -89,7 +88,7 @@ public class Crane4jApplicationContextTest {
     protected static class TestConfig {
         @Bean("testBean")
         public ConstantContainer<String> container() {
-            return ConstantContainer.forMap("test", MapUtil.of("key", "value"));
+            return ConstantContainer.forMap("test", Collections.singletonMap("key", "value"));
         }
     }
 }

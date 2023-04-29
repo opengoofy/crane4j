@@ -20,6 +20,19 @@ import java.util.Map;
 public class CollectionUtilsTest {
 
     @Test
+    public void reverse() {
+        Assert.assertEquals(Collections.emptyMap(), CollectionUtils.reverse(null));
+        Assert.assertEquals(Collections.emptyMap(), CollectionUtils.reverse(Collections.emptyMap()));
+        Map<Integer, String> map = new HashMap<>();
+        map.put(1, "a");
+        map.put(2, "b");
+        Map<String, Integer> reversedMap = CollectionUtils.reverse(map);
+        Assert.assertEquals(2, reversedMap.size());
+        Assert.assertEquals(1, reversedMap.get("a").intValue());
+        Assert.assertEquals(2, reversedMap.get("b").intValue());
+    }
+
+    @Test
     public void defaultIfEmpty() {
         Assert.assertEquals(Collections.emptyList(), CollectionUtils.defaultIfEmpty(null, Collections.emptyList()));
         Assert.assertEquals(Collections.emptyList(), CollectionUtils.defaultIfEmpty(Collections.emptyList(), Collections.emptyList()));

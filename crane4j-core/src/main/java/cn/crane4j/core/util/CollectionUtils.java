@@ -16,6 +16,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * {@link Collection}、{@link Map}、{@link Iterator}、{@link Iterable} utils.
@@ -24,6 +25,19 @@ import java.util.function.Supplier;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CollectionUtils {
+
+    /**
+     * <p>Reverse given map.
+     *
+     * @param map map to reverse
+     * @return reversed map
+     */
+    public static <K, V> Map<V, K> reverse(Map<K, V> map) {
+        if (isEmpty(map)) {
+            return Collections.emptyMap();
+        }
+        return map.entrySet().stream().collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
+    }
 
     /**
      * <p>Get collection if not null, otherwise return default collection.
