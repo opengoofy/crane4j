@@ -8,7 +8,7 @@ import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.Sorted;
 import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.ConfigurationUtil;
-import cn.hutool.core.text.CharSequenceUtil;
+import cn.crane4j.core.util.StringUtils;
 import cn.hutool.core.util.ObjectUtil;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
@@ -68,7 +68,7 @@ public class AssembleAnnotationResolver extends StandardAssembleAnnotationResolv
         );
         provider = ObjectUtil.defaultIfNull(provider, globalConfiguration);
         // get from provider
-        Container<?> container = CharSequenceUtil.isNotEmpty(annotation.container()) ?
+        Container<?> container = StringUtils.isNotEmpty(annotation.container()) ?
             provider.getContainer(annotation.container()) : Container.empty();
         Asserts.isNotNull(container, "cannot find container [{}] from provider [{}]", annotation.container(), annotation.containerProvider());
         return container;

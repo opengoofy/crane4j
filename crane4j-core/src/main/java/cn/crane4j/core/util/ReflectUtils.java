@@ -2,8 +2,6 @@ package cn.crane4j.core.util;
 
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.ParameterNameFinder;
-import cn.hutool.core.text.CharSequenceUtil;
-import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.ReflectUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -119,7 +117,8 @@ public class ReflectUtils {
         } else if (element instanceof Member) {
             checkedClass = ((Member)element).getDeclaringClass();
         }
-        return ClassUtil.isJdkClass(checkedClass);
+        // then check package name is start with "javax." or "java."
+        return ClassUtils.isJdkClass(checkedClass);
     }
 
     /**
@@ -228,7 +227,7 @@ public class ReflectUtils {
         InvocationHandler invocationHandler = Proxy.getInvocationHandler(annotation);
         // adapt to Spring
         String memberAttributeName = JDK_MEMBER_ATTRIBUTE;
-        if (CharSequenceUtil.contains(invocationHandler.getClass().getName(), SPRING_INVOCATION_HANDLER)) {
+        if (StringUtils.contains(invocationHandler.getClass().getName(), SPRING_INVOCATION_HANDLER)) {
             memberAttributeName = SPRING_MEMBER_ATTRIBUTE;
         }
         Map<String, Object> memberValues = (Map<String, Object>) ReflectUtil.getFieldValue(invocationHandler, memberAttributeName);
@@ -280,12 +279,12 @@ public class ReflectUtils {
         // find isXXX method
         Class<?> fieldType = field.getType();
         if (boolean.class.equals(fieldType) || Boolean.class.equals(fieldType)) {
-            String booleanGetterName = CharSequenceUtil.upperFirstAndAddPre(field.getName(), IS_PREFIX);
+            String booleanGetterName = StringUtils.upperFirstAndAddPrefix(field.getName(), IS_PREFIX);
             return Optional.ofNullable(ReflectUtil.getMethod(beanType, booleanGetterName));
         }
 
         // find getXXX method
-        String getterName = CharSequenceUtil.upperFirstAndAddPre(field.getName(), GET_PREFIX);
+        String getterName = StringUtils.upperFirstAndAddPrefix(field.getName(), GET_PREFIX);
         Method method = ReflectUtil.getMethod(beanType, getterName);
         if (Objects.nonNull(method)) {
             return Optional.of(method);
@@ -305,7 +304,7 @@ public class ReflectUtils {
      */
     public static Optional<Method> findGetterMethod(Class<?> beanType, String fieldName) {
         // find getXXX method
-        String getterName = CharSequenceUtil.upperFirstAndAddPre(fieldName, GET_PREFIX);
+        String getterName = StringUtils.upperFirstAndAddPrefix(fieldName, GET_PREFIX);
         Method method = ReflectUtil.getMethod(beanType, getterName);
         if (Objects.nonNull(method)) {
             return Optional.of(method);
@@ -318,7 +317,7 @@ public class ReflectUtils {
         }
 
         // find isXXX method
-        String booleanGetterName = CharSequenceUtil.upperFirstAndAddPre(fieldName, IS_PREFIX);
+        String booleanGetterName = StringUtils.upperFirstAndAddPrefix(fieldName, IS_PREFIX);
         return Optional.ofNullable(ReflectUtil.getMethod(beanType, booleanGetterName));
     }
 
@@ -332,7 +331,7 @@ public class ReflectUtils {
     public static Optional<Method> findSetterMethod(Class<?> beanType, Field field) {
         // find setXXX method
         Class<?> fieldType = field.getType();
-        String setterName = CharSequenceUtil.upperFirstAndAddPre(field.getName(), SET_PREFIX);
+        String setterName = StringUtils.upperFirstAndAddPrefix(field.getName(), SET_PREFIX);
         Method method = ReflectUtil.getMethod(beanType, setterName, fieldType);
         if (Objects.nonNull(method)) {
             return Optional.of(method);
@@ -346,7 +345,7 @@ public class ReflectUtils {
         }
 
         // find isXXX method
-        String booleanSetterName = CharSequenceUtil.upperFirstAndAddPre(field.getName(), IS_PREFIX);
+        String booleanSetterName = StringUtils.upperFirstAndAddPrefix(field.getName(), IS_PREFIX);
         return Optional.ofNullable(ReflectUtil.getMethod(beanType, booleanSetterName, fieldType));
     }
 }

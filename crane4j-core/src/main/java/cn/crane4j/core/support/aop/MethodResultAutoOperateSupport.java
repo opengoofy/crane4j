@@ -4,7 +4,7 @@ import cn.crane4j.annotation.ArgAutoOperate;
 import cn.crane4j.annotation.AutoOperate;
 import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
 import cn.crane4j.core.util.CollectionUtils;
-import cn.hutool.core.text.CharSequenceUtil;
+import cn.crane4j.core.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
@@ -61,6 +61,6 @@ public class MethodResultAutoOperateSupport {
     }
 
     private boolean support(Method method, Object result, Object[] args, String condition) {
-        return CharSequenceUtil.isEmpty(condition) || Boolean.TRUE.equals(expressionExecuteDelegate.execute(condition, Boolean.class, method, args, result));
+        return StringUtils.isEmpty(condition) || Boolean.TRUE.equals(expressionExecuteDelegate.execute(condition, Boolean.class, method, args, result));
     }
 }

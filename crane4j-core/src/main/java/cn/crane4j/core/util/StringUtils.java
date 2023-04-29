@@ -1,0 +1,178 @@
+package cn.crane4j.core.util;
+
+import lombok.NoArgsConstructor;
+
+import java.util.Objects;
+
+/**
+ * {@link CharSequence} or {@link String} utils.
+ *
+ * @author huangchengxing
+ */
+@NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
+public class StringUtils {
+
+    /**
+     * <p>Whether the {@code searchStr} is in the {@code str}.<br />
+     * eg:
+     * <ul>
+     *     <li>{@code "abc", "abc"} will return {@code true}</li>
+     *     <li>{@code "abc", "b"} will return {@code true}</li>
+     *     <li>{@code "abc", "d"} will return {@code false}</li>
+     *     <li>{@code null, "a"} will return {@code false}</li>
+     *     <li>{@code "a", null} will return {@code false}</li>
+     *     <li>{@code null, null} will return {@code false}</li>
+     * </ul>
+     *
+     * @param str the CharSequence to check, may be null
+     * @param searchStr the CharSequence to find, may be null
+     * @return true if the search CharSequence is in the CharSequence
+     */
+    public static boolean contains(CharSequence str, CharSequence searchStr) {
+        // if all null, return false
+        if (Objects.isNull(str) && Objects.isNull(searchStr)) {
+            return false;
+        }
+        if (Objects.equals(str, searchStr)) {
+            return true;
+        }
+        if (Objects.isNull(str) || Objects.isNull(searchStr)) {
+            return false;
+        }
+        return str.toString().contains(searchStr);
+    }
+
+    /**
+     * <p>Format string with placeholder {}.<br />
+     * eg: {@code "a{}c", "b"} will return {@code "abc"}
+     *
+     * @param template template
+     * @param args     args
+     * @return formatted string
+     */
+    public static String format(String template, Object... args) {
+        if (isEmpty(template) || ArrayUtils.isEmpty(args)) {
+            return template;
+        }
+        StringBuilder sb = new StringBuilder();
+        int cursor = 0;
+        int index = 0;
+        while (cursor < template.length()) {
+            int placeholderIndex = template.indexOf("{}", cursor);
+            if (placeholderIndex == -1) {
+                sb.append(template.substring(cursor));
+                break;
+            }
+            sb.append(template, cursor, placeholderIndex);
+            if (index < args.length) {
+                sb.append(args[index++]);
+            } else {
+                sb.append("{}");
+            }
+            cursor = placeholderIndex + 2;
+        }
+        return sb.toString();
+    }
+
+    /**
+     * <p>Whether the given {@link CharSequence} is empty.<br />
+     * eg: {@code null, ""} will return true, {@code "a", " "} will return false.
+     *
+     * @param cs char sequence
+     * @return is empty
+     */
+    public static boolean isEmpty(final CharSequence cs) {
+        return cs == null || cs.length() == 0;
+    }
+
+    /**
+     * <p>Whether the given {@link CharSequence} is not empty.
+     * eg: {@code null, ""} will return false, {@code "a", " "} will return true.
+     *
+     * @param cs char sequence
+     * @return is not empty
+     */
+    public static boolean isNotEmpty(final CharSequence cs) {
+        return !isEmpty(cs);
+    }
+
+    /**
+     * <p>return the {@code str} if {@code str} is not empty, otherwise return {@code defaultStr}.
+     *
+     * @param str str
+     * @param defaultStr default str
+     * @return str or default str
+     */
+    public static String emptyToDefault(String str, String defaultStr) {
+        return isEmpty(str) ? defaultStr : str;
+    }
+
+    /**
+     * <p>return the {@code str} if {@code str} is not empty, otherwise return {@code null}.
+     *
+     * @param str str
+     * @return str or null
+     */
+    public static String emptyToNull(String str) {
+        return isEmpty(str) ? null : str;
+    }
+
+    /**
+     * <p>Make the first character uppercase and add prefix.<br />
+     * eg: {@code "bc", "a"} will return {@code "aBc"}, {@code null, "a"} will return {@code "anull"}.
+     *
+     * @param str str
+     * @param prefix prefix
+     * @return str with first character uppercase and prefix
+     */
+    public static String upperFirstAndAddPrefix(String str, String prefix) {
+        return prefix + upperFirst(str);
+    }
+
+    /**
+     * <p>Make the first character uppercase.<br />
+     * eg: {@code "abc"} will return {@code "Abc"}.
+     *
+     * @param str str
+     * @return str with first character uppercase
+     */
+    public static String upperFirst(String str) {
+        if (isEmpty(str)) {
+            return str;
+        }
+        char[] charArray = str.toCharArray();
+        charArray[0] = Character.toUpperCase(charArray[0]);
+        return new String(charArray);
+    }
+
+    /**
+     * <p>Whether the given {@link CharSequence} is blank.
+     * eg: {@code null, "", " "} will return true, {@code "a"} will return false.
+     *
+     * @param cs char sequence
+     * @return is blank
+     */
+    public static boolean isBlank(final CharSequence cs) {
+        int strLen;
+        if (cs == null || (strLen = cs.length()) == 0) {
+            return true;
+        }
+        for (int i = 0; i < strLen; ++i) {
+            if (!Character.isWhitespace(cs.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * <p>Whether the given {@link CharSequence} is not blank.
+     * eg: {@code null, "", " "} will return false, {@code "a"} will return true.
+     *
+     * @param cs char sequence
+     * @return is not blank
+     */
+    public static boolean isNotBlank(final CharSequence cs) {
+        return !isBlank(cs);
+    }
+}

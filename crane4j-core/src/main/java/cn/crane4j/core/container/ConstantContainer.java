@@ -6,7 +6,7 @@ import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.CollectionUtils;
-import cn.hutool.core.text.CharSequenceUtil;
+import cn.crane4j.core.util.StringUtils;
 import cn.hutool.core.util.ReflectUtil;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -94,9 +94,9 @@ public class ConstantContainer<K> implements Container<K> {
         if (Objects.isNull(annotation)) {
             return (ConstantContainer<K>)forEnum(enumType.getSimpleName(), enumType, Enum::name);
         }
-        String namespace = CharSequenceUtil.emptyToDefault(annotation.namespace(), enumType.getSimpleName());
-        boolean hasKey = CharSequenceUtil.isNotEmpty(annotation.key());
-        boolean hasValue = CharSequenceUtil.isNotEmpty(annotation.value());
+        String namespace = StringUtils.emptyToDefault(annotation.namespace(), enumType.getSimpleName());
+        boolean hasKey = StringUtils.isNotEmpty(annotation.key());
+        boolean hasValue = StringUtils.isNotEmpty(annotation.value());
         Map<K, Object> map = Stream.of(enumType.getEnumConstants()).collect(Collectors.toMap(
             e -> hasKey ? (K)Objects.requireNonNull(propertyOperator.readProperty(enumType, e, annotation.key())) : (K)e.name(),
             e -> hasValue ? Objects.requireNonNull(propertyOperator.readProperty(enumType, e, annotation.value())) : e
@@ -133,7 +133,7 @@ public class ConstantContainer<K> implements Container<K> {
                 data.put(key, value);
             });
         // build container
-        String namespace = CharSequenceUtil.emptyToDefault(annotation.namespace(), constantClass.getSimpleName());
+        String namespace = StringUtils.emptyToDefault(annotation.namespace(), constantClass.getSimpleName());
         return forMap(namespace, annotation.reverse() ? CollectionUtils.reverse(data) : data);
     }
 

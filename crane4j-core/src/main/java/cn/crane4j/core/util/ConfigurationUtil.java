@@ -13,7 +13,6 @@ import cn.crane4j.core.parser.SimplePropertyMapping;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.callback.ContainerRegisterAware;
-import cn.hutool.core.text.CharSequenceUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -75,10 +74,10 @@ public class ConfigurationUtil {
     }
 
     public static PropertyMapping createPropertyMapping(Mapping annotation, String defaultReference) {
-        if (CharSequenceUtil.isNotEmpty(annotation.value())) {
+        if (StringUtils.isNotEmpty(annotation.value())) {
             return new SimplePropertyMapping(annotation.value(), annotation.value());
         }
-        String ref = CharSequenceUtil.emptyToDefault(annotation.ref(), defaultReference);
+        String ref = StringUtils.emptyToDefault(annotation.ref(), defaultReference);
         return new SimplePropertyMapping(annotation.src(), ref);
     }
 
@@ -135,7 +134,7 @@ public class ConfigurationUtil {
         BiFunction<Crane4jGlobalConfiguration, Class<T>, T> getByType, Class<?> type,
         BiFunction<Crane4jGlobalConfiguration, String, T> getByName, String name) {
         // find by name
-        if (CharSequenceUtil.isNotEmpty(name)) {
+        if (StringUtils.isNotEmpty(name)) {
             return pluginType.cast(getByName.apply(configuration, name));
         }
         // find by type

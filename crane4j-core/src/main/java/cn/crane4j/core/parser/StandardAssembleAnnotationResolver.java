@@ -11,7 +11,7 @@ import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.ConfigurationUtil;
 import cn.crane4j.core.util.Lazy;
 import cn.crane4j.core.util.ReflectUtils;
-import cn.hutool.core.text.CharSequenceUtil;
+import cn.crane4j.core.util.StringUtils;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import lombok.Setter;
@@ -218,7 +218,7 @@ public abstract class StandardAssembleAnnotationResolver<T extends Annotation> i
      */
     protected String parseKey(T annotation, Map<String, Object> attributes) {
         String key = (String)attributes.get(standardAssembleAnnotation.keyAttribute());
-        Asserts.isTrue(CharSequenceUtil.isNotBlank(key), "the key of assemble operation must not blank");
+        Asserts.isTrue(StringUtils.isNotBlank(key), "the key of assemble operation must not blank");
         return key;
     }
 

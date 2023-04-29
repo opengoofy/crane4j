@@ -1,6 +1,6 @@
 package cn.crane4j.core.exception;
 
-import cn.hutool.core.text.CharSequenceUtil;
+import cn.crane4j.core.util.StringUtils;
 
 /**
  * Crane's runtime exception
@@ -19,7 +19,7 @@ public class Crane4jException extends RuntimeException {
      * @param args args of message template
      */
     public Crane4jException(String messageTemplate, Object... args) {
-        super(CharSequenceUtil.format(messageTemplate, args));
+        super(StringUtils.format(messageTemplate, args));
     }
 
     /**

@@ -1,6 +1,6 @@
 package cn.crane4j.core.parser;
 
-import cn.hutool.core.text.CharSequenceUtil;
+import cn.crane4j.core.util.StringUtils;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -28,7 +28,7 @@ public class SimplePropertyMapping implements PropertyMapping {
      */
     public SimplePropertyMapping(String source, String reference) {
         this.source = source;
-        this.hasSource = CharSequenceUtil.isNotEmpty(source);
+        this.hasSource = StringUtils.isNotEmpty(source);
         this.reference = reference;
     }
 

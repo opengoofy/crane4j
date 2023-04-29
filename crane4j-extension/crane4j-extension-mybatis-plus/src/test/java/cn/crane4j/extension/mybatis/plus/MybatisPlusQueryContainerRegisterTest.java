@@ -8,7 +8,7 @@ import cn.crane4j.core.support.container.AbstractQueryContainerCreator;
 import cn.crane4j.core.support.container.MethodInvokerContainerCreator;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
 import cn.crane4j.core.util.ArrayUtils;
-import cn.hutool.core.text.CharSequenceUtil;
+import cn.crane4j.core.util.StringUtils;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.junit.Assert;
 import org.junit.Test;
@@ -84,7 +84,7 @@ public class MybatisPlusQueryContainerRegisterTest extends MpBaseTest {
             queryColumns = ArrayUtils.append(queryColumns, keyColumn);
         }
 
-        String namespace = CharSequenceUtil.format(
+        String namespace = StringUtils.format(
             "select {} from foo where {} in ?",
             ArrayUtils.isEmpty(queryColumns) ? "*" : ArrayUtils.join(queryColumns, ", "), keyColumn
         );

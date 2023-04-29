@@ -11,7 +11,7 @@ import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.support.ParameterNameFinder;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.ReflectUtils;
-import cn.hutool.core.text.CharSequenceUtil;
+import cn.crane4j.core.util.StringUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -72,7 +72,7 @@ public class DynamicSourceProxyMethodFactory implements OperatorProxyFactory.Pro
             ProvideData annotation = annotationFinder.getAnnotation(parameter, ProvideData.class);
             if (Objects.nonNull(annotation)) {
                 noneContainerParameters = false;
-                String namespace = CharSequenceUtil.emptyToDefault(annotation.value(), parameterName);
+                String namespace = StringUtils.emptyToDefault(annotation.value(), parameterName);
                 Class<?> parameterType = parameter.getType();
                 dataProviderFactories[paramIndex] = resolveParameter(namespace, parameterType);
             }

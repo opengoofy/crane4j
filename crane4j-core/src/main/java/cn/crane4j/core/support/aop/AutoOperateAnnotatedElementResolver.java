@@ -12,7 +12,7 @@ import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.ConfigurationUtil;
-import cn.hutool.core.text.CharSequenceUtil;
+import cn.crane4j.core.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 
 import java.lang.reflect.AnnotatedElement;
@@ -57,10 +57,10 @@ public class AutoOperateAnnotatedElementResolver {
         Class<?> type = resolveTypeForExtractor(element);
         String on = annotation.on();
         MethodInvoker extractor = (t, args) -> t;
-        if (CharSequenceUtil.isNotEmpty(on)) {
+        if (StringUtils.isNotEmpty(on)) {
             PropertyOperator propertyOperator = configuration.getPropertyOperator();
             extractor = propertyOperator.findGetter(type, on);
-            Objects.requireNonNull(extractor, () -> CharSequenceUtil.format("cannot find getter for [{}] on [{}]", on, annotation.type()));
+            Objects.requireNonNull(extractor, () -> StringUtils.format("cannot find getter for [{}] on [{}]", on, annotation.type()));
         }
         return extractor;
     }
