@@ -6,7 +6,6 @@ import cn.crane4j.core.container.MethodInvokerContainer;
 import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.CollectionUtils;
-import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -74,7 +73,7 @@ public abstract class AbstractQueryContainerCreator<T> {
     public Container<?> getContainer(String name, @Nullable String keyProperty, @Nullable List<String> properties) {
         CacheKey cacheKey = new CacheKey(
             name, CharSequenceUtil.emptyToNull(keyProperty),
-            CollUtil.defaultIfEmpty(properties, Collections.emptyList())
+            CollectionUtils.defaultIfEmpty(properties, Collections.emptyList())
         );
         return CollectionUtils.computeIfAbsent(containerCaches, cacheKey, this::createContainer);
     }
@@ -87,7 +86,7 @@ public abstract class AbstractQueryContainerCreator<T> {
         Asserts.isNotNull(repository, "cannot find repository [{}]", name);
 
         // resolve columns for query
-        Set<String> queryColumns = CollUtil.defaultIfEmpty(properties, Collections.emptyList())
+        Set<String> queryColumns = CollectionUtils.defaultIfEmpty(properties, Collections.emptyList())
             .stream()
             .map(p -> repository.propertyToQueryColumn(p, p))
             .collect(Collectors.toCollection(LinkedHashSet::new));

@@ -2,7 +2,7 @@ package cn.crane4j.extension.spring.operator;
 
 import cn.crane4j.annotation.Operator;
 import cn.crane4j.core.support.operator.OperatorProxyFactory;
-import cn.hutool.core.collection.CollUtil;
+import cn.crane4j.core.util.CollectionUtils;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ClassUtil;
 import lombok.Setter;
@@ -49,12 +49,12 @@ public class OperatorBeanDefinitionRegistrar implements ImportBeanDefinitionRegi
         Set<Class<?>> operatorTypes = Stream.of(annotationAttributes.getStringArray("scan"))
             .filter(CharSequenceUtil::isNotEmpty)
             .map(ClassUtil::scanPackage)
-            .filter(CollUtil::isNotEmpty)
+            .filter(CollectionUtils::isNotEmpty)
             .flatMap(Collection::stream)
             .filter(Class::isInterface)
             .filter(operatorType -> AnnotatedElementUtils.isAnnotated(operatorType, Operator.class))
             .collect(Collectors.toSet());
-        CollUtil.addAll(operatorTypes, annotationAttributes.getClassArray("includes"));
+        CollectionUtils.addAll(operatorTypes, annotationAttributes.getClassArray("includes"));
         Arrays.asList(annotationAttributes.getClassArray("excludes"))
             .forEach(operatorTypes::remove);
         for (Class<?> operatorType : operatorTypes) {

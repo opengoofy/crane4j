@@ -6,8 +6,8 @@ import cn.crane4j.annotation.ContainerMethod;
 import cn.crane4j.annotation.Disassemble;
 import cn.crane4j.annotation.Mapping;
 import cn.crane4j.annotation.MappingType;
+import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.extension.spring.Crane4jSpringTestConfiguration;
-import cn.hutool.core.collection.CollUtil;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -56,12 +56,14 @@ public class MethodResultAutoOperateAspectTest {
         service.noneResult();
         List<Foo> list = service.getFooList().getData();
 
-        Foo foo1 = CollUtil.get(list, 0);
+        Foo foo1 = CollectionUtils.get(list, 0);
+        Assert.assertNotNull(foo1);
         Assert.assertEquals(foo1.getId(), foo1.getName());
         NestedFoo nestedFoo1 = (NestedFoo)foo1.getNestedFoo();
         Assert.assertEquals(nestedFoo1.getId(), nestedFoo1.getName());
 
-        Foo foo2 = CollUtil.get(list, 1);
+        Foo foo2 = CollectionUtils.get(list, 1);
+        Assert.assertNotNull(foo2);
         Assert.assertEquals(foo2.getId(), foo2.getName());
         NestedFoo nestedFoo2 = (NestedFoo)foo1.getNestedFoo();
         Assert.assertEquals(nestedFoo2.getId(), nestedFoo2.getName());

@@ -6,7 +6,7 @@ import cn.crane4j.core.parser.AssembleOperation;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.DisassembleOperation;
 import cn.crane4j.core.parser.KeyTriggerOperation;
-import cn.hutool.core.collection.CollUtil;
+import cn.crane4j.core.util.CollectionUtils;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +37,7 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
      */
     @Override
     public void execute(Collection<?> targets, BeanOperations operations, Predicate<? super KeyTriggerOperation> filter) {
-        if (CollUtil.isEmpty(targets) || Objects.isNull(operations)) {
+        if (CollectionUtils.isEmpty(targets) || Objects.isNull(operations)) {
             return;
         }
         if (!operations.isActive()) {
@@ -99,7 +99,7 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
         Collection<T> targets, BeanOperations operations,
         Predicate<? super KeyTriggerOperation> filter, Multimap<BeanOperations, Object> collector) {
         Collection<DisassembleOperation> internalOperations = operations.getDisassembleOperations();
-        if (CollUtil.isEmpty(internalOperations)) {
+        if (CollectionUtils.isEmpty(internalOperations)) {
             return;
         }
         internalOperations.stream()
@@ -111,7 +111,7 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
         Collection<T> targets, DisassembleOperation disassembleOperation, Predicate<? super KeyTriggerOperation> filter, Multimap<BeanOperations, Object> collector) {
         DisassembleOperationHandler handler = disassembleOperation.getDisassembleOperationHandler();
         Collection<?> internalTargets = handler.process(disassembleOperation, targets);
-        if (CollUtil.isEmpty(internalTargets)) {
+        if (CollectionUtils.isEmpty(internalTargets)) {
             return;
         }
         BeanOperations internalOperations = disassembleOperation.getInternalBeanOperations(internalTargets);

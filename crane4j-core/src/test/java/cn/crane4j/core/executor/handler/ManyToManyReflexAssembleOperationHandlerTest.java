@@ -11,7 +11,7 @@ import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
-import cn.hutool.core.collection.CollUtil;
+import cn.crane4j.core.util.CollectionUtils;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.junit.Assert;
@@ -63,14 +63,14 @@ public class ManyToManyReflexAssembleOperationHandlerTest extends BaseExecutorTe
         );
 
         executor.execute(beanList, operations);
-        Bean bean1 = CollUtil.get(beanList, 0);
+        Bean bean1 = CollectionUtils.get(beanList, 0);
         checkBean(bean1, "1", "2", "3");
-        Bean bean2 = CollUtil.get(beanList, 1);
+        Bean bean2 = CollectionUtils.get(beanList, 1);
         checkBean(bean2, "4", "5");
-        Bean bean3 = CollUtil.get(beanList, 2);
-        Assert.assertTrue(CollUtil.isEmpty(bean3.getValues()));
-        Assert.assertTrue(CollUtil.isEmpty(bean3.getItems()));
-        Assert.assertTrue(CollUtil.isEmpty(bean3.getNames()));
+        Bean bean3 = CollectionUtils.get(beanList, 2);
+        Assert.assertTrue(CollectionUtils.isEmpty(bean3.getValues()));
+        Assert.assertTrue(CollectionUtils.isEmpty(bean3.getItems()));
+        Assert.assertTrue(CollectionUtils.isEmpty(bean3.getNames()));
     }
 
     private void checkBean(Bean bean, String... ids) {

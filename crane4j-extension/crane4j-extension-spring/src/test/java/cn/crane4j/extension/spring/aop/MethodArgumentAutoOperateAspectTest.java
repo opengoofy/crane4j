@@ -1,8 +1,14 @@
 package cn.crane4j.extension.spring.aop;
 
-import cn.crane4j.annotation.*;
+import cn.crane4j.annotation.ArgAutoOperate;
+import cn.crane4j.annotation.Assemble;
+import cn.crane4j.annotation.AutoOperate;
+import cn.crane4j.annotation.ContainerMethod;
+import cn.crane4j.annotation.Disassemble;
+import cn.crane4j.annotation.Mapping;
+import cn.crane4j.annotation.MappingType;
+import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.extension.spring.Crane4jSpringTestConfiguration;
-import cn.hutool.core.collection.CollUtil;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -16,7 +22,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -49,12 +59,14 @@ public class MethodArgumentAutoOperateAspectTest {
             null
         );
 
-        Foo foo1 = CollUtil.get(list, 0);
+        Foo foo1 = CollectionUtils.get(list, 0);
+        Assert.assertNotNull(foo1);
         Assert.assertEquals(foo1.getId(), foo1.getName());
         NestedFoo nestedFoo1 = (NestedFoo)foo1.getNestedFoo();
         Assert.assertEquals(nestedFoo1.getId(), nestedFoo1.getName());
 
-        Foo foo2 = CollUtil.get(list, 1);
+        Foo foo2 = CollectionUtils.get(list, 1);
+        Assert.assertNotNull(foo2);
         Assert.assertEquals(foo2.getId(), foo2.getName());
         NestedFoo nestedFoo2 = (NestedFoo)foo1.getNestedFoo();
         Assert.assertEquals(nestedFoo2.getId(), nestedFoo2.getName());

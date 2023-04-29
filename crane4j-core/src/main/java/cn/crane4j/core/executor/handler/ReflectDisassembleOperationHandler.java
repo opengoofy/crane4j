@@ -5,7 +5,6 @@ import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.CollectionUtils;
-import cn.hutool.core.collection.CollUtil;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
@@ -36,7 +35,7 @@ public class ReflectDisassembleOperationHandler implements DisassembleOperationH
      */
     @Override
     public Collection<Object> process(DisassembleOperation operation, Collection<?> targets) {
-        if (CollUtil.isEmpty(targets)) {
+        if (CollectionUtils.isEmpty(targets)) {
             return Collections.emptyList();
         }
         MethodInvoker getter = propertyOperator.findGetter(operation.getSourceType(), operation.getKey());

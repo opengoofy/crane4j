@@ -7,7 +7,7 @@ import cn.crane4j.core.container.CacheableContainer;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.support.SimpleAnnotationFinder;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
-import cn.hutool.core.collection.CollUtil;
+import cn.crane4j.core.util.CollectionUtils;
 import cn.hutool.core.util.ReflectUtil;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -61,7 +61,7 @@ public class CacheableMethodContainerFactoryTest {
     @Test
     public void get() {
         List<Container<Object>> containers = factory.get(service, annotatedMethod);
-        Container<Object> container = CollUtil.get(containers, 0);
+        Container<Object> container = CollectionUtils.get(containers, 0);
         Assert.assertTrue(container instanceof CacheableContainer);
 
         Object cachedA = container.get(Collections.singleton("a")).get("a");

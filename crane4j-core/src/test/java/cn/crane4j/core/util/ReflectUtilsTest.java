@@ -3,7 +3,6 @@ package cn.crane4j.core.util;
 import cn.crane4j.core.support.ParameterNameFinder;
 import cn.crane4j.core.support.SimpleAnnotationFinder;
 import cn.crane4j.core.support.SimpleParameterNameFinder;
-import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ReflectUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -49,11 +48,13 @@ public class ReflectUtilsTest {
         Map<String, Parameter> parameterMap2 = ReflectUtils.resolveParameterNames(finder, method2);
         Assert.assertEquals(2, parameterMap2.size());
 
-        Map.Entry<String, Parameter> arg1 = CollUtil.get(parameterMap2.entrySet(), 0);
+        Map.Entry<String, Parameter> arg1 = CollectionUtils.get(parameterMap2.entrySet(), 0);
+        Assert.assertNotNull(arg1);
         Assert.assertEquals("arg0", arg1.getKey());
         Assert.assertEquals("arg0", arg1.getValue().getName());
 
-        Map.Entry<String, Parameter> arg2 = CollUtil.get(parameterMap2.entrySet(), 1);
+        Map.Entry<String, Parameter> arg2 = CollectionUtils.get(parameterMap2.entrySet(), 1);
+        Assert.assertNotNull(arg2);
         Assert.assertEquals("arg1", arg2.getKey());
         Assert.assertEquals("arg1", arg2.getValue().getName());
     }

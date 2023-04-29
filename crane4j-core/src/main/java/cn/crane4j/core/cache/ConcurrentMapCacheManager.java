@@ -1,7 +1,6 @@
 package cn.crane4j.core.cache;
 
 import cn.crane4j.core.util.CollectionUtils;
-import cn.hutool.core.collection.CollUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -108,7 +107,7 @@ public class ConcurrentMapCacheManager implements CacheManager {
          */
         @Override
         public Map<K, Object> getAll(Iterable<K> keys) {
-            if (CollUtil.isEmpty(keys)) {
+            if (CollectionUtils.isEmpty(keys)) {
                 return Collections.emptyMap();
             }
             Map<K, Object> result = new HashMap<>(16);
