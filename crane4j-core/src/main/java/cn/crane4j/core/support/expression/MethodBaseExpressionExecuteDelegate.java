@@ -1,7 +1,7 @@
 package cn.crane4j.core.support.expression;
 
 import cn.crane4j.core.support.ParameterNameFinder;
-import cn.hutool.core.util.ArrayUtil;
+import cn.crane4j.core.util.ArrayUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -93,7 +93,7 @@ public class MethodBaseExpressionExecuteDelegate {
      * @return A collection of parameter names and input parameters
      */
     protected Map<String, Object> resolvedParams(String[] paramNames, Object[] args) {
-        if (ArrayUtil.isEmpty(paramNames)) {
+        if (ArrayUtils.isEmpty(paramNames)) {
             return Collections.emptyMap();
         }
         Map<String, Object> results = new LinkedHashMap<>(paramNames.length);

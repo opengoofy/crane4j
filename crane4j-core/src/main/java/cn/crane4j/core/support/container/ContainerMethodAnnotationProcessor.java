@@ -4,10 +4,10 @@ import cn.crane4j.annotation.Bind;
 import cn.crane4j.annotation.ContainerMethod;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.support.AnnotationFinder;
+import cn.crane4j.core.util.ArrayUtils;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.ReflectUtils;
 import cn.hutool.core.text.CharSequenceUtil;
-import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ReflectUtil;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -141,7 +141,7 @@ public class ContainerMethodAnnotationProcessor {
     protected boolean checkMethodMatch(ContainerMethod annotation, Method method) {
         Bind bind = annotation.bind();
         return Objects.equals(method.getName(), bind.value())
-            && ArrayUtil.equals(method.getParameterTypes(), bind.paramTypes());
+            && ArrayUtils.isEquals(method.getParameterTypes(), bind.paramTypes());
     }
 
     /**

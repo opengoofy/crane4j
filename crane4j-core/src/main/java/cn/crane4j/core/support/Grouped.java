@@ -1,6 +1,7 @@
 package cn.crane4j.core.support;
 
-import cn.hutool.core.util.ArrayUtil;
+
+import cn.crane4j.core.util.ArrayUtils;
 
 import java.util.Collections;
 import java.util.Set;
@@ -29,7 +30,7 @@ public interface Grouped {
      * @return predicate
      */
     static Predicate<Grouped> allMatch(String... groups) {
-        return ArrayUtil.isEmpty(groups) ?
+        return ArrayUtils.isEmpty(groups) ?
             alwaysMatch() : t -> Stream.of(groups).allMatch(t::isBelong);
     }
 
@@ -47,7 +48,7 @@ public interface Grouped {
      * @return predicate
      */
     static Predicate<Grouped> noneMatch(String... groups) {
-        return ArrayUtil.isEmpty(groups) ?
+        return ArrayUtils.isEmpty(groups) ?
             alwaysMatch() : t -> Stream.of(groups).noneMatch(t::isBelong);
     }
 
@@ -65,7 +66,7 @@ public interface Grouped {
      * @return predicate
      */
     static Predicate<Grouped> anyMatch(String... groups) {
-        return ArrayUtil.isEmpty(groups) ?
+        return ArrayUtils.isEmpty(groups) ?
             alwaysNoneMatch() : t -> Stream.of(groups).anyMatch(t::isBelong);
     }
 

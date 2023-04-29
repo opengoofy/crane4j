@@ -9,8 +9,8 @@ import cn.crane4j.core.support.expression.ExpressionContext;
 import cn.crane4j.core.support.expression.OgnlExpressionContext;
 import cn.crane4j.core.support.expression.OgnlExpressionEvaluator;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
+import cn.crane4j.core.util.ArrayUtils;
 import cn.hutool.core.text.CharSequenceUtil;
-import cn.hutool.core.util.ArrayUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -63,7 +63,7 @@ public class MybatisPlusContainerProviderTest extends MpBaseTest {
     private void checkNamespace(String namespace, String keyColumn, String... queryColumns) {
         String expected = CharSequenceUtil.format(
             "select {} from foo where {} in ?",
-            ArrayUtil.isEmpty(queryColumns) ? "*" : ArrayUtil.join(queryColumns, ", "), keyColumn
+            ArrayUtils.isEmpty(queryColumns) ? "*" : ArrayUtils.join(queryColumns, ", "), keyColumn
         );
         Assert.assertEquals(expected, namespace);
     }

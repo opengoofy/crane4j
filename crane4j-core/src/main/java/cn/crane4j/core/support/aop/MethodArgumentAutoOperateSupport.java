@@ -5,10 +5,10 @@ import cn.crane4j.annotation.AutoOperate;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.ParameterNameFinder;
 import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
+import cn.crane4j.core.util.ArrayUtils;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.ReflectUtils;
 import cn.hutool.core.text.CharSequenceUtil;
-import cn.hutool.core.util.ArrayUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
@@ -69,7 +69,7 @@ public class MethodArgumentAutoOperateSupport {
             return;
         }
         // has any arguments?
-        if (ArrayUtil.isEmpty(args)) {
+        if (ArrayUtils.isEmpty(args)) {
             return;
         }
         // cache resolved parameters

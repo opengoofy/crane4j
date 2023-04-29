@@ -7,8 +7,8 @@ import cn.crane4j.core.support.SimpleCrane4jGlobalConfiguration;
 import cn.crane4j.core.support.container.AbstractQueryContainerCreator;
 import cn.crane4j.core.support.container.MethodInvokerContainerCreator;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
+import cn.crane4j.core.util.ArrayUtils;
 import cn.hutool.core.text.CharSequenceUtil;
-import cn.hutool.core.util.ArrayUtil;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.junit.Assert;
 import org.junit.Test;
@@ -80,13 +80,13 @@ public class MybatisPlusQueryContainerRegisterTest extends MpBaseTest {
         Assert.assertNotNull(container);
         Assert.assertTrue(container instanceof MethodInvokerContainer);
 
-        if (ArrayUtil.length(queryColumns) > 0 && !ArrayUtil.contains(queryColumns, keyColumn)) {
-            queryColumns = ArrayUtil.append(queryColumns, keyColumn);
+        if (ArrayUtils.length(queryColumns) > 0 && !ArrayUtils.contains(queryColumns, keyColumn)) {
+            queryColumns = ArrayUtils.append(queryColumns, keyColumn);
         }
 
         String namespace = CharSequenceUtil.format(
             "select {} from foo where {} in ?",
-            ArrayUtil.isEmpty(queryColumns) ? "*" : ArrayUtil.join(queryColumns, ", "), keyColumn
+            ArrayUtils.isEmpty(queryColumns) ? "*" : ArrayUtils.join(queryColumns, ", "), keyColumn
         );
         Assert.assertEquals(namespace, container.getNamespace());
 
