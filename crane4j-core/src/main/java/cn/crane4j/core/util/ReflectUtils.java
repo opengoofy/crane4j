@@ -3,7 +3,6 @@ package cn.crane4j.core.util;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.ParameterNameFinder;
 import cn.hutool.core.text.CharSequenceUtil;
-import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.ReflectUtil;
 import lombok.AccessLevel;
@@ -78,11 +77,11 @@ public class ReflectUtils {
     public static Map<String, Parameter> resolveParameterNames(ParameterNameFinder finder, Method method) {
         Parameter[] parameters = method.getParameters();
         String[] parameterNames = finder.getParameterNames(method);
-        if (ArrayUtil.isEmpty(parameters)) {
+        if (ArrayUtils.isEmpty(parameters)) {
             return Collections.emptyMap();
         }
         Map<String, Parameter> parameterMap = new LinkedHashMap<>(parameters.length);
-        int nameLength = ArrayUtil.length(parameterNames);
+        int nameLength = ArrayUtils.length(parameterNames);
         for (int i = 0; i < parameters.length; i++) {
             Parameter parameter = parameters[i];
             String parameterName = nameLength <= i ? parameter.getName() : parameterNames[i];
