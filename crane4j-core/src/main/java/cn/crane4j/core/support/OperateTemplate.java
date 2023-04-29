@@ -5,7 +5,6 @@ import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.KeyTriggerOperation;
 import cn.crane4j.core.util.CollectionUtils;
-import cn.hutool.core.collection.CollUtil;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
@@ -159,7 +158,7 @@ public class OperateTemplate {
     public void execute(
         Collection<?> targets, Class<?> targetType, BeanOperationParser parser,
         BeanOperationExecutor executor, Predicate<? super KeyTriggerOperation> filter) {
-        if (CollUtil.isEmpty(targets)) {
+        if (CollectionUtils.isEmpty(targets)) {
             return;
         }
         Objects.requireNonNull(targetType);

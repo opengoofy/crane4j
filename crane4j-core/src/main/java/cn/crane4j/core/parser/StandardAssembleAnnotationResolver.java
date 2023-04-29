@@ -7,10 +7,10 @@ import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.util.Asserts;
+import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.ConfigurationUtil;
 import cn.crane4j.core.util.Lazy;
 import cn.crane4j.core.util.ReflectUtils;
-import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
@@ -254,7 +254,7 @@ public abstract class StandardAssembleAnnotationResolver<T extends Annotation> i
             .collect(Collectors.toSet());
         Class<?>[] propTemplates = (Class<?>[])attributes.get(standardAssembleAnnotation.propTemplatesAttribute());
         List<PropertyMapping> templateMappings = ConfigurationUtil.parsePropTemplateClasses(propTemplates, annotationFinder);
-        if (CollUtil.isNotEmpty(templateMappings)) {
+        if (CollectionUtils.isNotEmpty(templateMappings)) {
             propertyMappings.addAll(templateMappings);
         }
         return propertyMappings;

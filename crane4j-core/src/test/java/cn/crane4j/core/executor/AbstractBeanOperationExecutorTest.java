@@ -5,7 +5,7 @@ import cn.crane4j.annotation.Disassemble;
 import cn.crane4j.core.parser.AssembleOperation;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.KeyTriggerOperation;
-import cn.hutool.core.collection.CollUtil;
+import cn.crane4j.core.util.CollectionUtils;
 import lombok.Data;
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -40,11 +40,11 @@ public class AbstractBeanOperationExecutorTest extends BaseExecutorTest {
 
         List<AssembleExecution> executions = getExecutions((beans, beanOperations) -> executor.execute(beans, beanOperations));
 
-        AssembleExecution executionForId = CollUtil.get(executions, 0);
+        AssembleExecution executionForId = CollectionUtils.get(executions, 0);
         checkAssembleOperation(executionForId, Bean.class, 3, "id");
-        AssembleExecution executionForKey = CollUtil.get(executions, 1);
+        AssembleExecution executionForKey = CollectionUtils.get(executions, 1);
         checkAssembleOperation(executionForKey, Bean.class, 3, "key");
-        AssembleExecution executionForNested = CollUtil.get(executions, 2);
+        AssembleExecution executionForNested = CollectionUtils.get(executions, 2);
         checkAssembleOperation(executionForNested, NestedBean.class, 2, "type");
     }
 

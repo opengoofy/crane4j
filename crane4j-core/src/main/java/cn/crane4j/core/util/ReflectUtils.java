@@ -2,7 +2,6 @@ package cn.crane4j.core.util;
 
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.ParameterNameFinder;
-import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ClassUtil;
@@ -188,7 +187,7 @@ public class ReflectUtils {
             Set<Class<?>> declaredSuperClassWithInterface = getDeclaredSuperClassWithInterface(type);
             declaredSuperClassWithInterface.remove(Object.class);
             declaredSuperClassWithInterface.removeAll(accessed);
-            CollUtil.addAll(typeQueue, declaredSuperClassWithInterface);
+            CollectionUtils.addAll(typeQueue, declaredSuperClassWithInterface);
         }
     }
 
@@ -207,7 +206,7 @@ public class ReflectUtils {
         List<R> results = new ArrayList<>(fields.length);
         for (Field field : fields) {
             Set<T> annotation = annotationFinder.getAllAnnotations(field, annotationType);
-            if (CollUtil.isEmpty(annotation)) {
+            if (CollectionUtils.isEmpty(annotation)) {
                 continue;
             }
             for (T t : annotation) {

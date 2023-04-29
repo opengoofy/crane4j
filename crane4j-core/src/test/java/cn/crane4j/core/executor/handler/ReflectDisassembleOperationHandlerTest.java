@@ -6,7 +6,7 @@ import cn.crane4j.core.executor.BaseExecutorTest;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.DisassembleOperation;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
-import cn.hutool.core.collection.CollUtil;
+import cn.crane4j.core.util.CollectionUtils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -39,22 +39,22 @@ public class ReflectDisassembleOperationHandlerTest extends BaseExecutorTest {
         Collection<DisassembleOperation> operations = beanOperations.getDisassembleOperations();
 
         Bean root = new Bean();
-        DisassembleOperation operationForBean = CollUtil.get(operations, 0);
+        DisassembleOperation operationForBean = CollectionUtils.get(operations, 0);
         Assert.assertEquals("bean", operationForBean.getKey());
         root.setBean(new Bean());
         checkDisassembledBeans(operationForBean, root, 1);
 
-        DisassembleOperation operationForBeanArray = CollUtil.get(operations, 1);
+        DisassembleOperation operationForBeanArray = CollectionUtils.get(operations, 1);
         Assert.assertEquals("beanArray", operationForBeanArray.getKey());
         root.setBeanArray(new Bean[]{new Bean(), new Bean(), new Bean()});
         checkDisassembledBeans(operationForBeanArray, root, 3);
 
-        DisassembleOperation operationForBeanList = CollUtil.get(operations, 2);
+        DisassembleOperation operationForBeanList = CollectionUtils.get(operations, 2);
         Assert.assertEquals("beanList", operationForBeanList.getKey());
         root.setBeanList(Arrays.asList(new Bean(), new Bean(), new Bean()));
         checkDisassembledBeans(operationForBeanList, root, 3);
 
-        DisassembleOperation operationForBeanMultiList = CollUtil.get(operations, 3);
+        DisassembleOperation operationForBeanMultiList = CollectionUtils.get(operations, 3);
         Assert.assertEquals("beanMultiList", operationForBeanMultiList.getKey());
         root.setBeanMultiList(Arrays.asList(
             Arrays.asList(new Bean[]{new Bean(), new Bean()}, new Bean[]{new Bean(), new Bean()}),
@@ -73,7 +73,7 @@ public class ReflectDisassembleOperationHandlerTest extends BaseExecutorTest {
         BeanOperations beanOperations = parseOperations(Bean.class);
         Collection<DisassembleOperation> operations = beanOperations.getDisassembleOperations();
 
-        DisassembleOperation operation = CollUtil.get(operations, 4);
+        DisassembleOperation operation = CollectionUtils.get(operations, 4);
         Assert.assertEquals("noneGetter", operation.getKey());
 
         // 输入null

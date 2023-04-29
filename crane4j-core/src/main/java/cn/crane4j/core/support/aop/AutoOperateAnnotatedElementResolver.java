@@ -10,14 +10,15 @@ import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.Grouped;
 import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.support.reflect.PropertyOperator;
+import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.ConfigurationUtil;
-import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import lombok.RequiredArgsConstructor;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -81,8 +82,8 @@ public class AutoOperateAnnotatedElementResolver {
      * @return actual include groups
      */
     protected static Predicate<? super KeyTriggerOperation> resolveFilter(AutoOperate annotation) {
-        Set<String> excludes = CollUtil.newHashSet(annotation.excludes());
-        Set<String> includes = CollUtil.newHashSet(annotation.includes());
+        Set<String> excludes = CollectionUtils.newCollection(HashSet::new, annotation.excludes());
+        Set<String> includes = CollectionUtils.newCollection(HashSet::new, annotation.includes());
         includes.removeAll(excludes);
         // nothing includes
         if (includes.isEmpty()) {
@@ -93,7 +94,7 @@ public class AutoOperateAnnotatedElementResolver {
             return Grouped.anyMatch(annotation.includes());
         }
         // include or not exclude
-        return t -> CollUtil.containsAny(includes, t.getGroups())
-            || !CollUtil.containsAny(excludes, t.getGroups());
+        return t -> CollectionUtils.containsAny(includes, t.getGroups())
+            || CollectionUtils.notContainsAny(excludes, t.getGroups());
     }
 }

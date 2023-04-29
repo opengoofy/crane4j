@@ -14,7 +14,7 @@ import cn.crane4j.core.support.SimpleAnnotationFinder;
 import cn.crane4j.core.support.SimpleCrane4jGlobalConfiguration;
 import cn.crane4j.core.support.SimpleTypeResolver;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
-import cn.hutool.core.collection.CollUtil;
+import cn.crane4j.core.util.CollectionUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -74,16 +74,16 @@ public class TypeHierarchyBeanOperationParserTest {
         // assemble : key -> value
         Assert.assertEquals(2, beanOperations.getAssembleOperations().size());
         Collection<AssembleOperation> assembles = beanOperations.getAssembleOperations();
-        AssembleOperation keyValue = CollUtil.get(assembles, 0);
+        AssembleOperation keyValue = CollectionUtils.get(assembles, 0);
         checkAssembleOperation(keyValue, "key", SUB_SORT);
 
         // assemble: id -> name
-        AssembleOperation idName = CollUtil.get(assembles, 1);
+        AssembleOperation idName = CollectionUtils.get(assembles, 1);
         checkAssembleOperation(idName, "id", SUP_SORT);
 
         // disassemble: nestedBean
         Collection<DisassembleOperation> disassembles = beanOperations.getDisassembleOperations();
-        DisassembleOperation nestedBean = CollUtil.get(disassembles, 0);
+        DisassembleOperation nestedBean = CollectionUtils.get(disassembles, 0);
         Assert.assertTrue(nestedBean instanceof TypeFixedDisassembleOperation);
         Assert.assertEquals("nestedBean", nestedBean.getKey());
         Assert.assertEquals(Bean.class, nestedBean.getSourceType());
@@ -104,16 +104,16 @@ public class TypeHierarchyBeanOperationParserTest {
         Assert.assertEquals(2, assembles.size());
 
         // assemble : key -> value
-        AssembleOperation keyValue = CollUtil.get(assembles, 0);
+        AssembleOperation keyValue = CollectionUtils.get(assembles, 0);
         checkAssembleOperation(keyValue, "key", SUB_SORT);
 
         // assemble: id -> name
-        AssembleOperation idName = CollUtil.get(assembles, 1);
+        AssembleOperation idName = CollectionUtils.get(assembles, 1);
         checkAssembleOperation(idName, "id", SUP_SORT);
 
         // disassemble: bean
         Collection<DisassembleOperation> disassembles = nestedBeanOperations.getDisassembleOperations();
-        DisassembleOperation bean = CollUtil.get(disassembles, 0);
+        DisassembleOperation bean = CollectionUtils.get(disassembles, 0);
         if (!(bean instanceof TypeFixedDisassembleOperation)) {
             System.out.println(bean);
             System.out.println(bean.getKey());
@@ -127,7 +127,7 @@ public class TypeHierarchyBeanOperationParserTest {
         Assert.assertSame(beanOperations, bean.getInternalBeanOperations(null));
 
         // disassemble: dynamicBean
-        DisassembleOperation dynamicBean = CollUtil.get(disassembles, 1);
+        DisassembleOperation dynamicBean = CollectionUtils.get(disassembles, 1);
         Assert.assertTrue(dynamicBean instanceof TypeDynamitedDisassembleOperation);
         Assert.assertEquals("dynamicBean", dynamicBean.getKey());
         Assert.assertEquals(NestedBean.class, dynamicBean.getSourceType());
@@ -156,7 +156,7 @@ public class TypeHierarchyBeanOperationParserTest {
 
     private void checkPropertyMappings(Set<PropertyMapping> mappings, String ref, String src) {
         Assert.assertEquals(1, mappings.size());
-        PropertyMapping mapping = CollUtil.getFirst(mappings);
+        PropertyMapping mapping = CollectionUtils.get(mappings, 0);
         Assert.assertEquals(ref, mapping.getReference());
         Assert.assertEquals(src, mapping.getSource());
     }

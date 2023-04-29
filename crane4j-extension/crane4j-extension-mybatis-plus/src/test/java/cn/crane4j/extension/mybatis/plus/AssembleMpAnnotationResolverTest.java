@@ -14,7 +14,7 @@ import cn.crane4j.core.support.SimpleAnnotationFinder;
 import cn.crane4j.core.support.SimpleCrane4jGlobalConfiguration;
 import cn.crane4j.core.support.container.MethodInvokerContainerCreator;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
-import cn.hutool.core.collection.CollUtil;
+import cn.crane4j.core.util.CollectionUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,13 +53,15 @@ public class AssembleMpAnnotationResolverTest extends MpBaseTest {
         Collection<AssembleOperation> assembleOperations = operations.getAssembleOperations();
         Assert.assertEquals(2, assembleOperations.size());
 
-        AssembleOperation idOperation = CollUtil.get(assembleOperations, 0);
+        AssembleOperation idOperation = CollectionUtils.get(assembleOperations, 0);
+        Assert.assertNotNull(idOperation);
         Assert.assertEquals("id", idOperation.getKey());
         Assert.assertEquals(1, idOperation.getPropertyMappings().size());
         Container<?> idContainer = idOperation.getContainer();
         Assert.assertTrue(idContainer instanceof MethodInvokerContainer);
 
-        AssembleOperation keyOperation = CollUtil.get(assembleOperations, 1);
+        AssembleOperation keyOperation = CollectionUtils.get(assembleOperations, 1);
+        Assert.assertNotNull(keyOperation);
         Assert.assertEquals("key", keyOperation.getKey());
         Assert.assertEquals(1, keyOperation.getPropertyMappings().size());
         Container<?> keyContainer = keyOperation.getContainer();

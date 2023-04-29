@@ -6,7 +6,7 @@ import cn.crane4j.core.container.Container;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.SimpleAnnotationFinder;
 import cn.crane4j.core.support.SimpleCrane4jGlobalConfiguration;
-import cn.hutool.core.collection.CollUtil;
+import cn.crane4j.core.util.CollectionUtils;
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -46,11 +46,11 @@ public class AssembleEnumAnnotationResolverTest {
         Collection<AssembleOperation> operations = beanOperations.getAssembleOperations();
         Assert.assertEquals(2, operations.size());
 
-        AssembleOperation operationOfCnName = CollUtil.get(operations, 0);
+        AssembleOperation operationOfCnName = CollectionUtils.get(operations, 0);
         Assert.assertEquals("id", operationOfCnName.getKey());
         Set<PropertyMapping> mappings = operationOfCnName.getPropertyMappings();
         Assert.assertEquals(1, mappings.size());
-        PropertyMapping mapping = CollUtil.get(mappings, 0);
+        PropertyMapping mapping = CollectionUtils.get(mappings, 0);
         Assert.assertFalse(mapping.hasSource());
         Assert.assertEquals("cnName", mapping.getReference());
         Container<Integer> container = (Container<Integer>)operationOfCnName.getContainer();
@@ -58,11 +58,11 @@ public class AssembleEnumAnnotationResolverTest {
         Assert.assertEquals("女", sources.get(0));
         Assert.assertEquals("男", sources.get(1));
 
-        AssembleOperation operationOfEnName = CollUtil.get(operations, 1);
+        AssembleOperation operationOfEnName = CollectionUtils.get(operations, 1);
         Assert.assertEquals("id", operationOfEnName.getKey());
         mappings = operationOfEnName.getPropertyMappings();
         Assert.assertEquals(1, mappings.size());
-        mapping = CollUtil.get(mappings, 0);
+        mapping = CollectionUtils.get(mappings, 0);
         Assert.assertFalse(mapping.hasSource());
         Assert.assertEquals("enName", mapping.getReference());
         container = (Container<Integer>)operationOfEnName.getContainer();

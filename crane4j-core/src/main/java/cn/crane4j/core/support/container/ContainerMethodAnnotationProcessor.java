@@ -4,8 +4,8 @@ import cn.crane4j.annotation.Bind;
 import cn.crane4j.annotation.ContainerMethod;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.support.AnnotationFinder;
+import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.ReflectUtils;
-import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ReflectUtil;
@@ -153,7 +153,7 @@ public class ContainerMethodAnnotationProcessor {
     protected Collection<Container<Object>> processAnnotatedMethod(Object target, Multimap<Method, ContainerMethod> annotatedMethods) {
         return annotatedMethods.keys().stream()
             .map(method -> createMethodContainer(target, method))
-            .filter(CollUtil::isNotEmpty)
+            .filter(CollectionUtils::isNotEmpty)
             .flatMap(Collection::stream)
             .collect(Collectors.toList());
     }

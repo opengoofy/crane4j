@@ -6,7 +6,7 @@ import cn.crane4j.core.container.Container;
 import cn.crane4j.core.parser.AssembleOperation;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.BeanOperations;
-import cn.hutool.core.collection.CollUtil;
+import cn.crane4j.core.util.CollectionUtils;
 import lombok.Data;
 import org.junit.Assert;
 import org.junit.Test;
@@ -43,17 +43,20 @@ public class SpringAnnotationAwareBeanOperationParserTest {
         BeanOperations beanOperations = beanOperationParser.parse(Foo.class);
         Collection<AssembleOperation> operations = beanOperations.getAssembleOperations();
 
-        AssembleOperation operationForKey = CollUtil.get(operations, 0);
+        AssembleOperation operationForKey = CollectionUtils.get(operations, 0);
+        Assert.assertNotNull(operationForKey);
         Assert.assertEquals("key", operationForKey.getKey());
         Assert.assertEquals(-1, operationForKey.getSort());
         Assert.assertEquals(testContainer, operationForKey.getContainer());
 
-        AssembleOperation operationForCode = CollUtil.get(operations, 1);
+        AssembleOperation operationForCode = CollectionUtils.get(operations, 1);
+        Assert.assertNotNull(operationForCode);
         Assert.assertEquals("code", operationForCode.getKey());
         Assert.assertEquals(0, operationForCode.getSort());
         Assert.assertEquals(testContainer, operationForCode.getContainer());
 
-        AssembleOperation operationForId = CollUtil.get(operations, 2);
+        AssembleOperation operationForId = CollectionUtils.get(operations, 2);
+        Assert.assertNotNull(operationForId);
         Assert.assertEquals("id", operationForId.getKey());
         Assert.assertEquals(1, operationForId.getSort());
         Assert.assertEquals(testContainer, operationForId.getContainer());
