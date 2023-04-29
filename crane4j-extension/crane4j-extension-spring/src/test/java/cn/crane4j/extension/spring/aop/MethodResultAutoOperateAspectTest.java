@@ -1,9 +1,18 @@
 package cn.crane4j.extension.spring.aop;
 
-import cn.crane4j.annotation.*;
+import cn.crane4j.annotation.Assemble;
+import cn.crane4j.annotation.AutoOperate;
+import cn.crane4j.annotation.ContainerMethod;
+import cn.crane4j.annotation.Disassemble;
+import cn.crane4j.annotation.Mapping;
+import cn.crane4j.annotation.MappingType;
 import cn.crane4j.extension.spring.Crane4jSpringTestConfiguration;
 import cn.hutool.core.collection.CollUtil;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,7 +22,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -40,6 +53,7 @@ public class MethodResultAutoOperateAspectTest {
     @Test
     public void test() {
         TargetService service = applicationContext.getBean(TargetService.class);
+        service.noneResult();
         List<Foo> list = service.getFooList().getData();
 
         Foo foo1 = CollUtil.get(list, 0);
@@ -87,6 +101,9 @@ public class MethodResultAutoOperateAspectTest {
                     new Foo("2", null, new NestedFoo("1", null))
                 )
             );
+        }
+        @AutoOperate(type = Foo.class, on = "data")
+        public void noneResult() {
         }
     }
 

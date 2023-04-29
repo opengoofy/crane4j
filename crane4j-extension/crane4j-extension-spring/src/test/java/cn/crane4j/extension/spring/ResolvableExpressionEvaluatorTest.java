@@ -41,6 +41,9 @@ public class ResolvableExpressionEvaluatorTest {
             new Object[]{2, 3}, method, 0
         );
         Assert.assertTrue(evaluator.execute(expression, Boolean.class, execution));
+
+        evaluator.setEmbeddedValueResolver(null);
+        evaluator.execute(expression, Boolean.class, execution);
     }
 
     private Integer compute(Integer a, Integer b) {
