@@ -29,7 +29,6 @@ import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
 import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.CollectionUtils;
-import cn.hutool.core.map.MapUtil;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -85,7 +84,7 @@ public class SimpleCrane4jGlobalConfiguration
 
         // container register aware
         configuration.addContainerRegisterAware(new ContainerRegisteredLogger());
-        if (MapUtil.isNotEmpty(cacheConfig)) {
+        if (CollectionUtils.isNotEmpty(cacheConfig)) {
             configuration.addContainerRegisterAware(new DefaultCacheableContainerProcessor(cacheManager, cacheConfig));
         }
 

@@ -3,7 +3,7 @@ package cn.crane4j.core.executor.handler;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.EmptyContainer;
 import cn.crane4j.core.executor.AssembleExecution;
-import cn.hutool.core.map.MapUtil;
+import cn.crane4j.core.util.CollectionUtils;
 import cn.hutool.core.util.ObjectUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +33,7 @@ public abstract class AbstractAssembleOperationHandler<T extends AbstractAssembl
             return;
         }
         Map<Object, Object> sources = getSourcesFromContainer(container, targets);
-        if (MapUtil.isEmpty(sources)) {
+        if (CollectionUtils.isEmpty(sources)) {
             return;
         }
         for (T target : targets) {
