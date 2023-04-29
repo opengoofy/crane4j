@@ -3,7 +3,7 @@ package cn.crane4j.extension.spring.operator;
 import cn.crane4j.annotation.Operator;
 import cn.crane4j.core.support.operator.OperatorProxyFactory;
 import cn.crane4j.core.util.CollectionUtils;
-import cn.hutool.core.text.CharSequenceUtil;
+import cn.crane4j.core.util.StringUtils;
 import cn.hutool.core.util.ClassUtil;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -47,7 +47,7 @@ public class OperatorBeanDefinitionRegistrar implements ImportBeanDefinitionRegi
 
     private void doRegisterBeanDefinitions(AnnotationAttributes annotationAttributes, BeanDefinitionRegistry registry) {
         Set<Class<?>> operatorTypes = Stream.of(annotationAttributes.getStringArray("scan"))
-            .filter(CharSequenceUtil::isNotEmpty)
+            .filter(StringUtils::isNotEmpty)
             .map(ClassUtil::scanPackage)
             .filter(CollectionUtils::isNotEmpty)
             .flatMap(Collection::stream)

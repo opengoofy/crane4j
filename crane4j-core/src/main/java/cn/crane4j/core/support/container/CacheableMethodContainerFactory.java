@@ -5,7 +5,7 @@ import cn.crane4j.core.cache.CacheManager;
 import cn.crane4j.core.container.CacheableContainer;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.support.AnnotationFinder;
-import cn.hutool.core.text.CharSequenceUtil;
+import cn.crane4j.core.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
@@ -71,7 +71,7 @@ public class CacheableMethodContainerFactory extends DefaultMethodContainerFacto
         log.debug("create cacheable method container from [{}]", method);
         ContainerCache annotation = annotationFinder.findAnnotation(method, ContainerCache.class);
         // if cache name is not specified, the namespace of the container is taken by default
-        Function<Container<Object>, String> cacheNameFactory = container -> CharSequenceUtil.emptyToDefault(annotation.cacheName(), container.getNamespace());
+        Function<Container<Object>, String> cacheNameFactory = container -> StringUtils.emptyToDefault(annotation.cacheName(), container.getNamespace());
         return super.get(source, method).stream()
             .map(container -> new CacheableContainer<>(container, cacheManager, cacheNameFactory.apply(container)))
             .collect(Collectors.toList());

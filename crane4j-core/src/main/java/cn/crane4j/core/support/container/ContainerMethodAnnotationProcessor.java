@@ -7,7 +7,7 @@ import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.util.ArrayUtils;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.ReflectUtils;
-import cn.hutool.core.text.CharSequenceUtil;
+import cn.crane4j.core.util.StringUtils;
 import cn.hutool.core.util.ReflectUtil;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -189,7 +189,7 @@ public class ContainerMethodAnnotationProcessor {
     @Nullable
     private Method resolveMethodForClassLevelAnnotation(Map<String, List<Method>> methodGroup, ContainerMethod annotation) {
         Bind bind = annotation.bind();
-        String methodName = CharSequenceUtil.emptyToDefault(bind.value(), annotation.namespace());
+        String methodName = StringUtils.emptyToDefault(bind.value(), annotation.namespace());
         Method resolvedMethod = methodGroup.getOrDefault(methodName, Collections.emptyList()).stream()
             .filter(method -> checkMethodMatch(annotation, method))
             .findFirst()

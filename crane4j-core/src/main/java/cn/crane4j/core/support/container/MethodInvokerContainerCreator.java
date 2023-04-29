@@ -4,7 +4,8 @@ import cn.crane4j.annotation.MappingType;
 import cn.crane4j.core.container.MethodInvokerContainer;
 import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.support.reflect.PropertyOperator;
-import cn.hutool.core.text.CharSequenceUtil;
+import cn.crane4j.core.util.Asserts;
+import cn.crane4j.core.util.StringUtils;
 import cn.hutool.core.util.ReflectUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -15,7 +16,6 @@ import javax.annotation.Nullable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.Objects;
 
 /**
  * Support class for {@link MethodInvokerContainer} creation.
@@ -139,7 +139,7 @@ public class MethodInvokerContainerCreator {
      * @return namespace
      */
     protected static String getNamespace(Method method, String namespace) {
-        return CharSequenceUtil.emptyToDefault(namespace, method.getName());
+        return StringUtils.emptyToDefault(namespace, method.getName());
     }
 
     /**
@@ -151,9 +151,7 @@ public class MethodInvokerContainerCreator {
      */
     protected MethodInvoker findKeyGetter(Class<?> resultType, String resultKey) {
         MethodInvoker keyGetter = propertyOperator.findGetter(resultType, resultKey);
-        Objects.requireNonNull(keyGetter, CharSequenceUtil.format(
-            "cannot find getter method [{}] on [{}]", resultKey, resultType
-        ));
+        Asserts.isNotNull(keyGetter, "cannot find getter method [{}] on [{}]", resultKey, resultType);
         return keyGetter;
     }
 

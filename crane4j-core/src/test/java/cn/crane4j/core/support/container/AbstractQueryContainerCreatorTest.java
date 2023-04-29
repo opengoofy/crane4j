@@ -3,7 +3,7 @@ package cn.crane4j.core.support.container;
 import cn.crane4j.annotation.MappingType;
 import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
-import cn.hutool.core.text.CharSequenceUtil;
+import cn.crane4j.core.util.StringUtils;
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -80,7 +80,7 @@ public class AbstractQueryContainerCreatorTest {
         Recorder recorder, AbstractQueryContainerCreator.Repository<Object> repository,
         String keyProperty, List<String> properties) {
 
-        keyProperty = CharSequenceUtil.emptyToDefault(keyProperty, repository.getKeyProperty());
+        keyProperty = StringUtils.emptyToDefault(keyProperty, repository.getKeyProperty());
         Assert.assertEquals(repository, recorder.getRepository());
         Assert.assertEquals(keyProperty, recorder.getKeyProperty());
         Assert.assertEquals(COLUMNS.get(keyProperty), recorder.getKeyColumn());

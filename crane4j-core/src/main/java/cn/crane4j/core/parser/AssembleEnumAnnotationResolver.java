@@ -9,7 +9,7 @@ import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.Sorted;
 import cn.crane4j.core.support.reflect.PropertyOperator;
-import cn.hutool.core.text.CharSequenceUtil;
+import cn.crane4j.core.util.StringUtils;
 
 import java.util.Comparator;
 import java.util.Map;
@@ -81,7 +81,7 @@ public class AssembleEnumAnnotationResolver extends StandardAssembleAnnotationRe
         String namespace;
         if (annotation.useContainerEnum()) {
             ContainerEnum containerEnum = annotationFinder.findAnnotation(enumType, ContainerEnum.class);
-            namespace = CharSequenceUtil.emptyToDefault(containerEnum.namespace(), containerEnum.getClass().getSimpleName());
+            namespace = StringUtils.emptyToDefault(containerEnum.namespace(), containerEnum.getClass().getSimpleName());
         } else {
             namespace = getNamespace(annotation);
         }
@@ -92,8 +92,8 @@ public class AssembleEnumAnnotationResolver extends StandardAssembleAnnotationRe
         if (annotation.useContainerEnum()) {
             return ConstantContainer.forEnum(enumType, annotationFinder, propertyOperator);
         }
-        boolean hasKey = CharSequenceUtil.isNotEmpty(annotation.enumKey());
-        boolean hasValue = CharSequenceUtil.isNotEmpty(annotation.enumValue());
+        boolean hasKey = StringUtils.isNotEmpty(annotation.enumKey());
+        boolean hasValue = StringUtils.isNotEmpty(annotation.enumValue());
         return ConstantContainer.forMap(namespace, Stream.of(enumType.getEnumConstants())
             .collect(Collectors.toMap(e -> hasKey ? Objects.requireNonNull(propertyOperator.readProperty(enumType, e, annotation.enumKey())) : e, e -> hasValue ? Objects.requireNonNull(propertyOperator.readProperty(enumType, e, annotation.enumValue())) : e)));
     }
@@ -109,7 +109,7 @@ public class AssembleEnumAnnotationResolver extends StandardAssembleAnnotationRe
     @Override
     protected Set<PropertyMapping> parsePropertyMappings(AssembleEnum annotation, Map<String, Object> attributes, String key) {
         Set<PropertyMapping> propertyMappings = super.parsePropertyMappings(annotation, attributes, key);
-        if (CharSequenceUtil.isNotEmpty(annotation.ref())) {
+        if (StringUtils.isNotEmpty(annotation.ref())) {
             propertyMappings.add(new SimplePropertyMapping("", annotation.ref()));
         }
         return propertyMappings;

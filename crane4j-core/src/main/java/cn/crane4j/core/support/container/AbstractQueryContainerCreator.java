@@ -6,7 +6,7 @@ import cn.crane4j.core.container.MethodInvokerContainer;
 import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.CollectionUtils;
-import cn.hutool.core.text.CharSequenceUtil;
+import cn.crane4j.core.util.StringUtils;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -72,7 +72,7 @@ public abstract class AbstractQueryContainerCreator<T> {
      */
     public Container<?> getContainer(String name, @Nullable String keyProperty, @Nullable List<String> properties) {
         CacheKey cacheKey = new CacheKey(
-            name, CharSequenceUtil.emptyToNull(keyProperty),
+            name, StringUtils.emptyToNull(keyProperty),
             CollectionUtils.defaultIfEmpty(properties, Collections.emptyList())
         );
         return CollectionUtils.computeIfAbsent(containerCaches, cacheKey, this::createContainer);
@@ -92,7 +92,7 @@ public abstract class AbstractQueryContainerCreator<T> {
             .collect(Collectors.toCollection(LinkedHashSet::new));
 
         // resolve key column for query
-        keyProperty = CharSequenceUtil.emptyToDefault(keyProperty, repository.getKeyProperty());
+        keyProperty = StringUtils.emptyToDefault(keyProperty, repository.getKeyProperty());
         String keyColumn = repository.propertyToColumn(keyProperty, keyProperty);
         String keyQueryColumn = repository.propertyToQueryColumn(keyProperty, keyProperty);
         if (!queryColumns.isEmpty()) {
@@ -141,7 +141,7 @@ public abstract class AbstractQueryContainerCreator<T> {
     @Nonnull
     protected String generateContainerNamespace(
         Repository<T> repository, String keyColumn, Collection<String> queryColumns) {
-        return CharSequenceUtil.format(
+        return StringUtils.format(
             "select {} from {} where {} in ?",
             queryColumns.isEmpty() ? "*" : String.join(", ", queryColumns),
             repository.getTableName(),
