@@ -11,6 +11,17 @@ import org.junit.Test;
 public class ArrayUtilsTest {
 
     @Test
+    @SuppressWarnings("all")
+    public void getFirstNotNull() {
+        Assert.assertEquals("a", ArrayUtils.getFirstNotNull("a", "b", "c"));
+        Assert.assertEquals("b", ArrayUtils.getFirstNotNull(null, "b", "c"));
+        Assert.assertEquals("c", ArrayUtils.getFirstNotNull(null, null, "c"));
+        Assert.assertNull(ArrayUtils.getFirstNotNull(null, null, null));
+        // target is null
+        Assert.assertNull(ArrayUtils.getFirstNotNull(null));
+    }
+
+    @Test
     public void append() {
         String[] array = {"a", "b", "c"};
         String[] append = ArrayUtils.append(array, "d");

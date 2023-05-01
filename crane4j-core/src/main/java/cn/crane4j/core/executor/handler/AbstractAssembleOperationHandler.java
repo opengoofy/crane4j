@@ -4,7 +4,7 @@ import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.EmptyContainer;
 import cn.crane4j.core.executor.AssembleExecution;
 import cn.crane4j.core.util.CollectionUtils;
-import cn.hutool.core.util.ObjectUtil;
+import cn.crane4j.core.util.ObjectUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -38,7 +38,7 @@ public abstract class AbstractAssembleOperationHandler<T extends AbstractAssembl
         }
         for (T target : targets) {
             Object source = getTheAssociatedSource(target, sources);
-            if (ObjectUtil.isNotEmpty(source)) {
+            if (ObjectUtils.isNotEmpty(source)) {
                 completeMapping(source, target);
             }
         }

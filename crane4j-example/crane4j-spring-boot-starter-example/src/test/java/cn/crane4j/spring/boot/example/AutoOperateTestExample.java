@@ -6,8 +6,8 @@ import cn.crane4j.annotation.AutoOperate;
 import cn.crane4j.annotation.Mapping;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.LambdaContainer;
+import cn.crane4j.core.util.ObjectUtils;
 import cn.crane4j.extension.spring.Crane4jApplicationContext;
-import cn.hutool.core.util.ObjectUtil;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.junit.Assert;
@@ -47,7 +47,7 @@ public class AutoOperateTestExample {
             "student", ids -> ids.stream()
                 .collect(Collectors.toMap(Function.identity(), id -> "student" + id))
         );
-        context.compute("student", c -> ObjectUtil.defaultIfNull(c, supplier.get()));
+        context.compute("student", c -> ObjectUtils.defaultIfNull(c, supplier.get()));
     }
 
     @Test

@@ -3,15 +3,15 @@ package cn.crane4j.core.util;
 import lombok.NoArgsConstructor;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
 
 /**
+ * Common object utils.
+ *
  * @author huangchengxing
  */
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
@@ -24,35 +24,22 @@ public class ObjectUtils {
      * @param target target
      * @return element type
      */
+    @Nullable
     public static Class<?> getElementType(Object target) {
         if (Objects.isNull(target)) {
             return null;
         }
+        Object firstNonNull = target;
         if (target instanceof Iterator) {
-            Iterator<?> iterator = (Iterator<?>)target;
-            if (!iterator.hasNext()) {
-                return null;
-            }
-            // get first not null element
-            Object curr = iterator.next();
-            while (Objects.isNull(curr)) {
-                if (!iterator.hasNext()) {
-                    return null;
-                }
-                curr = iterator.next();
-            }
-            return curr.getClass();
+            firstNonNull = CollectionUtils.getFirstNotNull((Iterator<?>)target);
         }
-        if (target instanceof Collection) {
-            return getElementType(((Collection<?>)target).iterator());
+        else if (target instanceof Iterable) {
+            firstNonNull = CollectionUtils.getFirstNotNull((Iterable<?>)target);
         }
-        if (target instanceof Iterable) {
-            return getElementType(((Iterable<?>)target).iterator());
+        else if (target.getClass().isArray()) {
+            firstNonNull = ArrayUtils.getFirstNotNull((Object[])target);
         }
-        if (target.getClass().isArray()) {
-            return target.getClass().getComponentType();
-        }
-        return target.getClass();
+        return Objects.isNull(firstNonNull) ? null : firstNonNull.getClass();
     }
 
     /**
@@ -63,22 +50,8 @@ public class ObjectUtils {
      * @param <T> element type
      * @return element
      */
-    public <T> T getOrDefault(T target, T defaultValue) {
+    public static <T> T defaultIfNull(T target, T defaultValue) {
         return Objects.isNull(target) ? defaultValue : target;
-    }
-
-    /**
-     * <p>Get target then apply function, or default value if target is null.
-     *
-     * @param target target
-     * @param function function
-     * @param defaultValue default value
-     * @param <R> return type
-     * @param <T> element type
-     * @return element
-     */
-    public <T, R> R getOrDefault(T target, Function<T, R> function, R defaultValue) {
-        return Objects.isNull(target) ? defaultValue : function.apply(target);
     }
 
     /**
@@ -96,29 +69,22 @@ public class ObjectUtils {
             return null;
         }
         if (target instanceof List) {
-            return ((List<T>)target).get(index);
-        }
-        if (target instanceof Collection) {
-            return ((Collection<T>)target).stream().skip(index).findFirst().orElse(null);
-        }
-        if (target instanceof Map) {
-            return ((Map<?, T>)target).values().stream().skip(index).findFirst().orElse(null);
+            return CollectionUtils.get((List<T>)target, index);
         }
         if (target instanceof Iterator) {
             Iterator<T> iterator = (Iterator<T>)target;
-            for (int i = 0; i < index; i++) {
-                if (!iterator.hasNext()) {
-                    return null;
-                }
-                iterator.next();
-            }
-            return iterator.next();
+            return CollectionUtils.get(iterator, index);
         }
         if (target instanceof Iterable) {
-            return get(((Iterable<T>)target).iterator(), index);
+            return CollectionUtils.get((Iterable<T>)target, index);
+        }
+        if (target instanceof Map) {
+            return get(((Map<?, T>)target).values(), index);
         }
         if (target.getClass().isArray()) {
-            return ((T[])target)[index];
+            // if index is out of bounds, return null
+            T[] array = (T[])target;
+            return ArrayUtils.get(array, index);
         }
         return null;
     }
@@ -135,22 +101,19 @@ public class ObjectUtils {
             return true;
         }
         if (target instanceof Map) {
-            return ((Map<?, ?>)target).isEmpty();
-        }
-        if (target instanceof Collection) {
-            return ((Collection<?>)target).isEmpty();
-        }
-        if (target instanceof Iterator) {
-            return !((Iterator<?>)target).hasNext();
+            return CollectionUtils.isEmpty((Map<?, ?>)target);
         }
         if (target instanceof Iterable) {
-            return !((Iterable<?>)target).iterator().hasNext();
+            return CollectionUtils.isEmpty((Iterable<?>)target);
+        }
+        if (target instanceof Iterator) {
+            return CollectionUtils.isEmpty((Iterator<?>)target);
         }
         if (target.getClass().isArray()) {
-            return Array.getLength(target) == 0;
+            return ArrayUtils.isEmpty((Object[])target);
         }
         if (target instanceof CharSequence) {
-            return ((CharSequence)target).length() == 0;
+            return StringUtils.isEmpty((CharSequence)target);
         }
         return false;
     }
