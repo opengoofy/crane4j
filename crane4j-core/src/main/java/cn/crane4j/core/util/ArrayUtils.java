@@ -18,6 +18,25 @@ import java.util.stream.Stream;
 public class ArrayUtils {
 
     /**
+     * <p>Get first not null element from array.
+     *
+     * @param array array
+     * @param <T> element type
+     * @return first not null element, null if array is null or all elements are null
+     */
+    public static <T> T getFirstNotNull(T... array) {
+        if (Objects.isNull(array)) {
+            return null;
+        }
+        for (T t : array) {
+            if (Objects.nonNull(t)) {
+                return t;
+            }
+        }
+        return null;
+    }
+
+    /**
      * <p>Append elements to array and return a new array.
      *
      * @param array array to append

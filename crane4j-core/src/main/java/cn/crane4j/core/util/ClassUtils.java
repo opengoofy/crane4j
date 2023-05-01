@@ -3,6 +3,8 @@ package cn.crane4j.core.util;
 import cn.crane4j.core.exception.Crane4jException;
 import lombok.NoArgsConstructor;
 
+import java.util.Objects;
+
 /**
  * <p>{@link Class} utils.
  *
@@ -19,10 +21,8 @@ public class ClassUtils {
      * @return is jdk class
      */
     public static boolean isJdkClass(Class<?> clazz) {
+        Objects.requireNonNull(clazz);
         final Package objectPackage = clazz.getPackage();
-        if (null == objectPackage) {
-            return false;
-        }
         final String objectPackageName = objectPackage.getName();
         return objectPackageName.startsWith("java.")
             || objectPackageName.startsWith("javax.")

@@ -27,6 +27,40 @@ import java.util.stream.Collectors;
 public class CollectionUtils {
 
     /**
+     * <p>Get first not null element from the target.<br />
+     *
+     * @param iterator iterator
+     * @param <T> element type
+     * @return first not null element
+     */
+    public static <T> T getFirstNotNull(Iterator<T> iterator) {
+        if (Objects.isNull(iterator)) {
+            return null;
+        }
+        while (iterator.hasNext()) {
+            T t = iterator.next();
+            if (Objects.nonNull(t)) {
+                return t;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * <p>Get first not null element from the target.<br />
+     *
+     * @param iterable iterable
+     * @param <T> element type
+     * @return first not null element
+     */
+    public static <T> T getFirstNotNull(Iterable<T> iterable) {
+        if (Objects.isNull(iterable)) {
+            return null;
+        }
+        return getFirstNotNull(iterable.iterator());
+    }
+
+    /**
      * <p>Reverse given map.
      *
      * @param map map to reverse
@@ -63,17 +97,19 @@ public class CollectionUtils {
         if (isEmpty(coll1) || isEmpty(coll2)) {
             return false;
         }
+        // size of coll1 less than coll2
         if (coll1.size() < coll2.size()) {
             for (Object obj : coll1) {
                 if (coll2.contains(obj)) {
                     return true;
                 }
             }
-        } else {
-            for (Object obj : coll2) {
-                if (coll1.contains(obj)) {
-                    return true;
-                }
+            return false;
+        }
+        // size of coll1 greater than or equal to coll2
+        for (Object obj : coll2) {
+            if (coll1.contains(obj)) {
+                return true;
             }
         }
         return false;

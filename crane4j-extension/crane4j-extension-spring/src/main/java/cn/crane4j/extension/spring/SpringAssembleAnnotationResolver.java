@@ -10,9 +10,9 @@ import cn.crane4j.core.support.Sorted;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
 import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.ConfigurationUtil;
+import cn.crane4j.core.util.ObjectUtils;
 import cn.crane4j.core.util.ReflectUtils;
 import cn.crane4j.extension.spring.expression.SpelExpressionContext;
-import cn.hutool.core.util.ObjectUtil;
 import com.google.common.collect.Multimap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.EmbeddedValueResolverAware;
@@ -90,7 +90,7 @@ public class SpringAssembleAnnotationResolver
         ContainerProvider provider = ConfigurationUtil.getContainerProvider(
             globalConfiguration, annotation.containerProviderName(), annotation.containerProvider()
         );
-        provider = ObjectUtil.defaultIfNull(provider, globalConfiguration);
+        provider = ObjectUtils.defaultIfNull(provider, globalConfiguration);
 
         // determine container by expression
         Container<?> container = null;

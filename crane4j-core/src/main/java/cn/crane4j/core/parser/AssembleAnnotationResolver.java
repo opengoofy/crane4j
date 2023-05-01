@@ -8,8 +8,8 @@ import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.Sorted;
 import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.ConfigurationUtil;
+import cn.crane4j.core.util.ObjectUtils;
 import cn.crane4j.core.util.StringUtils;
-import cn.hutool.core.util.ObjectUtil;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 
@@ -66,7 +66,7 @@ public class AssembleAnnotationResolver extends StandardAssembleAnnotationResolv
         ContainerProvider provider = ConfigurationUtil.getContainerProvider(
             globalConfiguration, annotation.containerProviderName(), annotation.containerProvider()
         );
-        provider = ObjectUtil.defaultIfNull(provider, globalConfiguration);
+        provider = ObjectUtils.defaultIfNull(provider, globalConfiguration);
         // get from provider
         Container<?> container = StringUtils.isNotEmpty(annotation.container()) ?
             provider.getContainer(annotation.container()) : Container.empty();

@@ -20,6 +20,20 @@ import java.util.Map;
 public class CollectionUtilsTest {
 
     @Test
+    public void getFirstNotNull() {
+        // if target is iterator
+        Assert.assertNull(CollectionUtils.getFirstNotNull((Iterator<? extends Object>)null));
+        Assert.assertNull(CollectionUtils.getFirstNotNull(Collections.emptyIterator()));
+        Assert.assertEquals("a", CollectionUtils.getFirstNotNull(Arrays.asList("a", "b").iterator()));
+        Assert.assertNull(CollectionUtils.getFirstNotNull(Arrays.asList(null, null).iterator()));
+        // if target is iterable
+        Assert.assertNull(CollectionUtils.getFirstNotNull((Iterable<? extends Object>)null));
+        Assert.assertNull(CollectionUtils.getFirstNotNull(Collections.emptyList()));
+        Assert.assertEquals("a", CollectionUtils.getFirstNotNull(Arrays.asList("a", "b")));
+        Assert.assertNull(CollectionUtils.getFirstNotNull(Arrays.asList(null, null)));
+    }
+
+    @Test
     public void reverse() {
         Assert.assertEquals(Collections.emptyMap(), CollectionUtils.reverse(null));
         Assert.assertEquals(Collections.emptyMap(), CollectionUtils.reverse(Collections.emptyMap()));
@@ -49,6 +63,7 @@ public class CollectionUtilsTest {
         Assert.assertTrue(CollectionUtils.containsAny(Arrays.asList(1, 2), Arrays.asList(1, 2)));
         Assert.assertTrue(CollectionUtils.containsAny(Arrays.asList(1, 2), Arrays.asList(1, 3)));
         Assert.assertFalse(CollectionUtils.containsAny(Arrays.asList(1, 2), Arrays.asList(3, 4)));
+        Assert.assertFalse(CollectionUtils.containsAny(Arrays.asList(1, 2), Arrays.asList(3, 4, 5)));
         // any not null
         Assert.assertFalse(CollectionUtils.containsAny(null, Collections.singletonList(1)));
         Assert.assertFalse(CollectionUtils.containsAny(Collections.singletonList(1), null));

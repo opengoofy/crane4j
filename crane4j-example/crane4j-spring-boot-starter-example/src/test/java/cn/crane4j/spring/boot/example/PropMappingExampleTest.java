@@ -5,8 +5,8 @@ import cn.crane4j.annotation.Mapping;
 import cn.crane4j.core.container.ConstantContainer;
 import cn.crane4j.core.executor.handler.ManyToManyReflexAssembleOperationHandler;
 import cn.crane4j.core.support.OperateTemplate;
+import cn.crane4j.core.util.ObjectUtils;
 import cn.crane4j.extension.spring.Crane4jApplicationContext;
-import cn.hutool.core.util.ObjectUtil;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.junit.Assert;
@@ -50,7 +50,7 @@ public class PropMappingExampleTest {
             sources.put(i, source);
         }
         context.compute(
-            "student", c -> ObjectUtil.defaultIfNull(c, ConstantContainer.forMap("student", sources))
+            "student", c -> ObjectUtils.defaultIfNull(c, ConstantContainer.forMap("student", sources))
         );
     }
 
