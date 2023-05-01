@@ -47,6 +47,7 @@ import cn.crane4j.core.support.reflect.ChainAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
+import cn.crane4j.core.util.ClassUtils;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.extension.mybatis.plus.AssembleMpAnnotationResolver;
 import cn.crane4j.extension.spring.BeanMethodContainerRegistrar;
@@ -60,8 +61,6 @@ import cn.crane4j.extension.spring.aop.MethodResultAutoOperateAspect;
 import cn.crane4j.extension.spring.expression.SpelExpressionContext;
 import cn.crane4j.extension.spring.expression.SpelExpressionEvaluator;
 import cn.crane4j.spring.boot.annotation.EnableCrane4j;
-import cn.hutool.core.text.CharSequenceUtil;
-import cn.hutool.core.util.ClassUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -568,7 +567,7 @@ public class Crane4jAutoConfiguration {
         private void loadConstantClass() {
             Set<String> constantPackages = properties.getContainerConstantPackages();
             constantPackages.forEach(path -> readMetadata(path, reader -> {
-                Class<?> targetType = ClassUtil.loadClass(reader.getClassMetadata().getClassName());
+                Class<?> targetType = ClassUtils.forName(reader.getClassMetadata().getClassName());
                 if (AnnotatedElementUtils.isAnnotated(targetType, ContainerConstant.class)) {
                     Container<?> container = ConstantContainer.forConstantClass(targetType, annotationFinder);
                     configuration.registerContainer(container);
@@ -580,7 +579,7 @@ public class Crane4jAutoConfiguration {
         private void loadContainerEnum() {
             Set<String> enumPackages = properties.getContainerEnumPackages();
             enumPackages.forEach(path -> readMetadata(path, reader -> {
-                Class<?> targetType = ClassUtil.loadClass(reader.getClassMetadata().getClassName());
+                Class<?> targetType = ClassUtils.forName(reader.getClassMetadata().getClassName());
                 boolean supported = targetType.isEnum()
                     && (!properties.isOnlyLoadAnnotatedEnum() || AnnotatedElementUtils.isAnnotated(targetType, ContainerEnum.class));
                 if (supported) {
@@ -593,8 +592,7 @@ public class Crane4jAutoConfiguration {
         private void loadOperateEntity() {
             Set<String> entityPackages = properties.getOperateEntityPackages();
             entityPackages.forEach(path -> readMetadata(path, reader -> {
-                Class<?> targetType = ClassUtil.loadClass(reader.getClassMetadata()
-                    .getClassName());
+                Class<?> targetType = ClassUtils.forName(reader.getClassMetadata().getClassName());
                 applicationContext.getBeansOfType(BeanOperationParser.class).values()
                     .forEach(parser -> parser.parse(targetType));
             }));
@@ -602,7 +600,7 @@ public class Crane4jAutoConfiguration {
 
         @SneakyThrows
         private void readMetadata(String path, Consumer<MetadataReader> consumer) {
-            String actualPath = CharSequenceUtil.replace(path, ".", "/");
+            String actualPath = ClassUtils.packageToPath(path);
             Resource[] resources = resolver.getResources(actualPath);
             for (Resource resource : resources) {
                 MetadataReader reader = readerFactory.getMetadataReader(resource);

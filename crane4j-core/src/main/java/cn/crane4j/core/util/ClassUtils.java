@@ -37,6 +37,7 @@ public class ClassUtils {
      * @throws Crane4jException if class not found
      */
     public static Class<?> forName(String className) throws Crane4jException {
+        Objects.requireNonNull(className);
         try {
             return Class.forName(className);
         } catch (ClassNotFoundException e) {
@@ -52,6 +53,7 @@ public class ClassUtils {
      * @return resource path
      */
     public static String packageToPath(String packagePath) {
+        Objects.requireNonNull(packagePath);
         return packagePath.replace(".", "/");
     }
 }
