@@ -2,6 +2,7 @@ package cn.crane4j.core.support.converter;
 
 import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.util.ArrayUtils;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Objects;
@@ -13,10 +14,9 @@ import java.util.Objects;
  * @see ConverterManager
  * @since 1.3.0
  */
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class ParameterConvertibleMethodInvoker implements MethodInvoker {
 
-    private static final Object[] EMPTY_PARAMS = new Object[0];
     private final MethodInvoker methodInvoker;
     private final ConverterManager converterManager;
     private final Class<?>[] parameterTypes;
@@ -52,9 +52,6 @@ public class ParameterConvertibleMethodInvoker implements MethodInvoker {
 
     private Object[] resolveInvocationArguments(Object... args) {
         int parameterCount = parameterTypes.length;
-        if (parameterCount == 0) {
-            return EMPTY_PARAMS;
-        }
         // if args is null, return empty array
         if (ArrayUtils.isEmpty(args)) {
             return new Object[parameterCount];
@@ -66,6 +63,7 @@ public class ParameterConvertibleMethodInvoker implements MethodInvoker {
                 actualArgs[i] = converterManager.convert(args[i], parameterTypes[i]);
             }
         } else {
+            // abandon the extra parameters
             for (int i = 0; i < parameterCount; i++) {
                 actualArgs[i] = converterManager.convert(args[i], parameterTypes[i]);
             }
