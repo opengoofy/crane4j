@@ -24,7 +24,8 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 /**
- * Common template class for automatic operation based on {@link AutoOperate} annotation on method or method parameters.
+ * <p>An resolver that resolve the {@link AutoOperate}
+ * annotation on the element to {@link AutoOperateAnnotatedElement}.
  *
  * @author huangchengxing
  * @see AutoOperate

@@ -12,7 +12,16 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Method result auto operate support.
+ * <p>Support class for completing the operation for result of method which annotated by {@link AutoOperate}.
+ *
+ * <p>Before the method is called, the method return type will be resolved
+ * to {@link AutoOperateAnnotatedElement} by {@link AutoOperateAnnotatedElementResolver} and cached.<br />
+ * After the method is called, the {@link AutoOperateAnnotatedElement}
+ * will be used to complete the operation of data from the method result.
+ *
+ * <p>Support expression for {@link AutoOperate#condition()}, if the expression is not empty,
+ * the expression will be evaluated by {@link MethodBaseExpressionExecuteDelegate},
+ * only when the expression returns true or "true", the operation will be applied.
  *
  * @author huangchengxing
  * @see AutoOperateAnnotatedElementResolver

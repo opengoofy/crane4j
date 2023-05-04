@@ -25,15 +25,20 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * <p>A simple key-value pair constant data source container is used to support
- * data sources of constant enumeration type.
- * It allows rapid construction of data sources based on specific scenarios
- * through the built-in {@code forXXX} method.
+ * <p>A container that stores key-value pairs.
  *
- * <p>For performance reasons, the {@link #get} method
- * always obtains the full amount of data from the container,
- * rather than only corresponding to the entered key.
+ * <p>Supports the following factory methods to create containers:
+ * <ul>
+ *     <li>{@link #forMap}: key-value pairs in the specified map;</li>
+ *     <li>{@link #forEnum}: enumeration type, key or value is the enumeration attribute value;</li>
+ *     <li>{@link #forConstantClass}: static constants attribute in the specified class;</li>
+ * </ul>
+ * this method also supports configuration through annotations.
  *
+ * <p>for performance reasons, when get data from container,
+ * it always returns all data which set in the creation time.
+ * and data will not be updated after the container is created.
+ * 
  * @author huangchengxing
  * @param <K> key type
  * @see ContainerEnum

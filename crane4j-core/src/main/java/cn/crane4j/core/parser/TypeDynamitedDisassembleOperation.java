@@ -7,9 +7,9 @@ import lombok.Getter;
 import lombok.NonNull;
 
 /**
- * <p>The simple implementation of {@link DisassembleOperation}.<br />
- * It's used for the disassembly configuration of nested objects
- * of uncertain types, such as the field type to be disassembled is generic.
+ * <p>The {@link DisassembleOperation} implementation that
+ * express the disassemble operation of data from dynamic type.<br />
+ * It is usually used to process the disassemble operation for unknown types or generic types.
  *
  * @author huangchengxing
  * @see TypeResolver

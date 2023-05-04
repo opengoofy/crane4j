@@ -13,7 +13,8 @@ import java.util.Map;
 import java.util.function.Function;
 
 /**
- * Method base expression evaluator delegate.
+ * <p>A delegate class for executing expressions in the method aspect,
+ * generally supporting the awareness of method parameters and return values in expressions.
  *
  * @author huangchengxing
  */

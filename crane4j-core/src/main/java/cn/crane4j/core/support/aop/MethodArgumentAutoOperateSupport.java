@@ -21,11 +21,25 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Method argument auto operate support.
+ * <p>Support class for completing the operation of data
+ * from the method parameters which annotated by {@link AutoOperate}
+ * before the method is called.
+ *
+ * <p>Before the method is called, the method parameters will be resolved
+ * to {@link AutoOperateAnnotatedElement} array by {@link AutoOperateAnnotatedElementResolver},
+ * and then the {@link AutoOperateAnnotatedElement} array will be cached.<br />
+ * When the method is called, the {@link AutoOperateAnnotatedElement} array
+ * will be used to complete the operation of data from the method parameters.
+ *
+ * <p>Support expression for {@link AutoOperate#condition()}, if the expression is not empty,
+ * the expression will be evaluated by {@link MethodBaseExpressionExecuteDelegate},
+ * only when the expression returns true or "true", the operation will be applied.
  *
  * @author huangchengxing
  * @see AutoOperateAnnotatedElementResolver
  * @see MethodBaseExpressionExecuteDelegate
+ * @see AutoOperate
+ * @see ArgAutoOperate
  */
 @Slf4j
 public class MethodArgumentAutoOperateSupport {

@@ -5,8 +5,7 @@ import lombok.Getter;
 import lombok.NonNull;
 
 /**
- * <p>The simple implementation of {@link DisassembleOperation}.<br />
- * It's used for the disassembly configuration of nested objects of fixed types.
+ * <p>The {@link DisassembleOperation} implementation that express the disassemble operation of data from fixed type.
  *
  * @author huangchengxing
  */

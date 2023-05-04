@@ -14,7 +14,9 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 /**
- * Resolved annotated element.
+ * <p>An object that holds the {@link AutoOperate} annotation and the annotated element,
+ * used complete the operation of data from the annotated element
+ * for {@link BeanOperations} by {@link BeanOperationExecutor}.
  *
  * @author huangchengxing
  * @see AutoOperateAnnotatedElementResolver
