@@ -3,19 +3,18 @@ package cn.crane4j.core.support.container;
 import cn.crane4j.annotation.MappingType;
 import cn.crane4j.core.container.MethodInvokerContainer;
 import cn.crane4j.core.support.MethodInvoker;
+import cn.crane4j.core.support.converter.ConverterManager;
+import cn.crane4j.core.support.converter.ParameterConvertibleMethodInvoker;
 import cn.crane4j.core.support.reflect.PropertyOperator;
+import cn.crane4j.core.support.reflect.ReflectMethodInvoker;
 import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.StringUtils;
-import cn.hutool.core.util.ReflectUtil;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 
 /**
  * Support class for {@link MethodInvokerContainer} creation.
@@ -28,6 +27,7 @@ import java.lang.reflect.Proxy;
 public class MethodInvokerContainerCreator {
 
     protected final PropertyOperator propertyOperator;
+    protected final ConverterManager converterManager;
 
     /**
      * Create a {@link MethodInvokerContainer} from the given method.
@@ -98,18 +98,11 @@ public class MethodInvokerContainerCreator {
      * @return namespace
      * @implNote if target is <b>proxy object</b>, invoke method on proxy object,
      * otherwise invoke method on target object
-     * @see JdkProxyMethodInvoker
      */
     @Nonnull
     protected MethodInvoker getMethodInvoker(Object target, Method method) {
-        MethodInvoker methodInvoker;
-        if (Proxy.isProxyClass(target.getClass()) && !Proxy.isProxyClass(method.getDeclaringClass())) {
-            InvocationHandler handler = Proxy.getInvocationHandler(target);
-            methodInvoker = new JdkProxyMethodInvoker(handler, method);
-        } else {
-            methodInvoker = (t, args) -> ReflectUtil.invoke(t, method, args);
-        }
-        return methodInvoker;
+        MethodInvoker invoker = ReflectMethodInvoker.create(target, method, false);
+        return ParameterConvertibleMethodInvoker.create(invoker, converterManager, method.getParameterTypes());
     }
 
     /**
@@ -153,19 +146,5 @@ public class MethodInvokerContainerCreator {
         MethodInvoker keyGetter = propertyOperator.findGetter(resultType, resultKey);
         Asserts.isNotNull(keyGetter, "cannot find getter method [{}] on [{}]", resultKey, resultType);
         return keyGetter;
-    }
-
-    /**
-     * A {@link MethodInvoker} implementation for JDK proxy object, which invoke method on proxy object.
-     */
-    @RequiredArgsConstructor
-    protected static class JdkProxyMethodInvoker implements MethodInvoker {
-        private final InvocationHandler handler;
-        private final Method method;
-        @SneakyThrows
-        @Override
-        public Object invoke(Object target, Object... args) {
-            return handler.invoke(target, method, args);
-        }
     }
 }

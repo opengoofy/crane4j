@@ -30,6 +30,8 @@ import cn.crane4j.core.support.container.CacheableMethodContainerFactory;
 import cn.crane4j.core.support.container.DefaultMethodContainerFactory;
 import cn.crane4j.core.support.container.MethodContainerFactory;
 import cn.crane4j.core.support.container.MethodInvokerContainerCreator;
+import cn.crane4j.core.support.converter.ConverterManager;
+import cn.crane4j.core.support.converter.HutoolConverterManager;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
 import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
 import cn.crane4j.core.support.operator.DefaultProxyMethodFactory;
@@ -80,8 +82,13 @@ public class Crane4jSpringTestConfiguration {
     }
 
     @Bean
-    public PropertyOperator propertyOperator() {
-        PropertyOperator operator = new ReflectPropertyOperator();
+    public HutoolConverterManager hutoolConverterRegister() {
+        return new HutoolConverterManager();
+    }
+
+    @Bean
+    public PropertyOperator propertyOperator(ConverterManager converterManager) {
+        PropertyOperator operator = new ReflectPropertyOperator(converterManager);
         operator = new MapAccessiblePropertyOperator(operator);
         return new ChainAccessiblePropertyOperator(operator);
     }
@@ -161,8 +168,8 @@ public class Crane4jSpringTestConfiguration {
     }
 
     @Bean
-    public MethodInvokerContainerCreator methodInvokerContainerCreator(PropertyOperator propertyOperator) {
-        return new MethodInvokerContainerCreator(propertyOperator);
+    public MethodInvokerContainerCreator methodInvokerContainerCreator(PropertyOperator propertyOperator, ConverterManager converterManager) {
+        return new MethodInvokerContainerCreator(propertyOperator, converterManager);
     }
 
     @Order
@@ -225,8 +232,8 @@ public class Crane4jSpringTestConfiguration {
     }
 
     @Bean
-    public DefaultProxyMethodFactory defaultProxyMethodFactory() {
-        return new DefaultProxyMethodFactory();
+    public DefaultProxyMethodFactory defaultProxyMethodFactory(ConverterManager converterManager) {
+        return new DefaultProxyMethodFactory(converterManager);
     }
 
     @Bean

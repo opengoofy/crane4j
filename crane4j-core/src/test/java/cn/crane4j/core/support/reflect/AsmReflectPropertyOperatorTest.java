@@ -1,6 +1,7 @@
 package cn.crane4j.core.support.reflect;
 
 import cn.crane4j.core.support.MethodInvoker;
+import cn.crane4j.core.support.converter.SimpleConverterManager;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,7 +15,7 @@ import org.junit.Test;
  */
 public class AsmReflectPropertyOperatorTest {
 
-    private final AsmReflectPropertyOperator operator = new AsmReflectPropertyOperator();
+    private final AsmReflectPropertyOperator operator = new AsmReflectPropertyOperator(new SimpleConverterManager());
 
     @Test
     public void readProperty() {

@@ -7,6 +7,7 @@ import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.support.callback.ContainerRegisterAware;
+import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 
 import java.util.Collection;
@@ -17,6 +18,13 @@ import java.util.Collection;
  * @author huangchengxing
  */
 public interface Crane4jGlobalConfiguration extends ConfigurableContainerProvider {
+
+    /**
+     * Get {@link ConverterManager}
+     *
+     * @return {@link ConverterManager}
+     */
+    ConverterManager getConverterManager();
 
     /**
      * Get all registered {@link ContainerRegisterAware} callback.

@@ -23,6 +23,8 @@ import cn.crane4j.core.parser.DisassembleAnnotationResolver;
 import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
 import cn.crane4j.core.support.callback.ContainerRegisteredLogger;
 import cn.crane4j.core.support.callback.DefaultCacheableContainerProcessor;
+import cn.crane4j.core.support.converter.ConverterManager;
+import cn.crane4j.core.support.converter.HutoolConverterManager;
 import cn.crane4j.core.support.reflect.ChainAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.PropertyOperator;
@@ -51,6 +53,8 @@ public class SimpleCrane4jGlobalConfiguration
     private TypeResolver typeResolver;
     @Setter
     private PropertyOperator propertyOperator;
+    @Setter
+    private ConverterManager converterManager;
     private final Map<String, BeanOperationParser> beanOperationParserMap = new HashMap<>(16);
     private final Map<String, AssembleOperationHandler> assembleOperationHandlerMap = new HashMap<>(4);
     private final Map<String, DisassembleOperationHandler> disassembleOperationHandlerMap = new HashMap<>(4);
@@ -75,7 +79,8 @@ public class SimpleCrane4jGlobalConfiguration
     public static SimpleCrane4jGlobalConfiguration create(@Nullable Map<String, String> cacheConfig) {
         SimpleCrane4jGlobalConfiguration configuration = new SimpleCrane4jGlobalConfiguration();
         // basic components
-        PropertyOperator operator = new ReflectPropertyOperator();
+        ConverterManager register = new HutoolConverterManager();
+        PropertyOperator operator = new ReflectPropertyOperator(register);
         operator = new MapAccessiblePropertyOperator(operator);
         operator = new ChainAccessiblePropertyOperator(operator);
         configuration.setPropertyOperator(operator);

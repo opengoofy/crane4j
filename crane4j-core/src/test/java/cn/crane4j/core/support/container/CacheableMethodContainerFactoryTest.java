@@ -6,9 +6,11 @@ import cn.crane4j.core.cache.ConcurrentMapCacheManager;
 import cn.crane4j.core.container.CacheableContainer;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.support.SimpleAnnotationFinder;
+import cn.crane4j.core.support.converter.ConverterManager;
+import cn.crane4j.core.support.converter.HutoolConverterManager;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
 import cn.crane4j.core.util.CollectionUtils;
-import cn.hutool.core.util.ReflectUtil;
+import cn.crane4j.core.util.ReflectUtils;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -36,14 +38,17 @@ public class CacheableMethodContainerFactoryTest {
 
     @Before
     public void init() {
-        MethodInvokerContainerCreator containerCreator = new MethodInvokerContainerCreator(new ReflectPropertyOperator());
+        ConverterManager converterManager = new HutoolConverterManager();
+        MethodInvokerContainerCreator containerCreator = new MethodInvokerContainerCreator(
+            new ReflectPropertyOperator(converterManager), converterManager
+        );
         factory = new CacheableMethodContainerFactory(
             containerCreator, new SimpleAnnotationFinder(), new ConcurrentMapCacheManager(ConcurrentHashMap::new)
         );
         service = new Service();
-        annotatedMethod = ReflectUtil.getMethod(Service.class, "annotatedMethod", List.class);
+        annotatedMethod = ReflectUtils.getMethod(Service.class, "annotatedMethod", List.class);
         Assert.assertNotNull(annotatedMethod);
-        noneAnnotatedMethod = ReflectUtil.getMethod(Service.class, "noneAnnotatedMethod", List.class);
+        noneAnnotatedMethod = ReflectUtils.getMethod(Service.class, "noneAnnotatedMethod", List.class);
         Assert.assertNotNull(noneAnnotatedMethod);
     }
 

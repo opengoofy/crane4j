@@ -8,6 +8,7 @@ import cn.crane4j.core.executor.BaseExecutorTest;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
 import cn.crane4j.core.parser.BeanOperations;
+import cn.crane4j.core.support.converter.HutoolConverterManager;
 import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
@@ -36,7 +37,7 @@ public class ManyToManyReflexAssembleOperationHandlerTest extends BaseExecutorTe
 
     @Before
     public void init() {
-        PropertyOperator operator = new MapAccessiblePropertyOperator(new ReflectPropertyOperator());
+        PropertyOperator operator = new MapAccessiblePropertyOperator(new ReflectPropertyOperator(new HutoolConverterManager()));
         ManyToManyReflexAssembleOperationHandler handler = new ManyToManyReflexAssembleOperationHandler(operator);
         configuration.getAssembleOperationHandlerMap().put(handler.getClass().getName(), handler);
 

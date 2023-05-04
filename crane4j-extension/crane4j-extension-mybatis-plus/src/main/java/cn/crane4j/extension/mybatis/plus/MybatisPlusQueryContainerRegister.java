@@ -8,7 +8,7 @@ import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.support.container.AbstractQueryContainerCreator;
 import cn.crane4j.core.support.container.MethodInvokerContainerCreator;
 import cn.crane4j.core.util.CollectionUtils;
-import cn.hutool.core.util.ReflectUtil;
+import cn.crane4j.core.util.ReflectUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.injector.AbstractSqlInjector;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -60,7 +60,7 @@ public class MybatisPlusQueryContainerRegister extends AbstractQueryContainerCre
         TableInfo tableInfo = TableInfoHelper.getTableInfo(name);
         if (Objects.isNull(tableInfo)) {
             tableInfo = Optional.ofNullable(Proxy.getInvocationHandler(target))
-                .map(h -> (Class<?>)ReflectUtil.getFieldValue(h, "mapperInterface"))
+                .map(h -> (Class<?>)ReflectUtils.getFieldValue(h, "mapperInterface"))
                 .map(this::extractModelClass)
                 .map(TableInfoHelper::getTableInfo)
                 .orElseThrow(() -> new Crane4jException("cannot resolve bean type of mapper [{}]", name));

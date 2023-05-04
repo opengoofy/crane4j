@@ -8,7 +8,7 @@ import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.support.callback.ContainerRegisterAware;
-import cn.hutool.core.util.ReflectUtil;
+import cn.crane4j.core.util.ReflectUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,7 +55,7 @@ public class Crane4jApplicationContextTest {
         Assert.assertEquals(size + 1, context.getContainerRegisterAwareList().size());
 
         @SuppressWarnings("unchecked")
-        Map<String, Container<?>> containerMap = (Map<String, Container<?>>)ReflectUtil.getFieldValue(context, "containerMap");
+        Map<String, Container<?>> containerMap = ReflectUtils.getFieldValue(context, "containerMap");
         Assert.assertFalse(containerMap.isEmpty());
         context.destroy();
         Assert.assertTrue(containerMap.isEmpty());

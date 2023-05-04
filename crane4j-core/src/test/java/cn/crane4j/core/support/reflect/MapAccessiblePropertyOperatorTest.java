@@ -1,6 +1,7 @@
 package cn.crane4j.core.support.reflect;
 
 import cn.crane4j.core.support.MethodInvoker;
+import cn.crane4j.core.support.converter.HutoolConverterManager;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,7 +25,7 @@ public class MapAccessiblePropertyOperatorTest {
 
     @Before
     public void init() {
-        operator = new MapAccessiblePropertyOperator(new ReflectPropertyOperator());
+        operator = new MapAccessiblePropertyOperator(new ReflectPropertyOperator(new HutoolConverterManager()));
         map = new HashMap<>();
         map.put("name", "name");
         foo = new Foo(1, false);

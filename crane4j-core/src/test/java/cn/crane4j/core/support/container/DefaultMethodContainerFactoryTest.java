@@ -4,8 +4,10 @@ import cn.crane4j.annotation.ContainerMethod;
 import cn.crane4j.annotation.MappingType;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.support.SimpleAnnotationFinder;
+import cn.crane4j.core.support.converter.ConverterManager;
+import cn.crane4j.core.support.converter.HutoolConverterManager;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
-import cn.hutool.core.util.ReflectUtil;
+import cn.crane4j.core.util.ReflectUtils;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -44,18 +46,21 @@ public class DefaultMethodContainerFactoryTest {
 
     @Before
     public void initMethod() {
-        MethodInvokerContainerCreator containerCreator = new MethodInvokerContainerCreator(new ReflectPropertyOperator());
+        ConverterManager converterManager = new HutoolConverterManager();
+        MethodInvokerContainerCreator containerCreator = new MethodInvokerContainerCreator(
+            new ReflectPropertyOperator(converterManager), converterManager
+        );
         factory = new DefaultMethodContainerFactory(
             containerCreator, new SimpleAnnotationFinder()
         );
         serviceImpl = new ServiceImpl();
-        noneResultMethod = ReflectUtil.getMethod(ServiceImpl.class, "noneResultMethod");
+        noneResultMethod = ReflectUtils.getMethod(ServiceImpl.class, "noneResultMethod");
         Assert.assertNotNull(noneResultMethod);
-        mappedMethod = ReflectUtil.getMethod(ServiceImpl.class, "mappedMethod", List.class);
+        mappedMethod = ReflectUtils.getMethod(ServiceImpl.class, "mappedMethod", List.class);
         Assert.assertNotNull(mappedMethod);
-        onoToOneMethod = ReflectUtil.getMethod(ServiceImpl.class, "onoToOneMethod", List.class);
+        onoToOneMethod = ReflectUtils.getMethod(ServiceImpl.class, "onoToOneMethod", List.class);
         Assert.assertNotNull(onoToOneMethod);
-        oneToManyMethod = ReflectUtil.getMethod(ServiceImpl.class, "oneToManyMethod", List.class);
+        oneToManyMethod = ReflectUtils.getMethod(ServiceImpl.class, "oneToManyMethod", List.class);
         Assert.assertNotNull(oneToManyMethod);
 
         @SuppressWarnings("unchecked")

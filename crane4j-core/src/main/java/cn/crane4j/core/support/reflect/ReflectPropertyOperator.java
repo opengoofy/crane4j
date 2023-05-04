@@ -1,10 +1,8 @@
 package cn.crane4j.core.support.reflect;
 
 import cn.crane4j.core.support.MethodInvoker;
-import cn.hutool.core.util.ReflectUtil;
-import lombok.RequiredArgsConstructor;
+import cn.crane4j.core.support.converter.ConverterManager;
 
-import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 import java.util.Objects;
 
@@ -14,6 +12,15 @@ import java.util.Objects;
  * @author huangchengxing
  */
 public class ReflectPropertyOperator extends CacheablePropertyOperator {
+
+    /**
+     * Create an {@link ReflectPropertyOperator} instance
+     *
+     * @param converterManager converter register
+     */
+    public ReflectPropertyOperator(ConverterManager converterManager) {
+        super(converterManager);
+    }
 
     /**
      * Create {@link MethodInvoker} according to the specified method
@@ -26,32 +33,6 @@ public class ReflectPropertyOperator extends CacheablePropertyOperator {
     @Override
     protected MethodInvoker createInvoker(Class<?> targetType, String propertyName, Method method) {
         Objects.requireNonNull(method);
-        return new ReflectMethodInvoker(method);
-    }
-
-    /**
-     * {@link MethodInvoker} implementation based on JDK reflection
-     *
-     * @author huangchengxing
-     */
-    @RequiredArgsConstructor
-    public static class ReflectMethodInvoker implements MethodInvoker {
-
-        /**
-         * method
-         */
-        private final Method method;
-
-        /**
-         * Invoke method.
-         *
-         * @param target target
-         * @param args args
-         * @return result of invoke
-         */
-        @Override
-        public Object invoke(@Nullable Object target, @Nullable Object... args) {
-            return ReflectUtil.invoke(target, method, args);
-        }
+        return ReflectMethodInvoker.create(null, method, false);
     }
 }

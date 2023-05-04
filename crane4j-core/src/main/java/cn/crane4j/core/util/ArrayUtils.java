@@ -68,6 +68,16 @@ public class ArrayUtils {
     }
 
     /**
+     * <p>Whether array is not null and not empty.
+     *
+     * @param array array
+     * @return whether array is not null and not empty
+     */
+    public static boolean isNotEmpty(Object[] array) {
+        return !isEmpty(array);
+    }
+
+    /**
      * <p>Join array to string with delimiter.
      *
      * @param array array

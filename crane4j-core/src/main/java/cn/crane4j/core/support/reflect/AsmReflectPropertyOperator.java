@@ -1,6 +1,7 @@
 package cn.crane4j.core.support.reflect;
 
 import cn.crane4j.core.support.MethodInvoker;
+import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.util.CollectionUtils;
 import com.esotericsoftware.reflectasm.MethodAccess;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,15 @@ public class AsmReflectPropertyOperator extends CacheablePropertyOperator {
      * method access caches.
      */
     private final Map<Class<?>, MethodAccess> methodAccessCaches = new ConcurrentHashMap<>();
+
+    /**
+     * Create an {@link AsmReflectPropertyOperator} instance
+     *
+     * @param converterManager converter register
+     */
+    public AsmReflectPropertyOperator(ConverterManager converterManager) {
+        super(converterManager);
+    }
 
     /**
      * Create {@link MethodInvoker} according to the specified method

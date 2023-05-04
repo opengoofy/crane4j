@@ -3,6 +3,8 @@ package cn.crane4j.core.support.operator;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.support.MethodInvoker;
+import cn.crane4j.core.support.converter.ConverterManager;
+import cn.crane4j.core.support.converter.ParameterConvertibleMethodInvoker;
 import cn.crane4j.core.util.CollectionUtils;
 import lombok.RequiredArgsConstructor;
 
@@ -19,6 +21,8 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class DefaultProxyMethodFactory implements OperatorProxyFactory.ProxyMethodFactory {
 
+    private final ConverterManager converterManager;
+
     /**
      * Get operator proxy method.
      *
@@ -30,7 +34,8 @@ public class DefaultProxyMethodFactory implements OperatorProxyFactory.ProxyMeth
     @Nullable
     @Override
     public MethodInvoker get(BeanOperations beanOperations, Method method, BeanOperationExecutor beanOperationExecutor) {
-        return new ProxyMethod(beanOperations, beanOperationExecutor);
+        MethodInvoker invoker = new ProxyMethod(beanOperations, beanOperationExecutor);
+        return ParameterConvertibleMethodInvoker.create(invoker, converterManager, method.getParameterTypes());
     }
     /**
      * Standard operator method.

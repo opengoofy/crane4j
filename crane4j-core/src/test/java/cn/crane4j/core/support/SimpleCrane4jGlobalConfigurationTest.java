@@ -14,6 +14,8 @@ import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.OperationAnnotationResolver;
 import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
 import cn.crane4j.core.support.callback.ContainerRegisterAware;
+import cn.crane4j.core.support.converter.ConverterManager;
+import cn.crane4j.core.support.converter.HutoolConverterManager;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
 import org.junit.Assert;
 import org.junit.Before;
@@ -35,10 +37,12 @@ public class SimpleCrane4jGlobalConfigurationTest {
     @Before
     public void init() {
         configuration =  SimpleCrane4jGlobalConfiguration.create();
+        ConverterManager converterManager = new HutoolConverterManager();
+        configuration.setConverterManager(converterManager);
 
         configuration.registerContainer(LambdaContainer.forLambda("test", ids -> Collections.emptyMap()));
         configuration.setTypeResolver(new SimpleTypeResolver());
-        configuration.setPropertyOperator(new ReflectPropertyOperator());
+        configuration.setPropertyOperator(new ReflectPropertyOperator(converterManager));
 
         DisorderedBeanOperationExecutor executor = new DisorderedBeanOperationExecutor();
         configuration.getBeanOperationExecutorMap().put(executor.getClass().getName(), executor);
@@ -49,11 +53,11 @@ public class SimpleCrane4jGlobalConfigurationTest {
         configuration.getBeanOperationParserMap().put(parser.getClass().getName(), parser);
         configuration.getBeanOperationParserMap().put(BeanOperationParser.class.getName(), parser);
 
-        ManyToManyReflexAssembleOperationHandler assembleOperationHandler = new ManyToManyReflexAssembleOperationHandler(new ReflectPropertyOperator());
+        ManyToManyReflexAssembleOperationHandler assembleOperationHandler = new ManyToManyReflexAssembleOperationHandler(new ReflectPropertyOperator(converterManager));
         configuration.getAssembleOperationHandlerMap().put(assembleOperationHandler.getClass().getName(), assembleOperationHandler);
         configuration.getAssembleOperationHandlerMap().put(AssembleOperationHandler.class.getName(), assembleOperationHandler);
 
-        ReflectDisassembleOperationHandler disassembleOperationHandler = new ReflectDisassembleOperationHandler(new ReflectPropertyOperator());
+        ReflectDisassembleOperationHandler disassembleOperationHandler = new ReflectDisassembleOperationHandler(new ReflectPropertyOperator(converterManager));
         configuration.getDisassembleOperationHandlerMap().put(disassembleOperationHandler.getClass().getName(), disassembleOperationHandler);
         configuration.getDisassembleOperationHandlerMap().put(DisassembleOperationHandler.class.getName(), disassembleOperationHandler);
 

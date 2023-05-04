@@ -1,15 +1,18 @@
 package cn.crane4j.core.support.reflect;
 
 import cn.crane4j.core.support.MethodInvoker;
+import cn.crane4j.core.support.converter.ConverterManager;
+import cn.crane4j.core.support.converter.ParameterConvertibleMethodInvoker;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.ReflectUtils;
-import cn.hutool.core.util.ReflectUtil;
+import lombok.RequiredArgsConstructor;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
@@ -20,6 +23,7 @@ import java.util.function.Supplier;
  * @see AsmReflectPropertyOperator
  * @see ReflectPropertyOperator
  */
+@RequiredArgsConstructor
 public abstract class CacheablePropertyOperator implements PropertyOperator {
 
     private static final Object NULL = new Object();
@@ -33,6 +37,11 @@ public abstract class CacheablePropertyOperator implements PropertyOperator {
      * setter cache
      */
     private final Map<Class<?>, Map<String, Object>> setterCaches = CollectionUtils.newWeakConcurrentMap();
+
+    /**
+     * converter register
+     */
+    protected final ConverterManager converterManager;
 
     /**
      * Get the specified property value.
@@ -96,13 +105,17 @@ public abstract class CacheablePropertyOperator implements PropertyOperator {
         return getCachedSetter(
             targetType, propertyName,
             () -> {
-                Field field = ReflectUtil.getField(targetType, propertyName);
+                Field field = ReflectUtils.getField(targetType, propertyName);
                 if (Objects.isNull(field)) {
                     return null;
                 }
-                return ReflectUtils.findSetterMethod(targetType, field)
-                    .map(method -> createInvoker(targetType, propertyName, method))
-                    .orElse(null);
+                Optional<Method> setter = ReflectUtils.findSetterMethod(targetType, field);
+                if (!setter.isPresent()) {
+                    return null;
+                }
+                Method method = setter.get();
+                MethodInvoker invoker = createInvoker(targetType, propertyName, method);
+                return ParameterConvertibleMethodInvoker.create(invoker, converterManager, method.getParameterTypes());
             }
         );
     }

@@ -3,6 +3,7 @@ package cn.crane4j.core.container;
 import cn.crane4j.annotation.ContainerConstant;
 import cn.crane4j.annotation.ContainerEnum;
 import cn.crane4j.core.support.SimpleAnnotationFinder;
+import cn.crane4j.core.support.converter.HutoolConverterManager;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
 import lombok.Getter;
@@ -36,15 +37,15 @@ public class ConstantContainerTest {
     @Test
     public void forAnnotatedEnum() {
         // annotated
-        Container<String> container = ConstantContainer.forEnum(AnnotatedEnum.class, new SimpleAnnotationFinder(), new ReflectPropertyOperator());
+        Container<String> container = ConstantContainer.forEnum(AnnotatedEnum.class, new SimpleAnnotationFinder(), new ReflectPropertyOperator(new HutoolConverterManager()));
         Assert.assertEquals(AnnotatedEnum.class.getSimpleName(), container.getNamespace());
         Map<?, ?> data = container.get(null);
         Assert.assertEquals(AnnotatedEnum.ONE.getValue(), data.get(AnnotatedEnum.ONE.getKey()));
         Assert.assertEquals(AnnotatedEnum.TWO.getValue(), data.get(AnnotatedEnum.TWO.getKey()));
 
         // no annotated
-        PropertyOperator propertyOperator = new ReflectPropertyOperator();
-        container = ConstantContainer.forEnum(FooEnum.class, new SimpleAnnotationFinder(), new ReflectPropertyOperator());
+        PropertyOperator propertyOperator = new ReflectPropertyOperator(new HutoolConverterManager());
+        container = ConstantContainer.forEnum(FooEnum.class, new SimpleAnnotationFinder(), propertyOperator);
         Assert.assertEquals(FooEnum.class.getSimpleName(), container.getNamespace());
         data = container.get(null);
         Assert.assertEquals(FooEnum.ONE, data.get(FooEnum.ONE.name()));
@@ -54,7 +55,7 @@ public class ConstantContainerTest {
     @SuppressWarnings("unchecked")
     @Test
     public void forAnnotatedEnumWhenDefault() {
-        Container<String> container = ConstantContainer.forEnum(DefaultAnnotatedEnum.class, new SimpleAnnotationFinder(), new ReflectPropertyOperator());
+        Container<String> container = ConstantContainer.forEnum(DefaultAnnotatedEnum.class, new SimpleAnnotationFinder(), new ReflectPropertyOperator(new HutoolConverterManager()));
         Assert.assertEquals(DefaultAnnotatedEnum.class.getSimpleName(), container.getNamespace());
 
         Map<String, DefaultAnnotatedEnum> data = (Map<String, DefaultAnnotatedEnum>)container.get(null);

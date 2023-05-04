@@ -1,7 +1,7 @@
 package cn.crane4j.extension.spring.expression;
 
 import cn.crane4j.core.support.expression.ExpressionContext;
-import cn.hutool.core.util.ReflectUtil;
+import cn.crane4j.core.util.ReflectUtils;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 import java.util.Map;
@@ -75,9 +75,8 @@ public class SpelExpressionContext extends StandardEvaluationContext implements 
      *
      * @return variables
      */
-    @SuppressWarnings("unchecked")
     @Override
     public Map<String, Object> getVariables() {
-        return (Map<String, Object>)ReflectUtil.getFieldValue(this, "variables");
+        return ReflectUtils.getFieldValue(this, "variables");
     }
 }
