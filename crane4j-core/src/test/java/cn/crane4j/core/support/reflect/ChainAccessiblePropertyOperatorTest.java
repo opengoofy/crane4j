@@ -1,6 +1,7 @@
 package cn.crane4j.core.support.reflect;
 
 import cn.crane4j.core.support.MethodInvoker;
+import cn.crane4j.core.support.converter.HutoolConverterManager;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,7 +20,7 @@ public class ChainAccessiblePropertyOperatorTest {
 
     @Before
     public void init() {
-        operator = new ChainAccessiblePropertyOperator(new ReflectPropertyOperator());
+        operator = new ChainAccessiblePropertyOperator(new ReflectPropertyOperator(new HutoolConverterManager()));
     }
 
     @Test

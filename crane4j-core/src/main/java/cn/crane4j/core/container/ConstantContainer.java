@@ -6,8 +6,8 @@ import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.CollectionUtils;
+import cn.crane4j.core.util.ReflectUtils;
 import cn.crane4j.core.util.StringUtils;
-import cn.hutool.core.util.ReflectUtil;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -119,7 +119,7 @@ public class ConstantContainer<K> implements Container<K> {
         boolean onlyPublic = annotation.onlyPublic();
         boolean onlyExplicitlyIncluded = annotation.onlyExplicitlyIncluded();
         // get attribute
-        Field[] fields = ReflectUtil.getFields(constantClass);
+        Field[] fields = ReflectUtils.getFields(constantClass);
         Map<Object, Object> data = new LinkedHashMap<>();
         Stream.of(fields)
             .filter(field -> Modifier.isStatic(field.getModifiers()))
@@ -127,7 +127,7 @@ public class ConstantContainer<K> implements Container<K> {
             .filter(field -> !onlyExplicitlyIncluded || annotationFinder.hasAnnotation(field, ContainerConstant.Include.class))
             .filter(field -> !annotationFinder.hasAnnotation(field, ContainerConstant.Exclude.class))
             .forEach(field -> {
-                Object value = ReflectUtil.getStaticFieldValue(field);
+                Object value = ReflectUtils.getFieldValue(null, field);
                 ContainerConstant.Name name = annotationFinder.getAnnotation(field, ContainerConstant.Name.class);
                 String key = Objects.isNull(name) ? field.getName() : name.value();
                 data.put(key, value);

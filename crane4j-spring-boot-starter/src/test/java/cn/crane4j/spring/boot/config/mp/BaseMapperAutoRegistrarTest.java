@@ -4,10 +4,10 @@ import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.OperationAnnotationResolver;
 import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
 import cn.crane4j.core.support.container.AbstractQueryContainerCreator;
+import cn.crane4j.core.util.ReflectUtils;
 import cn.crane4j.extension.mybatis.plus.MybatisPlusQueryContainerRegister;
 import cn.crane4j.spring.boot.config.Crane4jAutoConfiguration;
 import cn.crane4j.spring.boot.config.Crane4jMybatisPlusAutoConfiguration;
-import cn.hutool.core.util.ReflectUtil;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.junit.Assert;
 import org.junit.Test;
@@ -43,7 +43,7 @@ public class BaseMapperAutoRegistrarTest {
     @Test
     public void test() {
         if (beanOperationParser instanceof TypeHierarchyBeanOperationParser) {
-            Set<OperationAnnotationResolver> resolvers = (Set<OperationAnnotationResolver>)ReflectUtil.getFieldValue(beanOperationParser, "operationAnnotationResolvers");
+            Set<OperationAnnotationResolver> resolvers = ReflectUtils.getFieldValue(beanOperationParser, "operationAnnotationResolvers");
             Assert.assertEquals(resolvers.size(), applicationContext.getBeanNamesForType(OperationAnnotationResolver.class).length);
         }
 

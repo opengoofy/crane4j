@@ -13,6 +13,8 @@ import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
 import cn.crane4j.core.support.SimpleAnnotationFinder;
 import cn.crane4j.core.support.SimpleCrane4jGlobalConfiguration;
 import cn.crane4j.core.support.SimpleTypeResolver;
+import cn.crane4j.core.support.converter.ConverterManager;
+import cn.crane4j.core.support.converter.HutoolConverterManager;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
 import cn.crane4j.core.util.CollectionUtils;
 import org.junit.Assert;
@@ -39,9 +41,12 @@ public class TypeHierarchyBeanOperationParserTest {
     private static final Container<Object> CONTAINER = LambdaContainer.forLambda(CONTAINER_NAME, keys -> Collections.emptyMap());
     private static final int SUB_SORT = Integer.MIN_VALUE;
     private static final int SUP_SORT = Integer.MAX_VALUE;
-    private static final AssembleOperationHandler ASSEMBLE_OPERATION_HANDLER = new ManyToManyReflexAssembleOperationHandler(new ReflectPropertyOperator());
+    private static final ConverterManager CONVERTER_MANAGER = new HutoolConverterManager();
+    private static final AssembleOperationHandler ASSEMBLE_OPERATION_HANDLER = new ManyToManyReflexAssembleOperationHandler(
+        new ReflectPropertyOperator(CONVERTER_MANAGER)
+    );
     private static final DisassembleOperationHandler DISASSEMBLE_OPERATION_HANDLER = new ReflectDisassembleOperationHandler(
-        new ReflectPropertyOperator()
+        new ReflectPropertyOperator(CONVERTER_MANAGER)
     );
 
     private BeanOperationParser parser;

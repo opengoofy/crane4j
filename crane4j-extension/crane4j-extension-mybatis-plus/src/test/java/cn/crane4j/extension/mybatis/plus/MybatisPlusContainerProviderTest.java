@@ -5,6 +5,8 @@ import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.SimpleCrane4jGlobalConfiguration;
 import cn.crane4j.core.support.container.MethodInvokerContainerCreator;
+import cn.crane4j.core.support.converter.ConverterManager;
+import cn.crane4j.core.support.converter.HutoolConverterManager;
 import cn.crane4j.core.support.expression.ExpressionContext;
 import cn.crane4j.core.support.expression.OgnlExpressionContext;
 import cn.crane4j.core.support.expression.OgnlExpressionEvaluator;
@@ -28,8 +30,9 @@ public class MybatisPlusContainerProviderTest extends MpBaseTest {
     @Override
     public void afterInit() {
         Crane4jGlobalConfiguration crane4jGlobalConfiguration = SimpleCrane4jGlobalConfiguration.create(Collections.emptyMap());
+        ConverterManager converterManager = new HutoolConverterManager();
         MybatisPlusQueryContainerRegister register = new MybatisPlusQueryContainerRegister(
-            new MethodInvokerContainerCreator(new ReflectPropertyOperator()), crane4jGlobalConfiguration
+            new MethodInvokerContainerCreator(new ReflectPropertyOperator(converterManager), converterManager), crane4jGlobalConfiguration
         );
         register.registerRepository("fooMapper", fooMapper);
         provider = new MybatisPlusContainerProvider(register, new OgnlExpressionEvaluator(), provider -> {

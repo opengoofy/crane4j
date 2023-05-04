@@ -12,6 +12,7 @@ import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.TypeResolver;
 import cn.crane4j.core.support.callback.ContainerRegisterAware;
+import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -63,6 +64,16 @@ public class Crane4jApplicationContext extends SimpleConfigurableContainerProvid
     public Container<?> getContainer(String namespace) {
         return super.containsContainer(namespace) ?
             super.getContainer(namespace) : applicationContext.getBean(namespace, Container.class);
+    }
+
+    /**
+     * Get {@link ConverterManager}
+     *
+     * @return {@link ConverterManager}
+     */
+    @Override
+    public ConverterManager getConverterManager() {
+        return applicationContext.getBean(ConverterManager.class);
     }
 
     /**

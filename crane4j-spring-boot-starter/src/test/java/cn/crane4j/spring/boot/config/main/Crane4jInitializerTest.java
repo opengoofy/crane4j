@@ -8,9 +8,9 @@ import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.OperationAnnotationResolver;
 import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
+import cn.crane4j.core.util.ReflectUtils;
 import cn.crane4j.extension.spring.Crane4jApplicationContext;
 import cn.crane4j.spring.boot.config.Crane4jAutoConfiguration;
-import cn.hutool.core.util.ReflectUtil;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,7 +59,7 @@ public class Crane4jInitializerTest {
 
         // 配置解析器
         if (beanOperationParser instanceof TypeHierarchyBeanOperationParser) {
-            Set<OperationAnnotationResolver> resolvers = (Set<OperationAnnotationResolver>)ReflectUtil.getFieldValue(beanOperationParser, "operationAnnotationResolvers");
+            Set<OperationAnnotationResolver> resolvers = ReflectUtils.getFieldValue(beanOperationParser, "operationAnnotationResolvers");
             Assert.assertEquals(applicationContext.getBeanNamesForType(OperationAnnotationResolver.class).length, resolvers.size());
         }
 
@@ -99,7 +99,7 @@ public class Crane4jInitializerTest {
             properties.getOperateEntityPackages()
         );
         BeanOperationParser parser = applicationContext.getBean(TypeHierarchyBeanOperationParser.class);
-        Map<Class<?>, BeanOperations> parsedBeanOperations = (Map<Class<?>, BeanOperations>)ReflectUtil.getFieldValue(parser, "resolvedElements");
+        Map<Class<?>, BeanOperations> parsedBeanOperations = ReflectUtils.getFieldValue(parser, "resolvedElements");
         Assert.assertTrue(parsedBeanOperations.containsKey(TestBean1.class));
         Assert.assertTrue(parsedBeanOperations.containsKey(TestBean2.class));
     }

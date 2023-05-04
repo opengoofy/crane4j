@@ -7,7 +7,7 @@ import cn.crane4j.annotation.MappingType;
 import cn.crane4j.core.container.CacheableContainer;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.MethodInvokerContainer;
-import cn.hutool.core.util.ReflectUtil;
+import cn.crane4j.core.util.ReflectUtils;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -40,8 +40,7 @@ public class BeanMethodContainerRegistrarTest {
 
     @Test
     public void test() {
-        @SuppressWarnings("unchecked")
-        Map<String, Container<?>> containerMap = (Map<String, Container<?>>)ReflectUtil.getFieldValue(context, "containerMap");
+        Map<String, Container<?>> containerMap = ReflectUtils.getFieldValue(context, "containerMap");
         Assert.assertEquals(3, containerMap.size());
         Assert.assertFalse(containerMap.containsKey("noneResultMethod"));
 

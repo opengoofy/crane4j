@@ -7,7 +7,7 @@ import cn.crane4j.core.container.LambdaContainer;
 import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.SimpleCrane4jGlobalConfiguration;
-import cn.hutool.core.util.ReflectUtil;
+import cn.crane4j.core.util.ReflectUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -46,7 +46,7 @@ public class AutoOperateAnnotatedElementResolverTest {
 
     @Test
     public void resolveMethod() {
-        Method method = ReflectUtil.getMethod(this.getClass(), "method", Collection.class);
+        Method method = ReflectUtils.getMethod(this.getClass(), "method", Collection.class);
         Assert.assertNotNull(method);
         AutoOperate annotation = method.getAnnotation(AutoOperate.class);
         Assert.assertNotNull(annotation);
@@ -63,7 +63,7 @@ public class AutoOperateAnnotatedElementResolverTest {
 
     @Test
     public void resolveParameter() {
-        Method method = ReflectUtil.getMethod(this.getClass(), "method2", Result.class);
+        Method method = ReflectUtils.getMethod(this.getClass(), "method2", Result.class);
         Assert.assertNotNull(method);
         Parameter parameter = method.getParameters()[0];
         AutoOperate annotation = parameter.getAnnotation(AutoOperate.class);

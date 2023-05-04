@@ -8,6 +8,7 @@ import cn.crane4j.core.executor.BaseExecutorTest;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
 import cn.crane4j.core.parser.BeanOperations;
+import cn.crane4j.core.support.converter.HutoolConverterManager;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
 import lombok.AllArgsConstructor;
@@ -34,7 +35,7 @@ public class OneToOneReflexAssembleOperationHandlerTest extends BaseExecutorTest
 
     @Before
     public void init() {
-        PropertyOperator operator = new ReflectPropertyOperator();
+        PropertyOperator operator = new ReflectPropertyOperator(new HutoolConverterManager());
         OneToOneReflexAssembleOperationHandler handler = new OneToOneReflexAssembleOperationHandler(operator);
         configuration.getAssembleOperationHandlerMap().put(handler.getClass().getName(), handler);
         executor = new DisorderedBeanOperationExecutor();

@@ -1,0 +1,60 @@
+package cn.crane4j.core.support.converter;
+
+import javax.annotation.Nullable;
+import java.util.Objects;
+import java.util.function.BiFunction;
+
+/**
+ * A manager for converter what convert target type to result type.
+ *
+ * @author huangchengxing
+ * @since 1.3.0
+ */
+public interface ConverterManager {
+
+    /**
+     * Get converter from target type to result type.
+     *
+     * @param targetType target type
+     * @param resultType result type
+     * @param <T>        target type
+     * @param <R>        result type
+     * @return converter
+     */
+    @Nullable
+    <T, R> BiFunction<T, R, R> getConverter(Class<T> targetType, Class<R> resultType);
+
+    /**
+     * Convert target to result type through converter, if converter is null, return default result value.
+     *
+     * @param target     target object
+     * @param resultType result type
+     * @param defaultResult default result value
+     * @param <T>        target type
+     * @param <R>        result type
+     * @return converted object, if converter is null, return default value
+     * @see #getConverter
+     */
+    @SuppressWarnings("unchecked")
+    default <T, R> R convert(T target, Class<R> resultType, R defaultResult) {
+        if (Objects.isNull(target)) {
+            return defaultResult;
+        }
+        BiFunction<T, R, R> converter = getConverter((Class<T>) target.getClass(), resultType);
+        return Objects.nonNull(converter) ? converter.apply(target, defaultResult) : defaultResult;
+    }
+
+    /**
+     * Convert source to target type through converter, if converter is null, return null.
+     *
+     * @param target     target object
+     * @param resultType result type
+     * @param <T>        target type
+     * @param <R>        result type
+     * @return converted object, if converter is null, return null
+     * @see #getConverter
+     */
+    default <T, R> R convert(T target, Class<R> resultType) {
+        return convert(target, resultType, null);
+    }
+}

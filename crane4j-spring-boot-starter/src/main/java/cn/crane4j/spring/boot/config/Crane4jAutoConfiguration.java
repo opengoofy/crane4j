@@ -37,6 +37,8 @@ import cn.crane4j.core.support.container.CacheableMethodContainerFactory;
 import cn.crane4j.core.support.container.DefaultMethodContainerFactory;
 import cn.crane4j.core.support.container.MethodContainerFactory;
 import cn.crane4j.core.support.container.MethodInvokerContainerCreator;
+import cn.crane4j.core.support.converter.ConverterManager;
+import cn.crane4j.core.support.converter.HutoolConverterManager;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
 import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
 import cn.crane4j.core.support.operator.DefaultProxyMethodFactory;
@@ -119,6 +121,12 @@ public class Crane4jAutoConfiguration {
 
     // ============== basic components ==============
 
+    @ConditionalOnMissingBean
+    @Bean
+    public HutoolConverterManager hutoolConverterRegister() {
+        return new HutoolConverterManager();
+    }
+
     @Primary
     @Bean
     @ConditionalOnMissingBean
@@ -131,9 +139,9 @@ public class Crane4jAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public PropertyOperator propertyOperator(Properties properties) {
+    public PropertyOperator propertyOperator(Properties properties, ConverterManager converterManager) {
         PropertyOperator operator = properties.isEnableAsmReflect() ?
-            new AsmReflectPropertyOperator() : new ReflectPropertyOperator();
+            new AsmReflectPropertyOperator(converterManager) : new ReflectPropertyOperator(converterManager);
         if (properties.isEnableMapOperate()) {
             operator = new MapAccessiblePropertyOperator(operator);
         }
@@ -240,8 +248,8 @@ public class Crane4jAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public MethodInvokerContainerCreator methodInvokerContainerCreator(PropertyOperator propertyOperator) {
-        return new MethodInvokerContainerCreator(propertyOperator);
+    public MethodInvokerContainerCreator methodInvokerContainerCreator(PropertyOperator propertyOperator, ConverterManager converterManager) {
+        return new MethodInvokerContainerCreator(propertyOperator, converterManager);
     }
 
     @Order
@@ -310,8 +318,8 @@ public class Crane4jAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public DefaultProxyMethodFactory defaultProxyMethodFactory() {
-        return new DefaultProxyMethodFactory();
+    public DefaultProxyMethodFactory defaultProxyMethodFactory(ConverterManager converterManager) {
+        return new DefaultProxyMethodFactory(converterManager);
     }
 
     @Bean

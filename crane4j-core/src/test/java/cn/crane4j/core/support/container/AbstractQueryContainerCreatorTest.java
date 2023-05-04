@@ -2,6 +2,8 @@ package cn.crane4j.core.support.container;
 
 import cn.crane4j.annotation.MappingType;
 import cn.crane4j.core.support.MethodInvoker;
+import cn.crane4j.core.support.converter.ConverterManager;
+import cn.crane4j.core.support.converter.HutoolConverterManager;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
 import cn.crane4j.core.util.StringUtils;
 import lombok.Data;
@@ -43,8 +45,9 @@ public class AbstractQueryContainerCreatorTest {
 
     @Before
     public void init() {
+        ConverterManager converterManager = new HutoolConverterManager();
         this.containerCreator = new TestQueryContainerCreator(
-            new MethodInvokerContainerCreator(new ReflectPropertyOperator())
+            new MethodInvokerContainerCreator(new ReflectPropertyOperator(converterManager), converterManager)
         );
     }
 

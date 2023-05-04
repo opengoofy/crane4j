@@ -13,7 +13,7 @@ import cn.crane4j.core.support.SimpleParameterNameFinder;
 import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
 import cn.crane4j.core.support.expression.OgnlExpressionContext;
 import cn.crane4j.core.support.expression.OgnlExpressionEvaluator;
-import cn.hutool.core.util.ReflectUtil;
+import cn.crane4j.core.util.ReflectUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -55,7 +55,7 @@ public class MethodArgumentAutoOperateSupportTest {
 
     @Test
     public void beforeMethodInvoke() {
-        Method method = ReflectUtil.getMethod(this.getClass(), "method", Result.class, Object.class);
+        Method method = ReflectUtils.getMethod(this.getClass(), "method", Result.class, Object.class);
         Assert.assertNotNull(method);
         ArgAutoOperate annotation = method.getAnnotation(ArgAutoOperate.class);
         Assert.assertNotNull(annotation);

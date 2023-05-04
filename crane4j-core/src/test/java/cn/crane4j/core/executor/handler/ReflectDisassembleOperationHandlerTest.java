@@ -5,6 +5,7 @@ import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.executor.BaseExecutorTest;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.DisassembleOperation;
+import cn.crane4j.core.support.converter.HutoolConverterManager;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
 import cn.crane4j.core.util.CollectionUtils;
 import lombok.Getter;
@@ -30,7 +31,7 @@ public class ReflectDisassembleOperationHandlerTest extends BaseExecutorTest {
 
     @Before
     public void init() {
-        handler = new ReflectDisassembleOperationHandler(new ReflectPropertyOperator());
+        handler = new ReflectDisassembleOperationHandler(new ReflectPropertyOperator(new HutoolConverterManager()));
     }
 
     @Test

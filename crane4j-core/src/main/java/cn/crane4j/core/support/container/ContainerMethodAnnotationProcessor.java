@@ -8,7 +8,6 @@ import cn.crane4j.core.util.ArrayUtils;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.ReflectUtils;
 import cn.crane4j.core.util.StringUtils;
-import cn.hutool.core.util.ReflectUtil;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.extern.slf4j.Slf4j;
@@ -120,7 +119,7 @@ public class ContainerMethodAnnotationProcessor {
      * @return all checked methods
      */
     protected Method[] collectMethodLevelAnnotatedMethods(Class<?> type, Multimap<Method, ContainerMethod> annotatedMethods) {
-        Method[] methods = ReflectUtil.getMethods(type);
+        Method[] methods = ReflectUtils.getMethods(type);
         for (Method method : methods) {
             Collection<ContainerMethod> annotations = resolveAnnotationsForMethod(method);
             if (annotations.isEmpty()) {

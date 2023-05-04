@@ -9,7 +9,9 @@ import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.SimpleAnnotationFinder;
 import cn.crane4j.core.support.SimpleCrane4jGlobalConfiguration;
+import cn.crane4j.core.support.converter.SimpleConverterManager;
 import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,8 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * test for {@link OperatorProxyFactory}.
@@ -35,7 +35,7 @@ public class OperatorProxyFactoryTest {
     public void init() {
         Crane4jGlobalConfiguration globalConfiguration = SimpleCrane4jGlobalConfiguration.create(Collections.emptyMap());
         AnnotationFinder annotationFinder = new SimpleAnnotationFinder();
-        this.operatorProxyFactory = new OperatorProxyFactory(globalConfiguration, annotationFinder, Collections.singletonList(new DefaultProxyMethodFactory()));
+        this.operatorProxyFactory = new OperatorProxyFactory(globalConfiguration, annotationFinder, Collections.singletonList(new DefaultProxyMethodFactory(new SimpleConverterManager())));
 
         LambdaContainer<Integer> container = LambdaContainer.forLambda(
             "test", ids -> ids.stream().collect(Collectors.toMap(id -> id, id -> "name" + id))

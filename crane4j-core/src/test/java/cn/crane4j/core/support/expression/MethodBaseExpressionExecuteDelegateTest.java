@@ -1,7 +1,7 @@
 package cn.crane4j.core.support.expression;
 
 import cn.crane4j.core.support.SimpleParameterNameFinder;
-import cn.hutool.core.util.ReflectUtil;
+import cn.crane4j.core.util.ReflectUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,7 +26,7 @@ public class MethodBaseExpressionExecuteDelegateTest {
 
     @Test
     public void execute() {
-        Method method = ReflectUtil.getMethod(
+        Method method = ReflectUtils.getMethod(
             MethodBaseExpressionExecuteDelegateTest.class,
             "method", Integer.class, Integer.class
         );
@@ -37,7 +37,7 @@ public class MethodBaseExpressionExecuteDelegateTest {
         );
         Assert.assertEquals((Integer)6, result);
 
-        method = ReflectUtil.getMethod(MethodBaseExpressionExecuteDelegateTest.class, "method2");
+        method = ReflectUtils.getMethod(MethodBaseExpressionExecuteDelegateTest.class, "method2");
         Assert.assertNotNull(method);
         result = expressionExecuteDelegate.execute(
             "#a0 + #a1 + #result", Integer.class,

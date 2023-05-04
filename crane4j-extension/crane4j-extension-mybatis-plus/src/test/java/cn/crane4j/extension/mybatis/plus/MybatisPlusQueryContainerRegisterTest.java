@@ -6,6 +6,8 @@ import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.SimpleCrane4jGlobalConfiguration;
 import cn.crane4j.core.support.container.AbstractQueryContainerCreator;
 import cn.crane4j.core.support.container.MethodInvokerContainerCreator;
+import cn.crane4j.core.support.converter.ConverterManager;
+import cn.crane4j.core.support.converter.HutoolConverterManager;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
 import cn.crane4j.core.util.ArrayUtils;
 import cn.crane4j.core.util.StringUtils;
@@ -30,8 +32,9 @@ public class MybatisPlusQueryContainerRegisterTest extends MpBaseTest {
     @Override
     public void afterInit() {
         Crane4jGlobalConfiguration crane4jGlobalConfiguration = SimpleCrane4jGlobalConfiguration.create(Collections.emptyMap());
+        ConverterManager converterManager = new HutoolConverterManager();
         mybatisPlusQueryContainerRegister = new LazyLoadMybatisPlusQueryContainerRegister(
-            new MethodInvokerContainerCreator(new ReflectPropertyOperator()),
+            new MethodInvokerContainerCreator(new ReflectPropertyOperator(converterManager), converterManager),
             crane4jGlobalConfiguration, name -> fooMapper
         );
         mybatisPlusQueryContainerRegister.registerRepository("fooMapper", fooMapper);
