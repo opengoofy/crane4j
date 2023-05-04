@@ -9,27 +9,8 @@ import lombok.NoArgsConstructor;
 
 import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Member;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.lang.reflect.Proxy;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.lang.reflect.*;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -189,12 +170,8 @@ public class ReflectUtils {
      */
     @Nullable
     public static Method getDeclaredMethod(
-        Class<?> type, String methodName, Class<?>... parameterTypes) {
-        return Stream.of(getDeclaredMethods(type))
-            .filter(method -> method.getName().equals(methodName)
-                && Arrays.equals(method.getParameterTypes(), parameterTypes))
-            .findFirst()
-            .orElse(null);
+        Class<?> type, String methodName, @Nullable Class<?>... parameterTypes) {
+        return findSpecificMethod(getDeclaredMethods(type), methodName, parameterTypes);
     }
 
     /**
@@ -222,14 +199,32 @@ public class ReflectUtils {
      */
     @Nullable
     public static Method getMethod(
-        Class<?> type, String methodName, Class<?>... parameterTypes) {
+        Class<?> type, String methodName, @Nullable Class<?>... parameterTypes) {
+        return findSpecificMethod(getMethods(type), methodName, parameterTypes);
+    }
+
+    /**
+     * Find specific method by name and parameter types in method list.<br />
+     * If parameterTypes:
+     * <ul>
+     *     <li>is null, only find method by name;</li>
+     *     <li>is empty, find without parameter method by name;</li>
+     *     <li>not empty, find method by name and parameters;</li>
+     * </ul>
+     *
+     * @param methods method list
+     * @param methodName method name
+     * @param parameterTypes parameter types
+     * @return method list
+     */
+    private static Method findSpecificMethod(Method[] methods, String methodName, Class<?>[] parameterTypes) {
         Predicate<Method> predicate = method -> method.getName().equals(methodName);
         if (Objects.nonNull(parameterTypes)) {
             predicate = parameterTypes.length > 0 ?
                 predicate.and(method -> Arrays.equals(method.getParameterTypes(), parameterTypes)) :
                 predicate.and(method -> method.getParameterCount() == 0);
         }
-        return Stream.of(getMethods(type))
+        return Stream.of(methods)
             .filter(predicate)
             .findFirst()
             .orElse(null);

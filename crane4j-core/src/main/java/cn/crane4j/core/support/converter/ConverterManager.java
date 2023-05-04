@@ -8,12 +8,24 @@ import java.util.function.BiFunction;
  * A manager for converter what convert target type to result type.
  *
  * @author huangchengxing
+ * @see ParameterConvertibleMethodInvoker
+ * @see HutoolConverterManager
+ * @see SimpleConverterManager
  * @since 1.3.0
  */
 public interface ConverterManager {
 
     /**
-     * Get converter from target type to result type.
+     * Get converter from target type to result type.<br />
+     * eg:
+     * <pre>{@code
+     *   ConverterManager converterManager = new SimpleConverterManager();
+     *   // get converter from String to Integer
+     *   BiFunction<String, Integer, Integer> converter = converterManager.getConverter(String.class, Integer.class);
+     *   // convert target to Integer, if target is null or target can't convert to Integer, return 0
+     *   Object target = "1";
+     *   Integer result = converter.apply(target, 0);
+     * }</pre>
      *
      * @param targetType target type
      * @param resultType result type
