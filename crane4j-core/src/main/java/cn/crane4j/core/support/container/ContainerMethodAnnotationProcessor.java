@@ -174,7 +174,7 @@ public class ContainerMethodAnnotationProcessor {
      * @return annotations
      */
     protected Collection<ContainerMethod> resolveAnnotationsForMethod(Method method) {
-        return annotationFinder.findAllAnnotations(method, ContainerMethod.class);
+        return annotationFinder.getAllAnnotations(method, ContainerMethod.class);
     }
 
     private Collection<Container<Object>> createMethodContainer(Object bean, Method method) {
