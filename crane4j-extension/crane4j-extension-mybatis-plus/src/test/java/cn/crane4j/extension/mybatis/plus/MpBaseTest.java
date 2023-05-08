@@ -60,7 +60,7 @@ public abstract class MpBaseTest {
 
         // init data source and environment
         Map<String, String> properties = new HashMap<>();
-        properties.put("url", "jdbc:h2:mem:test");
+        properties.put("url", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;MODE=MySQL;INIT=SET NAMES 'UTF-8'");
         properties.put("username", "crane4j");
         properties.put("password", "crane4j-test");
         properties.put("driverClassName", "org.h2.Driver");

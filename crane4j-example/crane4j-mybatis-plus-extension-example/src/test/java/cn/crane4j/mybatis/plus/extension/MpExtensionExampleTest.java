@@ -18,7 +18,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
@@ -55,7 +54,8 @@ import java.util.List;
  *
  * @author huangchengxing
  */
-@TestPropertySource(properties = "spring.config.location = classpath:test.yml")
+//@Sql(scripts = "classpath:data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, config = @SqlConfig(encoding = "utf8"))
+//@TestPropertySource(properties = "spring.config.location = classpath:test.yml")
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {Crane4jMybatisPlusExampleApplication.class})
 public class MpExtensionExampleTest {

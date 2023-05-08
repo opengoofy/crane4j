@@ -5,7 +5,7 @@ spring:
 #    password: crane4j-test
 #    driver-class-name: com.mysql.cj.jdbc.Driver
   platform: h2
-  url: jdbc:h2:mem:test
+  url: jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;MODE=MySQL;INIT=SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci
   driverClassName: org.h2.Driver
   username: crane4j
   password: crane4j-test
