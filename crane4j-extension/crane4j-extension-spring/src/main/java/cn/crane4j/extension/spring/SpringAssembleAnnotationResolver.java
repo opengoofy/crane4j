@@ -8,12 +8,8 @@ import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.Sorted;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
-import cn.crane4j.core.util.Asserts;
-import cn.crane4j.core.util.ConfigurationUtil;
-import cn.crane4j.core.util.ObjectUtils;
-import cn.crane4j.core.util.ReflectUtils;
+import cn.crane4j.core.util.*;
 import cn.crane4j.extension.spring.expression.SpelExpressionContext;
-import com.google.common.collect.Multimap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.EmbeddedValueResolverAware;
 import org.springframework.core.annotation.AnnotatedElementUtils;
@@ -68,8 +64,8 @@ public class SpringAssembleAnnotationResolver
      * @return element and annotation map
      */
     @Override
-    protected Multimap<AnnotatedElement, Assemble> parseAnnotationForFields(Class<?> beanType) {
-        Multimap<AnnotatedElement, Assemble> result = super.parseAnnotationForFields(beanType);
+    protected MultiMap<AnnotatedElement, Assemble> parseAnnotationForFields(Class<?> beanType) {
+        MultiMap<AnnotatedElement, Assemble> result = super.parseAnnotationForFields(beanType);
         result.forEach((e, a) -> Optional
             .ofNullable(AnnotatedElementUtils.findMergedAnnotation(e, Order.class))
             .ifPresent(o -> ReflectUtils.setAttributeValue(a, "sort", o.value()))

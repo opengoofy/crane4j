@@ -15,12 +15,6 @@ import java.util.Set;
 public interface AnnotationFinder {
 
     /**
-     * TODO refactor api:
-     * find hierarchy: isAnnotated, findAnnotation、findAllAnnotations/findRepeatableAnnotations;
-     * get direct: hasAnnotation, getAnnotation、getAllAnnotation/getRepeatableAnnotations
-     */
-
-    /**
      * Get the specified annotation from the element.
      *
      * @param element element
@@ -52,7 +46,7 @@ public interface AnnotationFinder {
     <A extends Annotation> Set<A> getAllAnnotations(@Nonnull AnnotatedElement element, Class<A> annotationType);
 
     /**
-     * Get the specified annotation from the element.
+     * Get the indirectly specified annotation from the element.
      *
      * @param element element
      * @param annotationType annotation type
@@ -62,7 +56,7 @@ public interface AnnotationFinder {
     <A extends Annotation> A findAnnotation(@Nonnull AnnotatedElement element, Class<A> annotationType);
 
     /**
-     * Whether the specified annotation exists on the element.
+     * Whether the specified annotation indirectly exists on the element.
      *
      * @param element element
      * @param annotationType annotation type
@@ -73,7 +67,7 @@ public interface AnnotationFinder {
     }
 
     /**
-     * Get all specified annotations from the element.
+     * Get all indirectly specified annotations from the element.
      *
      * @param element element
      * @param annotationType annotation type

@@ -4,23 +4,12 @@ import cn.crane4j.annotation.Bind;
 import cn.crane4j.annotation.ContainerMethod;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.support.AnnotationFinder;
-import cn.crane4j.core.util.ArrayUtils;
-import cn.crane4j.core.util.CollectionUtils;
-import cn.crane4j.core.util.ReflectUtils;
-import cn.crane4j.core.util.StringUtils;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
+import cn.crane4j.core.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -82,7 +71,7 @@ public class ContainerMethodAnnotationProcessor {
         if (nonAnnotatedClasses.contains(type)) {
             return Collections.emptyList();
         }
-        Multimap<Method, ContainerMethod> annotatedMethods = HashMultimap.create();
+        MultiMap<Method, ContainerMethod> annotatedMethods = MultiMap.linkedHashMultimap();
         Method[] allMethods = collectMethodLevelAnnotatedMethods(type, annotatedMethods);
         collectClassLevelAnnotatedMethods(type, allMethods, annotatedMethods);
         if (annotatedMethods.isEmpty()) {
@@ -100,7 +89,7 @@ public class ContainerMethodAnnotationProcessor {
      * @param annotatedMethods annotated methods
      */
     protected void collectClassLevelAnnotatedMethods(
-        Class<?> type, Method[] allMethods, Multimap<Method, ContainerMethod> annotatedMethods) {
+        Class<?> type, Method[] allMethods, MultiMap<Method, ContainerMethod> annotatedMethods) {
         Map<String, List<Method>> methodGroup = Stream.of(allMethods).collect(Collectors.groupingBy(Method::getName));
         Collection<ContainerMethod> classLevelAnnotation = resolveAnnotationsForClass(type);
         for (ContainerMethod annotation : classLevelAnnotation) {
@@ -118,7 +107,7 @@ public class ContainerMethodAnnotationProcessor {
      * @param annotatedMethods annotated methods
      * @return all checked methods
      */
-    protected Method[] collectMethodLevelAnnotatedMethods(Class<?> type, Multimap<Method, ContainerMethod> annotatedMethods) {
+    protected Method[] collectMethodLevelAnnotatedMethods(Class<?> type, MultiMap<Method, ContainerMethod> annotatedMethods) {
         Method[] methods = ReflectUtils.getMethods(type);
         for (Method method : methods) {
             Collection<ContainerMethod> annotations = resolveAnnotationsForMethod(method);
@@ -149,8 +138,8 @@ public class ContainerMethodAnnotationProcessor {
      * @param target target
      * @param annotatedMethods annotated methods
      */
-    protected Collection<Container<Object>> processAnnotatedMethod(Object target, Multimap<Method, ContainerMethod> annotatedMethods) {
-        return annotatedMethods.keys().stream()
+    protected Collection<Container<Object>> processAnnotatedMethod(Object target, MultiMap<Method, ContainerMethod> annotatedMethods) {
+        return annotatedMethods.keySet().stream()
             .map(method -> createMethodContainer(target, method))
             .filter(CollectionUtils::isNotEmpty)
             .flatMap(Collection::stream)

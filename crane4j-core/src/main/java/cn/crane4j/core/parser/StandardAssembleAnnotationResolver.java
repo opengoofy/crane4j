@@ -6,14 +6,7 @@ import cn.crane4j.core.container.Container;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
-import cn.crane4j.core.util.Asserts;
-import cn.crane4j.core.util.CollectionUtils;
-import cn.crane4j.core.util.ConfigurationUtil;
-import cn.crane4j.core.util.Lazy;
-import cn.crane4j.core.util.ReflectUtils;
-import cn.crane4j.core.util.StringUtils;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
+import cn.crane4j.core.util.*;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
@@ -22,11 +15,7 @@ import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -99,7 +88,7 @@ public abstract class StandardAssembleAnnotationResolver<T extends Annotation> i
      */
     private List<AssembleOperation> parseAssembleOperations(BeanOperations beanOperations) {
         AnnotatedElement source = beanOperations.getSource();
-        Multimap<AnnotatedElement, T> annotations = ArrayListMultimap.create();
+        MultiMap<AnnotatedElement, T> annotations = MultiMap.arrayListMultimap();
         if (source instanceof Class<?>) {
             Class<?> beanType = (Class<?>)source;
             annotations.putAll(beanType, parseAnnotationForClass(beanType));
@@ -140,8 +129,8 @@ public abstract class StandardAssembleAnnotationResolver<T extends Annotation> i
      * @param beanType bean type
      * @return element and annotation map
      */
-    protected Multimap<AnnotatedElement, T> parseAnnotationForFields(Class<?> beanType) {
-        Multimap<AnnotatedElement, T> result = ArrayListMultimap.create();
+    protected MultiMap<AnnotatedElement, T> parseAnnotationForFields(Class<?> beanType) {
+        MultiMap<AnnotatedElement, T> result = MultiMap.arrayListMultimap();
         ReflectUtils.parseAnnotationForDeclaredFields(annotationFinder, beanType, annotationType, (annotation, field) -> result.put(field, annotation));
         result.forEach((e, a) -> ReflectUtils.setAttributeValue(a, ANNOTATION_KEY_ATTRIBUTE, ((Field)e).getName()));
         return result;

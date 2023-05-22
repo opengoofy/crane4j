@@ -7,8 +7,7 @@ import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.DisassembleOperation;
 import cn.crane4j.core.parser.KeyTriggerOperation;
 import cn.crane4j.core.util.CollectionUtils;
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Multimap;
+import cn.crane4j.core.util.MultiMap;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -45,7 +44,7 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
             return;
         }
         // complete the disassembly first if necessary
-        Multimap<BeanOperations, Object> collector = LinkedListMultimap.create();
+        MultiMap<BeanOperations, Object> collector = MultiMap.linkedListMultimap();
         collector.putAll(operations, targets);
         disassembleIfNecessary(targets, operations, filter, collector);
 
@@ -97,7 +96,7 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
 
     private static <T> void disassembleIfNecessary(
         Collection<T> targets, BeanOperations operations,
-        Predicate<? super KeyTriggerOperation> filter, Multimap<BeanOperations, Object> collector) {
+        Predicate<? super KeyTriggerOperation> filter, MultiMap<BeanOperations, Object> collector) {
         Collection<DisassembleOperation> internalOperations = operations.getDisassembleOperations();
         if (CollectionUtils.isEmpty(internalOperations)) {
             return;
@@ -108,7 +107,7 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
     }
 
     private static <T> void doDisassembleAndCollect(
-        Collection<T> targets, DisassembleOperation disassembleOperation, Predicate<? super KeyTriggerOperation> filter, Multimap<BeanOperations, Object> collector) {
+        Collection<T> targets, DisassembleOperation disassembleOperation, Predicate<? super KeyTriggerOperation> filter, MultiMap<BeanOperations, Object> collector) {
         DisassembleOperationHandler handler = disassembleOperation.getDisassembleOperationHandler();
         Collection<?> internalTargets = handler.process(disassembleOperation, targets);
         if (CollectionUtils.isEmpty(internalTargets)) {

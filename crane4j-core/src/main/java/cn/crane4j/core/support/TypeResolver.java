@@ -3,7 +3,7 @@ package cn.crane4j.core.support;
 import javax.annotation.Nullable;
 
 /**
- * A resolver for Infer the actual type of {@link Object} instance.
+ * A resolver that infers the type of object.
  *
  * @author huangchengxing
  * @see SimpleTypeResolver
