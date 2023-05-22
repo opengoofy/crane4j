@@ -1,10 +1,10 @@
 package cn.crane4j.core.util;
 
 import cn.crane4j.core.exception.Crane4jException;
-import com.google.common.collect.Lists;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Collections;
 
 /**
@@ -79,8 +79,8 @@ public class AssertsTest {
         Assert.assertThrows(Crane4jException.class, () -> Asserts.isNotEmpty(new Object[0], () -> new Crane4jException("test")));
         Assert.assertThrows(Crane4jException.class, () -> Asserts.isNotEmpty(new Object[0], "test"));
         // collection
-        Assert.assertThrows(Crane4jException.class, () -> Asserts.isNotEmpty(Lists.newArrayList(), () -> new Crane4jException("test")));
-        Assert.assertThrows(Crane4jException.class, () -> Asserts.isNotEmpty(Lists.newArrayList(), "test"));
+        Assert.assertThrows(Crane4jException.class, () -> Asserts.isNotEmpty(CollectionUtils.newCollection(ArrayList::new), () -> new Crane4jException("test")));
+        Assert.assertThrows(Crane4jException.class, () -> Asserts.isNotEmpty(CollectionUtils.newCollection(ArrayList::new), "test"));
         // map
         Assert.assertThrows(Crane4jException.class, () -> Asserts.isNotEmpty(Collections.emptyMap(), () -> new Crane4jException("test")));
         Assert.assertThrows(Crane4jException.class, () -> Asserts.isNotEmpty(Collections.emptyMap(), "test"));

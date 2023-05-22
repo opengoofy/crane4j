@@ -1,18 +1,11 @@
 package cn.crane4j.core.util;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.MapMaker;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import javax.annotation.Nonnull;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -349,10 +342,14 @@ public class CollectionUtils {
             return Arrays.asList((Object[])obj);
         }
         if (obj instanceof Iterable) {
-            return Lists.newArrayList((Iterable<?>)obj);
+            List<Object> results = CollectionUtils.newCollection(ArrayList::new);
+            ((Iterable<?>)obj).forEach(results::add);
+            return results;
         }
         if (obj instanceof Iterator) {
-            return Lists.newArrayList((Iterator<?>)obj);
+            List<Object> results = CollectionUtils.newCollection(ArrayList::new);
+            ((Iterator<?>)obj).forEachRemaining(results::add);
+            return results;
         }
         return Collections.singletonList(obj);
     }

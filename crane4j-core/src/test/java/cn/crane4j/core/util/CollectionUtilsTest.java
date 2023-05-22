@@ -1,16 +1,9 @@
 package cn.crane4j.core.util;
 
-import com.google.common.collect.Iterators;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 /**
  * test for {@link CollectionUtils}
@@ -103,7 +96,7 @@ public class CollectionUtilsTest {
     public void getForIterator() {
         Assert.assertNull(CollectionUtils.get((Iterator<Object>)null, 0));
         Assert.assertNull(CollectionUtils.get(Collections.emptyIterator(), 0));
-        Assert.assertEquals(1, CollectionUtils.get(Iterators.singletonIterator(1), 0).intValue());
+        Assert.assertEquals(1, CollectionUtils.get(Collections.singletonList(1).iterator(), 0).intValue());
     }
 
     @Test
@@ -153,7 +146,7 @@ public class CollectionUtilsTest {
     public void isEmptyForIterator() {
         Assert.assertTrue(CollectionUtils.isEmpty((Iterator<?>)null));
         Assert.assertTrue(CollectionUtils.isEmpty(Collections.emptyIterator()));
-        Assert.assertFalse(CollectionUtils.isEmpty(Iterators.singletonIterator(1)));
+        Assert.assertFalse(CollectionUtils.isEmpty(Collections.singletonList(1).iterator()));
     }
 
     @Test
@@ -161,7 +154,7 @@ public class CollectionUtilsTest {
     public void isNotEmptyForIterator() {
         Assert.assertFalse(CollectionUtils.isNotEmpty((Iterator<?>)null));
         Assert.assertFalse(CollectionUtils.isNotEmpty(Collections.emptyIterator()));
-        Assert.assertTrue(CollectionUtils.isNotEmpty(Iterators.singletonIterator(1)));
+        Assert.assertTrue(CollectionUtils.isNotEmpty(Collections.singletonList(1).iterator()));
     }
 
     @Test
@@ -224,8 +217,8 @@ public class CollectionUtilsTest {
         Assert.assertTrue(CollectionUtils.adaptObjectToCollection(Collections.emptyList()).isEmpty());
         Assert.assertEquals(1, CollectionUtils.adaptObjectToCollection(Collections.emptyMap()).size());
         Assert.assertEquals(1, CollectionUtils.adaptObjectToCollection(new Object()).size());
-        Assert.assertEquals(1, CollectionUtils.adaptObjectToCollection(Iterators.singletonIterator(1)).size());
-        Assert.assertEquals(1, CollectionUtils.adaptObjectToCollection((Iterable<?>)() -> Iterators.singletonIterator(1)).size());
+        Assert.assertEquals(1, CollectionUtils.adaptObjectToCollection(Collections.singletonList(1).iterator()).size());
+        Assert.assertEquals(1, CollectionUtils.adaptObjectToCollection((Iterable<Integer>)() -> (Iterator<Integer>)Collections.singletonList(1).iterator()).size());
     }
 
     @Test
