@@ -14,18 +14,32 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
- * An abstract query container creator that provides access and querying to data storage based on the Repository interface.
+ * <p>Provides functionality to generate a specific {@link MethodInvokerContainer} object that
+ * supports generating SQL statements based on specified conditions and invoking the repository to execute the SQL,
+ * thereby retrieving data from the database.
+ *
+ * <h3>Implementation</h3>
+ * <p>The implementing class must provide a repository information object
+ * that implements the {@link Repository} interface (typically as an inner class).<br />
+ * It should also implement the {@link #createRepository} method to create this object when registering the repository.<br />
+ * This object will provide necessary functionality during SQL statement generation, including:
+ * <ul>
+ *     <li>Retrieving the entity class type associated with the repository;</li>
+ *     <li>Converting the specified property names in the JavaBean to query fields in SQL;</li>
+ *     <li>Obtaining the table name for querying in SQL;</li>
+ * </ul>
+ *
+ * <h3>Cache</h3>
+ * <p>The registered {@link Repository} ({@code t}) and generated {@link MethodInvokerContainer} will be cached.<br />
+ * Therefore, duplicate registration of the same {@link Repository} is not supported,
+ * and duplicate creation of the same {@link MethodInvokerContainer} will be avoided.<br />
+ * This cache is typically released only during JVM garbage collection.
+ * If necessary, you can manually invoke {@link #destroy} to clear all caches.
  *
  * @param <T> The data type stored in the repository.
  * @author huangchengxing
