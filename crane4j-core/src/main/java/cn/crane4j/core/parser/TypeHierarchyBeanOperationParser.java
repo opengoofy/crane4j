@@ -2,6 +2,7 @@ package cn.crane4j.core.parser;
 
 import cn.crane4j.core.exception.OperationParseException;
 import cn.crane4j.core.executor.BeanOperationExecutor;
+import cn.crane4j.core.parser.handler.OperationAnnotationHandler;
 import cn.crane4j.core.support.Sorted;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.ReflectUtils;
@@ -26,7 +27,7 @@ import java.util.stream.Collectors;
  * <p>General implementation of {@link BeanOperationParser}.
  *
  * <p>When parsing the configuration, the parser will create a root {@link BeanOperations}
- * as the context for this execution, Then successively call all registered {@link OperationAnnotationResolver}
+ * as the context for this execution, Then successively call all registered {@link OperationAnnotationHandler}
  * to collect the configuration information into the {@link BeanOperations} in context.
  *
  * <p>After the parsing is completed, the {@link BeanOperations} instance
@@ -42,14 +43,14 @@ import java.util.stream.Collectors;
  *
  * <p>The sequence of operations obtained through the parser follows:
  * <ul>
- *     <li>The calling order of {@link OperationAnnotationResolver};</li>
- *     <li>their order in link {@link OperationAnnotationResolver};</li>
+ *     <li>The calling order of {@link OperationAnnotationHandler};</li>
+ *     <li>their order in link {@link OperationAnnotationHandler};</li>
  * </ul>
  * It should be noted that this order does not represent the order in which the final operation will be executed.
  * This order is guaranteed by the executor {@link BeanOperationExecutor}.
  *
  * @author huangchengxing
- * @see OperationAnnotationResolver
+ * @see OperationAnnotationHandler
  * @since 1.2.0
  */
 @Slf4j
@@ -73,16 +74,16 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
     /**
      * registered operation annotation resolvers.
      */
-    protected Set<OperationAnnotationResolver> operationAnnotationResolvers;
+    protected Set<OperationAnnotationHandler> operationAnnotationHandlers;
 
     /**
      * Create a {@link TypeHierarchyBeanOperationParser} instance.
      *
-     * @param operationAnnotationResolvers operationAnnotationResolvers
+     * @param operationAnnotationHandlers operationAnnotationHandlers
      */
     public TypeHierarchyBeanOperationParser(
-        Collection<OperationAnnotationResolver> operationAnnotationResolvers) {
-        this.operationAnnotationResolvers = operationAnnotationResolvers.stream()
+        Collection<OperationAnnotationHandler> operationAnnotationHandlers) {
+        this.operationAnnotationHandlers = operationAnnotationHandlers.stream()
             .sorted(Sorted.comparator())
             .collect(Collectors.toCollection(LinkedHashSet::new));
     }
@@ -90,13 +91,13 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
     /**
      * Add bean operations resolvers.
      *
-     * @param resolver resolver
+     * @param resolver handler
      */
-    public void addBeanOperationsResolver(OperationAnnotationResolver resolver) {
+    public void addBeanOperationsResolver(OperationAnnotationHandler resolver) {
         Objects.requireNonNull(resolver);
-        if (!operationAnnotationResolvers.contains(resolver)) {
-            operationAnnotationResolvers.add(resolver);
-            this.operationAnnotationResolvers = operationAnnotationResolvers.stream()
+        if (!operationAnnotationHandlers.contains(resolver)) {
+            operationAnnotationHandlers.add(resolver);
+            this.operationAnnotationHandlers = operationAnnotationHandlers.stream()
                 .sorted(Sorted.comparator())
                 .collect(Collectors.toCollection(LinkedHashSet::new));
         }
@@ -243,10 +244,10 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
     protected final BeanOperations resolveToOperations(AnnotatedElement source) {
         return CollectionUtils.computeIfAbsent(resolvedHierarchyElements, source, s -> {
             if (ReflectUtils.isJdkElement(s)) {
-                return EmptyBeanOperations.INSTANCE;
+                return BeanOperations.EmptyBeanOperations.INSTANCE;
             }
             BeanOperations operations = createBeanOperations(source);
-            operationAnnotationResolvers.forEach(resolver -> resolver.resolve(this, operations));
+            operationAnnotationHandlers.forEach(resolver -> resolver.resolve(this, operations));
             return operations;
         });
     }

@@ -7,6 +7,7 @@ import cn.crane4j.annotation.ContainerMethod;
 import cn.crane4j.annotation.Disassemble;
 import cn.crane4j.annotation.Mapping;
 import cn.crane4j.annotation.MappingType;
+import cn.crane4j.core.container.ContainerManager;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.extension.spring.Crane4jSpringTestConfiguration;
 import lombok.AllArgsConstructor;
@@ -47,6 +48,8 @@ import java.util.stream.Collectors;
 public class MethodArgumentAutoOperateAspectTest {
     @Autowired
     private ApplicationContext applicationContext;
+    @Autowired
+    ContainerManager containerManager;
     @Autowired
     private MethodArgumentAutoOperateAspect methodArgumentAutoOperateAspect;
 

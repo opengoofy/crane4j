@@ -39,7 +39,7 @@ public class OneToManyReflexAssembleOperationHandlerTest extends BaseExecutorTes
         OneToManyAssembleOperationHandler handler = new OneToManyAssembleOperationHandler(operator);
         configuration.getAssembleOperationHandlerMap().put(handler.getClass().getName(), handler);
 
-        executor = new DisorderedBeanOperationExecutor();
+        executor = new DisorderedBeanOperationExecutor(configuration);
 
         Map<Integer, List<Bean>> sources = new HashMap<>();
         for (int i = 0; i < 6; i++) {
@@ -72,7 +72,7 @@ public class OneToManyReflexAssembleOperationHandlerTest extends BaseExecutorTes
     private static class Bean {
         @Assemble(
             container = "test", props = @Mapping(src = "name", ref = "names"),
-            handler = OneToManyAssembleOperationHandler.class
+            handler = "OneToManyAssembleOperationHandler"
         )
         private final Integer id;
         private final String name;

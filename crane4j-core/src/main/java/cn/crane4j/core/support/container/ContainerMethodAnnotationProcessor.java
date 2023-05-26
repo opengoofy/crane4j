@@ -4,18 +4,28 @@ import cn.crane4j.annotation.Bind;
 import cn.crane4j.annotation.ContainerMethod;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.support.AnnotationFinder;
-import cn.crane4j.core.util.*;
+import cn.crane4j.core.util.ArrayUtils;
+import cn.crane4j.core.util.CollectionUtils;
+import cn.crane4j.core.util.MultiMap;
+import cn.crane4j.core.util.ReflectUtils;
+import cn.crane4j.core.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * <p>An {@link ContainerMethod} annotation processor.
+ * <p>An {@link ContainerMethod} annotation lifecycle.
  * Scan methods annotated directly by {@link ContainerMethod}
  * in the class or methods bound by annotations on class,
  * and adapt it to {@link Container} instance according to given {@link MethodContainerFactory}.
@@ -186,7 +196,7 @@ public class ContainerMethodAnnotationProcessor {
             log.debug("bound method not found: [{}]", bind);
             return null;
         }
-        // try to binding annotations to method
+        // TODO try to binding annotations to method
         ReflectUtils.putAnnotation(annotation, resolvedMethod);
         return resolvedMethod;
     }

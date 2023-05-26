@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  *
  * @author huangchengxing
  */
-public class OneToManyAssembleOperationHandler extends GenericAssembleOperationHandler {
+public class OneToManyAssembleOperationHandler extends OneToOneAssembleOperationHandler {
 
     /**
      * Create an {@link OneToManyAssembleOperationHandler} instance.
@@ -38,7 +38,7 @@ public class OneToManyAssembleOperationHandler extends GenericAssembleOperationH
      * @param target target
      */
     @Override
-    protected void completeMapping(Object source, AssembleOperationTarget target) {
+    protected void completeMapping(Object source, Target target) {
         Collection<?> sources = CollectionUtils.adaptObjectToCollection(source);
         Set<PropertyMapping> mappings = target.getExecution().getOperation().getPropertyMappings();
         for (PropertyMapping mapping : mappings) {

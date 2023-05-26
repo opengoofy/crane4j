@@ -20,7 +20,6 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -36,7 +35,7 @@ public class AutoOperateAnnotatedElementResolverTest {
 
     @Before
     public void init() {
-        configuration = SimpleCrane4jGlobalConfiguration.create(Collections.emptyMap());
+        configuration = SimpleCrane4jGlobalConfiguration.create();
         resolver = new AutoOperateAnnotatedElementResolver(configuration);
         configuration.registerContainer(LambdaContainer.<Integer>forLambda(
             "test", ids -> ids.stream().map(id -> new Foo(id, "name" + id))

@@ -1,12 +1,8 @@
 package cn.crane4j.core.support;
 
-import cn.crane4j.core.cache.CacheManager;
-import cn.crane4j.core.cache.ConcurrentMapCacheManager;
 import cn.crane4j.core.container.ContainerProvider;
-import cn.crane4j.core.container.DynamicSourceContainerProvider;
-import cn.crane4j.core.container.SharedContextContainerProvider;
-import cn.crane4j.core.container.SimpleConfigurableContainerProvider;
-import cn.crane4j.core.container.ThreadContextContainerProvider;
+import cn.crane4j.core.container.DefaultContainerManager;
+import cn.crane4j.core.container.lifecycle.ContainerRegisterLogger;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
 import cn.crane4j.core.executor.OrderedBeanOperationExecutor;
@@ -16,13 +12,11 @@ import cn.crane4j.core.executor.handler.ManyToManyAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.OneToManyAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.OneToOneAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
-import cn.crane4j.core.parser.AssembleAnnotationResolver;
-import cn.crane4j.core.parser.AssembleEnumAnnotationResolver;
 import cn.crane4j.core.parser.BeanOperationParser;
-import cn.crane4j.core.parser.DisassembleAnnotationResolver;
 import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
-import cn.crane4j.core.support.callback.ContainerRegisteredLogger;
-import cn.crane4j.core.support.callback.DefaultCacheableContainerProcessor;
+import cn.crane4j.core.parser.handler.AssembleAnnotationHandler;
+import cn.crane4j.core.parser.handler.AssembleEnumAnnotationHandler;
+import cn.crane4j.core.parser.handler.DisassembleAnnotationHandler;
 import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.support.converter.HutoolConverterManager;
 import cn.crane4j.core.support.reflect.ChainAccessiblePropertyOperator;
@@ -30,13 +24,12 @@ import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
 import cn.crane4j.core.util.Asserts;
-import cn.crane4j.core.util.CollectionUtils;
 import lombok.Getter;
 import lombok.Setter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,7 +40,7 @@ import java.util.Map;
  */
 @Getter
 public class SimpleCrane4jGlobalConfiguration
-    extends SimpleConfigurableContainerProvider implements Crane4jGlobalConfiguration {
+    extends DefaultContainerManager implements Crane4jGlobalConfiguration {
 
     @Setter
     private TypeResolver typeResolver;
@@ -59,7 +52,6 @@ public class SimpleCrane4jGlobalConfiguration
     private final Map<String, AssembleOperationHandler> assembleOperationHandlerMap = new HashMap<>(4);
     private final Map<String, DisassembleOperationHandler> disassembleOperationHandlerMap = new HashMap<>(4);
     private final Map<String, BeanOperationExecutor> beanOperationExecutorMap = new HashMap<>(4);
-    private final Map<String, ContainerProvider> containerProviderMap = new HashMap<>(4);
 
     /**
      * Create a {@link SimpleCrane4jGlobalConfiguration} using the default configuration.
@@ -67,16 +59,6 @@ public class SimpleCrane4jGlobalConfiguration
      * @return configuration
      */
     public static SimpleCrane4jGlobalConfiguration create() {
-        return create(Collections.emptyMap());
-    }
-
-    /**
-     * Create a {@link SimpleCrane4jGlobalConfiguration} using the default configuration.
-     *
-     * @param cacheConfig cacheConfig
-     * @return configuration
-     */
-    public static SimpleCrane4jGlobalConfiguration create(@Nullable Map<String, String> cacheConfig) {
         SimpleCrane4jGlobalConfiguration configuration = new SimpleCrane4jGlobalConfiguration();
         // basic components
         ConverterManager register = new HutoolConverterManager();
@@ -85,87 +67,45 @@ public class SimpleCrane4jGlobalConfiguration
         operator = new ChainAccessiblePropertyOperator(operator);
         configuration.setPropertyOperator(operator);
         configuration.setTypeResolver(new SimpleTypeResolver());
-        CacheManager cacheManager = new ConcurrentMapCacheManager(CollectionUtils::newWeakConcurrentMap);
 
-        // container register aware
-        configuration.addContainerRegisterAware(new ContainerRegisteredLogger());
-        if (CollectionUtils.isNotEmpty(cacheConfig)) {
-            configuration.addContainerRegisterAware(new DefaultCacheableContainerProcessor(cacheManager, cacheConfig));
-        }
+        // container container lifecycle lifecycle
+        Logger logger = LoggerFactory.getLogger(ContainerRegisterLogger.class);
+        configuration.registerContainerLifecycleProcessor(new ContainerRegisterLogger(logger::info));
 
         // operation parser
         AnnotationFinder annotationFinder = new SimpleAnnotationFinder();
         BeanOperationParser beanOperationParser = new TypeHierarchyBeanOperationParser(Arrays.asList(
-            new AssembleAnnotationResolver(annotationFinder, configuration),
-            new DisassembleAnnotationResolver(annotationFinder, configuration),
-            new AssembleEnumAnnotationResolver(annotationFinder, configuration, operator, configuration)
+            new AssembleAnnotationHandler(annotationFinder, configuration),
+            new DisassembleAnnotationHandler(annotationFinder, configuration),
+            new AssembleEnumAnnotationHandler(annotationFinder, configuration, operator, configuration)
         ));
-        configuration.getBeanOperationParserMap().put(BeanOperationParser.class.getName(), beanOperationParser);
-        configuration.getBeanOperationParserMap().put(beanOperationParser.getClass().getName(), beanOperationParser);
+        configuration.getBeanOperationParserMap().put(BeanOperationParser.class.getSimpleName(), beanOperationParser);
+        configuration.getBeanOperationParserMap().put(beanOperationParser.getClass().getSimpleName(), beanOperationParser);
 
         // operation executor
-        DisorderedBeanOperationExecutor disorderedBeanOperationExecutor = new DisorderedBeanOperationExecutor();
-        configuration.getBeanOperationExecutorMap().put(BeanOperationExecutor.class.getName(), disorderedBeanOperationExecutor);
-        configuration.getBeanOperationExecutorMap().put(disorderedBeanOperationExecutor.getClass().getName(), disorderedBeanOperationExecutor);
-        OrderedBeanOperationExecutor orderedBeanOperationExecutor = new OrderedBeanOperationExecutor(Sorted.comparator());
-        configuration.getBeanOperationExecutorMap().put(orderedBeanOperationExecutor.getClass().getName(), orderedBeanOperationExecutor);
+        DisorderedBeanOperationExecutor disorderedBeanOperationExecutor = new DisorderedBeanOperationExecutor(configuration);
+        configuration.getBeanOperationExecutorMap().put(BeanOperationExecutor.class.getSimpleName(), disorderedBeanOperationExecutor);
+        configuration.getBeanOperationExecutorMap().put(disorderedBeanOperationExecutor.getClass().getSimpleName(), disorderedBeanOperationExecutor);
+        OrderedBeanOperationExecutor orderedBeanOperationExecutor = new OrderedBeanOperationExecutor(configuration, Sorted.comparator());
+        configuration.getBeanOperationExecutorMap().put(orderedBeanOperationExecutor.getClass().getSimpleName(), orderedBeanOperationExecutor);
 
-        // operation handler
+        // operation handlers
         OneToOneAssembleOperationHandler oneToOneReflexAssembleOperationHandler = new OneToOneAssembleOperationHandler(operator);
-        configuration.getAssembleOperationHandlerMap().put(AssembleOperationHandler.class.getName(), oneToOneReflexAssembleOperationHandler);
-        configuration.getAssembleOperationHandlerMap().put(oneToOneReflexAssembleOperationHandler.getClass().getName(), oneToOneReflexAssembleOperationHandler);
+        configuration.getAssembleOperationHandlerMap().put(AssembleOperationHandler.class.getSimpleName(), oneToOneReflexAssembleOperationHandler);
+        configuration.getAssembleOperationHandlerMap().put(oneToOneReflexAssembleOperationHandler.getClass().getSimpleName(), oneToOneReflexAssembleOperationHandler);
         OneToManyAssembleOperationHandler oneToManyReflexAssembleOperationHandler = new OneToManyAssembleOperationHandler(operator);
-        configuration.getAssembleOperationHandlerMap().put(oneToManyReflexAssembleOperationHandler.getClass().getName(), oneToManyReflexAssembleOperationHandler);
+        configuration.getAssembleOperationHandlerMap().put(oneToManyReflexAssembleOperationHandler.getClass().getSimpleName(), oneToManyReflexAssembleOperationHandler);
         ManyToManyAssembleOperationHandler manyToManyReflexAssembleOperationHandler = new ManyToManyAssembleOperationHandler(operator);
-        configuration.getAssembleOperationHandlerMap().put(manyToManyReflexAssembleOperationHandler.getClass().getName(), manyToManyReflexAssembleOperationHandler);
+        configuration.getAssembleOperationHandlerMap().put(manyToManyReflexAssembleOperationHandler.getClass().getSimpleName(), manyToManyReflexAssembleOperationHandler);
         ReflectDisassembleOperationHandler reflectDisassembleOperationHandler = new ReflectDisassembleOperationHandler(operator);
-        configuration.getDisassembleOperationHandlerMap().put(DisassembleOperationHandler.class.getName(), reflectDisassembleOperationHandler);
-        configuration.getDisassembleOperationHandlerMap().put(reflectDisassembleOperationHandler.getClass().getName(), reflectDisassembleOperationHandler);
+        configuration.getDisassembleOperationHandlerMap().put(DisassembleOperationHandler.class.getSimpleName(), reflectDisassembleOperationHandler);
+        configuration.getDisassembleOperationHandlerMap().put(reflectDisassembleOperationHandler.getClass().getSimpleName(), reflectDisassembleOperationHandler);
 
-        // container provider
-        configuration.getContainerProviderMap().put(configuration.getClass().getName(), configuration);
-        configuration.getContainerProviderMap().put(ContainerProvider.class.getName(), configuration);
-        ThreadContextContainerProvider threadContextContainerProvider = new ThreadContextContainerProvider();
-        configuration.getContainerProviderMap().put(DynamicSourceContainerProvider.class.getName(), threadContextContainerProvider);
-        configuration.getContainerProviderMap().put(threadContextContainerProvider.getClass().getName(), threadContextContainerProvider);
-        SharedContextContainerProvider sharedContextContainerProvider = new SharedContextContainerProvider();
-        configuration.getContainerProviderMap().put(sharedContextContainerProvider.getClass().getName(), sharedContextContainerProvider);
+        // container providers
+        configuration.registerContainerProvider(configuration.getClass().getSimpleName(), configuration);
+        configuration.registerContainerProvider(ContainerProvider.class.getSimpleName(), configuration);
 
         return configuration;
-    }
-
-    /**
-     * Get container provider.
-     *
-     * @param providerType provider type
-     * @return provider
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T extends ContainerProvider> T getContainerProvider(Class<T> providerType) {
-        return (T)getContainerProvider(providerType.getName());
-    }
-
-    /**
-     * Get container provider.
-     *
-     * @param providerName provider name
-     * @return provider
-     */
-    @Override
-    public ContainerProvider getContainerProvider(String providerName) {
-        return containerProviderMap.get(providerName);
-    }
-
-    /**
-     * Get bean operation executor.
-     *
-     * @param executorType executor type
-     * @return executor
-     */
-    @Override
-    public BeanOperationExecutor getBeanOperationExecutor(Class<? extends BeanOperationExecutor> executorType) {
-        return getBeanOperationExecutor(executorType.getName());
     }
 
     /**
@@ -184,17 +124,6 @@ public class SimpleCrane4jGlobalConfiguration
     /**
      * Get bean operation parser.
      *
-     * @param parserType parser type
-     * @return parser
-     */
-    @Override
-    public BeanOperationParser getBeanOperationsParser(Class<? extends BeanOperationParser> parserType) {
-        return getBeanOperationsParser(parserType.getName());
-    }
-
-    /**
-     * Get bean operation parser.
-     *
      * @param parserName parser name
      * @return parser
      */
@@ -208,36 +137,14 @@ public class SimpleCrane4jGlobalConfiguration
     /**
      * Get assemble operation handler.
      *
-     * @param handlerType handler type
-     * @return handler
-     */
-    @Override
-    public AssembleOperationHandler getAssembleOperationHandler(Class<? extends AssembleOperationHandler> handlerType) {
-        return getAssembleOperationHandler(handlerType.getName());
-    }
-
-    /**
-     * Get assemble operation handler.
-     *
      * @param  handlerName handler name
      * @return handler
      */
     @Override
     public AssembleOperationHandler getAssembleOperationHandler(String handlerName) {
         AssembleOperationHandler handler = assembleOperationHandlerMap.get(handlerName);
-        Asserts.isNotNull(handler, "cannot find handler [{}]", handlerName);
+        Asserts.isNotNull(handler, "cannot find assemble handler [{}]", handlerName);
         return handler;
-    }
-
-    /**
-     * Get disassemble operation handler.
-     *
-     * @param handlerType handler type
-     * @return handler
-     */
-    @Override
-    public DisassembleOperationHandler getDisassembleOperationHandler(Class<? extends DisassembleOperationHandler> handlerType) {
-        return getDisassembleOperationHandler(handlerType.getName());
     }
 
     /**
@@ -249,7 +156,7 @@ public class SimpleCrane4jGlobalConfiguration
     @Override
     public DisassembleOperationHandler getDisassembleOperationHandler(String handlerName) {
         DisassembleOperationHandler handler = disassembleOperationHandlerMap.get(handlerName);
-        Asserts.isNotNull(handler, "cannot find handler [{}]", handlerName);
+        Asserts.isNotNull(handler, "cannot find  disassemble handler [{}]", handlerName);
         return handler;
     }
 }

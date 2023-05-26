@@ -90,7 +90,7 @@ public class ChainPropMappingExampleTest {
         @Assemble(
             container = "OneToMany", groups = "testOneToMany",
             props = @Mapping(src = "foo.name", ref = "names"),
-            handlerName = "oneToManyReflexAssembleOperationHandler"
+            handler = "oneToManyReflexAssembleOperationHandler"
         )
         private Integer id;
         private Foo nested;

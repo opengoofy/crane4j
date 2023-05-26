@@ -6,9 +6,9 @@ import cn.crane4j.annotation.Mapping;
 import cn.crane4j.core.container.ConstantContainer;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
-import cn.crane4j.core.parser.AssembleOperation;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.BeanOperations;
+import cn.crane4j.core.parser.operation.AssembleOperation;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.junit.Assert;
@@ -35,11 +35,11 @@ public class OperateTemplateTest {
 
     @Before
     public void init() {
-        SimpleCrane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create(Collections.emptyMap());
-        parser = configuration.getBeanOperationsParser(BeanOperationParser.class);
-        beanOperationExecutor = new DisorderedBeanOperationExecutor();
+        SimpleCrane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create();
+        parser = configuration.getBeanOperationsParser(BeanOperationParser.class.getSimpleName());
+        beanOperationExecutor = new DisorderedBeanOperationExecutor(configuration);
         template = new OperateTemplate(
-            configuration.getBeanOperationsParser(BeanOperationParser.class),
+            configuration.getBeanOperationsParser(BeanOperationParser.class.getSimpleName()),
             beanOperationExecutor, configuration.getTypeResolver()
         );
 

@@ -1,14 +1,17 @@
 package cn.crane4j.core.executor;
 
 import cn.crane4j.core.container.Container;
+import cn.crane4j.core.container.ContainerManager;
 import cn.crane4j.core.exception.OperationExecuteException;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
-import cn.crane4j.core.parser.AssembleOperation;
 import cn.crane4j.core.parser.BeanOperations;
-import cn.crane4j.core.parser.DisassembleOperation;
-import cn.crane4j.core.parser.KeyTriggerOperation;
+import cn.crane4j.core.parser.operation.AssembleOperation;
+import cn.crane4j.core.parser.operation.DisassembleOperation;
+import cn.crane4j.core.parser.operation.KeyTriggerOperation;
+import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.MultiMap;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -54,18 +57,24 @@ import java.util.function.Predicate;
  * @see DisorderedBeanOperationExecutor
  * @see OrderedBeanOperationExecutor
  */
+@RequiredArgsConstructor
 @Slf4j
 public abstract class AbstractBeanOperationExecutor implements BeanOperationExecutor {
 
     /**
-     * Complete operations on all objects in {@code targets} according to the specified {@link BeanOperations}
+     * Container manager.
+     */
+    private final ContainerManager containerManager;
+
+    /**
+     * Complete operations on all objects in {@code targets} according to the specified {@link BeanOperations} and {@link Options}.
      *
      * @param targets targets
      * @param operations operations to be performed
-     * @param filter operation filter, which can filter some operations based on operation key, group and other attributes
+     * @param options options for execution
      */
     @Override
-    public void execute(Collection<?> targets, BeanOperations operations, Predicate<? super KeyTriggerOperation> filter) {
+    public void execute(Collection<?> targets, BeanOperations operations, Options options) {
         if (CollectionUtils.isEmpty(targets) || Objects.isNull(operations)) {
             return;
         }
@@ -76,6 +85,7 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
         // complete the disassembly first if necessary
         MultiMap<BeanOperations, Object> collector = MultiMap.linkedListMultimap();
         collector.putAll(operations, targets);
+        Predicate<? super KeyTriggerOperation> filter = options.getFilter();
         disassembleIfNecessary(targets, operations, filter, collector);
 
         // flattened objects are grouped according to assembly operations, then encapsulated as execution objects
@@ -83,12 +93,12 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
         collector.asMap().forEach((op, ts) -> op.getAssembleOperations()
             .stream()
             .filter(filter)
-            .map(p -> createAssembleExecution(op, p, ts))
+            .map(p -> createAssembleExecution(op, p, ts, options))
             .forEach(executions::add)
         );
 
         // complete assembly operation
-        executeOperations(executions);
+        executeOperations(executions, options);
     }
 
     /**
@@ -97,11 +107,15 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
      * @param beanOperations bean operations
      * @param operation operation
      * @param targets targets
+     * @param options options for execution
      * @return {@link AssembleExecution}
      */
     protected AssembleExecution createAssembleExecution(
-        BeanOperations beanOperations, AssembleOperation operation, Collection<Object> targets) {
-        return new SimpleAssembleExecution(beanOperations, operation, targets);
+        BeanOperations beanOperations, AssembleOperation operation, Collection<Object> targets, Options options) {
+        String namespace = operation.getContainer();
+        Container<?> container = options.getContainer(containerManager, namespace);
+        Asserts.isNotNull(container, "container of [{}] not found", namespace);
+        return AssembleExecution.create(beanOperations, operation, container, targets);
     }
     
     /**
@@ -112,6 +126,7 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
      * the corresponding {@link AssembleExecution} is obtained.
      *
      * @param executions assembly operations to be completed
+     * @param options options for execution
      * @throws OperationExecuteException thrown when operation execution exception
      * @implNote
      * <ul>
@@ -122,7 +137,7 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
      *     </li>
      * </ul>
      */
-    protected abstract void executeOperations(List<AssembleExecution> executions) throws OperationExecuteException;
+    protected abstract void executeOperations(List<AssembleExecution> executions, Options options) throws OperationExecuteException;
 
     private static <T> void disassembleIfNecessary(
         Collection<T> targets, BeanOperations operations,

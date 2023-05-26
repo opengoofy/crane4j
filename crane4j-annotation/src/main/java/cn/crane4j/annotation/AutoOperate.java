@@ -11,8 +11,8 @@ import java.lang.annotation.Target;
  *
  * @author huangchengxing
  * @see ArgAutoOperate
- * @see cn.crane4j.springboot.support.aop.MethodResultAutoOperateAspect
- * @see cn.crane4j.springboot.support.aop.MethodArgumentAutoOperateAspect
+ * @see cn.crane4j.extension.spring.aop.MethodResultAutoOperateAspect
+ * @see cn.crane4j.extension.spring.aop.MethodArgumentAutoOperateAspect
  */
 @Target({ElementType.METHOD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
@@ -61,32 +61,18 @@ public @interface AutoOperate {
     String on() default "";
 
     /**
-     * The type of the operation executor to be used.
-     *
-     * @return executor type
-     */
-    Class<?> executor() default Object.class;
-
-    /**
      * The name of the executor to be used.
      *
      * @return executor name
      */
-    String executorName() default "";
-
-    /**
-     * The type of the operation parser to be used.
-     *
-     * @return parser type
-     */
-    Class<?> parser() default Object.class;
+    String executor() default "DisorderedBeanOperationExecutor";
 
     /**
      * The name of the operation parser to be used.
      *
      * @return parser name
      */
-    String parserName() default "";
+    String parser() default "TypeHierarchyBeanOperationParser";
 
     /**
      * The group of operations to be performed. <br />
@@ -116,7 +102,6 @@ public @interface AutoOperate {
      * </ul>
      *
      * @return expression of apply condition
-     * @see cn.crane4j.springboot.support.aop.MethodResultAutoOperateAspect#methodBaseExpressionEvaluator
      */
     String condition() default "";
 }

@@ -4,9 +4,7 @@ import cn.crane4j.annotation.Assemble;
 import cn.crane4j.annotation.AssembleMp;
 import cn.crane4j.annotation.Mapping;
 import cn.crane4j.annotation.MappingTemplate;
-import cn.crane4j.annotation.extension.AssembleByMp;
 import cn.crane4j.core.support.OperateTemplate;
-import cn.crane4j.extension.mybatis.plus.MybatisPlusContainerProvider;
 import cn.crane4j.mybatis.plus.extension.example.Crane4jMybatisPlusExampleApplication;
 import cn.crane4j.mybatis.plus.extension.example.Foo;
 import cn.crane4j.mybatis.plus.extension.example.FooMapper;
@@ -171,16 +169,12 @@ public class MpExtensionExampleTest {
         )
         @Assemble(container = "container('fooMapper', {'name as userName'})",
             groups = "testPrimaryKeyAndCustomColumns",
-            containerProvider = MybatisPlusContainerProvider.class,
+            containerProvider = "",
             propTemplates = FooVO.class
         )
         private Integer id;
 
         // 声明两个不同组的操作，都基于name字段值进行
-        @AssembleByMp(container = "container('fooMapper', 'userName')",
-            groups = "testCustomKeyAndAllColumns",
-            propTemplates = FooVO.class
-        )
         @AssembleMp(
             mapper = "fooMapper",
             selects = "userAge", where = "userName",

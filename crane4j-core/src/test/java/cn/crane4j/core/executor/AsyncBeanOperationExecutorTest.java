@@ -37,7 +37,7 @@ public class AsyncBeanOperationExecutorTest extends BaseExecutorTest {
         executor = new ThreadPoolExecutor(
             1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>()
         );
-        operationExecutor = new AsyncBeanOperationExecutor(executor);
+        operationExecutor = new AsyncBeanOperationExecutor(configuration, executor);
 
         Map<Integer, Object> sources = new HashMap<>();
         sources.put(1, new Source(1, "one"));

@@ -24,7 +24,6 @@ import org.junit.Test;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -39,7 +38,7 @@ public class MethodArgumentAutoOperateSupportTest {
 
     @Before
     public void init() {
-        Crane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create(Collections.emptyMap());
+        Crane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create();
         ParameterNameFinder parameterNameFinder = new SimpleParameterNameFinder();
         MethodBaseExpressionExecuteDelegate expressionExecuteDelegate = new MethodBaseExpressionExecuteDelegate(
             parameterNameFinder, new OgnlExpressionEvaluator(), method -> new OgnlExpressionContext()

@@ -1,6 +1,6 @@
 package cn.crane4j.core.executor.handler;
 
-import cn.crane4j.core.parser.DisassembleOperation;
+import cn.crane4j.core.parser.operation.DisassembleOperation;
 
 import java.util.Collection;
 

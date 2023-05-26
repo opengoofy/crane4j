@@ -11,7 +11,6 @@ import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.support.Sorted;
 import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.CollectionUtils;
-import cn.crane4j.core.util.ConfigurationUtil;
 import cn.crane4j.core.util.ReflectUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -89,13 +88,9 @@ public class OperatorProxyFactory {
         }
 
         // get component of executor and parser
-        BeanOperationExecutor executor = ConfigurationUtil.getOperationExecutor(
-            globalConfiguration, annotation.executorName(), annotation.executor()
-        );
+        BeanOperationExecutor executor = globalConfiguration.getBeanOperationExecutor(annotation.executor());
         Asserts.isNotNull(executor, "the executor of the operator [{}] is not found.", operatorType.getName());
-        BeanOperationParser parser = ConfigurationUtil.getOperationParser(
-            globalConfiguration, annotation.parserName(), annotation.parser()
-        );
+        BeanOperationParser parser = globalConfiguration.getBeanOperationsParser(annotation.parser());
         Asserts.isNotNull(parser, "the parser of the operator [{}] is not found.", operatorType.getName());
 
         // create proxy by executor and parser
@@ -164,7 +159,6 @@ public class OperatorProxyFactory {
      * Operator proxy method factory.
      *
      * @author huangchengxing
-     * @see DynamicSourceProxyMethodFactory
      * @see DefaultProxyMethodFactory
      * @since  1.3.0
      */

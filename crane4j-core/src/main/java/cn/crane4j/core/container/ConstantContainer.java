@@ -45,7 +45,7 @@ import java.util.stream.Stream;
  */
 @EqualsAndHashCode
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class ConstantContainer<K> implements Container<K> {
+public class ConstantContainer<K> implements Container<K>, Container.Lifecycle {
 
     /**
      * namespace of the data source container,
@@ -116,7 +116,7 @@ public class ConstantContainer<K> implements Container<K> {
      * @return container
      * @see ContainerConstant
      */
-    public static ConstantContainer<?> forConstantClass(
+    public static ConstantContainer<Object> forConstantClass(
         Class<?> constantClass, AnnotationFinder annotationFinder) {
         Objects.requireNonNull(constantClass);
         ContainerConstant annotation = annotationFinder.getAnnotation(constantClass, ContainerConstant.class);
@@ -153,7 +153,6 @@ public class ConstantContainer<K> implements Container<K> {
      */
     public static <K> ConstantContainer<K> forMap(String namespace, Map<K, ?> data) {
         Objects.requireNonNull(namespace);
-        Asserts.isNotEmpty(data, "data must not empty");
         return new ConstantContainer<>(namespace, data);
     }
 
@@ -166,5 +165,17 @@ public class ConstantContainer<K> implements Container<K> {
     @Override
     public Map<K, ?> get(Collection<K> keys) {
         return data;
+    }
+
+    /**
+     * Destroy the container
+     */
+    @Override
+    public void destroy() {
+        try {
+            data.clear();
+        } catch (UnsupportedOperationException ex) {
+            // ignore if map is immutable
+        }
     }
 }

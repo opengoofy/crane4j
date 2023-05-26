@@ -1,6 +1,9 @@
 package cn.crane4j.core.parser;
 
-import cn.crane4j.core.container.Container;
+import cn.crane4j.core.parser.operation.AssembleOperation;
+import cn.crane4j.core.parser.operation.DisassembleOperation;
+import cn.crane4j.core.parser.operation.SimpleAssembleOperation;
+import cn.crane4j.core.parser.operation.TypeFixedDisassembleOperation;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +38,7 @@ public class SimpleBeanOperationsTest {
     public void putAssembleOperations() {
         Assert.assertTrue(operations.getAssembleOperations().isEmpty());
         AssembleOperation operation = new SimpleAssembleOperation(
-            "key", Integer.MIN_VALUE, Collections.emptySet(), Container.empty(), null
+            "key", Integer.MIN_VALUE, Collections.emptySet(), "empty", null
         );
         operations.addAssembleOperations(operation);
         operations.addAssembleOperations(operation);

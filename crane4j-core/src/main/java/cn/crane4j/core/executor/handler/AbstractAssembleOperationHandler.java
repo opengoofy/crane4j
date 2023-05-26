@@ -133,5 +133,10 @@ public abstract class AbstractAssembleOperationHandler<T extends AbstractAssembl
          * objects to be processed
          */
         protected final Object origin;
+
+        /**
+         * value of key property
+         */
+        private final Object key;
     }
 }

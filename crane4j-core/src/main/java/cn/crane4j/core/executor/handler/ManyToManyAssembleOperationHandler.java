@@ -57,16 +57,16 @@ public class ManyToManyAssembleOperationHandler extends OneToManyAssembleOperati
     }
 
     /**
-     * Create a {@link AssembleOperationTarget} instance.
+     * Create a {@link Target} instance.
      *
      * @param execution execution
      * @param origin    origin
      * @param keyValue  key value
-     * @return {@link AssembleOperationTarget}
+     * @return {@link Target}
      */
     @Override
-    protected AssembleOperationTarget createTarget(AssembleExecution execution, Object origin, Object keyValue) {
-        return new AssembleOperationTarget(execution, origin, keySplitter.apply(keyValue));
+    protected Target createTarget(AssembleExecution execution, Object origin, Object keyValue) {
+        return new Target(execution, origin, keySplitter.apply(keyValue));
     }
 
     /**
@@ -78,9 +78,9 @@ public class ManyToManyAssembleOperationHandler extends OneToManyAssembleOperati
      */
     @SuppressWarnings("unchecked")
     @Override
-    protected Map<Object, Object> getSourcesFromContainer(Container<?> container, Collection<AssembleOperationTarget> targets) {
+    protected Map<Object, Object> getSourcesFromContainer(Container<?> container, Collection<Target> targets) {
         Set<Object> keys = targets.stream()
-            .map(AssembleOperationTarget::getKey)
+            .map(Target::getKey)
             .map(k -> (Collection<?>)k)
             .flatMap(Collection::stream)
             .collect(Collectors.toSet());
@@ -95,7 +95,7 @@ public class ManyToManyAssembleOperationHandler extends OneToManyAssembleOperati
      * @return data source object associated with the target object
      */
     @Override
-    protected Object getTheAssociatedSource(AssembleOperationTarget target, Map<Object, Object> sources) {
+    protected Object getTheAssociatedSource(Target target, Map<Object, Object> sources) {
         return ((Collection<?>)target.getKey()).stream()
             .map(sources::get)
             .filter(Objects::nonNull)

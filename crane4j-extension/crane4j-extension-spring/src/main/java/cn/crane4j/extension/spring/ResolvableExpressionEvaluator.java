@@ -21,7 +21,7 @@ public class ResolvableExpressionEvaluator
     extends MethodBaseExpressionExecuteDelegate implements EmbeddedValueResolverAware {
 
     /**
-     * resolver
+     * handler
      */
     private StringValueResolver resolver;
 
@@ -61,7 +61,7 @@ public class ResolvableExpressionEvaluator
     /**
      * Set the StringValueResolver to use for resolving embedded definition values.
      *
-     * @param resolver resolver
+     * @param resolver handler
      */
     @Override
     public void setEmbeddedValueResolver(StringValueResolver resolver) {

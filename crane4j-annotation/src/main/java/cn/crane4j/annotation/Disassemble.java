@@ -1,6 +1,11 @@
 package cn.crane4j.annotation;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * <p>Declare a disassembly operation.<br />
@@ -38,8 +43,7 @@ import java.lang.annotation.*;
  *
  * @author huangchengxing
  * @see cn.crane4j.core.executor.handler.DisassembleOperationHandler;
- * @see cn.crane4j.core.parser.DisassembleAnnotationResolver;
- * @see cn.crane4j.core.parser.DisassembleOperation;
+ * @see cn.crane4j.core.parser.handler.DisassembleAnnotationHandler
  */
 @Repeatable(value = Disassemble.List.class)
 @Documented
@@ -73,18 +77,11 @@ public @interface Disassemble {
     Class<?> type() default Object.class;
 
     /**
-     * The type of the handler to be used.
-     *
-     * @return type
-     */
-    Class<?> handler() default Object.class;
-
-    /**
      * The name of the handler to be used.
      *
      * @return name
      */
-    String handlerName() default "";
+    String handler() default "ReflectDisassembleOperationHandler";
 
     /**
      * The group to which the current operation belongs.

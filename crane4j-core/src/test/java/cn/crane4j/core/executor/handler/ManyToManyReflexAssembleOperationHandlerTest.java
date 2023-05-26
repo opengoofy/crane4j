@@ -41,7 +41,7 @@ public class ManyToManyReflexAssembleOperationHandlerTest extends BaseExecutorTe
         ManyToManyAssembleOperationHandler handler = new ManyToManyAssembleOperationHandler(operator);
         configuration.getAssembleOperationHandlerMap().put(handler.getClass().getName(), handler);
 
-        executor = new DisorderedBeanOperationExecutor();
+        executor = new DisorderedBeanOperationExecutor(configuration);
 
         Map<String, Map<String, String>> sources = new HashMap<>();
         for (int i = 0; i < 6; i++) {
@@ -89,21 +89,21 @@ public class ManyToManyReflexAssembleOperationHandlerTest extends BaseExecutorTe
     private static class Bean {
         @Assemble(
             container = "test", props = @Mapping(src = "name", ref = "names"),
-            handler = ManyToManyAssembleOperationHandler.class
+            handler = "ManyToManyAssembleOperationHandler"
         )
         private final String ids;
         private List<String> names;
 
         @Assemble(
             container = "test", props = @Mapping(src = "value", ref = "values"),
-            handler = ManyToManyAssembleOperationHandler.class
+            handler = "ManyToManyAssembleOperationHandler"
         )
         private final List<String> keys;
         private Set<String> values;
 
         @Assemble(
             container = "test", props = @Mapping(ref = "items"),
-            handler = ManyToManyAssembleOperationHandler.class
+            handler = "ManyToManyAssembleOperationHandler"
         )
         private final String[] code;
         private List<Object> items;

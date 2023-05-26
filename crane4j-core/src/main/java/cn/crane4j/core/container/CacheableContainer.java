@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  */
 @Getter
 @RequiredArgsConstructor
-public class CacheableContainer<K> implements Container<K> {
+public class CacheableContainer<K> implements Container<K>, Container.Lifecycle {
 
     private final Container<K> container;
     private final CacheManager cacheManager;
@@ -62,5 +62,25 @@ public class CacheableContainer<K> implements Container<K> {
         }
         cachedValues.putAll(noneCachedValues);
         return cachedValues;
+    }
+
+    /**
+     * Initialize the container
+     */
+    @Override
+    public void init() {
+        if (container instanceof Container.Lifecycle) {
+            ((Container.Lifecycle)container).init();
+        }
+    }
+
+    /**
+     * Destroy the container
+     */
+    @Override
+    public void destroy() {
+        if (container instanceof Container.Lifecycle) {
+            ((Container.Lifecycle)container).destroy();
+        }
     }
 }

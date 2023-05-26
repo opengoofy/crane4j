@@ -60,11 +60,12 @@ public class MybatisPlusContainerProvider implements ContainerProvider {
      * @see MybatisPlusQueryContainerRegister#getContainer
      * @see #container
      */
+    @SuppressWarnings("unchecked")
     @Override
-    public Container<?> getContainer(String namespace) {
+    public <K> Container<K> getContainer(String namespace) {
         ExpressionContext context = expressionContextFactory.apply(this);
         try {
-            return evaluator.execute(namespace, Container.class, context);
+            return (Container<K>)evaluator.execute(namespace, Container.class, context);
         } catch (Exception e) {
             throw new Crane4jException(e);
         }

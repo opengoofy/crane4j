@@ -36,7 +36,7 @@ public class MethodResultAutoOperateSupport {
     /**
      * Create a {@link MethodResultAutoOperateSupport} instance
      *
-     * @param elementResolver element resolver
+     * @param elementResolver element handler
      * @param expressionExecuteDelegate method base expression evaluator delegate
      */
     public MethodResultAutoOperateSupport(

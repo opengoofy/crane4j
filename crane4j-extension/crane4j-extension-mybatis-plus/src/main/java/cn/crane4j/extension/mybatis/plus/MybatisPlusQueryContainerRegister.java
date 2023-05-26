@@ -1,6 +1,7 @@
 package cn.crane4j.extension.mybatis.plus;
 
 import cn.crane4j.core.container.Container;
+import cn.crane4j.core.container.ContainerProvider;
 import cn.crane4j.core.container.MethodInvokerContainer;
 import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
@@ -19,10 +20,12 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -32,7 +35,8 @@ import java.util.stream.Collectors;
 /**
  * @author huangchengxing
  */
-public class MybatisPlusQueryContainerRegister extends AbstractQueryContainerCreator<BaseMapper<?>> {
+public class MybatisPlusQueryContainerRegister
+        extends AbstractQueryContainerCreator<BaseMapper<?>> implements ContainerProvider {
 
     protected final Crane4jGlobalConfiguration crane4jGlobalConfiguration;
 
@@ -102,6 +106,18 @@ public class MybatisPlusQueryContainerRegister extends AbstractQueryContainerCre
             .filter(modelClass -> !Object.class.equals(modelClass))
             .findFirst()
             .orElse(null);
+    }
+
+    /**
+     * Get container instance by given namespace
+     *
+     * @param namespace namespace of container
+     * @return container instance
+     */
+    @Nullable
+    @Override
+    public <K> Container<K> getContainer(String namespace) {
+        return null;
     }
 
     /**
@@ -226,5 +242,13 @@ public class MybatisPlusQueryContainerRegister extends AbstractQueryContainerCre
             }
             return wrapper;
         }
+    }
+
+    protected static class FormattableCacheKey extends CacheKey {
+        public FormattableCacheKey(
+                String mapperName, @Nullable String keyProperty, @Nullable List<String> properties) {
+            super(mapperName, keyProperty, properties);
+        }
+
     }
 }

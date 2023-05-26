@@ -44,7 +44,7 @@
 
   <properties>
     <!--revision-->
-    <revision>1.3.0-ALPHA</revision>
+    <revision>1.3.0-BETA</revision>
     <!--build-->
     <java.version>1.8</java.version>
     <server.id>maven-central</server.id>

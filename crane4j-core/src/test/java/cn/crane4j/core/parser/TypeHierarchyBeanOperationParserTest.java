@@ -6,22 +6,20 @@ import cn.crane4j.annotation.Mapping;
 import cn.crane4j.annotation.MappingTemplate;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.LambdaContainer;
-import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
-import cn.crane4j.core.executor.handler.ManyToManyAssembleOperationHandler;
+import cn.crane4j.core.executor.handler.OneToOneAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
-import cn.crane4j.core.support.SimpleAnnotationFinder;
+import cn.crane4j.core.parser.operation.AssembleOperation;
+import cn.crane4j.core.parser.operation.DisassembleOperation;
+import cn.crane4j.core.parser.operation.TypeDynamitedDisassembleOperation;
+import cn.crane4j.core.parser.operation.TypeFixedDisassembleOperation;
+import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.SimpleCrane4jGlobalConfiguration;
-import cn.crane4j.core.support.SimpleTypeResolver;
-import cn.crane4j.core.support.converter.ConverterManager;
-import cn.crane4j.core.support.converter.HutoolConverterManager;
-import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
 import cn.crane4j.core.util.CollectionUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -41,35 +39,15 @@ public class TypeHierarchyBeanOperationParserTest {
     private static final Container<Object> CONTAINER = LambdaContainer.forLambda(CONTAINER_NAME, keys -> Collections.emptyMap());
     private static final int SUB_SORT = Integer.MIN_VALUE;
     private static final int SUP_SORT = Integer.MAX_VALUE;
-    private static final ConverterManager CONVERTER_MANAGER = new HutoolConverterManager();
-    private static final AssembleOperationHandler ASSEMBLE_OPERATION_HANDLER = new ManyToManyAssembleOperationHandler(
-        new ReflectPropertyOperator(CONVERTER_MANAGER)
-    );
-    private static final DisassembleOperationHandler DISASSEMBLE_OPERATION_HANDLER = new ReflectDisassembleOperationHandler(
-        new ReflectPropertyOperator(CONVERTER_MANAGER)
-    );
 
     private BeanOperationParser parser;
+    private Crane4jGlobalConfiguration configuration;
 
     @Before
     public void init() {
-        SimpleCrane4jGlobalConfiguration configuration = new SimpleCrane4jGlobalConfiguration();
-        parser = new TypeHierarchyBeanOperationParser(Arrays.asList(
-            new AssembleAnnotationResolver(new SimpleAnnotationFinder(), configuration).setLazyLoadAssembleContainer(false),
-            new DisassembleAnnotationResolver(new SimpleAnnotationFinder(), configuration),
-            new AssembleEnumAnnotationResolver(new SimpleAnnotationFinder(), configuration, configuration.getPropertyOperator(), configuration)
-        ));
-        configuration.setTypeResolver(new SimpleTypeResolver());
+        configuration = SimpleCrane4jGlobalConfiguration.create();
         configuration.registerContainer(CONTAINER);
-
-        configuration.getBeanOperationParserMap().put(parser.getClass().getName(), parser);
-        configuration.getBeanOperationParserMap().put(BeanOperationParser.class.getName(), parser);
-
-        configuration.getAssembleOperationHandlerMap().put(ASSEMBLE_OPERATION_HANDLER.getClass().getName(), ASSEMBLE_OPERATION_HANDLER);
-        configuration.getAssembleOperationHandlerMap().put(AssembleOperationHandler.class.getName(), ASSEMBLE_OPERATION_HANDLER);
-
-        configuration.getDisassembleOperationHandlerMap().put(DISASSEMBLE_OPERATION_HANDLER.getClass().getName(), DISASSEMBLE_OPERATION_HANDLER);
-        configuration.getDisassembleOperationHandlerMap().put(DisassembleOperationHandler.class.getName(), DISASSEMBLE_OPERATION_HANDLER);
+        parser = configuration.getBeanOperationsParser(BeanOperationParser.class.getSimpleName());
     }
 
     @Test
@@ -93,7 +71,7 @@ public class TypeHierarchyBeanOperationParserTest {
         Assert.assertEquals("nestedBean", nestedBean.getKey());
         Assert.assertEquals(Bean.class, nestedBean.getSourceType());
         checkGroups(nestedBean.getGroups(), GROUP);
-        Assert.assertEquals(DISASSEMBLE_OPERATION_HANDLER, nestedBean.getDisassembleOperationHandler());
+        Assert.assertEquals(configuration.getDisassembleOperationHandler(ReflectDisassembleOperationHandler.class.getSimpleName()), nestedBean.getDisassembleOperationHandler());
 
         // 获取NestedBean操作配置
         BeanOperations nestedBeanOperations = nestedBean.getInternalBeanOperations(null);
@@ -128,7 +106,7 @@ public class TypeHierarchyBeanOperationParserTest {
         Assert.assertEquals("bean", bean.getKey());
         Assert.assertEquals(NestedBean.class, bean.getSourceType());
         checkGroups(bean.getGroups(), GROUP);
-        Assert.assertEquals(DISASSEMBLE_OPERATION_HANDLER, bean.getDisassembleOperationHandler());
+        Assert.assertEquals(configuration.getDisassembleOperationHandler(ReflectDisassembleOperationHandler.class.getSimpleName()), bean.getDisassembleOperationHandler());
         Assert.assertSame(beanOperations, bean.getInternalBeanOperations(null));
 
         // disassemble: dynamicBean
@@ -137,7 +115,7 @@ public class TypeHierarchyBeanOperationParserTest {
         Assert.assertEquals("dynamicBean", dynamicBean.getKey());
         Assert.assertEquals(NestedBean.class, dynamicBean.getSourceType());
         checkGroups(dynamicBean.getGroups(), GROUP);
-        Assert.assertEquals(DISASSEMBLE_OPERATION_HANDLER, dynamicBean.getDisassembleOperationHandler());
+        Assert.assertEquals(configuration.getDisassembleOperationHandler(DisassembleOperationHandler.class.getSimpleName()), dynamicBean.getDisassembleOperationHandler());
 
         // 运行时再解析类型
         Assert.assertSame(beanOperations, dynamicBean.getInternalBeanOperations(new Bean()));
@@ -147,8 +125,8 @@ public class TypeHierarchyBeanOperationParserTest {
     private void checkAssembleOperation(AssembleOperation assembleOperation, String id, int supSort) {
         Assert.assertNotNull(assembleOperation);
         Assert.assertEquals(id, assembleOperation.getKey());
-        Assert.assertSame(ASSEMBLE_OPERATION_HANDLER, assembleOperation.getAssembleOperationHandler());
-        Assert.assertSame(CONTAINER, assembleOperation.getContainer());
+        Assert.assertSame(configuration.getAssembleOperationHandler(OneToOneAssembleOperationHandler.class.getSimpleName()), assembleOperation.getAssembleOperationHandler());
+        Assert.assertEquals(CONTAINER.getNamespace(), assembleOperation.getContainer());
         Assert.assertEquals(supSort, assembleOperation.getSort());
         checkGroups(assembleOperation.getGroups(), GROUP);
         checkPropertyMappings(assembleOperation.getPropertyMappings(), "name", "name");

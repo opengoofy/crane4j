@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * test for {@link EmptyBeanOperations}
+ * test for {@link BeanOperations.EmptyBeanOperations}
  *
  * @author huangchengxing
  */

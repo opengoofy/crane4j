@@ -1,8 +1,10 @@
 package cn.crane4j.core.executor;
 
+import cn.crane4j.core.container.Container;
+import cn.crane4j.core.container.ContainerManager;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.parser.BeanOperations;
-import cn.crane4j.core.parser.KeyTriggerOperation;
+import cn.crane4j.core.parser.operation.KeyTriggerOperation;
 
 import java.util.Collection;
 import java.util.function.Predicate;
@@ -22,13 +24,24 @@ import java.util.function.Predicate;
 public interface BeanOperationExecutor {
 
     /**
+     * Complete operations on all objects in {@code targets} according to the specified {@link BeanOperations} and {@link Options}.
+     *
+     * @param targets targets
+     * @param operations operations to be performed
+     * @param options options for execution
+     */
+    void execute(Collection<?> targets, BeanOperations operations, Options options);
+
+    /**
      * Complete operations on all objects in {@code targets} according to the specified {@link BeanOperations}
      *
      * @param targets targets
      * @param operations operations to be performed
      * @param filter operation filter, which can filter some operations based on operation key, group and other attributes
      */
-    void execute(Collection<?> targets, BeanOperations operations, Predicate<? super KeyTriggerOperation> filter);
+    default void execute(Collection<?> targets, BeanOperations operations, Predicate<? super KeyTriggerOperation> filter) {
+        execute(targets, operations, () -> filter);
+    }
 
     /**
      * Complete operations on all objects in {@code targets} according to the specified {@link BeanOperations}
@@ -38,5 +51,31 @@ public interface BeanOperationExecutor {
      */
     default void execute(Collection<?> targets, BeanOperations operations) {
         execute(targets, operations, t -> true);
+    }
+
+    /**
+     * Options for execution.
+     *
+     * @author huangchengxing
+     */
+    interface Options {
+
+        /**
+         * Get the container manager.
+         *
+         * @return container manager
+         */
+        Predicate<? super KeyTriggerOperation> getFilter();
+
+        /**
+         * Get container.
+         *
+         * @param containerManager container manager
+         * @param namespace namespace of container
+         * @return container instance
+         */
+        default Container<?> getContainer(ContainerManager containerManager, String namespace) {
+            return containerManager.getContainer(namespace);
+        }
     }
 }

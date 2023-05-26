@@ -2,9 +2,10 @@ package cn.crane4j.core.executor;
 
 import cn.crane4j.annotation.Assemble;
 import cn.crane4j.annotation.Disassemble;
-import cn.crane4j.core.parser.AssembleOperation;
+import cn.crane4j.core.container.ContainerManager;
 import cn.crane4j.core.parser.BeanOperations;
-import cn.crane4j.core.parser.KeyTriggerOperation;
+import cn.crane4j.core.parser.operation.AssembleOperation;
+import cn.crane4j.core.parser.operation.KeyTriggerOperation;
 import cn.crane4j.core.util.CollectionUtils;
 import lombok.Data;
 import lombok.Getter;
@@ -30,7 +31,7 @@ public class AbstractBeanOperationExecutorTest extends BaseExecutorTest {
 
     @Before
     public void init() {
-        executor = new TestExecutor();
+        executor = new TestExecutor(configuration);
     }
 
     @Test
@@ -89,8 +90,12 @@ public class AbstractBeanOperationExecutorTest extends BaseExecutorTest {
     @Getter
     private static class TestExecutor extends AbstractBeanOperationExecutor {
         private List<AssembleExecution> executions;
+        public TestExecutor(ContainerManager containerManager) {
+            super(containerManager);
+        }
+
         @Override
-        protected void executeOperations(List<AssembleExecution> executions) {
+        protected void executeOperations(List<AssembleExecution> executions, Options options) {
             this.executions = executions;
         }
     }
