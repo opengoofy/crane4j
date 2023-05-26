@@ -30,7 +30,7 @@ public class DisorderedBeanOperationExecutorTest extends BaseExecutorTest {
 
     @Before
     public void init() {
-        executor = new DisorderedBeanOperationExecutor();
+        executor = new DisorderedBeanOperationExecutor(configuration);
 
         Map<Integer, Object> sources = new HashMap<>();
         sources.put(1, new Source(1, "one"));

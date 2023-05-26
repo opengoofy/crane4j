@@ -1,7 +1,7 @@
 package cn.crane4j.core.executor;
 
 /**
- * test for {@link SimpleAssembleExecution}
+ * test for {@link AssembleExecution.SimpleAssembleExecution}
  *
  * @author huangchengxing
  */

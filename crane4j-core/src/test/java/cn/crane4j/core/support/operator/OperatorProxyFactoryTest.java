@@ -33,7 +33,7 @@ public class OperatorProxyFactoryTest {
 
     @Before
     public void init() {
-        Crane4jGlobalConfiguration globalConfiguration = SimpleCrane4jGlobalConfiguration.create(Collections.emptyMap());
+        Crane4jGlobalConfiguration globalConfiguration = SimpleCrane4jGlobalConfiguration.create();
         AnnotationFinder annotationFinder = new SimpleAnnotationFinder();
         this.operatorProxyFactory = new OperatorProxyFactory(globalConfiguration, annotationFinder, Collections.singletonList(new DefaultProxyMethodFactory(new SimpleConverterManager())));
 

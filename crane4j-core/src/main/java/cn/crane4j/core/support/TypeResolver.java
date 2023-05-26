@@ -3,7 +3,7 @@ package cn.crane4j.core.support;
 import javax.annotation.Nullable;
 
 /**
- * A resolver that infers the type of object.
+ * A handler that infers the type of object.
  *
  * @author huangchengxing
  * @see SimpleTypeResolver

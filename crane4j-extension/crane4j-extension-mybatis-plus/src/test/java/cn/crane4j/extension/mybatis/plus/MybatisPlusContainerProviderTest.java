@@ -16,8 +16,6 @@ import cn.crane4j.core.util.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.Collections;
-
 /**
  * test for {@link MybatisPlusContainerProvider}.
  *
@@ -29,7 +27,7 @@ public class MybatisPlusContainerProviderTest extends MpBaseTest {
 
     @Override
     public void afterInit() {
-        Crane4jGlobalConfiguration crane4jGlobalConfiguration = SimpleCrane4jGlobalConfiguration.create(Collections.emptyMap());
+        Crane4jGlobalConfiguration crane4jGlobalConfiguration = SimpleCrane4jGlobalConfiguration.create();
         ConverterManager converterManager = new HutoolConverterManager();
         MybatisPlusQueryContainerRegister register = new MybatisPlusQueryContainerRegister(
             new MethodInvokerContainerCreator(new ReflectPropertyOperator(converterManager), converterManager), crane4jGlobalConfiguration

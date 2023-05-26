@@ -15,8 +15,6 @@ import java.util.Map;
 public class EmptyContainer implements Container<Object> {
 
     public static final EmptyContainer INSTANCE = new EmptyContainer();
-    public static final String NAMESPACE = "";
-
     /**
      * Gets the namespace of the data source container,
      * The value always defaults to an empty string
@@ -25,7 +23,7 @@ public class EmptyContainer implements Container<Object> {
      */
     @Override
     public String getNamespace() {
-        return NAMESPACE;
+        return EMPTY_CONTAINER_NAMESPACE;
     }
 
     /**

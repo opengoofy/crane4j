@@ -9,6 +9,8 @@ import java.lang.annotation.Target;
 
 /**
  * @author huangchengxing
+ * @see cn.crane4j.core.executor.handler.AssembleOperationHandler;
+ * @see cn.crane4j.core.parser.handler.AssembleEnumAnnotationHandler;
  */
 @Repeatable(value = AssembleEnum.List.class)
 @Documented
@@ -76,14 +78,7 @@ public @interface AssembleEnum {
      *
      * @return name
      */
-    String handlerName() default "";
-
-    /**
-     * The type of the handler to be used.
-     *
-     * @return type
-     */
-    Class<?> handler() default Object.class;
+    String handler() default "OneToOneAssembleOperationHandler";
 
     /**
      * Attributes that need to be mapped

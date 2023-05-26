@@ -2,8 +2,10 @@ package cn.crane4j.core.executor;
 
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
-import cn.crane4j.core.parser.AssembleOperation;
 import cn.crane4j.core.parser.BeanOperations;
+import cn.crane4j.core.parser.operation.AssembleOperation;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.lang.reflect.AnnotatedElement;
 import java.util.Collection;
@@ -11,7 +13,7 @@ import java.util.Collection;
 /**
  * <p>Indicates that an assembly operation is executed at one time,
  * including all objects that need to perform this operation,
- * and the processor used for execution.
+ * and the lifecycle used for execution.
  *
  * <p>This object is usually one-time.
  * It is created at one execution of {@link BeanOperationExecutor}
@@ -22,6 +24,20 @@ import java.util.Collection;
  * @see AssembleOperationHandler
  */
 public interface AssembleExecution {
+
+    /**
+     * Create an instance of {@link AssembleExecution}.
+     *
+     * @param beanOperations bean operations
+     * @param operation      operation
+     * @param container      container
+     * @param targets        targets
+     * @return execution instance
+     */
+    static AssembleExecution create(
+            BeanOperations beanOperations, AssembleOperation operation, Container<?> container, Collection<Object> targets) {
+        return new SimpleAssembleExecution(beanOperations, operation, container, targets);
+    }
 
     /**
      * Get the operation configuration corresponding to the operation object.
@@ -51,9 +67,7 @@ public interface AssembleExecution {
      *
      * @return container
      */
-    default Container<?> getContainer() {
-        return getOperation().getContainer();
-    }
+    Container<?> getContainer();
 
     /**
      * Gets the handler used to perform the assembly operation.
@@ -70,4 +84,18 @@ public interface AssembleExecution {
      * @return target
      */
     Collection<Object> getTargets();
+
+    /**
+     * Simple implementation of {@link AssembleExecution}.
+     *
+     * @author huangchengxing
+     */
+    @Getter
+    @RequiredArgsConstructor
+    class SimpleAssembleExecution implements AssembleExecution {
+        private final BeanOperations beanOperations;
+        private final AssembleOperation operation;
+        private final Container<?> container;
+        private final Collection<Object> targets;
+    }
 }

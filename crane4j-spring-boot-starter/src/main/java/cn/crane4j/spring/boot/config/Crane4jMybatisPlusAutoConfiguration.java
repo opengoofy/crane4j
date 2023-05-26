@@ -5,7 +5,7 @@ import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.container.MethodInvokerContainerCreator;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
-import cn.crane4j.extension.mybatis.plus.AssembleMpAnnotationResolver;
+import cn.crane4j.extension.mybatis.plus.AssembleMpAnnotationHandler;
 import cn.crane4j.extension.mybatis.plus.LazyLoadMybatisPlusQueryContainerRegister;
 import cn.crane4j.extension.mybatis.plus.MybatisPlusContainerProvider;
 import cn.crane4j.extension.mybatis.plus.MybatisPlusQueryContainerRegister;
@@ -59,14 +59,12 @@ public class Crane4jMybatisPlusAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public AssembleMpAnnotationResolver assembleMpAnnotationResolver(
+    public AssembleMpAnnotationHandler assembleMpAnnotationResolver(
         AnnotationFinder annotationFinder, MybatisPlusQueryContainerRegister mybatisPlusQueryContainerRegister,
         Crane4jGlobalConfiguration globalConfiguration, Crane4jAutoConfiguration.Properties properties) {
-        AssembleMpAnnotationResolver resolver = new AssembleMpAnnotationResolver(
+        return new AssembleMpAnnotationHandler(
             annotationFinder, mybatisPlusQueryContainerRegister, globalConfiguration
         );
-        resolver.setLazyLoadAssembleContainer(properties.isLazyLoadAssembleContainer());
-        return resolver;
     }
 
     @Bean

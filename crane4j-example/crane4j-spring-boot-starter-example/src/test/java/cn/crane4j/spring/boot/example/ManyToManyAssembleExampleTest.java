@@ -72,7 +72,7 @@ public class ManyToManyAssembleExampleTest {
         @Assemble(
             container = "foo",
             props = @Mapping(src = "name", ref = "names"),
-            handlerName = "manyToManyReflexAssembleOperationHandler"
+            handler = "manyToManyReflexAssembleOperationHandler"
         )
         private final List<Integer> ids;
         private List<String> names;

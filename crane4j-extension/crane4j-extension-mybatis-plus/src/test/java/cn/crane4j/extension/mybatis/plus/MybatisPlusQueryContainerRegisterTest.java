@@ -16,7 +16,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +30,7 @@ public class MybatisPlusQueryContainerRegisterTest extends MpBaseTest {
 
     @Override
     public void afterInit() {
-        Crane4jGlobalConfiguration crane4jGlobalConfiguration = SimpleCrane4jGlobalConfiguration.create(Collections.emptyMap());
+        Crane4jGlobalConfiguration crane4jGlobalConfiguration = SimpleCrane4jGlobalConfiguration.create();
         ConverterManager converterManager = new HutoolConverterManager();
         mybatisPlusQueryContainerRegister = new LazyLoadMybatisPlusQueryContainerRegister(
             new MethodInvokerContainerCreator(new ReflectPropertyOperator(converterManager), converterManager),

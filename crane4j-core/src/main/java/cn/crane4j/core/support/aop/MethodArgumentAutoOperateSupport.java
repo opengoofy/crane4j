@@ -54,7 +54,7 @@ public class MethodArgumentAutoOperateSupport {
     /**
      * Create a {@link MethodArgumentAutoOperateSupport} instance.
      *
-     * @param elementResolver element resolver
+     * @param elementResolver element handler
      * @param expressionExecuteDelegate expression evaluator delegate
      * @param parameterNameFinder parameter name finder
      * @param annotationFinder annotation finder

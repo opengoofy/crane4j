@@ -4,10 +4,10 @@ import cn.crane4j.annotation.AssembleMp;
 import cn.crane4j.annotation.Mapping;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.MethodInvokerContainer;
-import cn.crane4j.core.parser.AssembleOperation;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.SimpleBeanOperations;
+import cn.crane4j.core.parser.operation.AssembleOperation;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.SimpleAnnotationFinder;
@@ -22,30 +22,28 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collection;
-import java.util.Collections;
 
 /**
- * test for {@link AssembleMpAnnotationResolver}
+ * test for {@link AssembleMpAnnotationHandler}
  *
  * @author huangchengxing
  */
 public class AssembleMpAnnotationResolverTest extends MpBaseTest {
 
-    private AssembleMpAnnotationResolver operationsResolver;
+    private AssembleMpAnnotationHandler operationsResolver;
     private BeanOperationParser beanOperationParser;
 
     @Before
     public void afterInit() {
         AnnotationFinder annotationFinder = new SimpleAnnotationFinder();
-        Crane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create(Collections.emptyMap());
-        beanOperationParser = configuration.getBeanOperationsParser(BeanOperationParser.class);
+        Crane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create();
+        beanOperationParser = configuration.getBeanOperationsParser(BeanOperationParser.class.getSimpleName());
         ConverterManager converterManager = new HutoolConverterManager();
         MybatisPlusQueryContainerRegister register = new MybatisPlusQueryContainerRegister(
             new MethodInvokerContainerCreator(new ReflectPropertyOperator(new HutoolConverterManager()), converterManager), configuration
         );
         register.registerRepository("fooMapper", fooMapper);
-        operationsResolver = new AssembleMpAnnotationResolver(annotationFinder, register, configuration);
-        operationsResolver.setLazyLoadAssembleContainer(false);
+        operationsResolver = new AssembleMpAnnotationHandler(annotationFinder, register, configuration);
     }
 
     @Test

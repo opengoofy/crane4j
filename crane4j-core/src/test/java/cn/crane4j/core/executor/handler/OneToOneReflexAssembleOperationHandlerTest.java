@@ -38,7 +38,7 @@ public class OneToOneReflexAssembleOperationHandlerTest extends BaseExecutorTest
         PropertyOperator operator = new ReflectPropertyOperator(new HutoolConverterManager());
         OneToOneAssembleOperationHandler handler = new OneToOneAssembleOperationHandler(operator);
         configuration.getAssembleOperationHandlerMap().put(handler.getClass().getName(), handler);
-        executor = new DisorderedBeanOperationExecutor();
+        executor = new DisorderedBeanOperationExecutor(configuration);
         Container<Integer> container = LambdaContainer.forLambda(
             "test", ids -> ids.stream().filter(id -> id != 0).collect(Collectors.toMap(
                 Function.identity(), id -> new Bean(id, "name" + id)
@@ -64,7 +64,7 @@ public class OneToOneReflexAssembleOperationHandlerTest extends BaseExecutorTest
     private static class Bean {
         @Assemble(
             container = "test", props = @Mapping(src = "name", ref = "name"),
-            handler = OneToOneAssembleOperationHandler.class
+            handler = "OneToOneAssembleOperationHandler"
         )
         private final Integer id;
         private String name;

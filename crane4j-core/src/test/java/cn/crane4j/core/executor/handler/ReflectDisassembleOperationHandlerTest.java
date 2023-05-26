@@ -4,7 +4,7 @@ import cn.crane4j.annotation.Disassemble;
 import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.executor.BaseExecutorTest;
 import cn.crane4j.core.parser.BeanOperations;
-import cn.crane4j.core.parser.DisassembleOperation;
+import cn.crane4j.core.parser.operation.DisassembleOperation;
 import cn.crane4j.core.support.converter.HutoolConverterManager;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
 import cn.crane4j.core.util.CollectionUtils;

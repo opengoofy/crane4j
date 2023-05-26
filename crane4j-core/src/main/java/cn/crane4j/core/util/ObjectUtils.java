@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * Common object utils.
@@ -126,5 +127,31 @@ public class ObjectUtils {
      */
     public static boolean isNotEmpty(Object target) {
         return !isEmpty(target);
+    }
+
+    /**
+     * Create after double check.
+     *
+     * @param monitor sync monitor
+     * @param cache get for cache
+     * @param creation actual create target
+     * @return the cache obtained through {@code cache}, or a new instance created through {@code creation}
+     */
+    @SuppressWarnings("all")
+    public static <T> T doubleCheck(Object monitor, Supplier<T> cache, Supplier<T> creation) {
+        Objects.requireNonNull(monitor);
+        Objects.requireNonNull(cache);
+        Objects.requireNonNull(creation);
+        T target = cache.get();
+        if (Objects.nonNull(target)) {
+            return target;
+        }
+        synchronized (monitor) {
+            if ((target = cache.get()) != null) {
+                return target;
+            }
+            target = creation.get();
+        }
+        return target;
     }
 }

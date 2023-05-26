@@ -11,7 +11,8 @@ import java.lang.annotation.Target;
  * Declare an assembly operation using the mybatis plus default interface method as the data source.
  *
  * @author huangchengxing
- * @see cn.crane4j.extension.mybatis.plus.AssembleMpAnnotationResolver
+ * @see cn.crane4j.core.parser.handler.OperationAnnotationHandler
+ * @see cn.crane4j.extension.mybatis.plus.AssembleMpAnnotationHandler
  * @since 1.2.0
  */
 @Repeatable(value = AssembleMp.List.class)
@@ -63,14 +64,7 @@ public @interface AssembleMp {
      *
      * @return name
      */
-    String handlerName() default "";
-
-    /**
-     * The type of the handler to be used.
-     *
-     * @return type
-     */
-    Class<?> handler() default Object.class;
+    String handler() default "OneToOneAssembleOperationHandler";
 
     /**
      * Attributes that need to be mapped

@@ -3,7 +3,7 @@ package cn.crane4j.core.support.aop;
 import cn.crane4j.annotation.AutoOperate;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.parser.BeanOperations;
-import cn.crane4j.core.parser.KeyTriggerOperation;
+import cn.crane4j.core.parser.operation.KeyTriggerOperation;
 import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.util.CollectionUtils;
 import lombok.Getter;

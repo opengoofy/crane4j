@@ -1,8 +1,8 @@
 package cn.crane4j.spring.boot.config.mp;
 
 import cn.crane4j.core.parser.BeanOperationParser;
-import cn.crane4j.core.parser.OperationAnnotationResolver;
 import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
+import cn.crane4j.core.parser.handler.OperationAnnotationHandler;
 import cn.crane4j.core.support.container.AbstractQueryContainerCreator;
 import cn.crane4j.core.util.ReflectUtils;
 import cn.crane4j.extension.mybatis.plus.MybatisPlusQueryContainerRegister;
@@ -43,8 +43,8 @@ public class BaseMapperAutoRegistrarTest {
     @Test
     public void test() {
         if (beanOperationParser instanceof TypeHierarchyBeanOperationParser) {
-            Set<OperationAnnotationResolver> resolvers = ReflectUtils.getFieldValue(beanOperationParser, "operationAnnotationResolvers");
-            Assert.assertEquals(resolvers.size(), applicationContext.getBeanNamesForType(OperationAnnotationResolver.class).length);
+            Set<OperationAnnotationHandler> resolvers = ReflectUtils.getFieldValue(beanOperationParser, "operationAnnotationHandlers");
+            Assert.assertEquals(resolvers.size(), applicationContext.getBeanNamesForType(OperationAnnotationHandler.class).length);
         }
 
         Map<String, AbstractQueryContainerCreator.Repository<BaseMapper<?>>> mapperInfoMap = containerRegister.getRegisterRepositories();

@@ -76,8 +76,7 @@ import java.lang.annotation.Target;
  *
  * @author huangchengxing
  * @see cn.crane4j.core.executor.handler.AssembleOperationHandler;
- * @see cn.crane4j.core.parser.AssembleAnnotationResolver;
- * @see cn.crane4j.core.parser.AssembleOperation;
+ * @see cn.crane4j.core.parser.handler.AssembleAnnotationHandler;
  */
 @Repeatable(value = Assemble.List.class)
 @Documented
@@ -112,32 +111,18 @@ public @interface Assemble {
     String container() default "";
 
     /**
-     * The type of the container provider to be used.
-     *
-     * @return container factory type
-     */
-    Class<?> containerProvider() default Object.class;
-
-    /**
      * The name of the container provider to be used.
      *
      * @return container factory name
      */
-    String containerProviderName() default "";
+    String containerProvider() default "";
 
     /**
      * The name of the handler to be used.
      *
      * @return name
      */
-    String handlerName() default "";
-
-    /**
-     * The type of the handler to be used.
-     *
-     * @return type
-     */
-    Class<?> handler() default Object.class;
+    String handler() default "OneToOneAssembleOperationHandler";
 
     /**
      * Attributes that need to be mapped

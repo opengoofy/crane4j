@@ -1,6 +1,6 @@
 package cn.crane4j.core.container;
 
-import cn.crane4j.core.support.callback.ContainerRegisterAware;
+import cn.crane4j.core.container.lifecycle.ContainerLifecycleProcessor;
 
 import java.util.Collection;
 import java.util.Map;
@@ -11,16 +11,41 @@ import java.util.Map;
  * Any Map set object method that can accept the key value set
  * and return grouping by key value can be used as a data source.
  *
- * <p>Containers are typically created and initialized at application startup,
- * and then manually or automatically registered to the specified {@link ContainerProvider}
- * (this stage will trigger a callback for {@link ContainerRegisterAware}).
- * Once everything is ready, containers can be retrieved from
- * the cache through {@link ContainerProvider#getContainer}.
+ * <p><strong>Lifecycle</strong>
+ * <p>All container instances support registering callback functions
+ * during specific stages of their lifecycle, including:
+ * <ul>
+ *     <li>
+ *         <em>When registered</em>: when the container is registered
+ *         as a {@link ContainerDefinition} instance to the {@link ContainerManager};
+ *     </li>
+ *     <li>
+ *         <em>When created</em>: when the container transitions from a {@link ContainerDefinition} to an actual instance;
+ *     </li>
+ *     <li>
+ *         <em>When destroyed</em>: when the container instance is destroyed,
+ *         this behavior may not affect the corresponding {@link ContainerDefinition};
+ *     </li>
+ * </ul>
+ * By extending the {@link ContainerLifecycleProcessor}(for all container)
+ * or implementing {@link Lifecycle}(for specified container class),
+ * users can perceive these specific stages and perform modifications and replacement operations on the container.
+ *
+ * <p><strong>Manger</strong>
+ * <p>Containers are typically not used directly in specific operations,
+ * but rather managed by a designated {@link ContainerManager} that handles the creation,
+ * usage, and destruction process.<br />
+ * This allows the associated {@link ContainerLifecycleProcessor} to fully handle the container's lifecycle.
+ * <p>When delegating the container to the manager,
+ * you have the option to directly register an instance or a factory method used to create the instance with the manager.
+ * Alternatively, you can register a {@link ContainerProvider},
+ * allowing the container to automatically complete the registration logic when necessary,
+ * similar to the internal BeanFactory in Spring, where beans are created using FactoryBean.
  *
  * @author huangchengxing
  * @param <K> key type
- * @see ContainerRegisterAware
- * @see ContainerProvider
+ * @see ContainerManager
+ * @see ContainerLifecycleProcessor
  * @see ConstantContainer
  * @see LambdaContainer
  * @see MethodInvokerContainer
@@ -28,6 +53,14 @@ import java.util.Map;
  * @see CacheableContainer
  */
 public interface Container<K> {
+
+    /**
+     * <p>Namespace of empty container.
+     *
+     * @see #empty()
+     * @see EmptyContainer
+     */
+    String EMPTY_CONTAINER_NAMESPACE = "";
 
     /**
      * <p>Get an empty data source container.<br />
@@ -57,4 +90,24 @@ public interface Container<K> {
      * @return data source objects grouped by key value
      */
     Map<K, ?> get(Collection<K> keys);
+
+    /**
+     * Simple lifecycle callback of container
+     */
+    interface Lifecycle {
+
+        /**
+         * Callback when container created.
+         */
+        default void init() {
+            // do nothing
+        }
+
+        /**
+         * Callback when container destroyed.
+         */
+        default void destroy() {
+            // do nothing
+        }
+    }
 }

@@ -2,12 +2,13 @@ package cn.crane4j.extension.spring;
 
 import cn.crane4j.core.container.ConstantContainer;
 import cn.crane4j.core.container.Container;
+import cn.crane4j.core.container.ContainerDefinition;
 import cn.crane4j.core.container.LambdaContainer;
-import cn.crane4j.core.executor.BeanOperationExecutor;
-import cn.crane4j.core.executor.handler.AssembleOperationHandler;
-import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
-import cn.crane4j.core.parser.BeanOperationParser;
-import cn.crane4j.core.support.callback.ContainerRegisterAware;
+import cn.crane4j.core.container.lifecycle.ContainerLifecycleProcessor;
+import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
+import cn.crane4j.core.executor.handler.OneToOneAssembleOperationHandler;
+import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
+import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
 import cn.crane4j.core.util.ReflectUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -36,25 +37,20 @@ public class Crane4jApplicationContextTest {
     public void test() {
         Assert.assertNotNull(context.getTypeResolver());
         Assert.assertNotNull(context.getPropertyOperator());
-        Assert.assertNotNull(context.getBeanOperationsParser(BeanOperationParser.class));
-        Assert.assertNotNull(context.getBeanOperationsParser("typeHierarchyBeanOperationParser"));
-        Assert.assertNotNull(context.getBeanOperationExecutor(BeanOperationExecutor.class));
-        Assert.assertNotNull(context.getBeanOperationExecutor("disorderedBeanOperationExecutor"));
-        Assert.assertNotNull(context.getAssembleOperationHandler(AssembleOperationHandler.class));
-        Assert.assertNotNull(context.getAssembleOperationHandler("oneToOneReflexAssembleOperationHandler"));
-        Assert.assertNotNull(context.getDisassembleOperationHandler(DisassembleOperationHandler.class));
-        Assert.assertNotNull(context.getDisassembleOperationHandler("reflectDisassembleOperationHandler"));
+        Assert.assertNotNull(context.getBeanOperationsParser(TypeHierarchyBeanOperationParser.class.getSimpleName()));
+        Assert.assertNotNull(context.getBeanOperationExecutor(DisorderedBeanOperationExecutor.class.getSimpleName()));
+        Assert.assertNotNull(context.getAssembleOperationHandler(OneToOneAssembleOperationHandler.class.getSimpleName()));
+        Assert.assertNotNull(context.getDisassembleOperationHandler(ReflectDisassembleOperationHandler.class.getSimpleName()));
         Assert.assertNotNull(context.getContainer("test"));
         Assert.assertNotNull(context.getContainer("testBean"));
 
-        int size = context.getContainerRegisterAwareList().size();
-        ContainerRegisterAware aware = new ContainerRegisterAware() { };
-        context.addContainerRegisterAware(aware);
-        Assert.assertEquals(size + 1, context.getContainerRegisterAwareList().size());
-        context.addContainerRegisterAware(aware);
-        Assert.assertEquals(size + 1, context.getContainerRegisterAwareList().size());
+        int size = context.getContainerLifecycleProcessors().size();
+        ContainerLifecycleProcessor processor = new ContainerLifecycleProcessor() { };
+        context.registerContainerLifecycleProcessor(processor);
+        Assert.assertEquals(size + 1, context.getContainerLifecycleProcessors().size());
+        context.registerContainerLifecycleProcessor(processor);
+        Assert.assertEquals(size + 2, context.getContainerLifecycleProcessors().size());
 
-        @SuppressWarnings("unchecked")
         Map<String, Container<?>> containerMap = ReflectUtils.getFieldValue(context, "containerMap");
         Assert.assertFalse(containerMap.isEmpty());
         context.destroy();
@@ -62,27 +58,15 @@ public class Crane4jApplicationContextTest {
     }
 
     @Test
-    public void containsContainer() {
-        Assert.assertTrue(context.containsContainer("test"));
-        Assert.assertFalse(context.containsContainer("no registered"));
-    }
-
-    @Test
     public void replaceContainer() {
-        Assert.assertFalse(context.containsContainer("no registered"));
-        Container<?> container1 = context.compute("no registered", container -> {
-            Assert.assertNull(container);
-            return LambdaContainer.forLambda("no registered", ids -> Collections.emptyMap());
-        });
-        Assert.assertNull(container1);
-        Assert.assertTrue(context.containsContainer("no registered"));
+        ContainerDefinition definition1 = context.registerContainer(LambdaContainer.forLambda("replaceContainer", ids -> Collections.emptyMap()));
+        Assert.assertNotNull(definition1);
+        Container<Object> container1 = context.getContainer("replaceContainer");
+        Assert.assertSame(container1, context.getContainer("replaceContainer"));
 
-        Container<?> container2 = context.compute("no registered", container -> {
-            Assert.assertNotNull(container);
-            return null;
-        });
-        Assert.assertNotNull(container2);
-        Assert.assertFalse(context.containsContainer("no registered"));
+        ContainerDefinition container2 = context.registerContainer(LambdaContainer.forLambda("replaceContainer", ids -> Collections.emptyMap()));
+        Assert.assertNotSame(definition1, container2);
+        Assert.assertNotSame(container1, context.getContainer("replaceContainer"));
     }
 
     protected static class TestConfig {

@@ -11,10 +11,17 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -85,11 +92,24 @@ public abstract class AbstractQueryContainerCreator<T> {
      * @return container
      */
     public Container<?> getContainer(String name, @Nullable String keyProperty, @Nullable List<String> properties) {
-        CacheKey cacheKey = new CacheKey(
-            name, StringUtils.emptyToNull(keyProperty),
-            CollectionUtils.defaultIfEmpty(properties, Collections.emptyList())
-        );
+        CacheKey cacheKey = getCacheKey(name, keyProperty, properties);
         return CollectionUtils.computeIfAbsent(containerCaches, cacheKey, this::createContainer);
+    }
+
+    /**
+     * <p>Get container cache key.
+     *
+     * @param name mapper name
+     * @param keyProperty key field name for query
+     * @param properties fields to query
+     * @return cache key
+     */
+    @NonNull
+    protected CacheKey getCacheKey(String name, @Nullable String keyProperty, @Nullable List<String> properties) {
+        return new CacheKey(
+                name, StringUtils.emptyToNull(keyProperty),
+                CollectionUtils.defaultIfEmpty(properties, Collections.emptyList())
+        );
     }
 
     private Container<?> createContainer(CacheKey cacheKey) {

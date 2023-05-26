@@ -76,7 +76,7 @@ public class OneToManyAssembleExampleTest {
         @Assemble(
             container = "customer-group",
             props = @Mapping(src = "name", ref = "customerNames"),
-            handlerName = "oneToManyReflexAssembleOperationHandler"
+            handler = "oneToManyReflexAssembleOperationHandler"
         )
         private final Integer groupId;
         private List<String> customerNames;

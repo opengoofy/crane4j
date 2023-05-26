@@ -1,23 +1,19 @@
 package cn.crane4j.core.support;
 
-import cn.crane4j.core.container.ConfigurableContainerProvider;
-import cn.crane4j.core.container.ContainerProvider;
+import cn.crane4j.core.container.ContainerManager;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
 import cn.crane4j.core.parser.BeanOperationParser;
-import cn.crane4j.core.support.callback.ContainerRegisterAware;
 import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.support.reflect.PropertyOperator;
-
-import java.util.Collection;
 
 /**
  * Framework global configuration.
  *
  * @author huangchengxing
  */
-public interface Crane4jGlobalConfiguration extends ConfigurableContainerProvider {
+public interface Crane4jGlobalConfiguration extends ContainerManager {
 
     /**
      * Get {@link ConverterManager}
@@ -27,13 +23,6 @@ public interface Crane4jGlobalConfiguration extends ConfigurableContainerProvide
     ConverterManager getConverterManager();
 
     /**
-     * Get all registered {@link ContainerRegisterAware} callback.
-     *
-     * @return {@link ContainerRegisterAware} instances
-     */
-    Collection<ContainerRegisterAware> getContainerRegisterAwareList();
-
-    /**
      * Get property operator.
      *
      * @return property operator
@@ -41,35 +30,11 @@ public interface Crane4jGlobalConfiguration extends ConfigurableContainerProvide
     PropertyOperator getPropertyOperator();
 
     /**
-     * Get type resolver.
+     * Get type handler.
      *
-     * @return type resolver
+     * @return type handler
      */
     TypeResolver getTypeResolver();
-
-    /**
-     * Get container provider.
-     *
-     * @param providerType provider type
-     * @return provider
-     */
-    <T extends ContainerProvider> T getContainerProvider(Class<T> providerType);
-
-    /**
-     * Get container provider.
-     *
-     * @param providerName provider name
-     * @return provider
-     */
-    ContainerProvider getContainerProvider(String providerName);
-    
-    /**
-     * Get bean operation executor.
-     *
-     * @param executorType executor type
-     * @return executor
-     */
-    BeanOperationExecutor getBeanOperationExecutor(Class<? extends BeanOperationExecutor> executorType);
 
     /**
      * Get bean operation executor.
@@ -82,26 +47,10 @@ public interface Crane4jGlobalConfiguration extends ConfigurableContainerProvide
     /**
      * Get bean operation parser.
      *
-     * @param parserType parser type
-     * @return parser
-     */
-    BeanOperationParser getBeanOperationsParser(Class<? extends BeanOperationParser> parserType);
-
-    /**
-     * Get bean operation parser.
-     *
      * @param parserName parser name
      * @return parser
      */
     BeanOperationParser getBeanOperationsParser(String parserName);
-    
-    /**
-     * Get assemble operation handler.
-     *
-     * @param handlerType handler type
-     * @return handler
-     */
-    AssembleOperationHandler getAssembleOperationHandler(Class<? extends AssembleOperationHandler> handlerType);
 
     /**
      * Get assemble operation handler.
@@ -110,14 +59,6 @@ public interface Crane4jGlobalConfiguration extends ConfigurableContainerProvide
      * @return handler
      */
     AssembleOperationHandler getAssembleOperationHandler(String handlerName);
-
-    /**
-     * Get disassemble operation handler.
-     *
-     * @param handlerType handler type
-     * @return handler
-     */
-    DisassembleOperationHandler getDisassembleOperationHandler(Class<? extends DisassembleOperationHandler> handlerType);
 
     /**
      * Get disassemble operation handler.

@@ -5,13 +5,12 @@ import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.BeanOperations;
-import cn.crane4j.core.parser.KeyTriggerOperation;
+import cn.crane4j.core.parser.operation.KeyTriggerOperation;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.Grouped;
 import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.util.CollectionUtils;
-import cn.crane4j.core.util.ConfigurationUtil;
 import cn.crane4j.core.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 
@@ -24,7 +23,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 /**
- * <p>An resolver that resolve the {@link AutoOperate}
+ * <p>An handler that resolve the {@link AutoOperate}
  * annotation on the element to {@link AutoOperateAnnotatedElement}.
  *
  * @author huangchengxing
@@ -46,9 +45,9 @@ public class AutoOperateAnnotatedElementResolver {
     public AutoOperateAnnotatedElement resolve(AnnotatedElement element, AutoOperate annotation) {
         MethodInvoker extractor = resolveExtractor(element, annotation);
         // prepare components for use
-        BeanOperationParser parser = ConfigurationUtil.getOperationParser(configuration, annotation.parserName(), annotation.parser());
+        BeanOperationParser parser = configuration.getBeanOperationsParser(annotation.parser());
         BeanOperations beanOperations = parser.parse(annotation.type());
-        BeanOperationExecutor executor = ConfigurationUtil.getOperationExecutor(configuration, annotation.executorName(), annotation.executor());
+        BeanOperationExecutor executor = configuration.getBeanOperationExecutor(annotation.executor());
         // check groups
         Predicate<? super KeyTriggerOperation> filter = resolveFilter(annotation);
         return new AutoOperateAnnotatedElement(annotation, element, extractor, filter, beanOperations, executor);

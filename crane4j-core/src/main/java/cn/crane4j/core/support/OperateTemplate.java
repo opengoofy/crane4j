@@ -3,7 +3,7 @@ package cn.crane4j.core.support;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.BeanOperations;
-import cn.crane4j.core.parser.KeyTriggerOperation;
+import cn.crane4j.core.parser.operation.KeyTriggerOperation;
 import cn.crane4j.core.util.CollectionUtils;
 import lombok.RequiredArgsConstructor;
 

@@ -10,6 +10,8 @@ import java.util.Comparator;
  */
 public interface Sorted {
 
+    // TODO Supports both Sorted, @ Order, and Ordered comparator chain.
+
     /**
      * Get a comparator, and the sorting rule follows {@link Sorted} semantics.
      *

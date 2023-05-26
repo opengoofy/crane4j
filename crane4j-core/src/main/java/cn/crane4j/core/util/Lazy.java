@@ -8,6 +8,7 @@ import java.util.function.Supplier;
  * A lazy initialization holder class.
  *
  * @author huangchengxing
+ * @since 1.3.0
  */
 @RequiredArgsConstructor
 public class Lazy<T> implements Supplier<T> {
@@ -29,5 +30,11 @@ public class Lazy<T> implements Supplier<T> {
             }
         }
         return value;
+    }
+
+    public synchronized T refresh() {
+        T oldValue = this.value;
+        this.value = null;
+        return oldValue;
     }
 }

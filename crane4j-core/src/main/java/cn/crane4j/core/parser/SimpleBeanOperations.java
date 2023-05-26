@@ -1,5 +1,7 @@
 package cn.crane4j.core.parser;
 
+import cn.crane4j.core.parser.operation.AssembleOperation;
+import cn.crane4j.core.parser.operation.DisassembleOperation;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
