@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * test for {@link OneToManyReflexAssembleOperationHandler}.
+ * test for {@link OneToManyAssembleOperationHandler}.
  *
  * @author huangchengxing
  */
@@ -36,7 +36,7 @@ public class OneToManyReflexAssembleOperationHandlerTest extends BaseExecutorTes
     @Before
     public void init() {
         PropertyOperator operator = new MapAccessiblePropertyOperator(new ReflectPropertyOperator(new HutoolConverterManager()));
-        OneToManyReflexAssembleOperationHandler handler = new OneToManyReflexAssembleOperationHandler(operator);
+        OneToManyAssembleOperationHandler handler = new OneToManyAssembleOperationHandler(operator);
         configuration.getAssembleOperationHandlerMap().put(handler.getClass().getName(), handler);
 
         executor = new DisorderedBeanOperationExecutor();
@@ -72,7 +72,7 @@ public class OneToManyReflexAssembleOperationHandlerTest extends BaseExecutorTes
     private static class Bean {
         @Assemble(
             container = "test", props = @Mapping(src = "name", ref = "names"),
-            handler = OneToManyReflexAssembleOperationHandler.class
+            handler = OneToManyAssembleOperationHandler.class
         )
         private final Integer id;
         private final String name;

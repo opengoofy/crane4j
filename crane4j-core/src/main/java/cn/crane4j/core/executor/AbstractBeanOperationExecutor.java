@@ -1,5 +1,6 @@
 package cn.crane4j.core.executor;
 
+import cn.crane4j.core.container.Container;
 import cn.crane4j.core.exception.OperationExecuteException;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
 import cn.crane4j.core.parser.AssembleOperation;
@@ -17,7 +18,36 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 /**
- * Basic implementation of {@link BeanOperationExecutor}.
+ *
+ * <p>This class serves as a template class and provides a basic skeleton implementation
+ * for most of the {@link BeanOperationExecutor},
+ * particularly shielding the complexity of parsing {@link DisassembleOperation} operations.
+ * Once the {@link #executeOperations} method is implemented in a subclass,
+ * it can be used as a {@link BeanOperationExecutor}.
+ *
+ * <p>According to the instructions specified in {@link BeanOperations},
+ * the following steps are performed when executing operations through the {@link BeanOperationExecutor#execute} method:
+ * <ul>
+ *     <li>
+ *         If there are any {@link DisassembleOperation} operations to be executed,
+ *         recursively extract and flatten the objects that need to be processed from
+ *         the {@code target} object (if it is a collection or an array, iterate over each element);
+ *     </li>
+ *     <li>
+ *         Group all the objects to be processed based on their corresponding {@link BeanOperations},
+ *         and wrap each group into an {@link AssembleExecution} object.
+ *     </li>
+ *     <li>
+ *         Invoke the {@link #executeOperations} method implemented in the subclass to
+ *         actually perform the operations within each {@link AssembleExecution}.
+ *     </li>
+ * </ul>
+ * 
+ * <p>This class only guarantees the sequential execution of {@link DisassembleOperation} operations,
+ * while the sequential execution of {@link AssembleOperation} operations depends on
+ * the implementation logic of {@link #executeOperations}.<br />
+ * For performance reasons, when implementing the {@link #executeOperations} method,
+ * it is recommended to minimize the number of accesses to the {@link Container}.
  *
  * @author huangchengxing
  * @see AsyncBeanOperationExecutor

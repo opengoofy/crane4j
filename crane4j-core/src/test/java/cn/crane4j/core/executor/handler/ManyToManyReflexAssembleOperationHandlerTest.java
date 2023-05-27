@@ -27,7 +27,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * test for {@link ManyToManyReflexAssembleOperationHandler}
+ * test for {@link ManyToManyAssembleOperationHandler}
  *
  * @author huangchengxing
  */
@@ -38,7 +38,7 @@ public class ManyToManyReflexAssembleOperationHandlerTest extends BaseExecutorTe
     @Before
     public void init() {
         PropertyOperator operator = new MapAccessiblePropertyOperator(new ReflectPropertyOperator(new HutoolConverterManager()));
-        ManyToManyReflexAssembleOperationHandler handler = new ManyToManyReflexAssembleOperationHandler(operator);
+        ManyToManyAssembleOperationHandler handler = new ManyToManyAssembleOperationHandler(operator);
         configuration.getAssembleOperationHandlerMap().put(handler.getClass().getName(), handler);
 
         executor = new DisorderedBeanOperationExecutor();
@@ -89,21 +89,21 @@ public class ManyToManyReflexAssembleOperationHandlerTest extends BaseExecutorTe
     private static class Bean {
         @Assemble(
             container = "test", props = @Mapping(src = "name", ref = "names"),
-            handler = ManyToManyReflexAssembleOperationHandler.class
+            handler = ManyToManyAssembleOperationHandler.class
         )
         private final String ids;
         private List<String> names;
 
         @Assemble(
             container = "test", props = @Mapping(src = "value", ref = "values"),
-            handler = ManyToManyReflexAssembleOperationHandler.class
+            handler = ManyToManyAssembleOperationHandler.class
         )
         private final List<String> keys;
         private Set<String> values;
 
         @Assemble(
             container = "test", props = @Mapping(ref = "items"),
-            handler = ManyToManyReflexAssembleOperationHandler.class
+            handler = ManyToManyAssembleOperationHandler.class
         )
         private final String[] code;
         private List<Object> items;

@@ -25,7 +25,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * test for {@link OneToOneReflexAssembleOperationHandler}.
+ * test for {@link OneToOneAssembleOperationHandler}.
  *
  * @author huangchengxing
  */
@@ -36,7 +36,7 @@ public class OneToOneReflexAssembleOperationHandlerTest extends BaseExecutorTest
     @Before
     public void init() {
         PropertyOperator operator = new ReflectPropertyOperator(new HutoolConverterManager());
-        OneToOneReflexAssembleOperationHandler handler = new OneToOneReflexAssembleOperationHandler(operator);
+        OneToOneAssembleOperationHandler handler = new OneToOneAssembleOperationHandler(operator);
         configuration.getAssembleOperationHandlerMap().put(handler.getClass().getName(), handler);
         executor = new DisorderedBeanOperationExecutor();
         Container<Integer> container = LambdaContainer.forLambda(
@@ -64,7 +64,7 @@ public class OneToOneReflexAssembleOperationHandlerTest extends BaseExecutorTest
     private static class Bean {
         @Assemble(
             container = "test", props = @Mapping(src = "name", ref = "name"),
-            handler = OneToOneReflexAssembleOperationHandler.class
+            handler = OneToOneAssembleOperationHandler.class
         )
         private final Integer id;
         private String name;

@@ -18,41 +18,41 @@ import java.util.stream.Collectors;
  * <p>An implementation of {@link AssembleOperationHandler}
  * for the one-to-one mapping between the target object and the data source object.
  *
- * <p>The difference between {@link ManyToManyReflexAssembleOperationHandler} and {@link OneToManyReflexAssembleOperationHandler}
- * is that {@link OneToManyReflexAssembleOperationHandler} is used to handle the situation where
+ * <p>The difference between {@link ManyToManyAssembleOperationHandler} and {@link OneToManyAssembleOperationHandler}
+ * is that {@link OneToManyAssembleOperationHandler} is used to handle the situation where
  * multiple values can be obtained through a key in the data source container,
- * while {@link ManyToManyReflexAssembleOperationHandler} is used to handle the situation where only
+ * while {@link ManyToManyAssembleOperationHandler} is used to handle the situation where only
  * one value can be obtained through a key, but there are multiple keys at the same time.
  *
  * @author huangchengxing
  * @see DefaultSplitter
  */
-public class ManyToManyReflexAssembleOperationHandler extends OneToManyReflexAssembleOperationHandler {
+public class ManyToManyAssembleOperationHandler extends OneToManyAssembleOperationHandler {
 
     /**
      * splitter used to split the value of key attribute into multiple key values.
      *
-     * @see ManyToManyReflexAssembleOperationHandler.DefaultSplitter
+     * @see ManyToManyAssembleOperationHandler.DefaultSplitter
      */
     private final Function<Object, Collection<Object>> keySplitter;
 
     /**
-     * Create an {@link ManyToManyReflexAssembleOperationHandler} instance.
+     * Create an {@link ManyToManyAssembleOperationHandler} instance.
      *
      * @param propertyOperator propertyOperator
      */
-    public ManyToManyReflexAssembleOperationHandler(PropertyOperator propertyOperator, Function<Object, Collection<Object>> keySplitter) {
+    public ManyToManyAssembleOperationHandler(PropertyOperator propertyOperator, Function<Object, Collection<Object>> keySplitter) {
         super(propertyOperator);
         this.keySplitter = keySplitter;
     }
 
     /**
-     * Create a {@link ManyToManyReflexAssembleOperationHandler} instance
+     * Create a {@link ManyToManyAssembleOperationHandler} instance
      * and use the default {@link DefaultSplitter} split key value
      *
      * @param propertyOperator property operator
      */
-    public ManyToManyReflexAssembleOperationHandler(PropertyOperator propertyOperator) {
+    public ManyToManyAssembleOperationHandler(PropertyOperator propertyOperator) {
         this(propertyOperator, new DefaultSplitter(","));
     }
 

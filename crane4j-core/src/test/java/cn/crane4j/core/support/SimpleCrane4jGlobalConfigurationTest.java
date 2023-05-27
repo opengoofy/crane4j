@@ -7,7 +7,7 @@ import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
-import cn.crane4j.core.executor.handler.ManyToManyReflexAssembleOperationHandler;
+import cn.crane4j.core.executor.handler.ManyToManyAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
 import cn.crane4j.core.parser.AssembleAnnotationResolver;
 import cn.crane4j.core.parser.BeanOperationParser;
@@ -53,7 +53,7 @@ public class SimpleCrane4jGlobalConfigurationTest {
         configuration.getBeanOperationParserMap().put(parser.getClass().getName(), parser);
         configuration.getBeanOperationParserMap().put(BeanOperationParser.class.getName(), parser);
 
-        ManyToManyReflexAssembleOperationHandler assembleOperationHandler = new ManyToManyReflexAssembleOperationHandler(new ReflectPropertyOperator(converterManager));
+        ManyToManyAssembleOperationHandler assembleOperationHandler = new ManyToManyAssembleOperationHandler(new ReflectPropertyOperator(converterManager));
         configuration.getAssembleOperationHandlerMap().put(assembleOperationHandler.getClass().getName(), assembleOperationHandler);
         configuration.getAssembleOperationHandlerMap().put(AssembleOperationHandler.class.getName(), assembleOperationHandler);
 
@@ -135,7 +135,7 @@ public class SimpleCrane4jGlobalConfigurationTest {
 
     @Test
     public void getAssembleOperationHandler() {
-        Assert.assertNotNull(configuration.getAssembleOperationHandler(ManyToManyReflexAssembleOperationHandler.class));
+        Assert.assertNotNull(configuration.getAssembleOperationHandler(ManyToManyAssembleOperationHandler.class));
     }
 
     @Test

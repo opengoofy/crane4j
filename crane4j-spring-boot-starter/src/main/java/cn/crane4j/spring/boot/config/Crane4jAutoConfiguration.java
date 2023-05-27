@@ -12,9 +12,9 @@ import cn.crane4j.core.container.SharedContextContainerProvider;
 import cn.crane4j.core.container.ThreadContextContainerProvider;
 import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
 import cn.crane4j.core.executor.OrderedBeanOperationExecutor;
-import cn.crane4j.core.executor.handler.ManyToManyReflexAssembleOperationHandler;
-import cn.crane4j.core.executor.handler.OneToManyReflexAssembleOperationHandler;
-import cn.crane4j.core.executor.handler.OneToOneReflexAssembleOperationHandler;
+import cn.crane4j.core.executor.handler.ManyToManyAssembleOperationHandler;
+import cn.crane4j.core.executor.handler.OneToManyAssembleOperationHandler;
+import cn.crane4j.core.executor.handler.OneToOneAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
 import cn.crane4j.core.parser.AssembleAnnotationResolver;
 import cn.crane4j.core.parser.AssembleEnumAnnotationResolver;
@@ -269,18 +269,18 @@ public class Crane4jAutoConfiguration {
 
     @Primary
     @Bean
-    public OneToOneReflexAssembleOperationHandler oneToOneReflexAssembleOperationHandler(PropertyOperator propertyOperator) {
-        return new OneToOneReflexAssembleOperationHandler(propertyOperator);
+    public OneToOneAssembleOperationHandler oneToOneReflexAssembleOperationHandler(PropertyOperator propertyOperator) {
+        return new OneToOneAssembleOperationHandler(propertyOperator);
     }
 
     @Bean
-    public ManyToManyReflexAssembleOperationHandler manyToManyReflexAssembleOperationHandler(PropertyOperator propertyOperator) {
-        return new ManyToManyReflexAssembleOperationHandler(propertyOperator);
+    public ManyToManyAssembleOperationHandler manyToManyReflexAssembleOperationHandler(PropertyOperator propertyOperator) {
+        return new ManyToManyAssembleOperationHandler(propertyOperator);
     }
 
     @Bean
-    public OneToManyReflexAssembleOperationHandler oneToManyReflexAssembleOperationHandler(PropertyOperator propertyOperator) {
-        return new OneToManyReflexAssembleOperationHandler(propertyOperator);
+    public OneToManyAssembleOperationHandler oneToManyReflexAssembleOperationHandler(PropertyOperator propertyOperator) {
+        return new OneToManyAssembleOperationHandler(propertyOperator);
     }
 
     @Primary

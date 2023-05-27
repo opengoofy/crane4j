@@ -12,22 +12,22 @@ import java.util.stream.Collectors;
  * <p>An implementation of {@link AssembleOperationHandler}
  * for the one-to-many mapping between the target object and the data source object.
  * 
- * <p>The difference between {@link ManyToManyReflexAssembleOperationHandler} and {@link OneToManyReflexAssembleOperationHandler}
- * is that {@link OneToManyReflexAssembleOperationHandler} is used to handle the situation where
+ * <p>The difference between {@link ManyToManyAssembleOperationHandler} and {@link OneToManyAssembleOperationHandler}
+ * is that {@link OneToManyAssembleOperationHandler} is used to handle the situation where
  * multiple values can be obtained through a key in the data source container,
- * while {@link ManyToManyReflexAssembleOperationHandler} is used to handle the situation where only
+ * while {@link ManyToManyAssembleOperationHandler} is used to handle the situation where only
  * one value can be obtained through a key, but there are multiple keys at the same time.
  *
  * @author huangchengxing
  */
-public class OneToManyReflexAssembleOperationHandler extends GenericReflexAssembleOperationHandler {
+public class OneToManyAssembleOperationHandler extends GenericAssembleOperationHandler {
 
     /**
-     * Create an {@link OneToManyReflexAssembleOperationHandler} instance.
+     * Create an {@link OneToManyAssembleOperationHandler} instance.
      *
      * @param propertyOperator property operator
      */
-    public OneToManyReflexAssembleOperationHandler(PropertyOperator propertyOperator) {
+    public OneToManyAssembleOperationHandler(PropertyOperator propertyOperator) {
         super(propertyOperator);
     }
 

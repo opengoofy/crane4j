@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
  * @see PropertyOperator
  */
 @RequiredArgsConstructor
-public class GenericReflexAssembleOperationHandler extends AbstractAssembleOperationHandler<AssembleOperationTarget> {
+public class GenericAssembleOperationHandler extends AbstractAssembleOperationHandler<AssembleOperationTarget> {
 
     /**
      * propertyOperator

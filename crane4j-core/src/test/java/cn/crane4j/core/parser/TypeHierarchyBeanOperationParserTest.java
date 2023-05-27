@@ -8,7 +8,7 @@ import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.LambdaContainer;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
-import cn.crane4j.core.executor.handler.ManyToManyReflexAssembleOperationHandler;
+import cn.crane4j.core.executor.handler.ManyToManyAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
 import cn.crane4j.core.support.SimpleAnnotationFinder;
 import cn.crane4j.core.support.SimpleCrane4jGlobalConfiguration;
@@ -42,7 +42,7 @@ public class TypeHierarchyBeanOperationParserTest {
     private static final int SUB_SORT = Integer.MIN_VALUE;
     private static final int SUP_SORT = Integer.MAX_VALUE;
     private static final ConverterManager CONVERTER_MANAGER = new HutoolConverterManager();
-    private static final AssembleOperationHandler ASSEMBLE_OPERATION_HANDLER = new ManyToManyReflexAssembleOperationHandler(
+    private static final AssembleOperationHandler ASSEMBLE_OPERATION_HANDLER = new ManyToManyAssembleOperationHandler(
         new ReflectPropertyOperator(CONVERTER_MANAGER)
     );
     private static final DisassembleOperationHandler DISASSEMBLE_OPERATION_HANDLER = new ReflectDisassembleOperationHandler(

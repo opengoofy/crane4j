@@ -10,9 +10,37 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 
 /**
- * Abstract template implementation of {@link AssembleOperationHandler}.
+ * <p>This class serves as the top-level template class
+ * and defines the key steps required by most {@link AssembleOperationHandler}:<br />
+ * Object processing phase:
+ * <ul>
+ *     <li>
+ *         {@link #collectToEntities}: Expands the target objects to be operated on from the {@link AssembleExecution}
+ *         and wraps them as {@link Target} objects, which will be used for subsequent processing;
+ *     </li>
+ *     <li>
+ *         {@link #introspectForEntities}: If the {@link Container} for the current operation is not specified,
+ *         directly use the target objects as the data source for field mapping;
+ *     </li>
+ * </ul>
+ * If the {@link Container} for the current operation is specified, it enters the data source preparation phase:
+ * <ul>
+ *     <li>
+ *         {@link #getSourcesFromContainer}: Obtains the required data sources based on the objects to be processed;
+ *     </li>
+ *     <li>
+ *         {@link #getTheAssociatedSource}: Retrieves the associated data source object
+ *         corresponding to the key value of the object to be processed from the data sources;
+ *     </li>
+ * </ul>
+ * Finally, if the object has an associated data source object,
+ * the {@link #completeMapping} method is called to perform property mapping between them.
+ *
+ * <p>The implementation logic of this template class is based on
+ * the encapsulation of {@link Target}, which may introduce unnecessary performance overhead.
  *
  * @author huangchengxing
  * @param <T> target type
@@ -28,7 +56,7 @@ public abstract class AbstractAssembleOperationHandler<T extends AbstractAssembl
     @Override
     public void process(Container<?> container, Collection<AssembleExecution> executions) {
         Collection<T> targets = collectToEntities(executions);
-        if (container instanceof EmptyContainer) {
+        if (container instanceof EmptyContainer || Objects.isNull(container)) {
             introspectForEntities(targets);
             return;
         }

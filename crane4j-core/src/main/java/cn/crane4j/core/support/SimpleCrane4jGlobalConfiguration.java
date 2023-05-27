@@ -12,9 +12,9 @@ import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
 import cn.crane4j.core.executor.OrderedBeanOperationExecutor;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
-import cn.crane4j.core.executor.handler.ManyToManyReflexAssembleOperationHandler;
-import cn.crane4j.core.executor.handler.OneToManyReflexAssembleOperationHandler;
-import cn.crane4j.core.executor.handler.OneToOneReflexAssembleOperationHandler;
+import cn.crane4j.core.executor.handler.ManyToManyAssembleOperationHandler;
+import cn.crane4j.core.executor.handler.OneToManyAssembleOperationHandler;
+import cn.crane4j.core.executor.handler.OneToOneAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
 import cn.crane4j.core.parser.AssembleAnnotationResolver;
 import cn.crane4j.core.parser.AssembleEnumAnnotationResolver;
@@ -111,12 +111,12 @@ public class SimpleCrane4jGlobalConfiguration
         configuration.getBeanOperationExecutorMap().put(orderedBeanOperationExecutor.getClass().getName(), orderedBeanOperationExecutor);
 
         // operation handler
-        OneToOneReflexAssembleOperationHandler oneToOneReflexAssembleOperationHandler = new OneToOneReflexAssembleOperationHandler(operator);
+        OneToOneAssembleOperationHandler oneToOneReflexAssembleOperationHandler = new OneToOneAssembleOperationHandler(operator);
         configuration.getAssembleOperationHandlerMap().put(AssembleOperationHandler.class.getName(), oneToOneReflexAssembleOperationHandler);
         configuration.getAssembleOperationHandlerMap().put(oneToOneReflexAssembleOperationHandler.getClass().getName(), oneToOneReflexAssembleOperationHandler);
-        OneToManyReflexAssembleOperationHandler oneToManyReflexAssembleOperationHandler = new OneToManyReflexAssembleOperationHandler(operator);
+        OneToManyAssembleOperationHandler oneToManyReflexAssembleOperationHandler = new OneToManyAssembleOperationHandler(operator);
         configuration.getAssembleOperationHandlerMap().put(oneToManyReflexAssembleOperationHandler.getClass().getName(), oneToManyReflexAssembleOperationHandler);
-        ManyToManyReflexAssembleOperationHandler manyToManyReflexAssembleOperationHandler = new ManyToManyReflexAssembleOperationHandler(operator);
+        ManyToManyAssembleOperationHandler manyToManyReflexAssembleOperationHandler = new ManyToManyAssembleOperationHandler(operator);
         configuration.getAssembleOperationHandlerMap().put(manyToManyReflexAssembleOperationHandler.getClass().getName(), manyToManyReflexAssembleOperationHandler);
         ReflectDisassembleOperationHandler reflectDisassembleOperationHandler = new ReflectDisassembleOperationHandler(operator);
         configuration.getDisassembleOperationHandlerMap().put(DisassembleOperationHandler.class.getName(), reflectDisassembleOperationHandler);

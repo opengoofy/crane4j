@@ -5,7 +5,7 @@ import cn.crane4j.annotation.MappingTemplate;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerProvider;
 import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
-import cn.crane4j.core.executor.handler.OneToOneReflexAssembleOperationHandler;
+import cn.crane4j.core.executor.handler.OneToOneAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
 import cn.crane4j.core.parser.PropertyMapping;
 import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
@@ -47,7 +47,7 @@ public class ConfigurationUtilTest {
 
     @Test
     public void getAssembleOperationHandler() {
-        Class<?> clazz = OneToOneReflexAssembleOperationHandler.class;
+        Class<?> clazz = OneToOneAssembleOperationHandler.class;
         Assert.assertNotNull(ConfigurationUtil.getAssembleOperationHandler(configuration, clazz.getName(), null));
         Assert.assertNotNull(ConfigurationUtil.getAssembleOperationHandler(configuration, null, clazz));
     }
