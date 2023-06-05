@@ -1,6 +1,11 @@
 package cn.crane4j.annotation;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * <p>Declare an assembly operation。<br />
@@ -74,7 +79,6 @@ import java.lang.annotation.*;
  * @see cn.crane4j.core.parser.AssembleAnnotationResolver;
  * @see cn.crane4j.core.parser.AssembleOperation;
  */
-@StandardAssembleAnnotation
 @Repeatable(value = Assemble.List.class)
 @Documented
 @Target({ElementType.ANNOTATION_TYPE, ElementType.FIELD, ElementType.TYPE, ElementType.METHOD})

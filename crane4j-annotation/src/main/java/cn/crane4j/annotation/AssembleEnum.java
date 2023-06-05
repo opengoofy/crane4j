@@ -10,7 +10,6 @@ import java.lang.annotation.Target;
 /**
  * @author huangchengxing
  */
-@StandardAssembleAnnotation
 @Repeatable(value = AssembleEnum.List.class)
 @Documented
 @Target({ElementType.ANNOTATION_TYPE, ElementType.FIELD, ElementType.TYPE, ElementType.METHOD})

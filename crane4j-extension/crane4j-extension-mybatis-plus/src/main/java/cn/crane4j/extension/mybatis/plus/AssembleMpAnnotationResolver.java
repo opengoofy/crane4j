@@ -2,15 +2,17 @@ package cn.crane4j.extension.mybatis.plus;
 
 import cn.crane4j.annotation.AssembleMp;
 import cn.crane4j.core.container.Container;
+import cn.crane4j.core.parser.AbstractAssembleAnnotationResolver;
 import cn.crane4j.core.parser.AssembleOperation;
+import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.KeyTriggerOperation;
 import cn.crane4j.core.parser.OperationAnnotationResolver;
-import cn.crane4j.core.parser.StandardAssembleAnnotationResolver;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.Sorted;
 import lombok.experimental.Accessors;
 
+import java.lang.reflect.AnnotatedElement;
 import java.util.Arrays;
 import java.util.Comparator;
 
@@ -25,7 +27,7 @@ import java.util.Comparator;
  * @since 1.2.0
  */
 @Accessors(chain = true)
-public class AssembleMpAnnotationResolver extends StandardAssembleAnnotationResolver<AssembleMp> {
+public class AssembleMpAnnotationResolver extends AbstractAssembleAnnotationResolver<AssembleMp> {
 
     private final MybatisPlusQueryContainerRegister containerRegister;
 
@@ -69,6 +71,25 @@ public class AssembleMpAnnotationResolver extends StandardAssembleAnnotationReso
     protected Container<?> getContainer(AssembleMp annotation) {
         return containerRegister.getContainer(
             annotation.mapper(), annotation.where(), Arrays.asList(annotation.selects())
+        );
+    }
+
+
+    /**
+     * Get {@link StandardAnnotation}.
+     *
+     * @param beanOperations bean operations
+     * @param element        element
+     * @param annotation     annotation
+     * @return {@link StandardAnnotation} instance
+     */
+    @Override
+    protected StandardAnnotation getStandardAnnotation(
+        BeanOperations beanOperations, AnnotatedElement element, AssembleMp annotation) {
+        return new StandardAnnotationAdapter(
+            annotation, annotation.key(), annotation.sort(),
+            annotation.handlerName(), annotation.handler(),
+            annotation.propTemplates(), annotation.props(), annotation.groups()
         );
     }
 }

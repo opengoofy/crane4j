@@ -13,6 +13,7 @@ import cn.crane4j.core.util.StringUtils;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 
+import java.lang.reflect.AnnotatedElement;
 import java.util.Comparator;
 
 /**
@@ -26,7 +27,7 @@ import java.util.Comparator;
  */
 @Accessors(chain = true)
 @Slf4j
-public class AssembleAnnotationResolver extends StandardAssembleAnnotationResolver<Assemble> {
+public class AssembleAnnotationResolver extends AbstractAssembleAnnotationResolver<Assemble> {
 
     /**
      * Create a {@link AssembleAnnotationResolver} instance.
@@ -72,5 +73,23 @@ public class AssembleAnnotationResolver extends StandardAssembleAnnotationResolv
             provider.getContainer(annotation.container()) : Container.empty();
         Asserts.isNotNull(container, "cannot find container [{}] from provider [{}]", annotation.container(), annotation.containerProvider());
         return container;
+    }
+
+    /**
+     * Get {@link StandardAnnotation}.
+     *
+     * @param beanOperations bean operations
+     * @param element        element
+     * @param annotation     annotation
+     * @return {@link StandardAnnotation} instance
+     */
+    @Override
+    protected StandardAnnotation getStandardAnnotation(
+        BeanOperations beanOperations, AnnotatedElement element, Assemble annotation) {
+        return new StandardAnnotationAdapter(
+            annotation, annotation.key(), annotation.sort(),
+            annotation.handlerName(), annotation.handler(),
+            annotation.propTemplates(), annotation.props(), annotation.groups()
+        );
     }
 }
