@@ -200,7 +200,7 @@ public class MybatisPlusQueryContainerRegister extends AbstractQueryContainerCre
     }
 
     @RequiredArgsConstructor
-    private static class Query<T> implements MethodInvoker {
+    protected static class Query<T> implements MethodInvoker {
 
         private final BaseMapper<T> baseMapper;
         private final String[] queryColumns;

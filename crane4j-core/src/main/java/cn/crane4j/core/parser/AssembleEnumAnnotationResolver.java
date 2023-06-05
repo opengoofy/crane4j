@@ -11,26 +11,26 @@ import cn.crane4j.core.support.Sorted;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.util.StringUtils;
 
+import java.lang.reflect.AnnotatedElement;
 import java.util.Comparator;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * An {@link StandardAssembleAnnotationResolver} implementation for {@link AssembleEnum} annotation.
+ * An {@link AbstractAssembleAnnotationResolver} implementation for {@link AssembleEnum} annotation.
  *
  * @author huangchengxing
  * @since 1.3.0
  */
-public class AssembleEnumAnnotationResolver extends StandardAssembleAnnotationResolver<AssembleEnum> {
+public class AssembleEnumAnnotationResolver extends AbstractAssembleAnnotationResolver<AssembleEnum> {
 
     private final ConfigurableContainerProvider containerProvider;
     private final PropertyOperator propertyOperator;
 
     /**
-     * Create an {@link StandardAssembleAnnotationResolver} instance.
+     * Create an {@link AbstractAssembleAnnotationResolver} instance.
      *
      * @param annotationFinder    annotation finder
      * @param globalConfiguration globalConfiguration
@@ -43,7 +43,7 @@ public class AssembleEnumAnnotationResolver extends StandardAssembleAnnotationRe
     }
 
     /**
-     * Create an {@link StandardAssembleAnnotationResolver} instance.
+     * Create an {@link AbstractAssembleAnnotationResolver} instance.
      *
      * @param annotationFinder    annotation finder
      * @param operationComparator operation comparator
@@ -88,7 +88,43 @@ public class AssembleEnumAnnotationResolver extends StandardAssembleAnnotationRe
         return containerProvider.getContainer(namespace, () -> createContainer(annotation, enumType, namespace));
     }
 
-    private ConstantContainer<Object> createContainer(AssembleEnum annotation, Class<? extends Enum<?>> enumType, String namespace) {
+    /**
+     * Get {@link StandardAnnotation}.
+     *
+     * @param beanOperations bean operations
+     * @param element        element
+     * @param annotation     annotation
+     * @return {@link StandardAnnotation} instance
+     */
+    @Override
+    protected StandardAnnotation getStandardAnnotation(
+        BeanOperations beanOperations, AnnotatedElement element, AssembleEnum annotation) {
+        return new StandardAnnotationAdapter(
+            annotation, annotation.key(), annotation.sort(),
+            annotation.handlerName(), annotation.handler(),
+            annotation.propTemplates(), annotation.props(), annotation.groups()
+        );
+    }
+
+    /**
+     * Get property mapping from given {@link StandardAnnotation}.
+     *
+     * @param standardAnnotation standard annotation
+     * @param key key
+     * @return assemble operation groups
+     */
+    @Override
+    protected Set<PropertyMapping> parsePropertyMappings(StandardAnnotation standardAnnotation, String key) {
+        Set<PropertyMapping> propertyMappings = super.parsePropertyMappings(standardAnnotation, key);
+        AssembleEnum annotation = (AssembleEnum)((StandardAnnotationAdapter)standardAnnotation).getAnnotation();
+        if (StringUtils.isNotEmpty(annotation.ref())) {
+            propertyMappings.add(new SimplePropertyMapping("", annotation.ref()));
+        }
+        return propertyMappings;
+    }
+
+    private ConstantContainer<Object> createContainer(
+        AssembleEnum annotation, Class<? extends Enum<?>> enumType, String namespace) {
         if (annotation.useContainerEnum()) {
             return ConstantContainer.forEnum(enumType, annotationFinder, propertyOperator);
         }
@@ -96,22 +132,5 @@ public class AssembleEnumAnnotationResolver extends StandardAssembleAnnotationRe
         boolean hasValue = StringUtils.isNotEmpty(annotation.enumValue());
         return ConstantContainer.forMap(namespace, Stream.of(enumType.getEnumConstants())
             .collect(Collectors.toMap(e -> hasKey ? Objects.requireNonNull(propertyOperator.readProperty(enumType, e, annotation.enumKey())) : e, e -> hasValue ? Objects.requireNonNull(propertyOperator.readProperty(enumType, e, annotation.enumValue())) : e)));
-    }
-
-    /**
-     * Get property mapping from given {@code attributes}.
-     *
-     * @param annotation annotation
-     * @param attributes attributes
-     * @param key key
-     * @return assemble operation groups
-     */
-    @Override
-    protected Set<PropertyMapping> parsePropertyMappings(AssembleEnum annotation, Map<String, Object> attributes, String key) {
-        Set<PropertyMapping> propertyMappings = super.parsePropertyMappings(annotation, attributes, key);
-        if (StringUtils.isNotEmpty(annotation.ref())) {
-            propertyMappings.add(new SimplePropertyMapping("", annotation.ref()));
-        }
-        return propertyMappings;
     }
 }

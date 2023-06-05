@@ -10,10 +10,14 @@ import cn.crane4j.core.support.Sorted;
  * for example, {@link AssembleAnnotationResolver} resolve {@link AssembleOperation} from the element.
  * {@link TypeHierarchyBeanOperationParser} will hold multiple resolvers to resolve different annotations.
  *
+ * <p>For implementors of assemble operation annotation resolver,
+ * it is recommended to derive from the provided {@link AbstractAssembleAnnotationResolver} class,
+ * which pre-implements the defined the logic of parsing and
+ * constructing {@link AssembleOperation} based on standard components.
+ *
  * @author huangchengxing
+ * @see AbstractAssembleAnnotationResolver
  * @see TypeHierarchyBeanOperationParser
- * @see AssembleAnnotationResolver
- * @see DisassembleAnnotationResolver
  * @since 1.2.0
  */
 public interface OperationAnnotationResolver extends Sorted {

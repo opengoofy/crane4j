@@ -1,6 +1,11 @@
 package cn.crane4j.annotation;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * Declare an assembly operation using the mybatis plus default interface method as the data source.
@@ -9,7 +14,6 @@ import java.lang.annotation.*;
  * @see cn.crane4j.extension.mybatis.plus.AssembleMpAnnotationResolver
  * @since 1.2.0
  */
-@StandardAssembleAnnotation
 @Repeatable(value = AssembleMp.List.class)
 @Documented
 @Target({ElementType.ANNOTATION_TYPE, ElementType.FIELD, ElementType.TYPE, ElementType.METHOD})

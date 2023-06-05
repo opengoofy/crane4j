@@ -1,12 +1,20 @@
 package cn.crane4j.core.parser;
 
 import cn.crane4j.annotation.Mapping;
-import cn.crane4j.annotation.StandardAssembleAnnotation;
+import cn.crane4j.annotation.MappingTemplate;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
-import cn.crane4j.core.util.*;
+import cn.crane4j.core.util.Asserts;
+import cn.crane4j.core.util.CollectionUtils;
+import cn.crane4j.core.util.ConfigurationUtil;
+import cn.crane4j.core.util.Lazy;
+import cn.crane4j.core.util.MultiMap;
+import cn.crane4j.core.util.ReflectUtils;
+import cn.crane4j.core.util.StringUtils;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
@@ -15,27 +23,30 @@ import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
  * <p>An abstract {@link OperationAnnotationResolver} implementation
- * that comparator、annotation aware and support assemble operation compare.<br />
- * Overwrite {@link #createAssembleOperation} to implement custom parsing logic.
+ * for resolve assemble operation annotation.<br />
+ * pre-implements the defined the logic of parsing and
+ * constructing {@link AssembleOperation} based on standard components.
  *
  * @author huangchengxing
  * @param <T> annotation type
- * @see StandardAssembleAnnotation
+ * @see StandardAnnotation
  * @since 1.3.0
  */
 @Accessors(chain = true)
 @Slf4j
-public abstract class StandardAssembleAnnotationResolver<T extends Annotation> implements OperationAnnotationResolver {
+public abstract class AbstractAssembleAnnotationResolver<T extends Annotation> implements OperationAnnotationResolver {
 
     protected static final String ANNOTATION_KEY_ATTRIBUTE = "key";
-    private final StandardAssembleAnnotation standardAssembleAnnotation;
     protected final Class<T> annotationType;
     protected final AnnotationFinder annotationFinder;
     protected final Comparator<KeyTriggerOperation> operationComparator;
@@ -44,21 +55,20 @@ public abstract class StandardAssembleAnnotationResolver<T extends Annotation> i
     private boolean lazyLoadAssembleContainer = true;
 
     /**
-     * Create an {@link StandardAssembleAnnotationResolver} instance.
+     * Create an {@link AbstractAssembleAnnotationResolver} instance.
      *
      * @param annotationType annotation type
      * @param annotationFinder annotation finder
      * @param operationComparator operation comparator
      * @param globalConfiguration global configuration
      */
-    protected StandardAssembleAnnotationResolver(
+    protected AbstractAssembleAnnotationResolver(
         Class<T> annotationType, AnnotationFinder annotationFinder,
         Comparator<KeyTriggerOperation> operationComparator, Crane4jGlobalConfiguration globalConfiguration) {
         this.annotationType = annotationType;
         this.annotationFinder = annotationFinder;
         this.operationComparator = operationComparator;
         this.globalConfiguration = globalConfiguration;
-        this.standardAssembleAnnotation = annotationFinder.findAnnotation(annotationType, StandardAssembleAnnotation.class);
     }
 
     /**
@@ -145,22 +155,18 @@ public abstract class StandardAssembleAnnotationResolver<T extends Annotation> i
      * @param element element
      * @param annotation annotation
      * @return {@link AssembleOperation} instance if element and annotation is resolvable, null otherwise
-     * @see StandardAssembleAnnotation
      */
     @Nullable
     protected AssembleOperation createAssembleOperation(
         BeanOperations beanOperations, AnnotatedElement element, T annotation) {
-        Asserts.isNotNull(
-            standardAssembleAnnotation, "cannot find @StandardAssembleAnnotation in annotation [{}], it is not an standard assemble annotation", annotationType
-        );
-        Map<String, Object> attributes = ReflectUtils.getAnnotationAttributes(annotation);
+        StandardAnnotation standardAnnotation = getStandardAnnotation(beanOperations, element, annotation);
 
         // get configuration of standard assemble operation
-        String key = parseKey(annotation, attributes);
-        AssembleOperationHandler assembleOperationHandler = parseAssembleOperationHandler(annotation, attributes);
-        Set<PropertyMapping> propertyMappings = parsePropertyMappings(annotation, attributes, key);
-        int sort = parseSort(annotation, attributes);
-        Set<String> groups = parseGroups(annotation, attributes);
+        String key = parseKey(standardAnnotation);
+        AssembleOperationHandler assembleOperationHandler = parseAssembleOperationHandler(standardAnnotation);
+        Set<PropertyMapping> propertyMappings = parsePropertyMappings(standardAnnotation, key);
+        int sort = parseSort(standardAnnotation);
+        Set<String> groups = parseGroups(standardAnnotation);
 
         // create operation
         AssembleOperation operation = createAssembleOperation(annotation, sort, key, assembleOperationHandler, propertyMappings);
@@ -196,31 +202,40 @@ public abstract class StandardAssembleAnnotationResolver<T extends Annotation> i
      */
     protected abstract Container<?> getContainer(T annotation);
 
+    /**
+     * Get {@link StandardAnnotation}.
+     *
+     * @param beanOperations bean operations
+     * @param element element
+     * @param annotation annotation
+     * @return {@link StandardAnnotation} instance
+     */
+    protected abstract StandardAnnotation getStandardAnnotation(
+        BeanOperations beanOperations, AnnotatedElement element, T annotation);
+
     // =============== process standard configuration ===============
 
     /**
-     * Get groups from given {@code attributes}.
+     * Get groups from given {@link StandardAnnotation}.
      *
-     * @param annotation annotation
-     * @param attributes attributes
+     * @param standardAnnotation standard annotation
      * @return groups
      */
-    protected String parseKey(T annotation, Map<String, Object> attributes) {
-        String key = (String)attributes.get(standardAssembleAnnotation.keyAttribute());
+    protected String parseKey(StandardAnnotation standardAnnotation) {
+        String key = standardAnnotation.getKey();
         Asserts.isTrue(StringUtils.isNotBlank(key), "the key of assemble operation must not blank");
         return key;
     }
 
     /**
-     * Get assemble operation groups from given {@code attributes}.
+     * Get assemble operation groups from given {@link StandardAnnotation}.
      *
-     * @param annotation annotation
-     * @param attributes attributes
+     * @param standardAnnotation standard annotation
      * @return assemble operation groups
      */
-    protected AssembleOperationHandler parseAssembleOperationHandler(T annotation, Map<String, Object> attributes) {
-        Class<?> handler = (Class<?>)attributes.get(standardAssembleAnnotation.handlerAttribute());
-        String handlerName = (String)attributes.get(standardAssembleAnnotation.handlerNameAttribute());
+    protected AssembleOperationHandler parseAssembleOperationHandler(StandardAnnotation standardAnnotation) {
+        Class<?> handler = standardAnnotation.getHandler();
+        String handlerName = standardAnnotation.getHandlerName();
         AssembleOperationHandler assembleOperationHandler = ConfigurationUtil.getAssembleOperationHandler(
             globalConfiguration, handlerName, handler
         );
@@ -229,19 +244,18 @@ public abstract class StandardAssembleAnnotationResolver<T extends Annotation> i
     }
 
     /**
-     * Get property mapping from given {@code attributes}.
+     * Get property mapping from given {@link StandardAnnotation}.
      *
-     * @param annotation annotation
-     * @param attributes attributes
+     * @param standardAnnotation standard annotation
      * @param key key
      * @return assemble operation groups
      */
-    protected Set<PropertyMapping> parsePropertyMappings(T annotation, Map<String, Object> attributes, String key) {
-        Mapping[] props = (Mapping[])attributes.get(standardAssembleAnnotation.propsAttribute());
+    protected Set<PropertyMapping> parsePropertyMappings(StandardAnnotation standardAnnotation, String key) {
+        Mapping[] props = standardAnnotation.getProps();
         Set<PropertyMapping> propertyMappings = Stream.of(props)
             .map(m -> ConfigurationUtil.createPropertyMapping(m, key))
             .collect(Collectors.toSet());
-        Class<?>[] propTemplates = (Class<?>[])attributes.get(standardAssembleAnnotation.propTemplatesAttribute());
+        Class<?>[] propTemplates = standardAnnotation.getMappingTemplates();
         List<PropertyMapping> templateMappings = ConfigurationUtil.parsePropTemplateClasses(propTemplates, annotationFinder);
         if (CollectionUtils.isNotEmpty(templateMappings)) {
             propertyMappings.addAll(templateMappings);
@@ -250,25 +264,104 @@ public abstract class StandardAssembleAnnotationResolver<T extends Annotation> i
     }
 
     /**
-     * Get sort value from given {@code attributes}.
+     * Get sort value from given {@link StandardAnnotation}.
      *
-     * @param annotation annotation
-     * @param attributes attributes
+     * @param standardAnnotation standard annotation
      * @return assemble operation groups
      */
-    protected int parseSort(T annotation, Map<String, Object> attributes) {
-        return (int)attributes.get(standardAssembleAnnotation.sortAttribute());
+    protected int parseSort(StandardAnnotation standardAnnotation) {
+        return standardAnnotation.getSort();
     }
 
     /**
-     * Get groups from given {@code attributes}.
+     * Get groups from given {@link StandardAnnotation}.
      *
-     * @param annotation annotation
-     * @param attributes attributes
+     * @param standardAnnotation standard assemble operation
      * @return groups
      */
-    protected Set<String> parseGroups(T annotation, Map<String, Object> attributes) {
-        return Stream.of((String[])attributes.get(standardAssembleAnnotation.groupsAttribute()))
+    protected Set<String> parseGroups(StandardAnnotation standardAnnotation) {
+        return Stream.of(standardAnnotation.getGroups())
             .collect(Collectors.toSet());
+    }
+
+    /**
+     * Standard annotation
+     *
+     * @author huangchengxing
+     * @see StandardAnnotationAdapter
+     */
+    public interface StandardAnnotation {
+
+        /**
+         * Key field name for query
+         *
+         * @return key field name
+         */
+        String getKey();
+
+        /**
+         * <p>Sort values.
+         * The lower the value, the higher the priority.
+         *
+         * @return sort values
+         */
+        int getSort();
+        
+        /**
+         * The name of the handler to be used.
+         *
+         * @return name of the handler
+         */
+        String getHandlerName();
+
+        /**
+         * The type of the handler to be used.
+         *
+         * @return type of the handler
+         */
+        Class<?> getHandler();
+
+        /**
+         *
+         * <p>Mapping template classes.
+         * specify a class, if {@link MappingTemplate} exists on the class,
+         * it will scan and add {@link Mapping} to {@link #getProps}。
+         *
+         * @return java.lang.Class<?>[]
+         */
+        Class<?>[] getMappingTemplates();
+
+        /**
+         * Attributes that need to be mapped
+         * between the data source object and the current object.
+         *
+         * @return attributes mappings
+         */
+        Mapping[] getProps();
+        
+        /**
+         * The group to which the current operation belongs.
+         *
+         * @return group names
+         */
+        String[] getGroups();
+    }
+
+    /**
+     * Adapting annotation to {@link StandardAnnotation}
+     *
+     * @author huangchengxing 
+     */
+    @Getter
+    @RequiredArgsConstructor
+    public static class StandardAnnotationAdapter implements StandardAnnotation {
+        private final Annotation annotation;
+        private final String key;
+        private final int sort;
+        private final String handlerName;
+        private final Class<?> handler;
+        private final Class<?>[] mappingTemplates;
+        private final Mapping[] props;
+        private final String[] groups;
     }
 }
