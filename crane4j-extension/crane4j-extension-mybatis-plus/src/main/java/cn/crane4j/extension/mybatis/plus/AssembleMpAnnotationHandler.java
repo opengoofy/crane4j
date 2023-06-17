@@ -1,7 +1,9 @@
 package cn.crane4j.extension.mybatis.plus;
 
 import cn.crane4j.annotation.AssembleMp;
+import cn.crane4j.annotation.MappingType;
 import cn.crane4j.core.container.Container;
+import cn.crane4j.core.container.ContainerManager;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.handler.AbstractAssembleAnnotationHandler;
 import cn.crane4j.core.parser.handler.OperationAnnotationHandler;
@@ -19,17 +21,18 @@ import java.util.Comparator;
 /**
  * <p>The implementation of {@link OperationAnnotationHandler}.<br />
  * It's used to scan the {@link AssembleMp} annotations on classes and their attributes,
- * And generate {@link AssembleOperation} for it using {@link MybatisPlusQueryContainerRegister.Query} as the data source container.
+ * And generate {@link AssembleOperation} for it using {@link MybatisPlusQueryContainerProvider.Query} as the data source container.
  *
  * @author huangchengxing
  * @see AssembleMp
- * @see MybatisPlusQueryContainerRegister
+ * @see MybatisPlusQueryContainerProvider
  * @since 1.2.0
  */
 @Accessors(chain = true)
 public class AssembleMpAnnotationHandler extends AbstractAssembleAnnotationHandler<AssembleMp> {
 
-    private final MybatisPlusQueryContainerRegister containerRegister;
+    private static final String QUERY_CONTAINER_PROVIDER_NAME = "MybatisQueryContainerProvider";
+    private final MybatisPlusQueryContainerProvider containerRegister;
 
     /**
      * Create a {@link AssembleMpAnnotationHandler} instance.
@@ -40,7 +43,7 @@ public class AssembleMpAnnotationHandler extends AbstractAssembleAnnotationHandl
      */
     public AssembleMpAnnotationHandler(
         AnnotationFinder annotationFinder,
-        MybatisPlusQueryContainerRegister containerRegister,
+        MybatisPlusQueryContainerProvider containerRegister,
         Crane4jGlobalConfiguration globalConfiguration) {
         this(annotationFinder, Sorted.comparator(), containerRegister, globalConfiguration);
     }
@@ -55,10 +58,11 @@ public class AssembleMpAnnotationHandler extends AbstractAssembleAnnotationHandl
      */
     public AssembleMpAnnotationHandler(
         AnnotationFinder annotationFinder, Comparator<KeyTriggerOperation> operationComparator,
-        MybatisPlusQueryContainerRegister containerRegister,
+        MybatisPlusQueryContainerProvider containerRegister,
         Crane4jGlobalConfiguration globalConfiguration) {
         super(AssembleMp.class, annotationFinder, operationComparator, globalConfiguration);
         this.containerRegister = containerRegister;
+        globalConfiguration.registerContainerProvider(QUERY_CONTAINER_PROVIDER_NAME, containerRegister);
     }
 
     /**
@@ -69,11 +73,14 @@ public class AssembleMpAnnotationHandler extends AbstractAssembleAnnotationHandl
      */
     @Override
     protected String getContainerNamespace(AssembleMp annotation) {
-        return containerRegister.getContainer(
+        String namespace = containerRegister.determineNamespace(
             annotation.mapper(), annotation.where(), Arrays.asList(annotation.selects())
         );
+        if (annotation.mappingType() != MappingType.ONE_TO_ONE) {
+            containerRegister.setMappingType(namespace, annotation.mappingType());
+        }
+        return ContainerManager.canonicalNamespace(namespace, QUERY_CONTAINER_PROVIDER_NAME);
     }
-
 
     /**
      * Get {@link StandardAnnotation}.

@@ -6,8 +6,8 @@ import cn.crane4j.core.container.MethodInvokerContainer;
 import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.MethodInvoker;
-import cn.crane4j.core.support.container.AbstractQueryContainerCreator;
 import cn.crane4j.core.support.container.MethodInvokerContainerCreator;
+import cn.crane4j.core.support.container.query.NamespaceResolvableQueryContainerProvider;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.ReflectUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -18,6 +18,7 @@ import com.baomidou.mybatisplus.core.metadata.TableInfo;
 import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -30,26 +31,75 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
+ * <p>A {@link ContainerProvider} implementation based on mybatis-plus's {@link BaseMapper},
+ * it's provides the ability that generate query container by the specified query information.<br/>
+ * It is need register {@link BaseMapper} from mybatis-plus to this instance before use it.
+ *
  * @author huangchengxing
  */
-public class MybatisPlusQueryContainerRegister
-        extends AbstractQueryContainerCreator<BaseMapper<?>> implements ContainerProvider {
+public class MybatisPlusQueryContainerProvider extends NamespaceResolvableQueryContainerProvider<BaseMapper<?>> {
 
+    /**
+     * Factory for creating {@link BaseMapper} instance if it is not registered.
+     */
+    @Setter
+    @Nullable
+    private Function<String, BaseMapper<?>> mapperFactory;
+
+    /**
+     * Global configuration.
+     */
     protected final Crane4jGlobalConfiguration crane4jGlobalConfiguration;
 
     /**
-     * Create a {@link MybatisPlusQueryContainerRegister} instance
+     * Create a {@link MybatisPlusQueryContainerProvider} instance
      *
      * @param methodInvokerContainerCreator method invoker container creator
      * @param globalConfiguration global configuration
      */
-    public MybatisPlusQueryContainerRegister(
-        MethodInvokerContainerCreator methodInvokerContainerCreator, Crane4jGlobalConfiguration globalConfiguration) {
+    public MybatisPlusQueryContainerProvider(
+            MethodInvokerContainerCreator methodInvokerContainerCreator, Crane4jGlobalConfiguration globalConfiguration) {
+        this(methodInvokerContainerCreator, globalConfiguration, null);
+    }
+
+    /**
+     * Create a {@link MybatisPlusQueryContainerProvider} instance
+     *
+     * @param methodInvokerContainerCreator method invoker container creator
+     * @param globalConfiguration global configuration
+     * @param mapperFactory mapper factory
+     */
+    public MybatisPlusQueryContainerProvider(
+        MethodInvokerContainerCreator methodInvokerContainerCreator, Crane4jGlobalConfiguration globalConfiguration, @Nullable Function<String, BaseMapper<?>> mapperFactory) {
         super(methodInvokerContainerCreator);
         this.crane4jGlobalConfiguration = globalConfiguration;
+        this.mapperFactory = mapperFactory;
+    }
+
+    /**
+     * <p>Get a container based on repository object repository.<br />
+     * When querying, the attribute name of the input parameter will be converted to
+     * the table columns specified in the corresponding property.
+     *
+     * @param name        mapper name
+     * @param keyProperty key field name for query, if it is empty, it defaults to the specified key field
+     * @param properties  fields to query, if it is empty, all table columns will be queried by default.
+     * @return container
+     */
+    @Override
+    public <K> Container<K> getQueryContainer(String name, @Nullable String keyProperty, @Nullable List<String> properties) {
+        if (!registeredRepositories.containsKey(name) && Objects.nonNull(mapperFactory)) {
+            synchronized (registeredRepositories) {
+                if (!registeredRepositories.containsKey(name)) {
+                    registerRepository(name, mapperFactory.apply(name));
+                }
+            }
+        }
+        return super.getQueryContainer(name, keyProperty, properties);
     }
 
     /**
@@ -106,18 +156,6 @@ public class MybatisPlusQueryContainerRegister
             .filter(modelClass -> !Object.class.equals(modelClass))
             .findFirst()
             .orElse(null);
-    }
-
-    /**
-     * Get container instance by given namespace
-     *
-     * @param namespace namespace of container
-     * @return container instance
-     */
-    @Nullable
-    @Override
-    public <K> Container<K> getContainer(String namespace) {
-        return null;
     }
 
     /**
@@ -242,13 +280,5 @@ public class MybatisPlusQueryContainerRegister
             }
             return wrapper;
         }
-    }
-
-    protected static class FormattableCacheKey extends CacheKey {
-        public FormattableCacheKey(
-                String mapperName, @Nullable String keyProperty, @Nullable List<String> properties) {
-            super(mapperName, keyProperty, properties);
-        }
-
     }
 }

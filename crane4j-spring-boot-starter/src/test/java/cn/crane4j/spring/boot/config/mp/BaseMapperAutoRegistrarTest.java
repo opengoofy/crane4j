@@ -3,9 +3,9 @@ package cn.crane4j.spring.boot.config.mp;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
 import cn.crane4j.core.parser.handler.OperationAnnotationHandler;
-import cn.crane4j.core.support.container.AbstractQueryContainerCreator;
+import cn.crane4j.core.support.container.query.AbstractQueryContainerProvider;
 import cn.crane4j.core.util.ReflectUtils;
-import cn.crane4j.extension.mybatis.plus.MybatisPlusQueryContainerRegister;
+import cn.crane4j.extension.mybatis.plus.MybatisPlusQueryContainerProvider;
 import cn.crane4j.spring.boot.config.Crane4jAutoConfiguration;
 import cn.crane4j.spring.boot.config.Crane4jMybatisPlusAutoConfiguration;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -34,7 +34,7 @@ import java.util.Set;
 public class BaseMapperAutoRegistrarTest {
 
     @Autowired
-    private MybatisPlusQueryContainerRegister containerRegister;
+    private MybatisPlusQueryContainerProvider containerRegister;
     @Autowired
     private BeanOperationParser beanOperationParser;
     @Autowired
@@ -47,7 +47,7 @@ public class BaseMapperAutoRegistrarTest {
             Assert.assertEquals(resolvers.size(), applicationContext.getBeanNamesForType(OperationAnnotationHandler.class).length);
         }
 
-        Map<String, AbstractQueryContainerCreator.Repository<BaseMapper<?>>> mapperInfoMap = containerRegister.getRegisterRepositories();
+        Map<String, AbstractQueryContainerProvider.Repository<BaseMapper<?>>> mapperInfoMap = containerRegister.getRegisteredRepositories();
         Assert.assertEquals(1, mapperInfoMap.size());
         Assert.assertTrue(mapperInfoMap.containsKey("fooMapper"));
     }

@@ -32,14 +32,15 @@ public class AssembleMpAnnotationResolverTest extends MpBaseTest {
 
     private AssembleMpAnnotationHandler operationsResolver;
     private BeanOperationParser beanOperationParser;
+    private Crane4jGlobalConfiguration configuration;
 
     @Before
     public void afterInit() {
         AnnotationFinder annotationFinder = new SimpleAnnotationFinder();
-        Crane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create();
+        configuration = SimpleCrane4jGlobalConfiguration.create();
         beanOperationParser = configuration.getBeanOperationsParser(BeanOperationParser.class.getSimpleName());
         ConverterManager converterManager = new HutoolConverterManager();
-        MybatisPlusQueryContainerRegister register = new MybatisPlusQueryContainerRegister(
+        MybatisPlusQueryContainerProvider register = new MybatisPlusQueryContainerProvider(
             new MethodInvokerContainerCreator(new ReflectPropertyOperator(new HutoolConverterManager()), converterManager), configuration
         );
         register.registerRepository("fooMapper", fooMapper);
@@ -58,14 +59,14 @@ public class AssembleMpAnnotationResolverTest extends MpBaseTest {
         Assert.assertNotNull(idOperation);
         Assert.assertEquals("id", idOperation.getKey());
         Assert.assertEquals(1, idOperation.getPropertyMappings().size());
-        Container<?> idContainer = idOperation.getContainer();
+        Container<?> idContainer = configuration.getContainer(idOperation.getContainer());
         Assert.assertTrue(idContainer instanceof MethodInvokerContainer);
 
         AssembleOperation keyOperation = CollectionUtils.get(assembleOperations, 1);
         Assert.assertNotNull(keyOperation);
         Assert.assertEquals("key", keyOperation.getKey());
         Assert.assertEquals(1, keyOperation.getPropertyMappings().size());
-        Container<?> keyContainer = keyOperation.getContainer();
+        Container<?> keyContainer = configuration.getContainer(keyOperation.getContainer());
         Assert.assertTrue(keyContainer instanceof MethodInvokerContainer);
     }
 

@@ -4,8 +4,8 @@ import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.MethodInvokerContainer;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.SimpleCrane4jGlobalConfiguration;
-import cn.crane4j.core.support.container.AbstractQueryContainerCreator;
 import cn.crane4j.core.support.container.MethodInvokerContainerCreator;
+import cn.crane4j.core.support.container.query.AbstractQueryContainerProvider;
 import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.support.converter.HutoolConverterManager;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
@@ -20,57 +20,56 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * test for {@link MybatisPlusQueryContainerRegister}
+ * test for {@link MybatisPlusQueryContainerProvider}
  *
  * @author huangchengxing
  */
-public class MybatisPlusQueryContainerRegisterTest extends MpBaseTest {
+public class MybatisPlusQueryContainerProviderTest extends MpBaseTest {
 
-    private MybatisPlusQueryContainerRegister mybatisPlusQueryContainerRegister;
+    private MybatisPlusQueryContainerProvider mybatisPlusQueryContainerProvider;
 
     @Override
     public void afterInit() {
         Crane4jGlobalConfiguration crane4jGlobalConfiguration = SimpleCrane4jGlobalConfiguration.create();
         ConverterManager converterManager = new HutoolConverterManager();
-        mybatisPlusQueryContainerRegister = new LazyLoadMybatisPlusQueryContainerRegister(
+        mybatisPlusQueryContainerProvider = new MybatisPlusQueryContainerProvider(
             new MethodInvokerContainerCreator(new ReflectPropertyOperator(converterManager), converterManager),
             crane4jGlobalConfiguration, name -> fooMapper
         );
-        mybatisPlusQueryContainerRegister.registerRepository("fooMapper", fooMapper);
+        mybatisPlusQueryContainerProvider.registerRepository("fooMapper", fooMapper);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void checkMapperInfo() {
         // check mapper info cache
-        Map<String, AbstractQueryContainerCreator.Repository<BaseMapper<?>>> infoMap
-            = mybatisPlusQueryContainerRegister.getRegisterRepositories();
+        Map<String, AbstractQueryContainerProvider.Repository<BaseMapper<?>>> infoMap
+            = mybatisPlusQueryContainerProvider.getRegisteredRepositories();
         Assert.assertEquals(1, infoMap.size());
 
         // check mapper info
-        AbstractQueryContainerCreator.Repository<BaseMapper<?>> fooMapperInfo = infoMap.get("fooMapper");
+        AbstractQueryContainerProvider.Repository<BaseMapper<?>> fooMapperInfo = infoMap.get("fooMapper");
         Assert.assertNotNull(fooMapperInfo);
         Assert.assertSame(fooMapper, fooMapperInfo.getTarget());
 
         // check destroy
-        mybatisPlusQueryContainerRegister.destroy();
+        mybatisPlusQueryContainerProvider.destroy();
         Assert.assertTrue(infoMap.isEmpty());
 
         // check container
-        Container<Object> container = (Container<Object>)mybatisPlusQueryContainerRegister.getContainer("fooMapper", null, null);
+        Container<Object> container = (Container<Object>) mybatisPlusQueryContainerProvider.getQueryContainer("fooMapper", null, null);
 
         // check lazy load
-        AbstractQueryContainerCreator.Repository<BaseMapper<?>> mapperInfo = infoMap.get("fooMapper");
+        AbstractQueryContainerProvider.Repository<BaseMapper<?>> mapperInfo = infoMap.get("fooMapper");
         Assert.assertNotNull(mapperInfo);
         Assert.assertSame(fooMapper, mapperInfo.getTarget());
 
         checkContainer(container, "id");
-        Assert.assertSame(container, mybatisPlusQueryContainerRegister.getContainer("fooMapper", null, null));
-        container = (Container<Object>)mybatisPlusQueryContainerRegister.getContainer("fooMapper", null, Arrays.asList("age", "name"));
+        Assert.assertSame(container, mybatisPlusQueryContainerProvider.getQueryContainer("fooMapper", null, null));
+        container = mybatisPlusQueryContainerProvider.getQueryContainer("fooMapper", null, Arrays.asList("age", "name"));
         checkContainer(container, "id", "age", "name", "id");
-        container = (Container<Object>)mybatisPlusQueryContainerRegister.getContainer("fooMapper", "userName", null);
+        container = mybatisPlusQueryContainerProvider.getQueryContainer("fooMapper", "userName", null);
         checkContainer(container, "name", Arrays.asList("小红", "小明", "小刚"));
-        container = (Container<Object>)mybatisPlusQueryContainerRegister.getContainer("fooMapper", "id", Arrays.asList("name", "age"));
+        container = mybatisPlusQueryContainerProvider.getQueryContainer("fooMapper", "id", Arrays.asList("name", "age"));
         checkContainer(container, "id", "name", "age");
     }
 

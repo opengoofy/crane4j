@@ -7,7 +7,6 @@ import cn.crane4j.core.container.ConstantContainer;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.OperateTemplate;
 import cn.crane4j.core.support.reflect.PropertyOperator;
-import cn.crane4j.core.util.ObjectUtils;
 import cn.crane4j.extension.spring.Crane4jApplicationContext;
 import lombok.Data;
 import lombok.Getter;
@@ -45,13 +44,13 @@ public class ContainerEnumExampleTest {
     @Before
     public void init() {
         // 手动指定key为code属性，而value直接为枚举项本身
-        context.compute(
-            "sex", c -> ObjectUtils.defaultIfNull(c, ConstantContainer.forEnum("sex", Sex.class, Sex::getCode))
-        );
+        if (!context.containsContainer("sex")) {
+            context.registerContainer("sex", () -> ConstantContainer.forEnum("sex", Sex.class, Sex::getCode));
+        }
         // 通过注解，配置了key为code属性，而value为name属性
-        context.compute(
-            "gender", c -> ObjectUtils.defaultIfNull(c, ConstantContainer.forEnum(Gender.class, annotationFinder, propertyOperator))
-        );
+        if (!context.containsContainer("gender")) {
+            context.registerContainer("gender", () -> ConstantContainer.forEnum(Gender.class, annotationFinder, propertyOperator));
+        }
     }
 
     @Test

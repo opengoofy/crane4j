@@ -2,7 +2,6 @@ package cn.crane4j.spring.boot.example;
 
 import cn.crane4j.annotation.Assemble;
 import cn.crane4j.annotation.Mapping;
-import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.LambdaContainer;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.OperateTemplate;
@@ -38,20 +37,23 @@ public class ChainPropMappingExampleTest {
 
     @Before
     public void init() {
-        Container<Integer> oneToOne = LambdaContainer.forLambda(
-            "OneToOne", ids -> ids.stream().collect(Collectors.toMap(
-                Function.identity(), id -> new Foo(id, null, new Foo(null, "name" + id, null))
-            ))
-        );
-        context.compute(oneToOne.getNamespace(), c -> oneToOne);
-        Container<Integer> oneToMany = LambdaContainer.forLambda(
-            "OneToMany", ids -> ids.stream().collect(Collectors.toMap(
-                Function.identity(), id -> Arrays.asList(
-                    new Foo(id, null, new Foo(null, "name" + id, null)), new Foo(id, null, new Foo(null, "name" + id, null))
-                )
-            ))
-        );
-        context.compute(oneToMany.getNamespace(), c -> oneToMany);
+        if (!context.containsContainer("OneToOne")) {
+            context.registerContainer("OneToOne", () -> LambdaContainer.forLambda(
+                    "OneToOne", ids -> ids.stream().collect(Collectors.toMap(
+                            Function.identity(), id -> new Foo((Integer) id, null, new Foo(null, "name" + id, null))
+                    ))
+            ));
+        }
+
+        if (!context.containsContainer("OneToMany")) {
+            context.registerContainer("OneToMany", () -> LambdaContainer.forLambda(
+                    "OneToMany", ids -> ids.stream().collect(Collectors.toMap(
+                            Function.identity(), id -> Arrays.asList(
+                                    new Foo((Integer) id, null, new Foo(null, "name" + id, null)), new Foo((Integer) id, null, new Foo(null, "name" + id, null))
+                            )
+                    ))
+            ));
+        }
     }
 
     @Test

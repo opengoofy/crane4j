@@ -1,7 +1,7 @@
-package cn.crane4j.core.support.container;
+package cn.crane4j.core.support.container.query;
 
-import cn.crane4j.annotation.MappingType;
 import cn.crane4j.core.support.MethodInvoker;
+import cn.crane4j.core.support.container.MethodInvokerContainerCreator;
 import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.support.converter.HutoolConverterManager;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
@@ -24,11 +24,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * test for {@link AbstractQueryContainerCreator}
+ * test for {@link NamespaceResolvableQueryContainerProvider}
  *
  * @author huangchengxing
  */
-public class AbstractQueryContainerCreatorTest {
+public class NamespaceResolvableQueryContainerProviderTest {
 
     private static final Map<String, String> COLUMNS = new HashMap<String, String>(){{
         put("id", "user_id");
@@ -56,31 +56,30 @@ public class AbstractQueryContainerCreatorTest {
         // check repository
         Object object = new Entity();
         containerCreator.registerRepository("test", object);
-        AbstractQueryContainerCreator.Repository<Object> repository = containerCreator.registerRepositories.get("test");
+        AbstractQueryContainerProvider.Repository<Object> repository = containerCreator.registeredRepositories.get("test");
         Assert.assertNotNull(repository);
         Assert.assertEquals("test", repository.getTableName());
         Assert.assertSame(object, repository.getTarget());
         Assert.assertEquals(object.getClass(), repository.getEntityType());
-        Assert.assertEquals(MappingType.ONE_TO_ONE, repository.getMappingType(null));
         COLUMNS.forEach((p, c) -> Assert.assertEquals(c, repository.propertyToColumn(c, c)));
         QUERY_COLUMNS.forEach((p, c) -> Assert.assertEquals(c, repository.propertyToQueryColumn(c, c)));
 
         // check recorder
-        containerCreator.getContainer("test", null, Collections.emptyList());
+        containerCreator.getQueryContainer("test", null, Collections.emptyList());
         Recorder recorder = containerCreator.recorders.get(0);
         checkRecorder(recorder, repository, null, Collections.emptyList());
 
-        containerCreator.getContainer("test", "id", Arrays.asList("name", "age"));
+        containerCreator.getQueryContainer("test", "id", Arrays.asList("name", "age"));
         recorder = containerCreator.recorders.get(1);
         checkRecorder(recorder, repository, "id", Arrays.asList("name", "age"));
 
-        containerCreator.getContainer("test", "id", Arrays.asList("id", "name", "age"));
+        containerCreator.getQueryContainer("test", "id", Arrays.asList("id", "name", "age"));
         recorder = containerCreator.recorders.get(2);
         checkRecorder(recorder, repository, "id", Arrays.asList("id", "name", "age"));
     }
 
     private void checkRecorder(
-        Recorder recorder, AbstractQueryContainerCreator.Repository<Object> repository,
+        Recorder recorder, AbstractQueryContainerProvider.Repository<Object> repository,
         String keyProperty, List<String> properties) {
 
         keyProperty = StringUtils.emptyToDefault(keyProperty, repository.getKeyProperty());
@@ -97,7 +96,7 @@ public class AbstractQueryContainerCreatorTest {
         }
     }
 
-    private static class TestQueryContainerCreator extends AbstractQueryContainerCreator<Object> {
+    private static class TestQueryContainerCreator extends NamespaceResolvableQueryContainerProvider<Object> {
         private final List<Recorder> recorders = new ArrayList<>();
         public TestQueryContainerCreator(MethodInvokerContainerCreator methodInvokerContainerCreator) {
             super(methodInvokerContainerCreator);
@@ -118,7 +117,7 @@ public class AbstractQueryContainerCreatorTest {
 
     @Getter
     @RequiredArgsConstructor
-    private static class TestRepository implements AbstractQueryContainerCreator.Repository<Object> {
+    private static class TestRepository implements AbstractQueryContainerProvider.Repository<Object> {
         private final Object target;
         private final String tableName;
         private final String keyProperty;
@@ -142,7 +141,7 @@ public class AbstractQueryContainerCreatorTest {
     @RequiredArgsConstructor
     private static class Recorder implements MethodInvoker {
         private final String namespace;
-        private final AbstractQueryContainerCreator.Repository<Object> repository;
+        private final AbstractQueryContainerProvider.Repository<Object> repository;
         private final Set<String> queryColumns;
         private final String keyColumn, keyProperty;
         @Override

@@ -45,7 +45,7 @@ import java.util.Objects;
  * @author huangchengxing
  * @param <T> target type
  */
-public abstract class AbstractAssembleOperationHandler<T extends AbstractAssembleOperationHandler.Target> implements AssembleOperationHandler {
+public abstract class AbstractReflectAssembleOperationHandler<T extends AbstractReflectAssembleOperationHandler.Target> implements AssembleOperationHandler {
 
     /**
      * Perform assembly operation.

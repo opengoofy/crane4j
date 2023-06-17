@@ -4,12 +4,8 @@ import cn.crane4j.core.container.MethodInvokerContainer;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.container.MethodInvokerContainerCreator;
-import cn.crane4j.core.support.expression.ExpressionEvaluator;
 import cn.crane4j.extension.mybatis.plus.AssembleMpAnnotationHandler;
-import cn.crane4j.extension.mybatis.plus.LazyLoadMybatisPlusQueryContainerRegister;
-import cn.crane4j.extension.mybatis.plus.MybatisPlusContainerProvider;
-import cn.crane4j.extension.mybatis.plus.MybatisPlusQueryContainerRegister;
-import cn.crane4j.extension.spring.expression.SpelExpressionContext;
+import cn.crane4j.extension.mybatis.plus.MybatisPlusQueryContainerProvider;
 import com.baomidou.mybatisplus.autoconfigure.MybatisPlusAutoConfiguration;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import lombok.Data;
@@ -27,7 +23,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.expression.BeanResolver;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -48,10 +43,10 @@ public class Crane4jMybatisPlusAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public MybatisPlusQueryContainerRegister mybatisPlusQueryContainerRegister(
+    public MybatisPlusQueryContainerProvider mybatisPlusQueryContainerProvider(
         MethodInvokerContainerCreator methodInvokerContainerCreator,
         Crane4jGlobalConfiguration globalConfiguration, ApplicationContext applicationContext) {
-        return new LazyLoadMybatisPlusQueryContainerRegister(
+        return new MybatisPlusQueryContainerProvider(
             methodInvokerContainerCreator, globalConfiguration,
             mapperName -> applicationContext.getBean(mapperName, BaseMapper.class)
         );
@@ -60,24 +55,11 @@ public class Crane4jMybatisPlusAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public AssembleMpAnnotationHandler assembleMpAnnotationResolver(
-        AnnotationFinder annotationFinder, MybatisPlusQueryContainerRegister mybatisPlusQueryContainerRegister,
+        AnnotationFinder annotationFinder, MybatisPlusQueryContainerProvider mybatisPlusQueryContainerProvider,
         Crane4jGlobalConfiguration globalConfiguration, Crane4jAutoConfiguration.Properties properties) {
         return new AssembleMpAnnotationHandler(
-            annotationFinder, mybatisPlusQueryContainerRegister, globalConfiguration
+            annotationFinder, mybatisPlusQueryContainerProvider, globalConfiguration
         );
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public MybatisPlusContainerProvider mpMethodContainerProvider(
-        ExpressionEvaluator evaluator, BeanResolver beanResolver,
-        MybatisPlusQueryContainerRegister mybatisPlusQueryContainerRegister) {
-        return new MybatisPlusContainerProvider(
-            mybatisPlusQueryContainerRegister, evaluator, provider -> {
-            SpelExpressionContext context = new SpelExpressionContext(provider);
-            context.setBeanResolver(beanResolver);
-            return context;
-        });
     }
 
     @ConditionalOnProperty(
@@ -153,7 +135,7 @@ public class Crane4jMybatisPlusAutoConfiguration {
             BiPredicate<String, BaseMapper<?>> mapperFilter = includes.isEmpty() ?
                 (n, m) -> !excludes.contains(n) : (n, m) -> includes.contains(n) && !excludes.contains(n);
             Map<String, BaseMapper> mappers = applicationContext.getBeansOfType(BaseMapper.class);
-            MybatisPlusQueryContainerRegister register = applicationContext.getBean(MybatisPlusQueryContainerRegister.class);
+            MybatisPlusQueryContainerProvider register = applicationContext.getBean(MybatisPlusQueryContainerProvider.class);
             mappers.entrySet().stream()
                 .filter(e -> mapperFilter.test(e.getKey(), e.getValue()))
                 .forEach(e -> register.registerRepository(e.getKey(), e.getValue()));
