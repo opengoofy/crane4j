@@ -3,6 +3,7 @@ package cn.crane4j.core.parser.handler;
 import cn.crane4j.annotation.Mapping;
 import cn.crane4j.annotation.MappingTemplate;
 import cn.crane4j.core.container.Container;
+import cn.crane4j.core.container.ContainerManager;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.executor.handler.OneToOneAssembleOperationHandler;
 import cn.crane4j.core.parser.BeanOperationParser;
@@ -197,6 +198,9 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
      *
      * @param annotation annotation
      * @return namespace of {@link Container}
+     * @implNote if the container needs to be obtained through a specific provider,
+     * the name of the provider and the namespace of the container need to be concatenated through {@link ContainerManager#canonicalNamespace}
+     * @see ContainerManager#canonicalNamespace
      */
     protected abstract String getContainerNamespace(T annotation);
 

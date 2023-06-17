@@ -42,6 +42,13 @@ public @interface AssembleMp {
      */
     String[] selects() default {};
 
+    /**
+     *  Mapping type of query result.
+     *
+     * @return mapping type
+     */
+    MappingType mappingType() default MappingType.ONE_TO_ONE;
+
     // ================= common =================
 
     /**

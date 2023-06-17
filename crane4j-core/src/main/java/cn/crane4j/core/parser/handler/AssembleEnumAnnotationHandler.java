@@ -149,7 +149,10 @@ public class AssembleEnumAnnotationHandler extends AbstractAssembleAnnotationHan
         boolean hasKey = StringUtils.isNotEmpty(annotation.enumKey());
         boolean hasValue = StringUtils.isNotEmpty(annotation.enumValue());
         return ConstantContainer.forMap(namespace, Stream.of(enumType.getEnumConstants())
-            .collect(Collectors.toMap(e -> hasKey ? Objects.requireNonNull(propertyOperator.readProperty(enumType, e, annotation.enumKey())) : e, e -> hasValue ? Objects.requireNonNull(propertyOperator.readProperty(enumType, e, annotation.enumValue())) : e)));
+            .collect(Collectors.toMap(
+                    e -> hasKey ? Objects.requireNonNull(propertyOperator.readProperty(enumType, e, annotation.enumKey())) : e,
+                    e -> hasValue ? Objects.requireNonNull(propertyOperator.readProperty(enumType, e, annotation.enumValue())) : e)
+            ));
     }
 
     private static class InternalEnumContainerProvider implements ContainerProvider {
