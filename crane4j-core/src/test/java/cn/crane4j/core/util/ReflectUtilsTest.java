@@ -230,17 +230,6 @@ public class ReflectUtilsTest {
     }
 
     @Test
-    public void putAnnotation() {
-        Method method = ReflectUtil.getMethod(ReflectUtilsTest.class, "putAnnotation");
-        Assert.assertNotNull(method);
-        Annotation annotation = method.getAnnotation(Annotation.class);
-        Assert.assertNull(annotation);
-        ReflectUtils.putAnnotation(Foo.class.getAnnotation(Annotation.class), method);
-        annotation = method.getAnnotation(Annotation.class);
-        Assert.assertNotNull(annotation);
-    }
-
-    @Test
     public void setAttributeValue() {
         Annotation annotation = Foo.class.getAnnotation(Annotation.class);
         int expected = -1;

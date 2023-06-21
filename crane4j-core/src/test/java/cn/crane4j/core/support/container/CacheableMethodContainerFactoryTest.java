@@ -19,6 +19,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -59,13 +61,13 @@ public class CacheableMethodContainerFactoryTest {
 
     @Test
     public void support() {
-        Assert.assertTrue(factory.support(service, annotatedMethod));
-        Assert.assertFalse(factory.support(service, noneAnnotatedMethod));
+        Assert.assertTrue(factory.support(service, annotatedMethod, findAnnotations(annotatedMethod)));
+        Assert.assertFalse(factory.support(service, noneAnnotatedMethod, findAnnotations(noneAnnotatedMethod)));
     }
 
     @Test
     public void get() {
-        List<Container<Object>> containers = factory.get(service, annotatedMethod);
+        List<Container<Object>> containers = factory.get(service, annotatedMethod, findAnnotations(annotatedMethod));
         Container<Object> container = CollectionUtils.get(containers, 0);
         Assert.assertTrue(container instanceof CacheableContainer);
 
@@ -73,6 +75,10 @@ public class CacheableMethodContainerFactoryTest {
         Assert.assertNotNull(cachedA);
         Object a = container.get(Collections.singleton("a")).get("a");
         Assert.assertSame(cachedA, a);
+    }
+
+    private static Collection<ContainerMethod> findAnnotations(Method method) {
+        return Arrays.asList(method.getAnnotationsByType(ContainerMethod.class));
     }
 
     private static class Service {

@@ -30,10 +30,6 @@ import java.util.stream.Stream;
  * in the class or methods bound by annotations on class,
  * and adapt it to {@link Container} instance according to given {@link MethodContainerFactory}.
  *
- * <p><b>NOTE</b>：In order to facilitate subsequent processing,
- * when looking up the method in the class according to the annotation on the class,
- * the corresponding annotation will be added to {@link Method#declaredAnnotations} through reflection.
- *
  * @author huangchengxing
  * @see ContainerMethod
  * @see MethodContainerFactory
@@ -148,9 +144,10 @@ public class ContainerMethodAnnotationProcessor {
      * @param target target
      * @param annotatedMethods annotated methods
      */
-    protected Collection<Container<Object>> processAnnotatedMethod(Object target, MultiMap<Method, ContainerMethod> annotatedMethods) {
-        return annotatedMethods.keySet().stream()
-            .map(method -> createMethodContainer(target, method))
+    protected Collection<Container<Object>> processAnnotatedMethod(
+            Object target, MultiMap<Method, ContainerMethod> annotatedMethods) {
+        return annotatedMethods.asMap().entrySet().stream()
+            .map(e -> createMethodContainer(target, e.getKey(), e.getValue()))
             .filter(CollectionUtils::isNotEmpty)
             .flatMap(Collection::stream)
             .collect(Collectors.toList());
@@ -176,11 +173,12 @@ public class ContainerMethodAnnotationProcessor {
         return annotationFinder.getAllAnnotations(method, ContainerMethod.class);
     }
 
-    private Collection<Container<Object>> createMethodContainer(Object bean, Method method) {
+    private Collection<Container<Object>> createMethodContainer(
+            Object bean, Method method, Collection<ContainerMethod> annotations) {
         return methodContainerFactories.stream()
-            .filter(factory -> factory.support(bean, method))
+            .filter(factory -> factory.support(bean, method, annotations))
             .findFirst()
-            .map(factory -> factory.get(bean, method))
+            .map(factory -> factory.get(bean, method, annotations))
             .orElse(Collections.emptyList());
     }
 
@@ -196,8 +194,6 @@ public class ContainerMethodAnnotationProcessor {
             log.debug("bound method not found: [{}]", bind);
             return null;
         }
-        // TODO try to binding annotations to method
-        ReflectUtils.putAnnotation(annotation, resolvedMethod);
         return resolvedMethod;
     }
 }
