@@ -167,10 +167,10 @@ public class MpExtensionExampleTest {
             groups = "testPrimaryKeyAndAllColumns",
             propTemplates = FooVO.class
         )
-        @Assemble(container = "container('fooMapper', {'name as userName'})",
-            groups = "testPrimaryKeyAndCustomColumns",
-            containerProvider = "",
-            propTemplates = FooVO.class
+        @AssembleMp(
+                mapper = "fooMapper", selects = "name as userName",
+                groups = "testPrimaryKeyAndCustomColumns",
+                propTemplates = FooVO.class
         )
         private Integer id;
 
@@ -180,6 +180,11 @@ public class MpExtensionExampleTest {
             selects = "userAge", where = "userName",
             groups = "testCustomKeyAndCustomColumns",
             propTemplates = FooVO.class
+        )
+        @AssembleMp(
+                mapper = "fooMapper", where = "userName",
+                groups = "testCustomKeyAndAllColumns",
+                propTemplates = FooVO.class
         )
         private String userName;
         private Integer userAge;
