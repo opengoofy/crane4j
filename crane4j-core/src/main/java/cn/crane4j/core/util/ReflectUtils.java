@@ -9,8 +9,27 @@ import lombok.NoArgsConstructor;
 
 import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.*;
-import java.util.*;
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.lang.reflect.Proxy;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -102,7 +121,6 @@ public class ReflectUtils {
      * @return invocation arguments
      */
     public static Object[] resolveMethodInvocationArguments(Method method, Object... args) {
-        // TODO provide convertible method invoker implementation
         int parameterCount = method.getParameterCount();
         if (parameterCount == 0) {
             return EMPTY_PARAMS;
@@ -389,30 +407,6 @@ public class ReflectUtils {
         }
         Map<String, Object> memberValues = (Map<String, Object>) ReflectUtil.getFieldValue(invocationHandler, memberAttributeName);
         memberValues.put(attributeName, attributeValue);
-    }
-
-    /**
-     * Add annotation to method.
-     *
-     * @param annotation annotation
-     * @param method method
-     * @throws IllegalArgumentException thrown when a method already has annotations of the same type
-     */
-    @SuppressWarnings("unchecked")
-    public static void putAnnotation(Annotation annotation, Method method) {
-        Objects.requireNonNull(method);
-        Objects.requireNonNull(method.getAnnotations());
-        Optional.ofNullable(ReflectUtil.getFieldValue(method, "declaredAnnotations"))
-            .map(map -> (Map<Class<? extends Annotation >, Annotation>)map)
-            .map(LinkedHashMap::new)
-            .ifPresent(map -> {
-                Asserts.isFalse(
-                    map.containsKey(annotation.annotationType()),
-                    "method has been annotated by [{}]", annotation.annotationType()
-                );
-                map.put(annotation.annotationType(), annotation);
-                ReflectUtil.setFieldValue(method, "declaredAnnotations", Collections.unmodifiableMap(map));
-            });
     }
 
     // ====================== class ======================

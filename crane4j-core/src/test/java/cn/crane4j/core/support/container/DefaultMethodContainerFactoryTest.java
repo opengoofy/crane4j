@@ -19,6 +19,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -88,15 +89,15 @@ public class DefaultMethodContainerFactoryTest {
 
     @Test
     public void support() {
-        Assert.assertFalse(factory.support(serviceImpl, noneResultMethod));
-        Assert.assertTrue(factory.support(serviceImpl, mappedMethod));
-        Assert.assertTrue(factory.support(serviceImpl, onoToOneMethod));
-        Assert.assertTrue(factory.support(serviceImpl, oneToManyMethod));
+        Assert.assertFalse(factory.support(serviceImpl, noneResultMethod, findAnnotations(noneResultMethod)));
+        Assert.assertTrue(factory.support(serviceImpl, mappedMethod, findAnnotations(mappedMethod)));
+        Assert.assertTrue(factory.support(serviceImpl, onoToOneMethod, findAnnotations(onoToOneMethod)));
+        Assert.assertTrue(factory.support(serviceImpl, oneToManyMethod, findAnnotations(oneToManyMethod)));
     }
 
     @Test
     public void getWhenMappedMethod() {
-        List<Container<Object>> containers = factory.get(serviceImpl, mappedMethod);
+        List<Container<Object>> containers = factory.get(serviceImpl, mappedMethod, findAnnotations(mappedMethod));
         Assert.assertEquals(1, containers.size());
         Container<Object> container = containers.get(0);
         Assert.assertNotNull(container);
@@ -109,7 +110,7 @@ public class DefaultMethodContainerFactoryTest {
 
     @Test
     public void getProxyWhenMappedMethod() {
-        List<Container<Object>> containers = factory.get(proxy, mappedMethod);
+        List<Container<Object>> containers = factory.get(proxy, mappedMethod, findAnnotations(mappedMethod));
         Assert.assertEquals(1, containers.size());
         Container<Object> container = containers.get(0);
         Assert.assertNotNull(container);
@@ -122,7 +123,7 @@ public class DefaultMethodContainerFactoryTest {
 
     @Test
     public void getWhenOnoToOneMethod() {
-        List<Container<Object>> containers = factory.get(serviceImpl, onoToOneMethod);
+        List<Container<Object>> containers = factory.get(serviceImpl, onoToOneMethod, findAnnotations(onoToOneMethod));
         Assert.assertEquals(1, containers.size());
         Container<Object> container = containers.get(0);
         Assert.assertNotNull(container);
@@ -135,7 +136,7 @@ public class DefaultMethodContainerFactoryTest {
 
     @Test
     public void getProxyWhenOnoToOneMethod() {
-        List<Container<Object>> containers = factory.get(proxy, onoToOneMethod);
+        List<Container<Object>> containers = factory.get(proxy, onoToOneMethod, findAnnotations(onoToOneMethod));
         Assert.assertEquals(1, containers.size());
         Container<Object> container = containers.get(0);
         Assert.assertNotNull(container);
@@ -148,7 +149,7 @@ public class DefaultMethodContainerFactoryTest {
 
     @Test
     public void getWhenOneToManyMethod() {
-        List<Container<Object>> containers = factory.get(serviceImpl, oneToManyMethod);
+        List<Container<Object>> containers = factory.get(serviceImpl, oneToManyMethod, findAnnotations(oneToManyMethod));
         Assert.assertEquals(1, containers.size());
         Container<Object> container = containers.get(0);
         Assert.assertNotNull(container);
@@ -160,7 +161,7 @@ public class DefaultMethodContainerFactoryTest {
 
     @Test
     public void getProxyWhenOneToManyMethod() {
-        List<Container<Object>> containers = factory.get(proxy, oneToManyMethod);
+        List<Container<Object>> containers = factory.get(proxy, oneToManyMethod, findAnnotations(oneToManyMethod));
         Assert.assertEquals(1, containers.size());
         Container<Object> container = containers.get(0);
         Assert.assertNotNull(container);
@@ -168,6 +169,10 @@ public class DefaultMethodContainerFactoryTest {
         Assert.assertEquals("oneToManyMethod", container.getNamespace());
         Map<Object, ?> data = container.get(null);
         Assert.assertEquals(Arrays.asList(foo1, foo2), data.get(foo1.name));
+    }
+
+    private static Collection<ContainerMethod> findAnnotations(Method method) {
+        return Arrays.asList(method.getAnnotationsByType(ContainerMethod.class));
     }
 
     private interface Service {

@@ -7,6 +7,7 @@ import cn.crane4j.core.support.AnnotationFinder;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -55,10 +56,11 @@ public class DefaultMethodContainerFactory implements MethodContainerFactory {
      *
      * @param source method's calling object
      * @param method method
+     * @param annotations annotations
      * @return true if supported, false otherwise
      */
     @Override
-    public boolean support(Object source, Method method) {
+    public boolean support(Object source, Method method, Collection<ContainerMethod> annotations) {
         return !Objects.equals(method.getReturnType(), Void.TYPE);
     }
 
@@ -67,11 +69,12 @@ public class DefaultMethodContainerFactory implements MethodContainerFactory {
      *
      * @param source method's calling object
      * @param method method
+     * @param annotations annotations
      * @return data source containers
      */
     @Override
-    public List<Container<Object>> get(Object source, Method method) {
-        return annotationFinder.findAllAnnotations(method, ContainerMethod.class).stream()
+    public List<Container<Object>> get(Object source, Method method, Collection<ContainerMethod> annotations) {
+        return annotations.stream()
             .map(annotation -> methodInvokerContainerCreator.createContainer(
                 source, method, annotation.type(), annotation.namespace(),
                 annotation.resultType(), annotation.resultKey()
