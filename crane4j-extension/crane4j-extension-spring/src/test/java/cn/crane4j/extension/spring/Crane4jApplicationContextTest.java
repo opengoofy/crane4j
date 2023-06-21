@@ -6,7 +6,7 @@ import cn.crane4j.core.container.LambdaContainer;
 import cn.crane4j.core.container.lifecycle.ContainerLifecycleProcessor;
 import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
 import cn.crane4j.core.executor.handler.OneToOneAssembleOperationHandler;
-import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
+import cn.crane4j.core.executor.handler.ReflectiveDisassembleOperationHandler;
 import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
 import cn.crane4j.core.util.ReflectUtils;
 import org.junit.Assert;
@@ -39,7 +39,7 @@ public class Crane4jApplicationContextTest {
         Assert.assertNotNull(context.getBeanOperationsParser(TypeHierarchyBeanOperationParser.class.getSimpleName()));
         Assert.assertNotNull(context.getBeanOperationExecutor(DisorderedBeanOperationExecutor.class.getSimpleName()));
         Assert.assertNotNull(context.getAssembleOperationHandler(OneToOneAssembleOperationHandler.class.getSimpleName()));
-        Assert.assertNotNull(context.getDisassembleOperationHandler(ReflectDisassembleOperationHandler.class.getSimpleName()));
+        Assert.assertNotNull(context.getDisassembleOperationHandler(ReflectiveDisassembleOperationHandler.class.getSimpleName()));
         Assert.assertNotNull(context.getContainer("test"));
         Assert.assertNotNull(context.getContainer("testBean"));
 

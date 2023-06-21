@@ -25,7 +25,7 @@ public class MapAccessiblePropertyOperatorTest {
 
     @Before
     public void init() {
-        operator = new MapAccessiblePropertyOperator(new ReflectPropertyOperator(new HutoolConverterManager()));
+        operator = new MapAccessiblePropertyOperator(new ReflectivePropertyOperator(new HutoolConverterManager()));
         map = new HashMap<>();
         map.put("name", "name");
         foo = new Foo(1, false);

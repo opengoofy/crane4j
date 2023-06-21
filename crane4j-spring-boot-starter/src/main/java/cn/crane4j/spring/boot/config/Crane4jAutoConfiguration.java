@@ -16,7 +16,7 @@ import cn.crane4j.core.executor.OrderedBeanOperationExecutor;
 import cn.crane4j.core.executor.handler.ManyToManyAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.OneToManyAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.OneToOneAssembleOperationHandler;
-import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
+import cn.crane4j.core.executor.handler.ReflectiveDisassembleOperationHandler;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
 import cn.crane4j.core.parser.handler.AssembleEnumAnnotationHandler;
@@ -40,11 +40,12 @@ import cn.crane4j.core.support.expression.ExpressionEvaluator;
 import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
 import cn.crane4j.core.support.operator.DefaultProxyMethodFactory;
 import cn.crane4j.core.support.operator.OperatorProxyFactory;
-import cn.crane4j.core.support.reflect.AsmReflectPropertyOperator;
+import cn.crane4j.core.support.reflect.AsmReflectivePropertyOperator;
+import cn.crane4j.core.support.reflect.CacheablePropertyOperator;
 import cn.crane4j.core.support.reflect.ChainAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.PropertyOperator;
-import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
+import cn.crane4j.core.support.reflect.ReflectivePropertyOperator;
 import cn.crane4j.core.util.ClassUtils;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.extension.spring.BeanMethodContainerRegistrar;
@@ -134,7 +135,8 @@ public class Crane4jAutoConfiguration {
     @Bean({"PropertyOperator", "propertyOperator"})
     public PropertyOperator propertyOperator(Properties properties, ConverterManager converterManager) {
         PropertyOperator operator = properties.isEnableAsmReflect() ?
-            new AsmReflectPropertyOperator(converterManager) : new ReflectPropertyOperator(converterManager);
+            new AsmReflectivePropertyOperator(converterManager) : new ReflectivePropertyOperator(converterManager);
+        operator = new CacheablePropertyOperator(operator);
         if (properties.isEnableMapOperate()) {
             operator = new MapAccessiblePropertyOperator(operator);
         }
@@ -284,9 +286,9 @@ public class Crane4jAutoConfiguration {
 
     @Primary
     @ConditionalOnMissingBean
-    @Bean({"ReflectDisassembleOperationHandler", "reflectDisassembleOperationHandler"})
-    public ReflectDisassembleOperationHandler reflectDisassembleOperationHandler(PropertyOperator propertyOperator) {
-        return new ReflectDisassembleOperationHandler(propertyOperator);
+    @Bean({"ReflectiveDisassembleOperationHandler", "reflectiveDisassembleOperationHandler"})
+    public ReflectiveDisassembleOperationHandler reflectiveDisassembleOperationHandler(PropertyOperator propertyOperator) {
+        return new ReflectiveDisassembleOperationHandler(propertyOperator);
     }
 
     // ============== operator interface components ==============
@@ -430,7 +432,7 @@ public class Crane4jAutoConfiguration {
          * Enabling can improve performance to some extent, but may increase additional memory usage.<br />
          * <b><NOTE</b>:If the customized {@link PropertyOperator} is registered, the configuration will be overwritten.
          *
-         * @see AsmReflectPropertyOperator
+         * @see AsmReflectivePropertyOperator
          */
         private boolean enableAsmReflect = false;
 

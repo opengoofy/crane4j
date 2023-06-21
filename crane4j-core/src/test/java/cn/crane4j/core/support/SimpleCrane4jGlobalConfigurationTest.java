@@ -4,7 +4,7 @@ import cn.crane4j.core.container.LambdaContainer;
 import cn.crane4j.core.container.lifecycle.ContainerLifecycleProcessor;
 import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
 import cn.crane4j.core.executor.handler.ManyToManyAssembleOperationHandler;
-import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
+import cn.crane4j.core.executor.handler.ReflectiveDisassembleOperationHandler;
 import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
 import org.junit.Assert;
 import org.junit.Before;
@@ -76,6 +76,6 @@ public class SimpleCrane4jGlobalConfigurationTest {
 
     @Test
     public void getDisassembleOperationHandler() {
-        Assert.assertNotNull(configuration.getDisassembleOperationHandler(ReflectDisassembleOperationHandler.class.getSimpleName()));
+        Assert.assertNotNull(configuration.getDisassembleOperationHandler(ReflectiveDisassembleOperationHandler.class.getSimpleName()));
     }
 }

@@ -11,7 +11,7 @@ import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.support.converter.HutoolConverterManager;
 import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.PropertyOperator;
-import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
+import cn.crane4j.core.support.reflect.ReflectivePropertyOperator;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.junit.Assert;
@@ -35,7 +35,7 @@ public class OneToManyReflexAssembleOperationHandlerTest extends BaseExecutorTes
 
     @Before
     public void init() {
-        PropertyOperator operator = new MapAccessiblePropertyOperator(new ReflectPropertyOperator(new HutoolConverterManager()));
+        PropertyOperator operator = new MapAccessiblePropertyOperator(new ReflectivePropertyOperator(new HutoolConverterManager()));
         OneToManyAssembleOperationHandler handler = new OneToManyAssembleOperationHandler(operator);
         configuration.getAssembleOperationHandlerMap().put(handler.getClass().getName(), handler);
 

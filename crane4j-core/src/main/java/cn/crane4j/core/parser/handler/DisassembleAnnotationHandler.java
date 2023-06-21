@@ -2,7 +2,7 @@ package cn.crane4j.core.parser.handler;
 
 import cn.crane4j.annotation.Disassemble;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
-import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
+import cn.crane4j.core.executor.handler.ReflectiveDisassembleOperationHandler;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.operation.DisassembleOperation;
@@ -118,7 +118,7 @@ public class DisassembleAnnotationHandler implements OperationAnnotationHandler 
      */
     protected DisassembleOperation createDisassembleOperation(Class<?> type, Disassemble annotation, BeanOperationParser parser) {
         // get handler
-        String handler = StringUtils.emptyToDefault(annotation.handler(), ReflectDisassembleOperationHandler.class.getSimpleName());
+        String handler = StringUtils.emptyToDefault(annotation.handler(), ReflectiveDisassembleOperationHandler.class.getSimpleName());
         DisassembleOperationHandler disassembleOperationHandler = globalConfiguration.getDisassembleOperationHandler(handler);
         Asserts.isNotNull(
             disassembleOperationHandler, "disassemble handler [{}] not found", annotation.handler()

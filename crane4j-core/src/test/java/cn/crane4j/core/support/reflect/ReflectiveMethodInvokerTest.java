@@ -10,11 +10,11 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 /**
- * test for {@link ReflectMethodInvoker}
+ * test for {@link ReflectiveMethodInvoker}
  *
  * @author huangchengxing
  */
-public class ReflectMethodInvokerTest {
+public class ReflectiveMethodInvokerTest {
 
     private Service target;
     private Service proxy;
@@ -40,8 +40,8 @@ public class ReflectMethodInvokerTest {
         Assert.assertNotNull(method);
 
         // create by target
-        ReflectMethodInvoker invoker = ReflectMethodInvoker.create(target, method, true);
-        Assert.assertTrue(invoker instanceof ReflectMethodInvoker.InvocationMethodInvoker);
+        ReflectiveMethodInvoker invoker = ReflectiveMethodInvoker.create(target, method, true);
+        Assert.assertTrue(invoker instanceof ReflectiveMethodInvoker.InvocationMethodInvoker);
         Assert.assertSame(target, invoker.target);
         Assert.assertSame(method, invoker.method);
         Assert.assertTrue(invoker.alignArguments);
@@ -50,8 +50,8 @@ public class ReflectMethodInvokerTest {
         Assert.assertEquals("12", result);
 
         // create by proxy
-        invoker = ReflectMethodInvoker.create(proxy, method, true);
-        Assert.assertTrue(invoker instanceof ReflectMethodInvoker.ProxyMethodInvoker);
+        invoker = ReflectiveMethodInvoker.create(proxy, method, true);
+        Assert.assertTrue(invoker instanceof ReflectiveMethodInvoker.ProxyMethodInvoker);
         Assert.assertSame(Proxy.getInvocationHandler(proxy), invoker.target);
         Assert.assertSame(method, invoker.method);
         Assert.assertTrue(invoker.alignArguments);
@@ -59,7 +59,7 @@ public class ReflectMethodInvokerTest {
         result = invoker.invoke(proxy, 1, 2);
         Assert.assertEquals("12", result);
 
-        MethodInvoker invoker2 = ReflectMethodInvoker.create(target, method, false);
+        MethodInvoker invoker2 = ReflectiveMethodInvoker.create(target, method, false);
         Assert.assertThrows(RuntimeException.class, () -> invoker2.invoke(target, Boolean.TRUE));
     }
 

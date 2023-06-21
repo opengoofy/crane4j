@@ -12,7 +12,7 @@ import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.SimpleAnnotationFinder;
 import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.support.converter.HutoolConverterManager;
-import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
+import cn.crane4j.core.support.reflect.ReflectivePropertyOperator;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -42,7 +42,7 @@ public class ContainerMethodAnnotationProcessorTest {
     public void init() {
         ConverterManager converterManager = new HutoolConverterManager();
         MethodInvokerContainerCreator containerCreator = new MethodInvokerContainerCreator(
-            new ReflectPropertyOperator(converterManager), converterManager
+            new ReflectivePropertyOperator(converterManager), converterManager
         );
         AnnotationFinder annotationFinder = new SimpleAnnotationFinder();
         Collection<MethodContainerFactory> factories = Arrays.asList(

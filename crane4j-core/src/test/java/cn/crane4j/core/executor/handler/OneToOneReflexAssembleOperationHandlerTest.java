@@ -10,7 +10,7 @@ import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.support.converter.HutoolConverterManager;
 import cn.crane4j.core.support.reflect.PropertyOperator;
-import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
+import cn.crane4j.core.support.reflect.ReflectivePropertyOperator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +35,7 @@ public class OneToOneReflexAssembleOperationHandlerTest extends BaseExecutorTest
 
     @Before
     public void init() {
-        PropertyOperator operator = new ReflectPropertyOperator(new HutoolConverterManager());
+        PropertyOperator operator = new ReflectivePropertyOperator(new HutoolConverterManager());
         OneToOneAssembleOperationHandler handler = new OneToOneAssembleOperationHandler(operator);
         configuration.getAssembleOperationHandlerMap().put(handler.getClass().getName(), handler);
         executor = new DisorderedBeanOperationExecutor(configuration);

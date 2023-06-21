@@ -6,7 +6,7 @@ import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.support.converter.ParameterConvertibleMethodInvoker;
 import cn.crane4j.core.support.reflect.PropertyOperator;
-import cn.crane4j.core.support.reflect.ReflectMethodInvoker;
+import cn.crane4j.core.support.reflect.ReflectiveMethodInvoker;
 import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.StringUtils;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ import java.lang.reflect.Method;
  *
  * @author huangchengxing
  * @see ParameterConvertibleMethodInvoker
- * @see ReflectMethodInvoker
+ * @see ReflectiveMethodInvoker
  * @since 1.3.0
  */
 @Slf4j
@@ -103,7 +103,7 @@ public class MethodInvokerContainerCreator {
      */
     @Nonnull
     protected MethodInvoker getMethodInvoker(Object target, Method method) {
-        MethodInvoker invoker = ReflectMethodInvoker.create(target, method, false);
+        MethodInvoker invoker = ReflectiveMethodInvoker.create(target, method, false);
         return ParameterConvertibleMethodInvoker.create(invoker, converterManager, method.getParameterTypes());
     }
 

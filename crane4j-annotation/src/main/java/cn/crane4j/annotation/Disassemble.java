@@ -81,7 +81,7 @@ public @interface Disassemble {
      *
      * @return name
      */
-    String handler() default "ReflectDisassembleOperationHandler";
+    String handler() default "ReflectiveDisassembleOperationHandler";
 
     /**
      * The group to which the current operation belongs.

@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
  * @author huangchengxing
  */
 @RequiredArgsConstructor
-public class ReflectDisassembleOperationHandler implements DisassembleOperationHandler {
+public class ReflectiveDisassembleOperationHandler implements DisassembleOperationHandler {
 
     private final PropertyOperator propertyOperator;
 

@@ -17,27 +17,32 @@ import java.util.Objects;
  * @since 1.3.0
  */
 @RequiredArgsConstructor
-public abstract class ReflectMethodInvoker implements MethodInvoker {
+public abstract class ReflectiveMethodInvoker implements MethodInvoker {
 
     protected final Object target;
     protected final Method method;
     protected final boolean alignArguments;
 
     /**
-     * Create a {@link ReflectMethodInvoker} from the given method.
+     * Create a {@link ReflectiveMethodInvoker} from the given method.
      *
      * @param target         target, if null, use method's declaring class as target
      * @param method         method
      * @param alignArguments align arguments
-     * @return {@link ReflectMethodInvoker}
+     * @return {@link ReflectiveMethodInvoker}
      */
-    public static ReflectMethodInvoker create(Object target, Method method, boolean alignArguments) {
+    public static ReflectiveMethodInvoker create(Object target, Method method, boolean alignArguments) {
         if (Objects.nonNull(target)
             && Proxy.isProxyClass(target.getClass())
             && !Proxy.isProxyClass(method.getDeclaringClass())) {
+            // target is proxied and method is not declared by proxy object
+            // invoke method through InvocationHandler of proxy object
+            // such as mapper interface methods of mybatis MapperProxy
             InvocationHandler handler = Proxy.getInvocationHandler(target);
             return new ProxyMethodInvoker(handler, method, alignArguments);
         }
+        // target is not proxied, or method declared by proxy object,
+        // invoke method by target
         return new InvocationMethodInvoker(target, method, alignArguments);
     }
 
@@ -69,7 +74,7 @@ public abstract class ReflectMethodInvoker implements MethodInvoker {
      *
      * @author huangchengxing
      */
-    public static class InvocationMethodInvoker extends ReflectMethodInvoker {
+    public static class InvocationMethodInvoker extends ReflectiveMethodInvoker {
 
         /**
          * Constructor with target and method.
@@ -100,7 +105,7 @@ public abstract class ReflectMethodInvoker implements MethodInvoker {
      *
      * @author huangchengxing
      */
-    public static class ProxyMethodInvoker extends ReflectMethodInvoker {
+    public static class ProxyMethodInvoker extends ReflectiveMethodInvoker {
 
         /**
          * Constructor with target and method.

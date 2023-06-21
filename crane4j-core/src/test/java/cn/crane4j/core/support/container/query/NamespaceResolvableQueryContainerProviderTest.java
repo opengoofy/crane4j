@@ -4,7 +4,7 @@ import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.support.container.MethodInvokerContainerCreator;
 import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.support.converter.HutoolConverterManager;
-import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
+import cn.crane4j.core.support.reflect.ReflectivePropertyOperator;
 import cn.crane4j.core.util.StringUtils;
 import lombok.Data;
 import lombok.Getter;
@@ -47,7 +47,7 @@ public class NamespaceResolvableQueryContainerProviderTest {
     public void init() {
         ConverterManager converterManager = new HutoolConverterManager();
         this.containerCreator = new TestQueryContainerCreator(
-            new MethodInvokerContainerCreator(new ReflectPropertyOperator(converterManager), converterManager)
+            new MethodInvokerContainerCreator(new ReflectivePropertyOperator(converterManager), converterManager)
         );
     }
 

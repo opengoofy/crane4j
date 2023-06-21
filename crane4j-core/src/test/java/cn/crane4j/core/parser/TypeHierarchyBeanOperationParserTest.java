@@ -8,7 +8,7 @@ import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.LambdaContainer;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
 import cn.crane4j.core.executor.handler.OneToOneAssembleOperationHandler;
-import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
+import cn.crane4j.core.executor.handler.ReflectiveDisassembleOperationHandler;
 import cn.crane4j.core.parser.operation.AssembleOperation;
 import cn.crane4j.core.parser.operation.DisassembleOperation;
 import cn.crane4j.core.parser.operation.TypeDynamitedDisassembleOperation;
@@ -71,7 +71,7 @@ public class TypeHierarchyBeanOperationParserTest {
         Assert.assertEquals("nestedBean", nestedBean.getKey());
         Assert.assertEquals(Bean.class, nestedBean.getSourceType());
         checkGroups(nestedBean.getGroups(), GROUP);
-        Assert.assertEquals(configuration.getDisassembleOperationHandler(ReflectDisassembleOperationHandler.class.getSimpleName()), nestedBean.getDisassembleOperationHandler());
+        Assert.assertEquals(configuration.getDisassembleOperationHandler(ReflectiveDisassembleOperationHandler.class.getSimpleName()), nestedBean.getDisassembleOperationHandler());
 
         // 获取NestedBean操作配置
         BeanOperations nestedBeanOperations = nestedBean.getInternalBeanOperations(null);
@@ -106,7 +106,7 @@ public class TypeHierarchyBeanOperationParserTest {
         Assert.assertEquals("bean", bean.getKey());
         Assert.assertEquals(NestedBean.class, bean.getSourceType());
         checkGroups(bean.getGroups(), GROUP);
-        Assert.assertEquals(configuration.getDisassembleOperationHandler(ReflectDisassembleOperationHandler.class.getSimpleName()), bean.getDisassembleOperationHandler());
+        Assert.assertEquals(configuration.getDisassembleOperationHandler(ReflectiveDisassembleOperationHandler.class.getSimpleName()), bean.getDisassembleOperationHandler());
         Assert.assertSame(beanOperations, bean.getInternalBeanOperations(null));
 
         // disassemble: dynamicBean

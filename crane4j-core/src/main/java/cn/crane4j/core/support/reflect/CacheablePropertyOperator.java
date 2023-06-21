@@ -1,152 +1,92 @@
 package cn.crane4j.core.support.reflect;
 
 import cn.crane4j.core.support.MethodInvoker;
-import cn.crane4j.core.support.converter.ConverterManager;
-import cn.crane4j.core.support.converter.ParameterConvertibleMethodInvoker;
 import cn.crane4j.core.util.CollectionUtils;
-import cn.crane4j.core.util.ReflectUtils;
 import lombok.RequiredArgsConstructor;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Supplier;
+import java.util.function.BiFunction;
 
 /**
- * A {@link PropertyOperator} abstract implementation class with basic caching function.
+ * The wrapper class of {@link PropertyOperator} that adds support for invoker cache.
  *
  * @author huangchengxing
- * @see AsmReflectPropertyOperator
- * @see ReflectPropertyOperator
  */
 @RequiredArgsConstructor
-public abstract class CacheablePropertyOperator implements PropertyOperator {
+public class CacheablePropertyOperator implements PropertyOperator {
 
-    private static final Object NULL = new Object();
+    /**
+     * Null cache object
+     */
+    private static final MethodInvoker NULL = (target, args) -> null;
 
     /**
      * getter cache
      */
-    private final Map<Class<?>, Map<String, Object>> getterCaches = CollectionUtils.newWeakConcurrentMap();
+    private final Map<Class<?>, Map<String, MethodInvoker>> getterCaches = CollectionUtils.newWeakConcurrentMap();
 
     /**
      * setter cache
      */
-    private final Map<Class<?>, Map<String, Object>> setterCaches = CollectionUtils.newWeakConcurrentMap();
+    private final Map<Class<?>, Map<String, MethodInvoker>> setterCaches = CollectionUtils.newWeakConcurrentMap();
 
     /**
-     * converter register
+     * Property operator
      */
-    protected final ConverterManager converterManager;
-
-    /**
-     * Get the specified property value.
-     *
-     * @param target target
-     * @param targetType target type
-     * @param propertyName property name
-     * @return property value
-     */
-    @Nullable
-    @Override
-    public Object readProperty(Class<?> targetType, Object target, String propertyName) {
-        MethodInvoker getter = findGetter(targetType, propertyName);
-        return Objects.isNull(getter) ? null : getter.invoke(target);
-    }
+    private final PropertyOperator propertyOperator;
 
     /**
      * Get getter method.
      *
-     * @param targetType target type
+     * @param targetType   target type
      * @param propertyName property name
      * @return getter method
      */
     @Nullable
     @Override
     public MethodInvoker findGetter(Class<?> targetType, String propertyName) {
-        return getCachedGetter(
-            targetType, propertyName,
-            () -> ReflectUtils.findGetterMethod(targetType, propertyName)
-                .map(method -> createInvoker(targetType, propertyName, method))
-                .orElse(null)
+        MethodInvoker invoker = findInvokerFromCache(
+                getterCaches, targetType, propertyName, propertyOperator::findGetter
         );
-    }
-
-    /**
-     * Set the specified property value.
-     *
-     * @param target target
-     * @param targetType target type
-     * @param propertyName property name
-     * @param value property value
-     */
-    @Override
-    public void writeProperty(Class<?> targetType, Object target, String propertyName, Object value) {
-        MethodInvoker setter = findSetter(targetType, propertyName);
-        if (Objects.nonNull(setter)) {
-            setter.invoke(target, value);
-        }
+        return resolve(invoker);
     }
 
     /**
      * Get setter method.
      *
-     * @param targetType target type
+     * @param targetType   target type
      * @param propertyName property name
      * @return setter method
      */
     @Nullable
     @Override
     public MethodInvoker findSetter(Class<?> targetType, String propertyName) {
-        return getCachedSetter(
-            targetType, propertyName,
-            () -> {
-                Field field = ReflectUtils.getField(targetType, propertyName);
-                if (Objects.isNull(field)) {
-                    return null;
-                }
-                Optional<Method> setter = ReflectUtils.findSetterMethod(targetType, field);
-                if (!setter.isPresent()) {
-                    return null;
-                }
-                Method method = setter.get();
-                MethodInvoker invoker = createInvoker(targetType, propertyName, method);
-                return ParameterConvertibleMethodInvoker.create(invoker, converterManager, method.getParameterTypes());
-            }
+        MethodInvoker invoker = findInvokerFromCache(
+                setterCaches, targetType, propertyName, propertyOperator::findSetter
         );
+        return resolve(invoker);
     }
 
-    /**
-     * Create {@link MethodInvoker} according to the specified method
-     *
-     * @param targetType target type
-     * @param propertyName property name
-     * @param method getter method or setter method
-     * @return {@link MethodInvoker}
-     */
-    protected abstract MethodInvoker createInvoker(Class<?> targetType, String propertyName, Method method);
-
-    private MethodInvoker getCachedGetter(Class<?> type, String methodName, Supplier<MethodInvoker> invokerSupplier) {
-        Map<String, Object> caches = CollectionUtils.computeIfAbsent(getterCaches, type, t -> new ConcurrentHashMap<>(8));
-        Object target = CollectionUtils.computeIfAbsent(caches, methodName, m -> createInvoker(invokerSupplier.get()));
-        return getInvoker(target);
+    @Nullable
+    private MethodInvoker resolve(MethodInvoker invoker) {
+        return invoker == NULL ? null : invoker;
     }
 
-    private MethodInvoker getCachedSetter(Class<?> type, String methodName, Supplier<MethodInvoker> invokerSupplier) {
-        Map<String, Object> caches = CollectionUtils.computeIfAbsent(setterCaches, type, t -> new ConcurrentHashMap<>(8));
-        Object target = CollectionUtils.computeIfAbsent(caches, methodName, m -> createInvoker(invokerSupplier.get()));
-        return getInvoker(target);
-    }
-
-    private static MethodInvoker getInvoker(Object o) {
-        return o == NULL ? null : (MethodInvoker)o;
-    }
-
-    private static Object createInvoker(Object target) {
-        return Objects.isNull(target) ? NULL : target;
+    @Nonnull
+    private MethodInvoker findInvokerFromCache(
+            Map<Class<?>, Map<String, MethodInvoker>> caches,
+            Class<?> targetType, String propertyName,
+            BiFunction<Class<?>, String, MethodInvoker> invokerFactory) {
+        Map<String, MethodInvoker> invokers = CollectionUtils.computeIfAbsent(
+                caches, targetType, t -> new ConcurrentHashMap<>(8)
+        );
+        return CollectionUtils.computeIfAbsent(invokers, propertyName, t -> {
+            MethodInvoker target = invokerFactory.apply(targetType, propertyName);
+            return Objects.isNull(target) ? NULL : target;
+        });
     }
 }

@@ -9,13 +9,13 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * test for {@link AsmReflectPropertyOperator}
+ * test for {@link AsmReflectivePropertyOperator}
  *
  * @author huangchengxing
  */
-public class AsmReflectPropertyOperatorTest {
+public class AsmReflectivePropertyOperatorTest {
 
-    private final AsmReflectPropertyOperator operator = new AsmReflectPropertyOperator(new SimpleConverterManager());
+    private final AsmReflectivePropertyOperator operator = new AsmReflectivePropertyOperator(new SimpleConverterManager());
 
     @Test
     public void readProperty() {
@@ -28,7 +28,6 @@ public class AsmReflectPropertyOperatorTest {
     public void findGetter() {
         MethodInvoker getter = operator.findGetter(Foo.class, "id");
         Assert.assertNotNull(getter);
-        Assert.assertEquals(getter, operator.findGetter(Foo.class, "id"));
         Assert.assertNull(operator.findGetter(Foo.class, "none"));
     }
 
@@ -45,7 +44,6 @@ public class AsmReflectPropertyOperatorTest {
     public void findSetter() {
         MethodInvoker setter = operator.findSetter(Foo.class, "id");
         Assert.assertNotNull(setter);
-        Assert.assertEquals(setter, operator.findSetter(Foo.class, "id"));
         Assert.assertNull(operator.findSetter(Foo.class, "none"));
     }
 
