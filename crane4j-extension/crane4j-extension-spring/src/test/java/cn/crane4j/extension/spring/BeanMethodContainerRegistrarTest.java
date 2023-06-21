@@ -45,17 +45,17 @@ public class BeanMethodContainerRegistrarTest {
         Assert.assertFalse(containerMap.containsKey("noneResultMethod"));
 
         // mappedMethod
-        Container<?> mappedMethod = containerMap.get("mappedMethod");
+        Container<?> mappedMethod = context.getContainer("mappedMethod");
         Assert.assertTrue(mappedMethod instanceof MethodInvokerContainer);
         Assert.assertEquals("mappedMethod", mappedMethod.getNamespace());
 
         // onoToOneMethod
-        Container<?> onoToOneMethod = containerMap.get("onoToOneMethod");
+        Container<?> onoToOneMethod = context.getContainer("onoToOneMethod");
         Assert.assertTrue(onoToOneMethod instanceof MethodInvokerContainer);
         Assert.assertEquals("onoToOneMethod", onoToOneMethod.getNamespace());
 
         // oneToManyMethod
-        Container<?> oneToManyMethod = containerMap.get("oneToManyMethod");
+        Container<?> oneToManyMethod = context.getContainer("oneToManyMethod");
         Assert.assertTrue(oneToManyMethod instanceof CacheableContainer);
         Assert.assertEquals("oneToManyMethod", oneToManyMethod.getNamespace());
 

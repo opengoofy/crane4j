@@ -1,6 +1,5 @@
 package cn.crane4j.core.support;
 
-import cn.crane4j.core.container.ContainerDefinition;
 import cn.crane4j.core.container.LambdaContainer;
 import cn.crane4j.core.container.lifecycle.ContainerLifecycleProcessor;
 import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
@@ -55,9 +54,8 @@ public class SimpleCrane4jGlobalConfigurationTest {
 
     @Test
     public void getContainer() {
-        ContainerDefinition containerDefinition = configuration.registerContainer(LambdaContainer.forLambda("test", DataProvider.empty()));
-        Assert.assertNotNull(containerDefinition);
-        Assert.assertEquals("test", containerDefinition.getNamespace());
+        Object old = configuration.registerContainer(LambdaContainer.forLambda("test", DataProvider.empty()));
+        Assert.assertNull(old);
         Assert.assertNotNull(configuration.getContainer("test"));
     }
 

@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -57,35 +56,6 @@ public interface ContainerDefinition {
      */
     void setContainerFactory(Supplier<Container<Object>> factory);
 
-    /**
-     * Set init method, it takes effect simultaneously with {@link Container.Lifecycle#init()}.
-     *
-     * @param initMethod init method
-     */
-    void setInitMethod(@Nullable Consumer<Container<Object>> initMethod);
-
-    /**
-     * Get init method.
-     *
-     * @return init method
-     */
-    @Nullable
-    Consumer<Container<Object>> getInitMethod();
-    
-    /**
-     * Set destroy method, it takes effect simultaneously with {@link Container.Lifecycle#destroy()}.
-     *
-     * @param destroyMethod destroy method
-     */
-    void setDestroyMethod(@Nullable Consumer<Container<Object>> destroyMethod);
-
-    /**
-     * Get destroy method.
-     *
-     * @return destroy method
-     */
-    @Nullable
-    Consumer<Container<Object>> getDestroyMethod();
 
     /**
      * Create {@link Container} by given {@code factory}.
@@ -103,7 +73,6 @@ public interface ContainerDefinition {
      * @author huangchengxing
      * @see ContainerLifecycleProcessor
      */
-    @Setter
     @Getter
     class SimpleContainerDefinition implements ContainerDefinition {
     
@@ -121,20 +90,10 @@ public interface ContainerDefinition {
         /**
          * Container factory.
          */
+        @Setter
         @Nullable
         private Supplier<Container<Object>> containerFactory;
-    
-        /**
-         * Init method.
-         */
-        @Nullable
-        private Consumer<Container<Object>> initMethod;
-    
-        /**
-         * Destroy method.
-         */
-        private Consumer<Container<Object>> destroyMethod;
-    
+
         /**
          * Create an instance.
          *

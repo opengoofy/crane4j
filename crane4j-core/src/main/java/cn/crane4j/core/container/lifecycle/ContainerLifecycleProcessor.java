@@ -22,13 +22,13 @@ public interface ContainerLifecycleProcessor extends Sorted {
      * At this stage, you can modify the container's definition information,
      * including but not limited to modifying its loading strategy or replacing its factory method.
      *
-     * @param oldDefinition old definition of container, if not registered it is {@code null}
+     * @param old old container instance or container definition
      * @param newDefinition new definition of container
      * @return final effective container definition
      * @see ContainerManager#registerContainer
      */
     default ContainerDefinition whenRegistered(
-            @Nullable ContainerDefinition oldDefinition, ContainerDefinition newDefinition) {
+            @Nullable Object old, ContainerDefinition newDefinition) {
         return newDefinition;
     }
 
@@ -52,11 +52,10 @@ public interface ContainerLifecycleProcessor extends Sorted {
      * At this stage, you can perform some final operations
      * on the container definition or container instance, such as clearing data caches.
      *
-     * @param definition definition
-     * @param container container, if not created it is {@code null}
+     * @param target container instance or container definition
      * @see ContainerManager#clear()
      */
-    default void whenDestroyed(ContainerDefinition definition, Container<Object> container) {
+    default void whenDestroyed(Object target) {
         // do nothing
     }
 }

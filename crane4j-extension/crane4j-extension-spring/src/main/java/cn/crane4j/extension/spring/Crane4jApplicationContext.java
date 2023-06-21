@@ -2,6 +2,7 @@ package cn.crane4j.extension.spring;
 
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerDefinition;
+import cn.crane4j.core.container.ContainerProvider;
 import cn.crane4j.core.container.DefaultContainerManager;
 import cn.crane4j.core.container.lifecycle.ContainerLifecycleProcessor;
 import cn.crane4j.core.executor.BeanOperationExecutor;
@@ -18,6 +19,9 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.context.ApplicationContext;
+
+import javax.annotation.Nullable;
+import java.util.Objects;
 
 /**
  * <p>The global configuration class implemented based on the Spring context,
@@ -65,6 +69,48 @@ public class Crane4jApplicationContext extends DefaultContainerManager
     @Override
     public TypeResolver getTypeResolver() {
         return applicationContext.getBean(TypeResolver.class);
+    }
+
+    /**
+     * Get {@link ContainerProvider} by given name.
+     *
+     * @param name name
+     * @return {@link ContainerProvider} instance
+     */
+    @SuppressWarnings("unchecked")
+    @Nullable
+    @Override
+    public <T extends ContainerProvider> T getContainerProvider(String name) {
+        T provider = super.getContainerProvider(name);
+        return Objects.isNull(provider) && applicationContext.containsBean(name) ?
+                (T)applicationContext.getBean(name, ContainerProvider.class) : provider;
+    }
+
+    /**
+     * Obtaining and caching container instances from provider or definition.
+     *
+     * @param namespace namespace of container, which can also be the cache name for the container instance.
+     * @return container instance
+     * @see ContainerLifecycleProcessor#whenCreated
+     */
+    @SuppressWarnings("unchecked")
+    @Nullable
+    @Override
+    public <K> Container<K> getContainer(String namespace) {
+        Container<K> container = super.getContainer(namespace);
+        return Objects.isNull(container) && applicationContext.containsBean(namespace) ?
+                applicationContext.getBean(namespace, Container.class) : container;
+    }
+
+    /**
+     * Whether this provider has container of given {@code namespace}.
+     *
+     * @param namespace namespace
+     * @return boolean
+     */
+    @Override
+    public boolean containsContainer(String namespace) {
+        return super.containsContainer(namespace) || applicationContext.containsBean(namespace);
     }
 
     /**
