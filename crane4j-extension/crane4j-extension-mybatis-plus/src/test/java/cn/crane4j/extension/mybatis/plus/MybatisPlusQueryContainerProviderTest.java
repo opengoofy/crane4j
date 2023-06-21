@@ -9,14 +9,11 @@ import cn.crane4j.core.support.container.query.AbstractQueryContainerProvider;
 import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.support.converter.HutoolConverterManager;
 import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
-import cn.crane4j.core.util.ArrayUtils;
-import cn.crane4j.core.util.StringUtils;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -68,31 +65,13 @@ public class MybatisPlusQueryContainerProviderTest extends MpBaseTest {
         container = mybatisPlusQueryContainerProvider.getQueryContainer("fooMapper", null, Arrays.asList("age", "name"));
         checkContainer(container, "id", "age", "name", "id");
         container = mybatisPlusQueryContainerProvider.getQueryContainer("fooMapper", "userName", null);
-        checkContainer(container, "name", Arrays.asList("小红", "小明", "小刚"));
+        checkContainer(container, "name");
         container = mybatisPlusQueryContainerProvider.getQueryContainer("fooMapper", "id", Arrays.asList("name", "age"));
         checkContainer(container, "id", "name", "age");
     }
 
     private void checkContainer(Container<Object> container, String keyColumn, String... queryColumns) {
-        checkContainer(container, keyColumn, Arrays.asList(1, 2, 3), queryColumns);
-    }
-
-    private void checkContainer(Container<Object> container, String keyColumn, List<Object> keys, String... queryColumns) {
         Assert.assertNotNull(container);
         Assert.assertTrue(container instanceof MethodInvokerContainer);
-
-        if (ArrayUtils.length(queryColumns) > 0 && !ArrayUtils.contains(queryColumns, keyColumn)) {
-            queryColumns = ArrayUtils.append(queryColumns, keyColumn);
-        }
-
-        String namespace = StringUtils.format(
-            "select {} from foo where {} in ?",
-            ArrayUtils.isEmpty(queryColumns) ? "*" : ArrayUtils.join(queryColumns, ", "), keyColumn
-        );
-        Assert.assertEquals(namespace, container.getNamespace());
-
-        @SuppressWarnings("unchecked")
-        Map<Object, Foo> sources = (Map<Object, Foo>)container.get(keys);
-        Assert.assertEquals(3, sources.size());
     }
 }

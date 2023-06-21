@@ -2,7 +2,6 @@ package cn.crane4j.extension.spring;
 
 import cn.crane4j.core.container.ConstantContainer;
 import cn.crane4j.core.container.Container;
-import cn.crane4j.core.container.ContainerDefinition;
 import cn.crane4j.core.container.LambdaContainer;
 import cn.crane4j.core.container.lifecycle.ContainerLifecycleProcessor;
 import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
@@ -59,13 +58,13 @@ public class Crane4jApplicationContextTest {
 
     @Test
     public void replaceContainer() {
-        ContainerDefinition definition1 = context.registerContainer(LambdaContainer.forLambda("replaceContainer", ids -> Collections.emptyMap()));
-        Assert.assertNotNull(definition1);
+        Object old1 = context.registerContainer(LambdaContainer.forLambda("replaceContainer", ids -> Collections.emptyMap()));
+        Assert.assertNull(old1);
         Container<Object> container1 = context.getContainer("replaceContainer");
         Assert.assertSame(container1, context.getContainer("replaceContainer"));
 
-        ContainerDefinition container2 = context.registerContainer(LambdaContainer.forLambda("replaceContainer", ids -> Collections.emptyMap()));
-        Assert.assertNotSame(definition1, container2);
+        Object old2 = context.registerContainer(LambdaContainer.forLambda("replaceContainer", ids -> Collections.emptyMap()));
+        Assert.assertSame(container1, old2);
         Assert.assertNotSame(container1, context.getContainer("replaceContainer"));
     }
 

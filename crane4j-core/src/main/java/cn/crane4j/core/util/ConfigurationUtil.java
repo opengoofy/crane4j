@@ -32,13 +32,11 @@ public class ConfigurationUtil {
     /**
      * trigger {@link ContainerLifecycleProcessor#whenDestroyed}
      *
-     * @param definition definition
-     * @param container container
+     * @param target container instance or container definition
      */
     public static void triggerWhenDestroyed(
-        ContainerDefinition definition, Container<Object> container,
-        Collection<ContainerLifecycleProcessor> containerLifecycleProcessorList) {
-        containerLifecycleProcessorList.forEach(processor -> processor.whenDestroyed(definition, container));
+        Object target, Collection<ContainerLifecycleProcessor> containerLifecycleProcessorList) {
+        containerLifecycleProcessorList.forEach(processor -> processor.whenDestroyed(target));
     }
 
     /**
@@ -46,15 +44,15 @@ public class ConfigurationUtil {
      *
      * @param definition definition
      * @param namespace namespace
-     * @param oldDefinition old definition
+     * @param old old container instance or container definition
      * @return container definition
      */
     @Nullable
     public static ContainerDefinition triggerWhenRegistered(
-        ContainerDefinition definition, String namespace, ContainerDefinition oldDefinition,
+        ContainerDefinition definition, String namespace, Object old,
         Collection<ContainerLifecycleProcessor> containerLifecycleProcessorList, Logger log) {
         for (ContainerLifecycleProcessor containerLifecycleProcessor : containerLifecycleProcessorList) {
-            definition = containerLifecycleProcessor.whenRegistered(oldDefinition, definition);
+            definition = containerLifecycleProcessor.whenRegistered(old, definition);
             if (Objects.isNull(definition)) {
                 log.info("not register container definition for [{}]", namespace);
                 return null;
@@ -73,7 +71,7 @@ public class ConfigurationUtil {
      */
     @Nullable
     public static Container<Object> triggerWhenCreated(
-        String namespace, @Nullable ContainerDefinition definition, Container<Object> container,
+        String namespace, ContainerDefinition definition, Container<Object> container,
         Collection<ContainerLifecycleProcessor> containerLifecycleProcessorList, Logger log) {
         for (ContainerLifecycleProcessor containerLifecycleProcessor : containerLifecycleProcessorList) {
             container = containerLifecycleProcessor.whenCreated(definition, container);

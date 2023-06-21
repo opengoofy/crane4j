@@ -50,19 +50,19 @@ public class SpringAssembleAnnotationHandlerTest {
         Assert.assertNotNull(operationForKey);
         Assert.assertEquals("key", operationForKey.getKey());
         Assert.assertEquals(-1, operationForKey.getSort());
-        Assert.assertEquals(testContainer, operationForKey.getContainer());
+        Assert.assertEquals(testContainer, containerManager.getContainer(operationForKey.getContainer()));
 
         AssembleOperation operationForCode = CollectionUtils.get(operations, 1);
         Assert.assertNotNull(operationForCode);
         Assert.assertEquals("code", operationForCode.getKey());
         Assert.assertEquals(0, operationForCode.getSort());
-        Assert.assertEquals(testContainer, operationForCode.getContainer());
+        Assert.assertEquals(testContainer, containerManager.getContainer(operationForCode.getContainer()));
 
         AssembleOperation operationForId = CollectionUtils.get(operations, 2);
         Assert.assertNotNull(operationForId);
         Assert.assertEquals("id", operationForId.getKey());
         Assert.assertEquals(1, operationForId.getSort());
-        Assert.assertEquals(testContainer, operationForId.getContainer());
+        Assert.assertEquals(testContainer, containerManager.getContainer(operationForId.getContainer()));
     }
 
     @Configuration
@@ -81,7 +81,7 @@ public class SpringAssembleAnnotationHandlerTest {
         @Assemble(container = "${crane4j.container-name}")
         private Integer id;
         @Order(-1)
-        @Assemble(container = "@testContainer", containerProvider = "crane4jApplicationContext")
+        @Assemble(container = "testContainer")
         private Integer key;
         @Assemble(container = "'test' + 'Container'", sort = 0)
         private Integer code;

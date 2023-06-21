@@ -7,8 +7,6 @@ import cn.crane4j.core.container.ContainerProvider;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Nullable;
-import java.util.Objects;
-import java.util.function.Consumer;
 
 /**
  * Processor for init and destroy container.
@@ -34,10 +32,6 @@ public class ContainerInstanceLifecycleProcessor implements ContainerLifecyclePr
         if (container instanceof Container.Lifecycle) {
             ((Container.Lifecycle)container).init();
         }
-        Consumer<Container<Object>> initMethod = definition.getInitMethod();
-        if (Objects.nonNull(initMethod)) {
-            initMethod.accept(container);
-        }
         return container;
     }
 
@@ -46,18 +40,13 @@ public class ContainerInstanceLifecycleProcessor implements ContainerLifecyclePr
      * At this stage, you can perform some final operations
      * on the container definition or container instance, such as clearing data caches.
      *
-     * @param definition definition
-     * @param container container, if not created it is {@code null}
+     * @param target container instance or container definition
      * @see ContainerManager#clear()
      */
     @Override
-    public void whenDestroyed(ContainerDefinition definition, Container<Object> container) {
-        if (container instanceof Container.Lifecycle) {
-            ((Container.Lifecycle)container).destroy();
-        }
-        Consumer<Container<Object>> destroyMethod = definition.getDestroyMethod();
-        if (Objects.nonNull(destroyMethod)) {
-            destroyMethod.accept(container);
+    public void whenDestroyed(Object target) {
+        if (target instanceof Container.Lifecycle) {
+            ((Container.Lifecycle)target).destroy();
         }
     }
 }

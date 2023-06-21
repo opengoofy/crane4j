@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * A base implementation of {@link ContainerManager}.
@@ -27,14 +28,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DefaultContainerManager implements ContainerManager {
 
     /**
-     * Registered container definitions.
-     */
-    protected final Map<Object, ContainerDefinition> containerDefinitionMap = new ConcurrentHashMap<>(64);
-
-    /**
      * Container singleton caches.
      */
-    protected final Map<Object, Container<Object>> containerMap = new ConcurrentHashMap<>(64);
+    protected final Map<Object, Object> containerMap = new ConcurrentHashMap<>(64);
 
     /**
      * Registered container lifecycle callbacks.
@@ -94,17 +90,6 @@ public class DefaultContainerManager implements ContainerManager {
         return (T)containerProviderMap.get(name);
     }
 
-    /**
-     * Get all registered {@link ContainerProvider}.
-     *
-     * @return {@link ContainerProvider} instances
-     */
-    @Nullable
-    @Override
-    public Collection<ContainerProvider> getContainerProviders() {
-        return containerProviderMap.values();
-    }
-
     // =============== container  ===============
 
     /**
@@ -116,26 +101,28 @@ public class DefaultContainerManager implements ContainerManager {
      */
     @Nullable
     @Override
-    public ContainerDefinition registerContainer(ContainerDefinition definition) {
+    public Object registerContainer(ContainerDefinition definition) {
         Asserts.isNotNull(definition, "definition must not null");
         Object key = getCacheKey(definition.getNamespace());
-        return containerDefinitionMap.compute(key, (k, oldDefinition) -> {
+        AtomicReference<Object> resultHolder = new AtomicReference<>();
+        containerMap.compute(key, (k, t) -> {
             // process new definition
             ContainerDefinition newDefinition = ConfigurationUtil.triggerWhenRegistered(
-                definition, key.toString(), oldDefinition, containerLifecycleProcessorList, log
+                    definition, key.toString(), t, containerLifecycleProcessorList, log
             );
             // no change if new definition is null
             if (Objects.isNull(newDefinition)) {
-                return oldDefinition;
+                return t;
             }
-
-            // remove old container if necessary
-            Container<Object> oldContainer = containerMap.remove(k);
-            if (Objects.nonNull(oldContainer)) {
-                ConfigurationUtil.triggerWhenDestroyed(oldDefinition, oldContainer, containerLifecycleProcessorList);
+            // remove old instance or definition
+            if (Objects.nonNull(t)) {
+                ConfigurationUtil.triggerWhenDestroyed(t, containerLifecycleProcessorList);
+                resultHolder.set(t);
             }
-            return newDefinition;
+            // register new definition
+            return definition;
         });
+        return resultHolder.get();
     }
 
     /**
@@ -144,7 +131,6 @@ public class DefaultContainerManager implements ContainerManager {
      * @param namespace namespace of container, which can also be the cache name for the container instance.
      * @return container instance
      * @see ContainerLifecycleProcessor#whenCreated
-     * @see #doGetContainer(CacheKey)
      */
     @SuppressWarnings("all")
     @Nullable
@@ -153,31 +139,24 @@ public class DefaultContainerManager implements ContainerManager {
         if (Objects.equals(namespace, Container.EMPTY_CONTAINER_NAMESPACE)) {
             return Container.empty();
         }
-        // container already cached?
+        // container instance already created?
         Object key = getCacheKey(namespace);
-        Container<Object> container = containerMap.get(key);
-        if (Objects.nonNull(container)) {
+        Object container = containerMap.get(key);
+        if (Objects.nonNull(container) && container instanceof Container) {
             return (Container<K>) container;
         }
-        // create if necessary
-        return (Container<K>) containerMap.compute(key, (k, c) -> {
-            // if already created
-            if (Objects.nonNull(c)) {
-                return c;
+        // create container instance
+        return (Container<K>) containerMap.compute(key, (k, t) -> {
+            boolean isRegistered = Objects.nonNull(t);
+            if (isRegistered && container instanceof Container) {
+                return t;
             }
             // get definition
-            ContainerDefinition definition = containerDefinitionMap.get(k);
-            if (Objects.isNull(definition)) {
-                definition = containerDefinitionMap.compute(
-                        k, (n, def) -> Objects.nonNull(def) ? def : createDefinition(n)
-                );
-            }
-            // is unregistered container or processor returned null
+            ContainerDefinition definition = isRegistered ? (ContainerDefinition) t : createDefinition(k);
             if (Objects.isNull(definition)) {
                 return null;
             }
-
-            // create instance
+            // create instance by definition
             return createContainer(k.toString(), definition);
         });
     }
@@ -192,7 +171,7 @@ public class DefaultContainerManager implements ContainerManager {
     public boolean containsContainer(String namespace) {
         Object key = getCacheKey(namespace);
         if (key instanceof String) {
-            return containerMap.containsKey(key) || containerDefinitionMap.containsKey(key);
+            return containerMap.containsKey(key);
         }
         CacheKey ck = (CacheKey) key;
         return Optional.ofNullable(containerProviderMap.get(ck.getProviderName()))
@@ -207,15 +186,9 @@ public class DefaultContainerManager implements ContainerManager {
      */
     @Override
     public void clear() {
-        containerMap.forEach((ns, c) -> {
-            Container<Object> container = containerMap.remove(ns);
-            ContainerDefinition definition = containerDefinitionMap.remove(ns);
-            if (Objects.nonNull(container)) {
-                ConfigurationUtil.triggerWhenDestroyed(definition, container, containerLifecycleProcessorList);
-            }
-        });
+        log.info("clear all cache for container manager");
+        containerMap.values().forEach(t -> ConfigurationUtil.triggerWhenDestroyed(t, containerLifecycleProcessorList));
         containerMap.clear();
-        containerDefinitionMap.clear();
         containerProviderMap.clear();
         containerLifecycleProcessorList.clear();
     }
@@ -287,9 +260,9 @@ public class DefaultContainerManager implements ContainerManager {
         if (index < 0) {
             return namespace;
         }
-        String containerName = namespace.substring(0, index);
-        String providerName = namespace.substring(index + 2);
-        return new CacheKey(containerName, providerName);
+        String providerName = namespace.substring(0, index);
+        String containerNamespace = namespace.substring(index + 2);
+        return new CacheKey(containerNamespace, providerName);
     }
 
     /**

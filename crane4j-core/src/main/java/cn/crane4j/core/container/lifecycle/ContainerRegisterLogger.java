@@ -26,15 +26,15 @@ public class ContainerRegisterLogger implements ContainerLifecycleProcessor {
      * <p>Callback before registering container.<br/>
      * If the instance is created through a container, this method will not be called
      *
-     * @param oldDefinition old definition of container, if not registered it is {@code null}
+     * @param old old container instance or container definition
      * @param newDefinition new definition of container
      */
     @Override
-    public ContainerDefinition whenRegistered(@Nullable ContainerDefinition oldDefinition, ContainerDefinition newDefinition) {
-        if (Objects.isNull(oldDefinition)) {
+    public ContainerDefinition whenRegistered(@Nullable Object old, ContainerDefinition newDefinition) {
+        if (Objects.isNull(old)) {
             logConsumer.accept("register container definition [{}]", new Object[]{ newDefinition.getNamespace() });
         } else {
-            logConsumer.accept("replace container definition [{}]", new Object[]{ oldDefinition.getNamespace() });
+            logConsumer.accept("replace container definition [{}]", new Object[]{ newDefinition.getNamespace() });
         }
         return newDefinition;
     }
@@ -56,16 +56,18 @@ public class ContainerRegisterLogger implements ContainerLifecycleProcessor {
     /**
      * Callback when container is destroyed.
      *
-     * @param definition definition
-     * @param container container, if not created it is {@code null}
+     * @param target container instance or container definition
      */
     @Override
-    public void whenDestroyed(ContainerDefinition definition, Container<Object> container) {
-        if (Objects.nonNull(container)) {
-            logConsumer.accept(
+    public void whenDestroyed(Object target) {
+        if (target instanceof ContainerDefinition) {
+            String namespace = ((ContainerDefinition) target).getNamespace();
+            logConsumer.accept("destroy container instance [{}] of [{}]", new Object[]{ namespace });
+        }
+        Container<?> container = (Container<?>) target;
+        logConsumer.accept(
                 "destroy container instance [{}] of [{}]",
                 new Object[]{ container.hashCode(), container.getNamespace() }
-            );
-        }
+        );
     }
 }

@@ -33,7 +33,8 @@ public interface ContainerManager extends ContainerProvider {
      * @return container
      */
     static String canonicalNamespace(String namespace, @Nullable String providerName) {
-        return namespace + (StringUtils.isEmpty(providerName) ? "" : PROVIDER_NAME_PREFIX + providerName);
+        return StringUtils.isEmpty(providerName) ?
+                namespace : providerName + PROVIDER_NAME_PREFIX + namespace;
     }
 
     /**
@@ -78,14 +79,6 @@ public interface ContainerManager extends ContainerProvider {
     @Nullable
     <T extends ContainerProvider> T getContainerProvider(String name);
 
-    /**
-     * Get all registered {@link ContainerProvider}.
-     *
-     * @return {@link ContainerProvider} instances
-     */
-    @Nullable
-    Collection<ContainerProvider> getContainerProviders();
-
     // =============== register container  ===============
 
     /**
@@ -93,11 +86,11 @@ public interface ContainerManager extends ContainerProvider {
      * This operation will overwrite the existing container definition.
      *
      * @param definition definition of container
-     * @return container definition
+     * @return old container instance or container definition
      * @see ContainerLifecycleProcessor#whenRegistered
      */
     @Nullable
-    ContainerDefinition registerContainer(ContainerDefinition definition);
+    Object registerContainer(ContainerDefinition definition);
 
     /**
      * Register container definition by given arguments.<br />
@@ -105,11 +98,11 @@ public interface ContainerManager extends ContainerProvider {
      *
      * @param namespace namespace of container
      * @param factory factory method of container instance
-     * @return container definition
+     * @return old container instance or container definition
      * @see ContainerLifecycleProcessor#whenRegistered
      */
     @Nullable
-    default ContainerDefinition registerContainer(
+    default Object registerContainer(
         String namespace, Supplier<Container<Object>> factory) {
         ContainerDefinition definition = new ContainerDefinition.SimpleContainerDefinition(namespace, null, factory);
         return registerContainer(definition);
@@ -120,11 +113,11 @@ public interface ContainerManager extends ContainerProvider {
      * This operation will overwrite the existing container definition.
      *
      * @param container container
-     * @return container definition
+     * @return old container instance or container definition
      * @see ContainerLifecycleProcessor#whenRegistered
      */
     @SuppressWarnings("unchecked")
-    default ContainerDefinition registerContainer(Container<?> container) {
+    default Object registerContainer(Container<?> container) {
         return registerContainer(container.getNamespace(), () -> (Container<Object>) container);
     }
 
