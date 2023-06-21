@@ -143,6 +143,12 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
                         doParse(result);
                         resolvedElements.put(element, currentlyInParsing.remove(element));
                         result.setActive(true);
+                    } else {
+                        // FIXME： If the current configuration is not yet activated,
+                        //  it may not be appropriate to directly return it to the caller.
+                        //  A better approach is to have the caller thread
+                        //  also assist in parsing the configuration,
+                        //  just like when expanding ConcurrentHashMap
                     }
                 }
             }
