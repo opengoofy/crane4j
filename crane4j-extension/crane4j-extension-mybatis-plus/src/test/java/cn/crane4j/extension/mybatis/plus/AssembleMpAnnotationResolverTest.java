@@ -15,7 +15,7 @@ import cn.crane4j.core.support.SimpleCrane4jGlobalConfiguration;
 import cn.crane4j.core.support.container.MethodInvokerContainerCreator;
 import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.support.converter.HutoolConverterManager;
-import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
+import cn.crane4j.core.support.reflect.ReflectivePropertyOperator;
 import cn.crane4j.core.util.CollectionUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -41,7 +41,7 @@ public class AssembleMpAnnotationResolverTest extends MpBaseTest {
         beanOperationParser = configuration.getBeanOperationsParser(BeanOperationParser.class.getSimpleName());
         ConverterManager converterManager = new HutoolConverterManager();
         MybatisPlusQueryContainerProvider register = new MybatisPlusQueryContainerProvider(
-            new MethodInvokerContainerCreator(new ReflectPropertyOperator(new HutoolConverterManager()), converterManager), configuration
+            new MethodInvokerContainerCreator(new ReflectivePropertyOperator(new HutoolConverterManager()), converterManager), configuration
         );
         register.registerRepository("fooMapper", fooMapper);
         operationsResolver = new AssembleMpAnnotationHandler(annotationFinder, register, configuration);

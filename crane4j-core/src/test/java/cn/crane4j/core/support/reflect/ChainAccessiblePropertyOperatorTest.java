@@ -20,7 +20,7 @@ public class ChainAccessiblePropertyOperatorTest {
 
     @Before
     public void init() {
-        operator = new ChainAccessiblePropertyOperator(new ReflectPropertyOperator(new HutoolConverterManager()));
+        operator = new ChainAccessiblePropertyOperator(new ReflectivePropertyOperator(new HutoolConverterManager()));
     }
 
     @Test

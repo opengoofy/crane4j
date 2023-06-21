@@ -8,7 +8,7 @@ import cn.crane4j.core.container.Container;
 import cn.crane4j.core.support.SimpleAnnotationFinder;
 import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.support.converter.HutoolConverterManager;
-import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
+import cn.crane4j.core.support.reflect.ReflectivePropertyOperator;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.ReflectUtils;
 import lombok.AllArgsConstructor;
@@ -42,7 +42,7 @@ public class CacheableMethodContainerFactoryTest {
     public void init() {
         ConverterManager converterManager = new HutoolConverterManager();
         MethodInvokerContainerCreator containerCreator = new MethodInvokerContainerCreator(
-            new ReflectPropertyOperator(converterManager), converterManager
+            new ReflectivePropertyOperator(converterManager), converterManager
         );
         factory = new CacheableMethodContainerFactory(
             containerCreator, new SimpleAnnotationFinder(), new ConcurrentMapCacheManager(ConcurrentHashMap::new)

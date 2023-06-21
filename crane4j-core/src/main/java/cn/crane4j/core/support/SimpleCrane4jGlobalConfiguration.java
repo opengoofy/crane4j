@@ -11,7 +11,7 @@ import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
 import cn.crane4j.core.executor.handler.ManyToManyAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.OneToManyAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.OneToOneAssembleOperationHandler;
-import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
+import cn.crane4j.core.executor.handler.ReflectiveDisassembleOperationHandler;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
 import cn.crane4j.core.parser.handler.AssembleAnnotationHandler;
@@ -22,7 +22,7 @@ import cn.crane4j.core.support.converter.HutoolConverterManager;
 import cn.crane4j.core.support.reflect.ChainAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.PropertyOperator;
-import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
+import cn.crane4j.core.support.reflect.ReflectivePropertyOperator;
 import cn.crane4j.core.util.Asserts;
 import lombok.Getter;
 import lombok.Setter;
@@ -62,7 +62,7 @@ public class SimpleCrane4jGlobalConfiguration
         SimpleCrane4jGlobalConfiguration configuration = new SimpleCrane4jGlobalConfiguration();
         // basic components
         ConverterManager register = new HutoolConverterManager();
-        PropertyOperator operator = new ReflectPropertyOperator(register);
+        PropertyOperator operator = new ReflectivePropertyOperator(register);
         operator = new MapAccessiblePropertyOperator(operator);
         operator = new ChainAccessiblePropertyOperator(operator);
         configuration.setPropertyOperator(operator);
@@ -97,9 +97,9 @@ public class SimpleCrane4jGlobalConfiguration
         configuration.getAssembleOperationHandlerMap().put(oneToManyReflexAssembleOperationHandler.getClass().getSimpleName(), oneToManyReflexAssembleOperationHandler);
         ManyToManyAssembleOperationHandler manyToManyReflexAssembleOperationHandler = new ManyToManyAssembleOperationHandler(operator);
         configuration.getAssembleOperationHandlerMap().put(manyToManyReflexAssembleOperationHandler.getClass().getSimpleName(), manyToManyReflexAssembleOperationHandler);
-        ReflectDisassembleOperationHandler reflectDisassembleOperationHandler = new ReflectDisassembleOperationHandler(operator);
-        configuration.getDisassembleOperationHandlerMap().put(DisassembleOperationHandler.class.getSimpleName(), reflectDisassembleOperationHandler);
-        configuration.getDisassembleOperationHandlerMap().put(reflectDisassembleOperationHandler.getClass().getSimpleName(), reflectDisassembleOperationHandler);
+        ReflectiveDisassembleOperationHandler reflectiveDisassembleOperationHandler = new ReflectiveDisassembleOperationHandler(operator);
+        configuration.getDisassembleOperationHandlerMap().put(DisassembleOperationHandler.class.getSimpleName(), reflectiveDisassembleOperationHandler);
+        configuration.getDisassembleOperationHandlerMap().put(reflectiveDisassembleOperationHandler.getClass().getSimpleName(), reflectiveDisassembleOperationHandler);
 
         // container providers
         configuration.registerContainerProvider(configuration.getClass().getSimpleName(), configuration);
@@ -156,7 +156,7 @@ public class SimpleCrane4jGlobalConfiguration
     @Override
     public DisassembleOperationHandler getDisassembleOperationHandler(String handlerName) {
         DisassembleOperationHandler handler = disassembleOperationHandlerMap.get(handlerName);
-        Asserts.isNotNull(handler, "cannot find  disassemble handler [{}]", handlerName);
+        Asserts.isNotNull(handler, "cannot find disassemble handler [{}]", handlerName);
         return handler;
     }
 }

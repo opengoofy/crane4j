@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author huangchengxing
  */
-public class AsmReflectPropertyOperator extends CacheablePropertyOperator {
+public class AsmReflectivePropertyOperator extends ReflectivePropertyOperator {
 
     /**
      * method access caches.
@@ -24,11 +24,11 @@ public class AsmReflectPropertyOperator extends CacheablePropertyOperator {
     private final Map<Class<?>, MethodAccess> methodAccessCaches = new ConcurrentHashMap<>();
 
     /**
-     * Create an {@link AsmReflectPropertyOperator} instance
+     * Create an {@link AsmReflectivePropertyOperator} instance
      *
      * @param converterManager converter register
      */
-    public AsmReflectPropertyOperator(ConverterManager converterManager) {
+    public AsmReflectivePropertyOperator(@Nullable ConverterManager converterManager) {
         super(converterManager);
     }
 

@@ -6,7 +6,7 @@ import cn.crane4j.core.container.Container;
 import cn.crane4j.core.support.SimpleAnnotationFinder;
 import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.support.converter.HutoolConverterManager;
-import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
+import cn.crane4j.core.support.reflect.ReflectivePropertyOperator;
 import cn.crane4j.core.util.ReflectUtils;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -49,7 +49,7 @@ public class DefaultMethodContainerFactoryTest {
     public void initMethod() {
         ConverterManager converterManager = new HutoolConverterManager();
         MethodInvokerContainerCreator containerCreator = new MethodInvokerContainerCreator(
-            new ReflectPropertyOperator(converterManager), converterManager
+            new ReflectivePropertyOperator(converterManager), converterManager
         );
         factory = new DefaultMethodContainerFactory(
             containerCreator, new SimpleAnnotationFinder()

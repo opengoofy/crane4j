@@ -6,7 +6,7 @@ import cn.crane4j.core.executor.BaseExecutorTest;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.operation.DisassembleOperation;
 import cn.crane4j.core.support.converter.HutoolConverterManager;
-import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
+import cn.crane4j.core.support.reflect.ReflectivePropertyOperator;
 import cn.crane4j.core.util.CollectionUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,17 +21,17 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * test for {@link ReflectDisassembleOperationHandler}
+ * test for {@link ReflectiveDisassembleOperationHandler}
  *
  * @author huangchengxing
  */
-public class ReflectDisassembleOperationHandlerTest extends BaseExecutorTest {
+public class ReflectiveDisassembleOperationHandlerTest extends BaseExecutorTest {
 
-    private ReflectDisassembleOperationHandler handler;
+    private ReflectiveDisassembleOperationHandler handler;
 
     @Before
     public void init() {
-        handler = new ReflectDisassembleOperationHandler(new ReflectPropertyOperator(new HutoolConverterManager()));
+        handler = new ReflectiveDisassembleOperationHandler(new ReflectivePropertyOperator(new HutoolConverterManager()));
     }
 
     @Test

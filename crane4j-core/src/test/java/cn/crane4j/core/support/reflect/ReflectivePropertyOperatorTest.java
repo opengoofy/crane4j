@@ -9,13 +9,13 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * test for {@link ReflectPropertyOperator}
+ * test for {@link ReflectivePropertyOperator}
  *
  * @author huangchengxing
  */
-public class ReflectPropertyOperatorTest {
+public class ReflectivePropertyOperatorTest {
 
-    private final ReflectPropertyOperator operator = new ReflectPropertyOperator(new HutoolConverterManager());
+    private final ReflectivePropertyOperator operator = new ReflectivePropertyOperator(new HutoolConverterManager());
 
     @Test
     public void readProperty() {
@@ -29,7 +29,6 @@ public class ReflectPropertyOperatorTest {
     public void findGetter() {
         MethodInvoker getter = operator.findGetter(Foo.class, "id");
         Assert.assertNotNull(getter);
-        Assert.assertEquals(getter, operator.findGetter(Foo.class, "id"));
         Assert.assertNull(operator.findGetter(Foo.class, "none"));
     }
 
@@ -47,7 +46,6 @@ public class ReflectPropertyOperatorTest {
     public void findSetter() {
         MethodInvoker setter = operator.findSetter(Foo.class, "id");
         Assert.assertNotNull(setter);
-        Assert.assertEquals(setter, operator.findSetter(Foo.class, "id"));
         Assert.assertNull(operator.findSetter(Foo.class, "none"));
     }
 

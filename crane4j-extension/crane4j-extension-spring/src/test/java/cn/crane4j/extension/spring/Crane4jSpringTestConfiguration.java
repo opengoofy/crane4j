@@ -10,7 +10,7 @@ import cn.crane4j.core.executor.OrderedBeanOperationExecutor;
 import cn.crane4j.core.executor.handler.ManyToManyAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.OneToManyAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.OneToOneAssembleOperationHandler;
-import cn.crane4j.core.executor.handler.ReflectDisassembleOperationHandler;
+import cn.crane4j.core.executor.handler.ReflectiveDisassembleOperationHandler;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
 import cn.crane4j.core.parser.handler.AssembleEnumAnnotationHandler;
@@ -37,7 +37,7 @@ import cn.crane4j.core.support.operator.OperatorProxyFactory;
 import cn.crane4j.core.support.reflect.ChainAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.PropertyOperator;
-import cn.crane4j.core.support.reflect.ReflectPropertyOperator;
+import cn.crane4j.core.support.reflect.ReflectivePropertyOperator;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.extension.spring.aop.MethodArgumentAutoOperateAspect;
 import cn.crane4j.extension.spring.aop.MethodResultAutoOperateAspect;
@@ -59,6 +59,7 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Optional;
 
 /**
  * @author huangchengxing
@@ -82,10 +83,11 @@ public class Crane4jSpringTestConfiguration {
 
     @Bean({"PropertyOperator", "propertyOperator"})
     public PropertyOperator propertyOperator(ConverterManager converterManager) {
-        PropertyOperator operator = new ReflectPropertyOperator(converterManager);
-        operator = new MapAccessiblePropertyOperator(operator);
-        operator = new ChainAccessiblePropertyOperator(operator);
-        return operator;
+        return Optional.of(new ReflectivePropertyOperator(converterManager))
+                .map(ChainAccessiblePropertyOperator::new)
+                .map(MapAccessiblePropertyOperator::new)
+                .map(ChainAccessiblePropertyOperator::new)
+                .get();
     }
 
     @Bean({"MergedAnnotationFinder", "mergedAnnotationFinder"})
@@ -202,9 +204,9 @@ public class Crane4jSpringTestConfiguration {
     }
 
     @Primary
-    @Bean({"ReflectDisassembleOperationHandler", "reflectDisassembleOperationHandler"})
-    public ReflectDisassembleOperationHandler reflectDisassembleOperationHandler(PropertyOperator propertyOperator) {
-        return new ReflectDisassembleOperationHandler(propertyOperator);
+    @Bean({"ReflectiveDisassembleOperationHandler", "reflectiveDisassembleOperationHandler"})
+    public ReflectiveDisassembleOperationHandler reflectiveDisassembleOperationHandler(PropertyOperator propertyOperator) {
+        return new ReflectiveDisassembleOperationHandler(propertyOperator);
     }
 
     // ============== operator interface components ==============
