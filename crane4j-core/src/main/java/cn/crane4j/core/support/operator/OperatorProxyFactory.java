@@ -168,11 +168,12 @@ public class OperatorProxyFactory {
          * Get operator proxy method.
          *
          * @param beanOperations bean operations
-         * @param method method
+         * @param method method with at least one parameter
          * @param beanOperationExecutor bean operation executor
          * @return operator proxy method if supported, null otherwise
          */
         @Nullable
-        MethodInvoker get(BeanOperations beanOperations, Method method, BeanOperationExecutor beanOperationExecutor);
+        MethodInvoker get(
+            BeanOperations beanOperations, Method method, BeanOperationExecutor beanOperationExecutor);
     }
 }

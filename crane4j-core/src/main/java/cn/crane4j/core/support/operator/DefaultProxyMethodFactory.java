@@ -27,7 +27,7 @@ public class DefaultProxyMethodFactory implements OperatorProxyFactory.ProxyMeth
      * Get operator proxy method.
      *
      * @param beanOperations        bean operations
-     * @param method                method
+     * @param method with at least one parameter
      * @param beanOperationExecutor bean operation executor
      * @return operator proxy method if supported, null otherwise
      */
