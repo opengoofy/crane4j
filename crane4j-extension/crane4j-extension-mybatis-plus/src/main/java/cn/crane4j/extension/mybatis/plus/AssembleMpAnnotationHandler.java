@@ -11,7 +11,7 @@ import cn.crane4j.core.parser.operation.AssembleOperation;
 import cn.crane4j.core.parser.operation.KeyTriggerOperation;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
-import cn.crane4j.core.support.Sorted;
+import cn.crane4j.core.support.Crane4jGlobalSorter;
 import lombok.experimental.Accessors;
 
 import java.lang.reflect.AnnotatedElement;
@@ -45,7 +45,7 @@ public class AssembleMpAnnotationHandler extends AbstractAssembleAnnotationHandl
         AnnotationFinder annotationFinder,
         MybatisPlusQueryContainerProvider containerRegister,
         Crane4jGlobalConfiguration globalConfiguration) {
-        this(annotationFinder, Sorted.comparator(), containerRegister, globalConfiguration);
+        this(annotationFinder, Crane4jGlobalSorter.instance(), containerRegister, globalConfiguration);
     }
 
     /**

@@ -7,6 +7,7 @@ import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.operation.KeyTriggerOperation;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
+import cn.crane4j.core.support.Crane4jGlobalSorter;
 import cn.crane4j.core.support.Sorted;
 import cn.crane4j.core.util.StringUtils;
 import lombok.experimental.Accessors;
@@ -51,7 +52,7 @@ public class AssembleAnnotationHandler extends AbstractAssembleAnnotationHandler
      */
     public AssembleAnnotationHandler(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration globalConfiguration) {
-        this(annotationFinder, globalConfiguration, Sorted.comparator());
+        this(annotationFinder, globalConfiguration, Crane4jGlobalSorter.instance());
     }
 
     /**

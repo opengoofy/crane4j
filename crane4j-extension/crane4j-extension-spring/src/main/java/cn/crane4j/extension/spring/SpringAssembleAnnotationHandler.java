@@ -6,23 +6,20 @@ import cn.crane4j.core.container.ContainerManager;
 import cn.crane4j.core.parser.handler.AssembleAnnotationHandler;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
+import cn.crane4j.core.support.Crane4jGlobalSorter;
 import cn.crane4j.core.support.Sorted;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
-import cn.crane4j.core.util.MultiMap;
-import cn.crane4j.core.util.ReflectUtils;
 import cn.crane4j.core.util.StringUtils;
 import cn.crane4j.extension.spring.expression.SpelExpressionContext;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.springframework.context.EmbeddedValueResolverAware;
-import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.expression.BeanResolver;
 import org.springframework.util.StringValueResolver;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.AnnotatedElement;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * <p>Extension implementation of {@link AssembleAnnotationHandler},
@@ -33,7 +30,6 @@ import java.util.Optional;
  * </ul>
  *
  * @author huangchengxing
- * @see Order
  * @since 1.2.0
  */
 @Slf4j
@@ -55,25 +51,9 @@ public class SpringAssembleAnnotationHandler
         AnnotationFinder annotationFinder,
         Crane4jGlobalConfiguration globalConfiguration,
         ExpressionEvaluator evaluator, BeanResolver beanResolver) {
-        super(annotationFinder, globalConfiguration, Sorted.comparator());
+        super(annotationFinder, globalConfiguration, Crane4jGlobalSorter.instance());
         this.evaluator = evaluator;
         this.beanResolver = beanResolver;
-    }
-
-    /**
-     * Parse annotation for fields
-     *
-     * @param beanType bean type
-     * @return element and annotation map
-     */
-    @Override
-    protected MultiMap<AnnotatedElement, Assemble> parseAnnotationForFields(Class<?> beanType) {
-        MultiMap<AnnotatedElement, Assemble> result = super.parseAnnotationForFields(beanType);
-        result.forEach((e, a) -> Optional
-            .ofNullable(AnnotatedElementUtils.findMergedAnnotation(e, Order.class))
-            .ifPresent(o -> ReflectUtils.setAttributeValue(a, "sort", o.value()))
-        );
-        return result;
     }
 
     /**
@@ -113,7 +93,7 @@ public class SpringAssembleAnnotationHandler
      * @param resolver handler
      */
     @Override
-    public void setEmbeddedValueResolver(StringValueResolver resolver) {
+    public void setEmbeddedValueResolver(@NonNull StringValueResolver resolver) {
         this.stringValueResolver = resolver;
     }
 }
