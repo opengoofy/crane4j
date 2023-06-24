@@ -3,9 +3,9 @@ package cn.crane4j.core.support.reflect;
 import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.util.CollectionUtils;
 import lombok.RequiredArgsConstructor;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -76,7 +76,7 @@ public class CacheablePropertyOperator implements PropertyOperator {
         return invoker == NULL ? null : invoker;
     }
 
-    @Nonnull
+    @NonNull
     private MethodInvoker findInvokerFromCache(
             Map<Class<?>, Map<String, MethodInvoker>> caches,
             Class<?> targetType, String propertyName,

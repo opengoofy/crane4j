@@ -2,8 +2,7 @@ package cn.crane4j.core.parser.operation;
 
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
 import cn.crane4j.core.parser.BeanOperations;
-
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  * <p>The disassembly operation triggered by the specified key,
@@ -30,7 +29,7 @@ public interface DisassembleOperation extends KeyTriggerOperation {
      * @param internalBean internal bean
      * @return operation
      */
-    @Nonnull
+    @NonNull
     BeanOperations getInternalBeanOperations(Object internalBean);
 
     /**

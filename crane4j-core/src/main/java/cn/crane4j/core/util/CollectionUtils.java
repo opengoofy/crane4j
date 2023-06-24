@@ -3,9 +3,16 @@ package cn.crane4j.core.util;
 import com.google.common.collect.MapMaker;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
-import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -189,7 +196,7 @@ public class CollectionUtils {
      * @return {@link Collection} itself if not null, or empty collection if null
      */
     @SuppressWarnings("unchecked")
-    @Nonnull
+    @NonNull
     public static <T, C extends Collection<T>> C addAll(C collection, T... elements) {
         if (Objects.isNull(collection)) {
             return (C)Collections.emptyList();
@@ -202,7 +209,7 @@ public class CollectionUtils {
     }
 
     @SuppressWarnings("unchecked")
-    @Nonnull
+    @NonNull
     public static <T, C extends Collection<T>> C addAll(C collection, Collection<T> elements) {
         if (Objects.isNull(collection)) {
             return (C)Collections.emptyList();
@@ -223,6 +230,7 @@ public class CollectionUtils {
      * @param <C> collection type
      * @return collection
      */
+    @SafeVarargs
     public static <T, C extends Collection<T>> C newCollection(Supplier<C> collectionFactory, T... elements) {
         C collection = collectionFactory.get();
         Objects.requireNonNull(collection);

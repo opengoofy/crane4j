@@ -1,10 +1,9 @@
 package cn.crane4j.core.util;
 
 import cn.crane4j.core.exception.Crane4jException;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
-
-import javax.annotation.Nullable;
 
 /**
  * test for {@link ClassUtils}
@@ -16,7 +15,7 @@ public class ClassUtilsTest {
     @Test
     public void isJdkClass() {
         Assert.assertTrue(ClassUtils.isJdkClass(String.class));
-        Assert.assertTrue(ClassUtils.isJdkClass(Nullable.class));
+        Assert.assertFalse(ClassUtils.isJdkClass(Nullable.class));
         Assert.assertFalse(ClassUtils.isJdkClass(ClassUtilsTest.class));
         Assert.assertThrows(NullPointerException.class, () -> ClassUtils.isJdkClass(null));
     }

@@ -97,6 +97,12 @@
         <artifactId>guava</artifactId>
         <version>${guava.version}</version>
         <optional>true</optional>
+        <exclusions>
+          <exclusion>
+            <groupId></groupId>
+            <artifactId></artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <dependency>

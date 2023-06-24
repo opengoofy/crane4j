@@ -16,8 +16,8 @@ import cn.crane4j.core.support.Crane4jGlobalSorter;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.StringUtils;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-import javax.annotation.Nullable;
 import java.lang.reflect.AnnotatedElement;
 import java.util.Comparator;
 import java.util.Map;

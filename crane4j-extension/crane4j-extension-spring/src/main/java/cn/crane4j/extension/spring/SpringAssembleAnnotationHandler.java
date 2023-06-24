@@ -13,12 +13,12 @@ import cn.crane4j.core.util.StringUtils;
 import cn.crane4j.extension.spring.expression.SpelExpressionContext;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.context.EmbeddedValueResolverAware;
 import org.springframework.core.annotation.Order;
 import org.springframework.expression.BeanResolver;
 import org.springframework.util.StringValueResolver;
 
-import javax.annotation.Nullable;
 import java.util.Objects;
 
 /**

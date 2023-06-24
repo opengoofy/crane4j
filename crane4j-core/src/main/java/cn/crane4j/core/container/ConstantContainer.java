@@ -12,8 +12,8 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
-import javax.annotation.Nonnull;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
@@ -69,7 +69,7 @@ public class ConstantContainer<K> implements Container<K>, Container.Lifecycle {
      * @param <T> enumeration type
      * @return container
      */
-    @Nonnull
+    @NonNull
     public static <K, T extends Enum<?>> ConstantContainer<K> forEnum(
         String namespace, Class<T> enumType, Function<? super T, ? extends K> keyGetter) {
         Objects.requireNonNull(enumType);

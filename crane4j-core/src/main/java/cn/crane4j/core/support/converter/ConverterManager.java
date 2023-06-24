@@ -1,6 +1,7 @@
 package cn.crane4j.core.support.converter;
 
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.util.Objects;
 import java.util.function.BiFunction;
 

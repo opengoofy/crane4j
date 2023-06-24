@@ -11,9 +11,9 @@ import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 
 /**
@@ -85,7 +85,7 @@ public class MethodInvokerContainerCreator {
      * @param methodInvoker method invoker
      * @return {@link MethodInvokerContainer} instance
      */
-    @Nonnull
+    @NonNull
     protected MethodInvokerContainer createMethodInvokerContainer(
         Object target, MappingType mappingType, String namespace,
         MethodInvokerContainer.KeyExtractor keyExtractor, MethodInvoker methodInvoker) {
@@ -101,7 +101,7 @@ public class MethodInvokerContainerCreator {
      * @implNote if target is <b>proxy object</b>, invoke method on proxy object,
      * otherwise invoke method on target object
      */
-    @Nonnull
+    @NonNull
     protected MethodInvoker getMethodInvoker(Object target, Method method) {
         MethodInvoker invoker = ReflectiveMethodInvoker.create(target, method, false);
         return ParameterConvertibleMethodInvoker.create(invoker, converterManager, method.getParameterTypes());
@@ -115,8 +115,7 @@ public class MethodInvokerContainerCreator {
      * @param resultKey   result key
      * @return key extractor
      */
-    @Nullable
-    protected MethodInvokerContainer.KeyExtractor getKeyExtractor(
+    protected MethodInvokerContainer.@Nullable KeyExtractor getKeyExtractor(
         MappingType mappingType, Class<?> resultType, String resultKey) {
         MethodInvokerContainer.KeyExtractor keyExtractor = null;
         if (mappingType != MappingType.MAPPED) {

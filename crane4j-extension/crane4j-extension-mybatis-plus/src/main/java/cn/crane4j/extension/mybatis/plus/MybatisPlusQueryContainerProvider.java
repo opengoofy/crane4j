@@ -19,9 +19,9 @@ import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
@@ -132,7 +132,7 @@ public class MybatisPlusQueryContainerProvider extends NamespaceResolvableQueryC
      * @param keyProperty key property
      * @return {@link Container}
      */
-    @Nonnull
+    @NonNull
     @Override
     protected MethodInvoker createMethodInvoker(
         String namespace, Repository<BaseMapper<?>> repository,

@@ -1,6 +1,6 @@
 package cn.crane4j.core.support;
 
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * A handler that infers the type of object.
