@@ -2,8 +2,8 @@ package cn.crane4j.core.support.reflect;
 
 import cn.crane4j.core.support.MethodInvoker;
 import lombok.RequiredArgsConstructor;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.Map;
 
 /**

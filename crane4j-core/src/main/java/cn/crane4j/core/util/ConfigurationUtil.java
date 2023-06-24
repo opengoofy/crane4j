@@ -10,9 +10,9 @@ import cn.crane4j.core.parser.SimplePropertyMapping;
 import cn.crane4j.core.support.AnnotationFinder;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;

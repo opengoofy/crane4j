@@ -2,8 +2,7 @@ package cn.crane4j.core.container;
 
 import cn.crane4j.core.support.container.ContainerMethodAnnotationProcessor;
 import lombok.RequiredArgsConstructor;
-
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * @author huangchengxing

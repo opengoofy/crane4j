@@ -5,8 +5,8 @@ import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.util.CollectionUtils;
 import com.esotericsoftware.reflectasm.MethodAccess;
 import lombok.RequiredArgsConstructor;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

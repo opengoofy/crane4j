@@ -5,8 +5,7 @@ import cn.crane4j.core.container.ContainerDefinition;
 import cn.crane4j.core.container.ContainerManager;
 import cn.crane4j.core.container.ContainerProvider;
 import lombok.extern.slf4j.Slf4j;
-
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Processor for init and destroy container.

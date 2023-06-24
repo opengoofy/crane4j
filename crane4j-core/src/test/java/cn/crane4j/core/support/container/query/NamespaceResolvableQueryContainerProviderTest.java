@@ -9,11 +9,11 @@ import cn.crane4j.core.util.StringUtils;
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -105,7 +105,7 @@ public class NamespaceResolvableQueryContainerProviderTest {
         protected Repository<Object> createRepository(String name, Object target) {
             return new TestRepository(target, name, "id");
         }
-        @Nonnull
+        @NonNull
         @Override
         protected MethodInvoker createMethodInvoker(
             String namespace, Repository<Object> repository, Set<String> queryColumns, String keyColumn, String keyProperty) {

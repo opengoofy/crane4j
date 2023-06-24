@@ -1,6 +1,7 @@
 package cn.crane4j.core.support;
 
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.util.Set;
@@ -23,7 +24,7 @@ public class SimpleAnnotationFinder implements AnnotationFinder {
      * @return annotation
      */
     @Override
-    public <A extends Annotation> A getAnnotation(@Nonnull AnnotatedElement element, Class<A> annotationType) {
+    public <A extends Annotation> A getAnnotation(@NonNull AnnotatedElement element, Class<A> annotationType) {
         return element.getDeclaredAnnotation(annotationType);
     }
 
@@ -36,7 +37,7 @@ public class SimpleAnnotationFinder implements AnnotationFinder {
      * @return annotations
      */
     @Override
-    public <A extends Annotation> Set<A> getAllAnnotations(@Nonnull AnnotatedElement element, Class<A> annotationType) {
+    public <A extends Annotation> Set<A> getAllAnnotations(@NonNull AnnotatedElement element, Class<A> annotationType) {
         return Stream.of(element.getDeclaredAnnotationsByType(annotationType))
             .collect(Collectors.toSet());
     }
@@ -49,7 +50,7 @@ public class SimpleAnnotationFinder implements AnnotationFinder {
      * @return annotation
      */
     @Override
-    public <A extends Annotation> A findAnnotation(@Nonnull AnnotatedElement element, Class<A> annotationType) {
+    public <A extends Annotation> A findAnnotation(@NonNull AnnotatedElement element, Class<A> annotationType) {
         return element.getAnnotation(annotationType);
     }
 
@@ -61,7 +62,7 @@ public class SimpleAnnotationFinder implements AnnotationFinder {
      * @return annotations
      */
     @Override
-    public <A extends Annotation> Set<A> findAllAnnotations(@Nonnull AnnotatedElement element, Class<A> annotationType) {
+    public <A extends Annotation> Set<A> findAllAnnotations(@NonNull AnnotatedElement element, Class<A> annotationType) {
         return Stream.of(element.getAnnotationsByType(annotationType))
             .collect(Collectors.toSet());
     }

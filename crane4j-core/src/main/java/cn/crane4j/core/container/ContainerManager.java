@@ -2,8 +2,8 @@ package cn.crane4j.core.container;
 
 import cn.crane4j.core.container.lifecycle.ContainerLifecycleProcessor;
 import cn.crane4j.core.util.StringUtils;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.function.Supplier;
 
