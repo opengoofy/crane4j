@@ -14,6 +14,7 @@ import cn.crane4j.core.parser.operation.KeyTriggerOperation;
 import cn.crane4j.core.parser.operation.SimpleAssembleOperation;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
+import cn.crane4j.core.support.Crane4jGlobalSorter;
 import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.ConfigurationUtil;
@@ -51,7 +52,6 @@ import java.util.stream.Stream;
 @Slf4j
 public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> implements OperationAnnotationHandler {
 
-    protected static final String ANNOTATION_KEY_ATTRIBUTE = "key";
     protected final Class<T> annotationType;
     protected final AnnotationFinder annotationFinder;
     protected final Comparator<KeyTriggerOperation> operationComparator;
@@ -145,7 +145,6 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
     protected MultiMap<AnnotatedElement, T> parseAnnotationForFields(Class<?> beanType) {
         MultiMap<AnnotatedElement, T> result = MultiMap.arrayListMultimap();
         ReflectUtils.parseAnnotationForDeclaredFields(annotationFinder, beanType, annotationType, (annotation, field) -> result.put(field, annotation));
-        result.forEach((e, a) -> ReflectUtils.setAttributeValue(a, ANNOTATION_KEY_ATTRIBUTE, ((Field)e).getName()));
         return result;
     }
 
@@ -165,11 +164,11 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
         StandardAnnotation standardAnnotation = getStandardAnnotation(beanOperations, element, annotation);
 
         // get configuration of standard assemble operation
-        String key = parseKey(standardAnnotation);
-        AssembleOperationHandler assembleOperationHandler = parseAssembleOperationHandler(standardAnnotation);
-        Set<PropertyMapping> propertyMappings = parsePropertyMappings(standardAnnotation, key);
-        int sort = parseSort(standardAnnotation);
-        Set<String> groups = parseGroups(standardAnnotation);
+        String key = parseKey(element, standardAnnotation);
+        AssembleOperationHandler assembleOperationHandler = parseAssembleOperationHandler(element, standardAnnotation);
+        Set<PropertyMapping> propertyMappings = parsePropertyMappings(element, standardAnnotation, key);
+        int sort = parseSort(element, standardAnnotation);
+        Set<String> groups = parseGroups(element, standardAnnotation);
 
         // create operation
         AssembleOperation operation = createAssembleOperation(annotation, sort, key, assembleOperationHandler, propertyMappings);
@@ -220,11 +219,13 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
     /**
      * Get groups from given {@link StandardAnnotation}.
      *
+     * @param element element
      * @param standardAnnotation standard annotation
      * @return groups
      */
-    protected String parseKey(StandardAnnotation standardAnnotation) {
-        String key = standardAnnotation.getKey();
+    protected String parseKey(AnnotatedElement element, StandardAnnotation standardAnnotation) {
+        String key = (element instanceof Field) ?
+            ((Field) element).getName() : standardAnnotation.getKey();
         Asserts.isTrue(StringUtils.isNotBlank(key), "the key of assemble operation must not blank");
         return key;
     }
@@ -232,10 +233,12 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
     /**
      * Get assemble operation groups from given {@link StandardAnnotation}.
      *
+     * @param element element
      * @param standardAnnotation standard annotation
      * @return assemble operation groups
      */
-    protected AssembleOperationHandler parseAssembleOperationHandler(StandardAnnotation standardAnnotation) {
+    protected AssembleOperationHandler parseAssembleOperationHandler(
+        AnnotatedElement element, StandardAnnotation standardAnnotation) {
         String handler = StringUtils.emptyToDefault(standardAnnotation.getHandler(), OneToOneAssembleOperationHandler.class.getSimpleName());
         AssembleOperationHandler assembleOperationHandler = globalConfiguration.getAssembleOperationHandler(handler);
         Asserts.isNotNull(assembleOperationHandler, "assemble operation handler [{}] not found", handler);
@@ -245,11 +248,13 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
     /**
      * Get property mapping from given {@link StandardAnnotation}.
      *
+     * @param element element
      * @param standardAnnotation standard annotation
      * @param key key
      * @return assemble operation groups
      */
-    protected Set<PropertyMapping> parsePropertyMappings(StandardAnnotation standardAnnotation, String key) {
+    protected Set<PropertyMapping> parsePropertyMappings(
+        AnnotatedElement element, StandardAnnotation standardAnnotation, String key) {
         Mapping[] props = standardAnnotation.getProps();
         Set<PropertyMapping> propertyMappings = Stream.of(props)
             .map(m -> ConfigurationUtil.createPropertyMapping(m, key))
@@ -265,20 +270,22 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
     /**
      * Get sort value from given {@link StandardAnnotation}.
      *
+     * @param element element
      * @param standardAnnotation standard annotation
      * @return assemble operation groups
      */
-    protected int parseSort(StandardAnnotation standardAnnotation) {
-        return standardAnnotation.getSort();
+    protected int parseSort(AnnotatedElement element, StandardAnnotation standardAnnotation) {
+        return Crane4jGlobalSorter.INSTANCE.getSortValue(element, standardAnnotation.getSort());
     }
 
     /**
      * Get groups from given {@link StandardAnnotation}.
      *
+     * @param element element
      * @param standardAnnotation standard assemble operation
      * @return groups
      */
-    protected Set<String> parseGroups(StandardAnnotation standardAnnotation) {
+    protected Set<String> parseGroups(AnnotatedElement element, StandardAnnotation standardAnnotation) {
         return Stream.of(standardAnnotation.getGroups())
             .collect(Collectors.toSet());
     }

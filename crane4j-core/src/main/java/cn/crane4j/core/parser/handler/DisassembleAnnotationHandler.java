@@ -11,6 +11,7 @@ import cn.crane4j.core.parser.operation.TypeDynamitedDisassembleOperation;
 import cn.crane4j.core.parser.operation.TypeFixedDisassembleOperation;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
+import cn.crane4j.core.support.Crane4jGlobalSorter;
 import cn.crane4j.core.support.Sorted;
 import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.ReflectUtils;
@@ -19,11 +20,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Field;
+import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -41,7 +46,6 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class DisassembleAnnotationHandler implements OperationAnnotationHandler {
 
-    protected static final String ANNOTATION_KEY_ATTRIBUTE = "key";
     protected final AnnotationFinder annotationFinder;
     protected final Crane4jGlobalConfiguration globalConfiguration;
     protected final Comparator<KeyTriggerOperation> operationComparator;
@@ -55,7 +59,7 @@ public class DisassembleAnnotationHandler implements OperationAnnotationHandler 
      */
     public DisassembleAnnotationHandler(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration globalConfiguration) {
-        this(annotationFinder, globalConfiguration, Sorted.comparator());
+        this(annotationFinder, globalConfiguration, Crane4jGlobalSorter.instance());
     }
 
     /**
@@ -86,11 +90,14 @@ public class DisassembleAnnotationHandler implements OperationAnnotationHandler 
             return Collections.emptyList();
         }
         Class<?> beanType = (Class<?>)source;
-        Collection<Disassemble> fieldLevelAnnotation = resolveFieldLevelAnnotations(beanType);
+        Map<Field, Disassemble> fieldLevelAnnotations = resolveFieldLevelAnnotations(beanType);
         Collection<Disassemble> classLevelAnnotations = resolveClassLevelAnnotations(beanType);
-        return Stream.of(fieldLevelAnnotation, classLevelAnnotations)
-            .flatMap(Collection::stream)
-            .map(annotation -> createDisassembleOperation(beanType, annotation, parser))
+        // create operations
+        return Stream.concat(
+            fieldLevelAnnotations.entrySet().stream(),
+            classLevelAnnotations.stream().map(a -> new AbstractMap.SimpleEntry<>(beanType, a))
+        )
+            .map(e -> createDisassembleOperation(beanType, e.getKey(), e.getValue(), parser))
             .sorted(operationComparator)
             .collect(Collectors.toList());
     }
@@ -101,12 +108,13 @@ public class DisassembleAnnotationHandler implements OperationAnnotationHandler 
      * @param beanType bean type
      * @return {@link Disassemble}
      */
-    protected List<Disassemble> resolveFieldLevelAnnotations(Class<?> beanType) {
-        return ReflectUtils.parseAnnotationForDeclaredFields(annotationFinder, beanType, Disassemble.class, (a, f) -> {
-            // force value to be set to the annotated attribute name
-            ReflectUtils.setAttributeValue(a, ANNOTATION_KEY_ATTRIBUTE, f.getName());
+    protected Map<Field, Disassemble> resolveFieldLevelAnnotations(Class<?> beanType) {
+        Map<Field, Disassemble> disassembles = new LinkedHashMap<>();
+        ReflectUtils.parseAnnotationForDeclaredFields(annotationFinder, beanType, Disassemble.class, (a, f) -> {
+            disassembles.put(f, a);
             return a;
         });
+        return disassembles;
     }
 
     /**
@@ -116,7 +124,8 @@ public class DisassembleAnnotationHandler implements OperationAnnotationHandler 
      * @param annotation annotation
      * @return {@link DisassembleOperation}
      */
-    protected DisassembleOperation createDisassembleOperation(Class<?> type, Disassemble annotation, BeanOperationParser parser) {
+    protected DisassembleOperation createDisassembleOperation(
+        Class<?> type, AnnotatedElement element, Disassemble annotation, BeanOperationParser parser) {
         // get handler
         String handler = StringUtils.emptyToDefault(annotation.handler(), ReflectiveDisassembleOperationHandler.class.getSimpleName());
         DisassembleOperationHandler disassembleOperationHandler = globalConfiguration.getDisassembleOperationHandler(handler);
@@ -124,27 +133,52 @@ public class DisassembleAnnotationHandler implements OperationAnnotationHandler 
             disassembleOperationHandler, "disassemble handler [{}] not found", annotation.handler()
         );
 
+        // resolve trigger key
+        String key = parseKey(element, annotation);
+        // resolve sort value
+        int sort = parseSort(element, annotation);
+
         // wait until runtime to dynamically determine the actual type if no type is specified
         DisassembleOperation operation;
         if (Objects.equals(Object.class, annotation.type()) || Objects.equals(Void.TYPE, annotation.type())) {
             operation = new TypeDynamitedDisassembleOperation(
-                annotation.key(), annotation.sort(),
-                type, disassembleOperationHandler, parser,
-                globalConfiguration.getTypeResolver()
+                key, sort, type, disassembleOperationHandler, parser, globalConfiguration.getTypeResolver()
             );
         }
         // complete the parsing now if the type has been specified in the annotation
         else {
             BeanOperations operations = parser.parse(annotation.type());
             operation = new TypeFixedDisassembleOperation(
-                annotation.key(), annotation.sort(),
-                type, operations, disassembleOperationHandler
+                key, sort, type, operations, disassembleOperationHandler
             );
         }
 
         // set group
         operation.getGroups().addAll(Arrays.asList(annotation.groups()));
         return operation;
+    }
+
+    /**
+     * Parse sort value from given element and annotation. 
+     *
+     * @param element element
+     * @param annotation annotation
+     * @return sort value
+     * @see Crane4jGlobalSorter#getSortValue 
+     */
+    protected int parseSort(AnnotatedElement element, Disassemble annotation) {
+        return Crane4jGlobalSorter.INSTANCE.getSortValue(element, annotation.sort());
+    }
+
+    /**
+     * Parse operation trigger key from given element and annotation.
+     *
+     * @param element element
+     * @param annotation annotation
+     * @return operation trigger key
+     */
+    protected String parseKey(AnnotatedElement element, Disassemble annotation) {
+        return (element instanceof Field) ? ((Field) element).getName() : annotation.key();
     }
 
     /**

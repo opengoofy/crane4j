@@ -3,7 +3,7 @@ package cn.crane4j.core.parser;
 import cn.crane4j.core.exception.OperationParseException;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.parser.handler.OperationAnnotationHandler;
-import cn.crane4j.core.support.Sorted;
+import cn.crane4j.core.support.Crane4jGlobalSorter;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.ReflectUtils;
 import lombok.NonNull;
@@ -84,7 +84,7 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
     public TypeHierarchyBeanOperationParser(
         Collection<OperationAnnotationHandler> operationAnnotationHandlers) {
         this.operationAnnotationHandlers = operationAnnotationHandlers.stream()
-            .sorted(Sorted.comparator())
+            .sorted(Crane4jGlobalSorter.INSTANCE)
             .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
@@ -98,7 +98,7 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
         if (!operationAnnotationHandlers.contains(resolver)) {
             operationAnnotationHandlers.add(resolver);
             this.operationAnnotationHandlers = operationAnnotationHandlers.stream()
-                .sorted(Sorted.comparator())
+                .sorted(Crane4jGlobalSorter.instance())
                 .collect(Collectors.toCollection(LinkedHashSet::new));
         }
     }

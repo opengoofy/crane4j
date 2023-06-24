@@ -12,7 +12,7 @@ import cn.crane4j.core.parser.SimplePropertyMapping;
 import cn.crane4j.core.parser.operation.KeyTriggerOperation;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
-import cn.crane4j.core.support.Sorted;
+import cn.crane4j.core.support.Crane4jGlobalSorter;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.StringUtils;
@@ -49,7 +49,7 @@ public class AssembleEnumAnnotationHandler extends AbstractAssembleAnnotationHan
     public AssembleEnumAnnotationHandler(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration globalConfiguration,
         PropertyOperator propertyOperator, ContainerManager containerManager) {
-        this(annotationFinder, Sorted.comparator(), globalConfiguration, propertyOperator, containerManager);
+        this(annotationFinder, Crane4jGlobalSorter.instance(), globalConfiguration, propertyOperator, containerManager);
     }
 
     /**
@@ -127,13 +127,14 @@ public class AssembleEnumAnnotationHandler extends AbstractAssembleAnnotationHan
     /**
      * Get property mapping from given {@link StandardAnnotation}.
      *
+     * @param element element
      * @param standardAnnotation standard annotation
      * @param key key
      * @return assemble operation groups
      */
     @Override
-    protected Set<PropertyMapping> parsePropertyMappings(StandardAnnotation standardAnnotation, String key) {
-        Set<PropertyMapping> propertyMappings = super.parsePropertyMappings(standardAnnotation, key);
+    protected Set<PropertyMapping> parsePropertyMappings(AnnotatedElement element, StandardAnnotation standardAnnotation, String key) {
+        Set<PropertyMapping> propertyMappings = super.parsePropertyMappings(element, standardAnnotation, key);
         AssembleEnum annotation = (AssembleEnum)((StandardAnnotationAdapter)standardAnnotation).getAnnotation();
         if (StringUtils.isNotEmpty(annotation.ref())) {
             propertyMappings.add(new SimplePropertyMapping("", annotation.ref()));

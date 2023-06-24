@@ -3,7 +3,6 @@ package cn.crane4j.core.util;
 import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.ParameterNameFinder;
-import cn.hutool.core.util.ReflectUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -12,11 +11,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -48,10 +45,6 @@ public class ReflectUtils {
     private static final String IS_PREFIX = "is";
     private static final String GET_PREFIX = "get";
     private static final Object[] EMPTY_PARAMS = new Object[0];
-
-    private static final String JDK_MEMBER_ATTRIBUTE = "memberValues";
-    private static final String SPRING_MEMBER_ATTRIBUTE = "valueCache";
-    private static final String SPRING_INVOCATION_HANDLER = "SynthesizedMergedAnnotationInvocationHandler";
 
     /**
      * declared field cache
@@ -136,11 +129,8 @@ public class ReflectUtils {
         // if the number of parameters is not equal, resolve actual arguments
         Parameter[] parameters = method.getParameters();
         Object[] actualArguments = new Object[parameterCount];
-        if (parameters.length >= args.length) {
-            System.arraycopy(args, 0, actualArguments, 0, args.length);
-        } else {
-            System.arraycopy(args, 0, actualArguments, 0, parameters.length);
-        }
+        int newLen = Math.min(parameters.length, args.length);
+        System.arraycopy(args, 0, actualArguments, 0, newLen);
         return actualArguments;
     }
 
@@ -388,25 +378,6 @@ public class ReflectUtils {
             }
         }
         return results;
-    }
-
-    /**
-     * Set annotation attribute value.
-     *
-     * @param annotation annotation
-     * @param attributeName attribute name
-     * @param attributeValue attribute value
-     */
-    @SuppressWarnings("unchecked")
-    public static void setAttributeValue(Annotation annotation, String attributeName, Object attributeValue) {
-        InvocationHandler invocationHandler = Proxy.getInvocationHandler(annotation);
-        // adapt to Spring
-        String memberAttributeName = JDK_MEMBER_ATTRIBUTE;
-        if (StringUtils.contains(invocationHandler.getClass().getName(), SPRING_INVOCATION_HANDLER)) {
-            memberAttributeName = SPRING_MEMBER_ATTRIBUTE;
-        }
-        Map<String, Object> memberValues = (Map<String, Object>) ReflectUtil.getFieldValue(invocationHandler, memberAttributeName);
-        memberValues.put(attributeName, attributeValue);
     }
 
     // ====================== class ======================

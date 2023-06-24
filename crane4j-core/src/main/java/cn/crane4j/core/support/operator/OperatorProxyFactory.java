@@ -7,6 +7,7 @@ import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
+import cn.crane4j.core.support.Crane4jGlobalSorter;
 import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.support.Sorted;
 import cn.crane4j.core.util.Asserts;
@@ -59,7 +60,7 @@ public class OperatorProxyFactory {
         this.annotationFinder = annotationFinder;
         this.proxyMethodFactories = proxyMethodFactories.stream()
             .distinct()
-            .sorted(Sorted.comparator())
+            .sorted(Crane4jGlobalSorter.instance())
             .collect(Collectors.toList());
     }
 

@@ -7,7 +7,6 @@ import cn.crane4j.core.support.SimpleParameterNameFinder;
 import cn.hutool.core.util.ReflectUtil;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.junit.Assert;
 import org.junit.Test;
@@ -18,14 +17,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
-import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -230,24 +226,6 @@ public class ReflectUtilsTest {
     }
 
     @Test
-    public void setAttributeValue() {
-        Annotation annotation = Foo.class.getAnnotation(Annotation.class);
-        int expected = -1;
-        Assert.assertNotEquals(expected, annotation.value());
-        ReflectUtils.setAttributeValue(annotation, "value", expected);
-        Assert.assertEquals(expected, annotation.value());
-
-        Map<String, Object> memberValues = new HashMap<>();
-        InvocationHandler handler = new SynthesizedMergedAnnotationInvocationHandler(memberValues);
-        Annotation synthesizedAnnotation = (Annotation) Proxy.newProxyInstance(
-            Annotation.class.getClassLoader(), new Class<?>[]{Annotation.class}, handler
-        );
-        ReflectUtils.setAttributeValue(synthesizedAnnotation, "value", expected);
-        Assert.assertEquals(expected, synthesizedAnnotation.value());
-    }
-
-
-    @Test
     public void isJdkElement() throws NoSuchMethodException {
         Assert.assertTrue(ReflectUtils.isJdkElement(Object.class));
         Assert.assertTrue(ReflectUtils.isJdkElement(String.class));
@@ -333,15 +311,6 @@ public class ReflectUtilsTest {
     @Retention(RetentionPolicy.RUNTIME)
     private @interface Annotation {
         int value() default 0;
-    }
-
-    @RequiredArgsConstructor
-    private static class SynthesizedMergedAnnotationInvocationHandler implements InvocationHandler {
-        private final Map<String, Object> valueCache;
-        @Override
-        public Object invoke(Object proxy, Method method, Object[] args) {
-            return valueCache.get(method.getName());
-        }
     }
 
     private static class Super {}

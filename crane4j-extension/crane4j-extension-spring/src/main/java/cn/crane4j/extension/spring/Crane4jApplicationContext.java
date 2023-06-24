@@ -10,6 +10,7 @@ import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
+import cn.crane4j.core.support.Crane4jGlobalSorter;
 import cn.crane4j.core.support.TypeResolver;
 import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.support.reflect.PropertyOperator;
@@ -19,8 +20,13 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.DecoratingProxy;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.annotation.Order;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.AnnotatedElement;
 import java.util.Objects;
 
 /**
@@ -35,6 +41,32 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class Crane4jApplicationContext extends DefaultContainerManager
     implements Crane4jGlobalConfiguration, SmartInitializingSingleton, DisposableBean, InitializingBean {
+
+    static {
+        // support compare by @Order annotation and Ordered interface
+        Crane4jGlobalSorter.INSTANCE.addCompareValueExtractor(t -> {
+            if (Objects.isNull(t)) {
+                return null;
+            }
+            if (t instanceof  Ordered) {
+                return ((Ordered)t).getOrder();
+            }
+            Integer order = findOrderFromAnnotation(t);
+            if (Objects.isNull(order) && t instanceof DecoratingProxy) {
+                order = findOrderFromAnnotation(((DecoratingProxy)t).getDecoratedClass());
+            }
+            return order;
+        });
+    }
+
+    @Nullable
+    private static Integer findOrderFromAnnotation(Object t) {
+        if (!(t instanceof AnnotatedElement)) {
+            return null;
+        }
+        Order annotation = AnnotatedElementUtils.findMergedAnnotation(((AnnotatedElement) t), Order.class);
+        return Objects.nonNull(annotation) ? annotation.value() : null;
+    }
 
     /**
      * application context
