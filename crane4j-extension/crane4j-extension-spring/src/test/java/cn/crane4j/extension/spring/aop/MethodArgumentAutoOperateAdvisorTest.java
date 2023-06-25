@@ -35,23 +35,24 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * test for {@link MethodArgumentAutoOperateAspect}
+ * test for {@link MethodArgumentAutoOperateAdvisor}
  *
  * @author huangchengxing
  */
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {
     Crane4jSpringTestConfiguration.class,
-    MethodArgumentAutoOperateAspectTest.SourceService.class,
-    MethodArgumentAutoOperateAspectTest.TargetService.class
+    MethodArgumentAutoOperateAdvisorTest.SourceService.class,
+    MethodArgumentAutoOperateAdvisorTest.TargetService.class
 })
-public class MethodArgumentAutoOperateAspectTest {
+public class MethodArgumentAutoOperateAdvisorTest {
+
     @Autowired
     private ApplicationContext applicationContext;
     @Autowired
     ContainerManager containerManager;
     @Autowired
-    private MethodArgumentAutoOperateAspect methodArgumentAutoOperateAspect;
+    private MethodArgumentAutoOperateAdvisor methodArgumentAutoOperateAdvisor;
 
     @Test
     public void test() {
@@ -74,7 +75,7 @@ public class MethodArgumentAutoOperateAspectTest {
         NestedFoo nestedFoo2 = (NestedFoo)foo1.getNestedFoo();
         Assert.assertEquals(nestedFoo2.getId(), nestedFoo2.getName());
 
-        methodArgumentAutoOperateAspect.destroy();
+        methodArgumentAutoOperateAdvisor.destroy();
     }
 
     protected static class SourceService {

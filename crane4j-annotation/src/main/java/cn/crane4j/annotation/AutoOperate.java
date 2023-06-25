@@ -11,8 +11,9 @@ import java.lang.annotation.Target;
  *
  * @author huangchengxing
  * @see ArgAutoOperate
- * @see cn.crane4j.extension.spring.aop.MethodResultAutoOperateAspect
- * @see cn.crane4j.extension.spring.aop.MethodArgumentAutoOperateAspect
+ * @see cn.crane4j.core.support.aop.MethodResultAutoOperateSupport
+ * @see cn.crane4j.core.support.aop.MethodArgumentAutoOperateSupport
+ * @see cn.crane4j.core.support.aop.AutoOperateAnnotatedElementResolver
  */
 @Target({ElementType.METHOD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)

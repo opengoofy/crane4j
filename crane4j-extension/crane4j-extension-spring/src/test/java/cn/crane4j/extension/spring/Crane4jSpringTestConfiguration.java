@@ -5,6 +5,7 @@ import cn.crane4j.core.cache.ConcurrentMapCacheManager;
 import cn.crane4j.core.container.ContainerManager;
 import cn.crane4j.core.container.lifecycle.ContainerInstanceLifecycleProcessor;
 import cn.crane4j.core.container.lifecycle.ContainerRegisterLogger;
+import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
 import cn.crane4j.core.executor.OrderedBeanOperationExecutor;
 import cn.crane4j.core.executor.handler.ManyToManyAssembleOperationHandler;
@@ -39,8 +40,8 @@ import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.support.reflect.ReflectivePropertyOperator;
 import cn.crane4j.core.util.CollectionUtils;
-import cn.crane4j.extension.spring.aop.MethodArgumentAutoOperateAspect;
-import cn.crane4j.extension.spring.aop.MethodResultAutoOperateAspect;
+import cn.crane4j.extension.spring.aop.MethodArgumentAutoOperateAdvisor;
+import cn.crane4j.extension.spring.aop.MethodResultAutoOperateAdvisor;
 import cn.crane4j.extension.spring.expression.SpelExpressionContext;
 import cn.crane4j.extension.spring.expression.SpelExpressionEvaluator;
 import org.slf4j.Logger;
@@ -62,6 +63,8 @@ import java.util.Comparator;
 import java.util.Optional;
 
 /**
+ * Configuration class for test cases.
+ *
  * @author huangchengxing
  */
 @EnableAspectJAutoProxy
@@ -227,7 +230,7 @@ public class Crane4jSpringTestConfiguration {
 
     @Bean({"OperateTemplate", "operateTemplate"})
     public OperateTemplate operateTemplate(
-        BeanOperationParser parser, DisorderedBeanOperationExecutor executor, TypeResolver typeResolver) {
+        BeanOperationParser parser, BeanOperationExecutor executor, TypeResolver typeResolver) {
         return new OperateTemplate(parser, executor, typeResolver);
     }
 
@@ -253,26 +256,26 @@ public class Crane4jSpringTestConfiguration {
         );
     }
 
-    @Bean({"MethodResultAutoOperateAspect", "methodResultAutoOperateAspect"})
-    public MethodResultAutoOperateAspect methodResultAutoOperateAspect(
+    @Bean({"MethodResultAutoOperateAdvisor", "methodResultAutoOperateAdvisor"})
+    public MethodResultAutoOperateAdvisor methodResultAutoOperateAdvisor(
         AutoOperateAnnotatedElementResolver autoOperateAnnotatedElementResolver,
         ResolvableExpressionEvaluator resolvableExpressionEvaluator) {
-        return new MethodResultAutoOperateAspect(autoOperateAnnotatedElementResolver, resolvableExpressionEvaluator);
+        return new MethodResultAutoOperateAdvisor(autoOperateAnnotatedElementResolver, resolvableExpressionEvaluator);
     }
 
-    @Bean({"MethodArgumentAutoOperateAspect", "methodArgumentAutoOperateAspect"})
-    public MethodArgumentAutoOperateAspect methodArgumentAutoOperateAspect(
+    @Bean({"methodArgumentAutoOperateAdvisor", "methodArgumentAutoOperateAdvisor"})
+    public MethodArgumentAutoOperateAdvisor methodArgumentAutoOperateAdvisor(
         MethodBaseExpressionExecuteDelegate methodBaseExpressionExecuteDelegate,
         AutoOperateAnnotatedElementResolver autoOperateAnnotatedElementResolver,
         ParameterNameFinder parameterNameDiscoverer, AnnotationFinder annotationFinder) {
-        return new MethodArgumentAutoOperateAspect(autoOperateAnnotatedElementResolver,
+        return new MethodArgumentAutoOperateAdvisor(autoOperateAnnotatedElementResolver,
             methodBaseExpressionExecuteDelegate,
             parameterNameDiscoverer, annotationFinder
         );
     }
 
-    @Bean({"BeanMethodContainerRegistrar", "beanMethodContainerPostProcessor"})
-    public BeanMethodContainerRegistrar beanMethodContainerPostProcessor(
+    @Bean({"BeanMethodContainerRegistrar", "beanMethodContainerRegistrar"})
+    public BeanMethodContainerRegistrar beanMethodContainerRegistrar(
         AnnotationFinder annotationFinder, Collection<MethodContainerFactory> factories, Crane4jGlobalConfiguration configuration) {
         return new BeanMethodContainerRegistrar(factories, annotationFinder, configuration);
     }

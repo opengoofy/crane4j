@@ -11,6 +11,7 @@ import cn.crane4j.core.container.ContainerManager;
 import cn.crane4j.core.container.lifecycle.CacheableContainerProcessor;
 import cn.crane4j.core.container.lifecycle.ContainerInstanceLifecycleProcessor;
 import cn.crane4j.core.container.lifecycle.ContainerRegisterLogger;
+import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
 import cn.crane4j.core.executor.OrderedBeanOperationExecutor;
 import cn.crane4j.core.executor.handler.ManyToManyAssembleOperationHandler;
@@ -54,8 +55,8 @@ import cn.crane4j.extension.spring.MergedAnnotationFinder;
 import cn.crane4j.extension.spring.ResolvableExpressionEvaluator;
 import cn.crane4j.extension.spring.SpringAssembleAnnotationHandler;
 import cn.crane4j.extension.spring.SpringParameterNameFinder;
-import cn.crane4j.extension.spring.aop.MethodArgumentAutoOperateAspect;
-import cn.crane4j.extension.spring.aop.MethodResultAutoOperateAspect;
+import cn.crane4j.extension.spring.aop.MethodArgumentAutoOperateAdvisor;
+import cn.crane4j.extension.spring.aop.MethodResultAutoOperateAdvisor;
 import cn.crane4j.extension.spring.expression.SpelExpressionContext;
 import cn.crane4j.extension.spring.expression.SpelExpressionEvaluator;
 import cn.crane4j.spring.boot.annotation.EnableCrane4j;
@@ -77,7 +78,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.expression.BeanFactoryResolver;
 import org.springframework.core.DefaultParameterNameDiscoverer;
@@ -110,7 +110,6 @@ import java.util.function.Consumer;
  * @see cn.crane4j.extension.spring
  */
 @Configuration
-@EnableAspectJAutoProxy
 @RequiredArgsConstructor
 @EnableConfigurationProperties(Crane4jAutoConfiguration.Properties.class)
 public class Crane4jAutoConfiguration {
@@ -312,7 +311,7 @@ public class Crane4jAutoConfiguration {
     @ConditionalOnMissingBean
     @Bean({"OperateTemplate", "operateTemplate"})
     public OperateTemplate operateTemplate(
-        BeanOperationParser parser, DisorderedBeanOperationExecutor executor, TypeResolver typeResolver) {
+        BeanOperationParser parser, BeanOperationExecutor executor, TypeResolver typeResolver) {
         return new OperateTemplate(parser, executor, typeResolver);
     }
 
@@ -347,11 +346,11 @@ public class Crane4jAutoConfiguration {
         name = "enable-method-result-auto-operate",
         havingValue = "true", matchIfMissing = true
     )
-    @Bean({"MethodResultAutoOperateAspect", "methodResultAutoOperateAspect"})
-    public MethodResultAutoOperateAspect methodResultAutoOperateAspect(
+    @Bean({"MethodResultAutoOperateAdvisor", "methodResultAutoOperateAdvisor"})
+    public MethodResultAutoOperateAdvisor methodResultAutoOperateAdvisor(
         AutoOperateAnnotatedElementResolver autoOperateAnnotatedElementResolver,
         ResolvableExpressionEvaluator resolvableExpressionEvaluator) {
-        return new MethodResultAutoOperateAspect(autoOperateAnnotatedElementResolver, resolvableExpressionEvaluator);
+        return new MethodResultAutoOperateAdvisor(autoOperateAnnotatedElementResolver, resolvableExpressionEvaluator);
     }
 
     @ConditionalOnMissingBean
@@ -360,12 +359,12 @@ public class Crane4jAutoConfiguration {
         name = "enable-method-argument-auto-operate",
         havingValue = "true", matchIfMissing = true
     )
-    @Bean({"MethodArgumentAutoOperateAspect", "methodArgumentAutoOperateAspect"})
-    public MethodArgumentAutoOperateAspect methodArgumentAutoOperateAspect(
+    @Bean({"MethodArgumentAutoOperateAdvisor", "methodArgumentAutoOperateAdvisor"})
+    public MethodArgumentAutoOperateAdvisor methodArgumentAutoOperateAdvisor(
         MethodBaseExpressionExecuteDelegate methodBaseExpressionExecuteDelegate,
         AutoOperateAnnotatedElementResolver autoOperateAnnotatedElementResolver,
         ParameterNameFinder parameterNameDiscoverer, AnnotationFinder annotationFinder) {
-        return new MethodArgumentAutoOperateAspect(autoOperateAnnotatedElementResolver,
+        return new MethodArgumentAutoOperateAdvisor(autoOperateAnnotatedElementResolver,
             methodBaseExpressionExecuteDelegate,
             parameterNameDiscoverer, annotationFinder
         );
@@ -479,14 +478,14 @@ public class Crane4jAutoConfiguration {
         /**
          * Whether to enable automatic filling of aspect with method parameters.
          *
-         * @see MethodArgumentAutoOperateAspect
+         * @see MethodArgumentAutoOperateAdvisor
          */
         private boolean enableMethodArgumentAutoOperate = true;
 
         /**
          * Whether to enable the method return value to automatically fill the cut surface.
          *
-         * @see MethodResultAutoOperateAspect
+         * @see MethodResultAutoOperateAdvisor
          */
         private boolean enableMethodResultAutoOperate = true;
 

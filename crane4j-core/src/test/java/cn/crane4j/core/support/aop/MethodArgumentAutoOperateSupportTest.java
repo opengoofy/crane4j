@@ -56,14 +56,11 @@ public class MethodArgumentAutoOperateSupportTest {
     public void beforeMethodInvoke() {
         Method method = ReflectUtils.getMethod(this.getClass(), "method", Result.class, Object.class);
         Assert.assertNotNull(method);
-        ArgAutoOperate annotation = method.getAnnotation(ArgAutoOperate.class);
-        Assert.assertNotNull(annotation);
         Result<Foo> foo = new Result<>(new Foo(1));
-        support.beforeMethodInvoke(annotation, method, new Object[]{ foo });
+        support.beforeMethodInvoke(method, new Object[]{ foo });
         Assert.assertEquals("name1", foo.getData().getName());
 
-        support.beforeMethodInvoke(null, method, new Object[]{ foo });
-        support.beforeMethodInvoke(annotation, method, null);
+        support.beforeMethodInvoke(method, null);
     }
 
     @ArgAutoOperate(

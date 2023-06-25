@@ -7,7 +7,6 @@ import cn.crane4j.annotation.MappingType;
 import cn.crane4j.core.container.CacheableContainer;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.MethodInvokerContainer;
-import cn.crane4j.core.util.ReflectUtils;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -15,6 +14,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -34,15 +34,15 @@ import java.util.stream.Collectors;
 public class BeanMethodContainerRegistrarTest {
 
     @Autowired
+    private ApplicationContext applicationContext;
+    @Autowired
     private Crane4jApplicationContext context;
     @Autowired
     private BeanMethodContainerRegistrar beanMethodContainerRegistrar;
 
     @Test
     public void test() {
-        Map<String, Container<?>> containerMap = ReflectUtils.getFieldValue(context, "containerMap");
-        Assert.assertEquals(3, containerMap.size());
-        Assert.assertFalse(containerMap.containsKey("noneResultMethod"));
+        Assert.assertFalse(context.containsContainer("noneResultMethod"));
 
         // mappedMethod
         Container<?> mappedMethod = context.getContainer("mappedMethod");
@@ -71,6 +71,7 @@ public class BeanMethodContainerRegistrarTest {
         }
     }
 
+    @SuppressWarnings("all")
     // 若不指定bind则无法正确找到对应方法
     @ContainerMethod(namespace = "noneResultMethod", type = MappingType.MAPPED, resultType = Foo.class)
     // 通过类注解声明父类中的容器方法

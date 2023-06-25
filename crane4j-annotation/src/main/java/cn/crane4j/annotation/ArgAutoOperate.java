@@ -1,6 +1,10 @@
 package cn.crane4j.annotation;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * <p>Declaration requires automatic processing of method input parameters, for example：
@@ -13,9 +17,8 @@ import java.lang.annotation.*;
  *     // do something
  * }
  * </pre>
- * or：
+ * or:
  * <pre class="code">
- * &#64;ArgAutoOperate
  * public void doSomething(
  *     &#64;AutoOperate(value = "list", type = A.class) List<A> list,
  *     &#64;AutoOperate(value = "b", type = B.class) B b) {
@@ -27,7 +30,7 @@ import java.lang.annotation.*;
  *
  * @author huangchengxing
  * @see AutoOperate
- * @see cn.crane4j.springboot.support.aop.MethodArgumentAutoOperateAspect
+ * @see cn.crane4j.core.support.aop.MethodArgumentAutoOperateSupport
  */
 @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)

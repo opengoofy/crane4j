@@ -7,6 +7,7 @@ import cn.crane4j.core.support.Crane4jGlobalSorter;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.ReflectUtils;
 import lombok.NonNull;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.AnnotatedElement;
@@ -64,7 +65,7 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
     /**
      * temp cache for operations of resolved element where in type hierarchy.
      */
-    protected Map<AnnotatedElement, BeanOperations> resolvedHierarchyElements = CollectionUtils.newWeakConcurrentMap();
+    protected final Map<AnnotatedElement, BeanOperations> resolvedHierarchyElements = CollectionUtils.newWeakConcurrentMap();
 
     /**
      *  finally cache for operations of resolved element.
@@ -75,6 +76,14 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
      * registered operation annotation resolvers.
      */
     protected Set<OperationAnnotationHandler> operationAnnotationHandlers;
+
+    /**
+     * Whether to cache hierarchy operation info of element.
+     *
+     * @see #resolvedHierarchyElements
+     */
+    @Setter
+    protected boolean enableHierarchyCache = false;
 
     /**
      * Create a {@link TypeHierarchyBeanOperationParser} instance.
@@ -248,13 +257,20 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
      * @return operations from source, may come from cache
      */
     protected final BeanOperations resolveToOperations(AnnotatedElement source) {
-        return CollectionUtils.computeIfAbsent(resolvedHierarchyElements, source, s -> {
-            if (ReflectUtils.isJdkElement(s)) {
-                return BeanOperations.EmptyBeanOperations.INSTANCE;
-            }
-            BeanOperations operations = createBeanOperations(source);
-            operationAnnotationHandlers.forEach(resolver -> resolver.resolve(this, operations));
-            return operations;
-        });
+        if (enableHierarchyCache) {
+            return CollectionUtils.computeIfAbsent(
+                resolvedHierarchyElements, source, this::doResolveToOperations
+            );
+        }
+        return doResolveToOperations(source);
+    }
+
+    private BeanOperations doResolveToOperations(AnnotatedElement source) {
+        if (ReflectUtils.isJdkElement(source)) {
+            return BeanOperations.empty();
+        }
+        BeanOperations operations = createBeanOperations(source);
+        operationAnnotationHandlers.forEach(resolver -> resolver.resolve(this, operations));
+        return operations;
     }
 }

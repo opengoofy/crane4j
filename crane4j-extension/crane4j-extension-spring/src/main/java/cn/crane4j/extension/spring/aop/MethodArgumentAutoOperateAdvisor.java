@@ -8,11 +8,14 @@ import cn.crane4j.core.support.aop.AutoOperateAnnotatedElement;
 import cn.crane4j.core.support.aop.AutoOperateAnnotatedElementResolver;
 import cn.crane4j.core.support.aop.MethodArgumentAutoOperateSupport;
 import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.reflect.MethodSignature;
+import org.aopalliance.aop.Advice;
+import org.aopalliance.intercept.MethodInterceptor;
+import org.aopalliance.intercept.MethodInvocation;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.springframework.aop.Pointcut;
+import org.springframework.aop.PointcutAdvisor;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 
@@ -28,23 +31,22 @@ import java.util.Arrays;
  * @see MethodArgumentAutoOperateSupport
  */
 @Slf4j
-@Aspect
-public class MethodArgumentAutoOperateAspect extends MethodArgumentAutoOperateSupport implements DisposableBean {
+@Getter
+public class MethodArgumentAutoOperateAdvisor
+    extends MethodArgumentAutoOperateSupport implements PointcutAdvisor, MethodInterceptor, DisposableBean {
 
-    public MethodArgumentAutoOperateAspect(
+    private final Pointcut pointcut = AutoOperatePointcut.forAnnotatedMethod(
+        (m, c) -> m.getParameterCount() > 0
+            && (AnnotatedElementUtils.isAnnotated(m, ArgAutoOperate.class)
+            || Arrays.stream(m.getParameters()).anyMatch(p -> p.isAnnotationPresent(AutoOperate.class)))
+    );
+
+    public MethodArgumentAutoOperateAdvisor(
         AutoOperateAnnotatedElementResolver elementResolver,
         MethodBaseExpressionExecuteDelegate expressionExecuteDelegate,
         ParameterNameFinder parameterNameFinder, AnnotationFinder annotationFinder) {
         super(elementResolver, expressionExecuteDelegate, parameterNameFinder, annotationFinder);
         log.info("enable automatic filling of method argument");
-    }
-
-    @Before("@annotation(cn.crane4j.annotation.ArgAutoOperate)")
-    public void beforeMethodInvoke(JoinPoint joinPoint) {
-        MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
-        Method method = methodSignature.getMethod();
-        ArgAutoOperate annotation = AnnotatedElementUtils.findMergedAnnotation(method, ArgAutoOperate.class);
-        super.beforeMethodInvoke(annotation, method, joinPoint.getArgs());
     }
 
     /**
@@ -56,5 +58,29 @@ public class MethodArgumentAutoOperateAspect extends MethodArgumentAutoOperateSu
             Arrays.fill(elements, null);
         }
         methodParameterCaches.clear();
+    }
+
+    @Override
+    public Object invoke(MethodInvocation methodInvocation) throws Throwable {
+        Method method = methodInvocation.getMethod();
+        try {
+            super.beforeMethodInvoke(method, methodInvocation.getArguments());
+        } catch (Exception ex) {
+            log.error("cannot auto operate input arguments for method [{}]", method);
+            ex.printStackTrace();
+            throw ex;
+        }
+        return methodInvocation.proceed();
+    }
+
+    @NonNull
+    @Override
+    public Advice getAdvice() {
+        return this;
+    }
+
+    @Override
+    public boolean isPerInstance() {
+        return false;
     }
 }
