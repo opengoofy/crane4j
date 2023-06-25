@@ -56,7 +56,7 @@ public class MethodResultAutoOperateSupport {
      */
     public void afterMethodInvoke(AutoOperate annotation, Method method, Object result, Object[] args) {
         // has annotation?
-        if (Objects.isNull(annotation)) {
+        if (Objects.isNull(annotation) || Objects.equals(method.getReturnType(), Void.TYPE)) {
             return;
         }
         // get and build method cache

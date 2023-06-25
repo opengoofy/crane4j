@@ -10,15 +10,17 @@ import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.ReflectUtils;
 import cn.crane4j.core.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * <p>Support class for completing the operation of data
@@ -71,24 +73,20 @@ public class MethodArgumentAutoOperateSupport {
 
     /**
      * Before the method is called, process the input parameters
-     * of the method according to the configuration of {@link ArgAutoOperate} annotation.
+     * of the method according to the configuration of {@link ArgAutoOperate} or {@link AutoOperate} annotation.
      *
-     * @param annotation annotation
      * @param method method
      * @param args args
      */
-    public final void beforeMethodInvoke(ArgAutoOperate annotation, Method method, Object[] args) {
+    public final void beforeMethodInvoke(Method method, Object[] args) {
         // has annotation?
-        if (Objects.isNull(annotation)) {
-            return;
-        }
-        // has any arguments?
         if (ArrayUtils.isEmpty(args)) {
             return;
         }
         // cache resolved parameters
+        ArgAutoOperate methodLevelAnnotation = annotationFinder.findAnnotation(method, ArgAutoOperate.class);
         AutoOperateAnnotatedElement[] elements = CollectionUtils.computeIfAbsent(
-            methodParameterCaches, method.getName(), name -> resolveParameters(annotation, method)
+            methodParameterCaches, method.getName(), name -> resolveParameters(methodLevelAnnotation, method)
         );
         if (elements == EMPTY_ELEMENTS) {
             return;
@@ -123,15 +121,18 @@ public class MethodArgumentAutoOperateSupport {
      * @param method method
      * @return operation configuration of method parameters
      */
-    protected AutoOperateAnnotatedElement[] resolveParameters(ArgAutoOperate argAutoOperate, Method method) {
-        Map<String, Parameter> parameterMap = ReflectUtils.resolveParameterNames(parameterNameFinder, method);
-        Map<String, AutoOperate> methodLevelAnnotations = Stream.of(argAutoOperate.value())
-            .collect(Collectors.toMap(AutoOperate::value, Function.identity()));
+    protected AutoOperateAnnotatedElement[] resolveParameters(@Nullable ArgAutoOperate argAutoOperate, Method method) {
+        Map<String, AutoOperate> methodLevelAnnotations = Optional.ofNullable(argAutoOperate)
+            .map(ArgAutoOperate::value)
+            .map(Arrays::stream)
+            .map(s -> s.collect(Collectors.toMap(AutoOperate::value, Function.identity())))
+            .orElseGet(Collections::emptyMap);
 
+        Map<String, Parameter> parameterMap = ReflectUtils.resolveParameterNames(parameterNameFinder, method);
         AutoOperateAnnotatedElement[] results = new AutoOperateAnnotatedElement[parameterMap.size()];
         int index = 0;
         for (Map.Entry<String, Parameter> entry : parameterMap.entrySet()) {
-            // find the parameter first, then the method
+            // find the parameter level annotation first, then find the method level annotation
             String paramName = entry.getKey();
             Parameter param = entry.getValue();
             AutoOperate annotation = Optional
