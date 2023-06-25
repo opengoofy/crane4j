@@ -2,11 +2,17 @@ package cn.crane4j.core.util;
 
 import cn.crane4j.annotation.Mapping;
 import cn.crane4j.annotation.MappingTemplate;
+import cn.crane4j.core.container.Container;
+import cn.crane4j.core.container.ContainerDefinition;
+import cn.crane4j.core.container.lifecycle.ContainerLifecycleProcessor;
 import cn.crane4j.core.parser.PropertyMapping;
 import cn.crane4j.core.support.SimpleAnnotationFinder;
+import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -14,7 +20,43 @@ import java.util.List;
  *
  * @author huangchengxing
  */
+@Slf4j
 public class ConfigurationUtilTest {
+
+    @Test
+    public void triggerWhenDestroyed() {
+        List<ContainerLifecycleProcessor> processors = Arrays.asList(
+            AlwaysNullContainerLifecycleProcessor.INSTANCE, DoNothingContainerLifecycleProcessor.INSTANCE
+        );
+        Container<Object> container = Container.empty();
+        ConfigurationUtil.triggerWhenDestroyed(container, processors);
+        ConfigurationUtil.triggerWhenDestroyed(null, processors);
+    }
+
+    @Test
+    public void triggerWhenRegistered() {
+        List<ContainerLifecycleProcessor> processors = Arrays.asList(
+            AlwaysNullContainerLifecycleProcessor.INSTANCE, DoNothingContainerLifecycleProcessor.INSTANCE
+        );
+        ContainerDefinition definition = ContainerDefinition.create(Container.EMPTY_CONTAINER_NAMESPACE, null, Container::empty);
+        definition = ConfigurationUtil.triggerWhenRegistered(definition, Container.EMPTY_CONTAINER_NAMESPACE, null, processors, log);
+        Assert.assertNull(definition);
+        definition = ConfigurationUtil.triggerWhenRegistered(null, Container.EMPTY_CONTAINER_NAMESPACE, null, processors, log);
+        Assert.assertNull(definition);
+    }
+
+    @Test
+    public void triggerWhenCreated() {
+        List<ContainerLifecycleProcessor> processors = Arrays.asList(
+            AlwaysNullContainerLifecycleProcessor.INSTANCE, DoNothingContainerLifecycleProcessor.INSTANCE
+        );
+        Container<Object> container = Container.empty();
+        container = ConfigurationUtil.triggerWhenCreated(Container.EMPTY_CONTAINER_NAMESPACE, null, container, processors, log);
+        Assert.assertNull(container);
+
+        container = ConfigurationUtil.triggerWhenCreated(Container.EMPTY_CONTAINER_NAMESPACE, null, null, processors, log);
+        Assert.assertNull(container);
+    }
 
     @Test
     public void createPropertyMapping() {
@@ -52,6 +94,26 @@ public class ConfigurationUtilTest {
             new Class[]{ AnnotatedElement.class }, new SimpleAnnotationFinder()
         );
         Assert.assertEquals(4, mappings.size());
+    }
+
+    private static class AlwaysNullContainerLifecycleProcessor implements ContainerLifecycleProcessor {
+        public static final AlwaysNullContainerLifecycleProcessor INSTANCE = new AlwaysNullContainerLifecycleProcessor();
+        @Override
+        public @Nullable Container<Object> whenCreated(ContainerDefinition definition, Container<Object> container) {
+            return null;
+        }
+        @Override
+        public ContainerDefinition whenRegistered(@Nullable Object old, ContainerDefinition newDefinition) {
+            return null;
+        }
+    }
+
+    private static class DoNothingContainerLifecycleProcessor implements ContainerLifecycleProcessor {
+        public static final DoNothingContainerLifecycleProcessor INSTANCE = new DoNothingContainerLifecycleProcessor();
+        @Override
+        public @Nullable Container<Object> whenCreated(ContainerDefinition definition, Container<Object> container) {
+            return null;
+        }
     }
 
     @MappingTemplate({

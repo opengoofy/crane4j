@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,6 +21,22 @@ import java.util.Map;
  * @author huangchengxing
  */
 public class ConstantContainerTest {
+
+    @Test
+    public void destroy() {
+        // map is modifiable
+        Map<String, Object> map = new HashMap<>();
+        map.put("1", new Object());
+        ConstantContainer.forMap("test", map).destroy();
+        Assert.assertTrue(map.isEmpty());
+
+        // map is unmodifiable
+        map = new HashMap<>();
+        map.put("1", new Object());
+        map = Collections.unmodifiableMap(map);
+        ConstantContainer.forMap("test", map).destroy();
+        Assert.assertFalse(map.isEmpty());
+    }
 
     @SuppressWarnings("unchecked")
     @Test
@@ -131,6 +148,8 @@ public class ConstantContainerTest {
         private final String value;
     }
 
+
+    @SuppressWarnings("unused")
     @ContainerConstant(namespace = "foo")
     public static class FooConstant1 {
         @ContainerConstant.Include
@@ -141,6 +160,7 @@ public class ConstantContainerTest {
         public static final String SAN = "three";
     }
 
+    @SuppressWarnings("unused")
     @ContainerConstant(onlyExplicitlyIncluded = true, onlyPublic = false)
     public static class FooConstant2 {
         @ContainerConstant.Include
@@ -151,6 +171,7 @@ public class ConstantContainerTest {
         private static final String SAN = "three";
     }
 
+    @SuppressWarnings("unused")
     @ContainerConstant(onlyExplicitlyIncluded = true, onlyPublic = false, reverse = true)
     public static class FooConstant3 {
         @ContainerConstant.Include
