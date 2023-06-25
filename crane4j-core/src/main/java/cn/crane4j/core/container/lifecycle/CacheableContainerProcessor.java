@@ -5,7 +5,6 @@ import cn.crane4j.core.container.CacheableContainer;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerDefinition;
 import cn.crane4j.core.util.StringUtils;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +21,6 @@ import java.util.function.BiFunction;
  */
 @Slf4j
 @RequiredArgsConstructor
-@AllArgsConstructor
 public class CacheableContainerProcessor implements ContainerLifecycleProcessor {
 
     /**
@@ -35,7 +33,7 @@ public class CacheableContainerProcessor implements ContainerLifecycleProcessor 
      * If the obtained cache name is null or an empty string, it will not be wrapped into a cache container.
      */
     @Setter
-    private BiFunction<ContainerDefinition, Container<Object>, String> cacheSelector = (definition, container) -> null;
+    private BiFunction<ContainerDefinition, Container<Object>, String> cacheNameSelector = (definition, container) -> null;
 
     /**
      * Callback when container is created.
@@ -47,7 +45,7 @@ public class CacheableContainerProcessor implements ContainerLifecycleProcessor 
     @Nullable
     @Override
     public Container<Object> whenCreated(ContainerDefinition definition, Container<Object> container) {
-        String cacheName = cacheSelector.apply(definition, container);
+        String cacheName = cacheNameSelector.apply(definition, container);
         if (StringUtils.isNotEmpty(cacheName)) {
             log.info("use cache [{}] for container [{}]", cacheName, container.getNamespace());
             container = new CacheableContainer<>(container, cacheManager, cacheName);

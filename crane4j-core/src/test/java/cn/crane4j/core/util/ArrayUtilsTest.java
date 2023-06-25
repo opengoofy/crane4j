@@ -8,6 +8,7 @@ import org.junit.Test;
  *
  * @author huangchengxing
  */
+@SuppressWarnings("all")
 public class ArrayUtilsTest {
 
     @Test
@@ -46,6 +47,13 @@ public class ArrayUtilsTest {
         Assert.assertTrue(ArrayUtils.isEmpty(null));
         Assert.assertTrue(ArrayUtils.isEmpty(new String[]{}));
         Assert.assertFalse(ArrayUtils.isEmpty(new String[]{"a"}));
+    }
+
+    @Test
+    public void isNotEmpty() {
+        Assert.assertFalse(ArrayUtils.isNotEmpty(null));
+        Assert.assertFalse(ArrayUtils.isNotEmpty(new String[]{}));
+        Assert.assertTrue(ArrayUtils.isNotEmpty(new String[]{"a"}));
     }
 
     @Test

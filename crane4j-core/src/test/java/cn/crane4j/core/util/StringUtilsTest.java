@@ -31,6 +31,7 @@ public class StringUtilsTest {
         Assert.assertEquals("abc{}", StringUtils.format("abc{}", new Object[0]));
         // if placeholder is not enough
         Assert.assertEquals("aab", StringUtils.format("a{}{}", "a", "b", "c"));
+        Assert.assertEquals("abcd{}", StringUtils.format("abc{}{}", "d"));
     }
 
     @Test

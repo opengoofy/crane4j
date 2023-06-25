@@ -191,7 +191,9 @@ public class Crane4jAutoConfiguration {
         properties.getCacheContainers().forEach((cacheName, namespaces) ->
             namespaces.forEach(namespace -> cacheMap.put(namespace, cacheName))
         );
-        return new CacheableContainerProcessor(cacheManager, (definition, container) -> cacheMap.get(container.getNamespace()));
+        CacheableContainerProcessor processor = new CacheableContainerProcessor(cacheManager);
+        processor.setCacheNameSelector((definition, container) -> cacheMap.get(container.getNamespace()));
+        return processor;
     }
 
     // ============== execute components ==============
@@ -382,6 +384,7 @@ public class Crane4jAutoConfiguration {
         return new BeanMethodContainerRegistrar(factories, annotationFinder, configuration);
     }
 
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @ConditionalOnMissingBean
     @Bean({"Crane4jInitializer", "crane4jInitializer"})
     public Crane4jInitializer crane4jInitializer(
@@ -512,6 +515,7 @@ public class Crane4jAutoConfiguration {
     @RequiredArgsConstructor
     public static class Crane4jInitializer implements ApplicationRunner {
 
+        @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
         private final MetadataReaderFactory readerFactory;
         private final ResourcePatternResolver resolver;
 

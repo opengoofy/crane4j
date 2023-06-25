@@ -138,14 +138,14 @@ public interface ContainerManager extends ContainerProvider {
     /**
      * Obtaining and caching container instances from the specified container provider..
      *
-     * @param namespace namespace of container
      * @param providerName container provider name
+     * @param namespace namespace of container
      * @param <K> key type
      * @return container provider
      * @see ContainerLifecycleProcessor#whenCreated
      */
     @Nullable
-    default <K> Container<K> getContainer(String namespace, String providerName) {
-        return getContainer(namespace + PROVIDER_NAME_PREFIX + providerName);
+    default <K> Container<K> getContainer(String providerName, String namespace) {
+        return getContainer(canonicalNamespace(namespace, providerName));
     }
 }

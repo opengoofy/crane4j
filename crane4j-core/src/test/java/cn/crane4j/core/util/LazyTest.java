@@ -16,4 +16,12 @@ public class LazyTest {
         Object object = lazy.get();
         Assert.assertSame(object, lazy.get());
     }
+
+    @Test
+    public void refresh() {
+        Lazy<Object> lazy = new Lazy<>(Object::new);
+        Object object = lazy.get();
+        lazy.refresh();
+        Assert.assertNotSame(object, lazy.get());
+    }
 }
