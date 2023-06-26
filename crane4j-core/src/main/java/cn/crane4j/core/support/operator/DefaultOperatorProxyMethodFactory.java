@@ -19,9 +19,21 @@ import java.util.Objects;
  * @since  1.3.0
  */
 @RequiredArgsConstructor
-public class DefaultProxyMethodFactory implements OperatorProxyFactory.ProxyMethodFactory {
+public class DefaultOperatorProxyMethodFactory implements OperatorProxyMethodFactory {
 
+    public static final int ORDER = Integer.MAX_VALUE;
     private final ConverterManager converterManager;
+
+    /**
+     * <p>Gets the sorting value.<br />
+     * The smaller the value, the higher the priority of the object.
+     *
+     * @return sorting value
+     */
+    @Override
+    public int getSort() {
+        return ORDER;
+    }
 
     /**
      * Get operator proxy method.

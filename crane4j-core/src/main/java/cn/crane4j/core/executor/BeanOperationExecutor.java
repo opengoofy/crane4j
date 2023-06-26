@@ -5,8 +5,11 @@ import cn.crane4j.core.container.ContainerManager;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.operation.KeyTriggerOperation;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.function.Predicate;
 
 /**
@@ -76,6 +79,17 @@ public interface BeanOperationExecutor {
          */
         default Container<?> getContainer(ContainerManager containerManager, String namespace) {
             return containerManager.getContainer(namespace);
+        }
+
+        @RequiredArgsConstructor
+        @Getter
+        public class DynamicContainerOption implements Options {
+            private final Predicate<? super KeyTriggerOperation> filter;
+            private final Map<String, Container<Object>> dynamicContainers;
+            @Override
+            public Container<?> getContainer(ContainerManager containerManager, String namespace) {
+                return dynamicContainers.getOrDefault(namespace, containerManager.getContainer(namespace));
+            }
         }
     }
 }
