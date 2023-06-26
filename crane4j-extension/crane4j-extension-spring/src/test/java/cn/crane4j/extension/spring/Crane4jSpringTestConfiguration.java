@@ -33,8 +33,10 @@ import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.support.converter.HutoolConverterManager;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
 import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
-import cn.crane4j.core.support.operator.DefaultProxyMethodFactory;
+import cn.crane4j.core.support.operator.DefaultOperatorProxyMethodFactory;
+import cn.crane4j.core.support.operator.DynamicContainerOperatorProxyMethodFactory;
 import cn.crane4j.core.support.operator.OperatorProxyFactory;
+import cn.crane4j.core.support.operator.OperatorProxyMethodFactory;
 import cn.crane4j.core.support.reflect.ChainAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.PropertyOperator;
@@ -183,6 +185,13 @@ public class Crane4jSpringTestConfiguration {
         return new DefaultMethodContainerFactory(methodInvokerContainerCreator, annotationFinder);
     }
 
+    @Order
+    @Bean({"DynamicContainerOperatorProxyMethodFactory", "dynamicContainerOperatorProxyMethodFactory"})
+    public DynamicContainerOperatorProxyMethodFactory dynamicContainerOperatorProxyMethodFactory(
+        ConverterManager converterManager, ParameterNameFinder parameterNameFinder, AnnotationFinder annotationFinder) {
+        return new DynamicContainerOperatorProxyMethodFactory(converterManager, parameterNameFinder, annotationFinder);
+    }
+
     @Order(Ordered.LOWEST_PRECEDENCE - 1)
     @Bean({"CacheableMethodContainerFactory", "cacheableMethodContainerFactory"})
     public CacheableMethodContainerFactory cacheableMethodContainerFactory(
@@ -215,15 +224,17 @@ public class Crane4jSpringTestConfiguration {
     // ============== operator interface components ==============
 
     @Bean({"DefaultProxyMethodFactory", "defaultProxyMethodFactory"})
-    public DefaultProxyMethodFactory defaultProxyMethodFactory(ConverterManager converterManager) {
-        return new DefaultProxyMethodFactory(converterManager);
+    public DefaultOperatorProxyMethodFactory defaultProxyMethodFactory(ConverterManager converterManager) {
+        return new DefaultOperatorProxyMethodFactory(converterManager);
     }
 
     @Bean({"OperatorProxyFactory", "operatorProxyFactory"})
     public OperatorProxyFactory operatorProxyFactory(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration,
-        Collection<OperatorProxyFactory.ProxyMethodFactory> factories) {
-        return new OperatorProxyFactory(configuration, annotationFinder, factories);
+        Collection<OperatorProxyMethodFactory> factories) {
+        OperatorProxyFactory proxyFactory = new OperatorProxyFactory(configuration, annotationFinder);
+        factories.forEach(proxyFactory::addProxyMethodFactory);
+        return proxyFactory;
     }
 
     // ============== extension components ==============

@@ -9,7 +9,6 @@ import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.Crane4jGlobalSorter;
 import cn.crane4j.core.support.MethodInvoker;
-import cn.crane4j.core.support.Sorted;
 import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.ReflectUtils;
@@ -20,12 +19,12 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -34,7 +33,7 @@ import java.util.stream.Stream;
  *
  * @author huangchengxing
  * @see Operator
- * @see ProxyMethodFactory
+ * @see OperatorProxyMethodFactory
  * @since 1.3.0
  */
 @Slf4j
@@ -43,7 +42,7 @@ public class OperatorProxyFactory {
     private static final Object NULL = new Object();
     private final Crane4jGlobalConfiguration globalConfiguration;
     private final AnnotationFinder annotationFinder;
-    private final Collection<ProxyMethodFactory> proxyMethodFactories;
+    private final List<OperatorProxyMethodFactory> proxyMethodFactories;
     private final Map<Class<?>, Object> proxyCaches = new ConcurrentHashMap<>(8);
 
     /**
@@ -51,17 +50,23 @@ public class OperatorProxyFactory {
      *
      * @param globalConfiguration global configuration
      * @param annotationFinder annotation finder
-     * @param proxyMethodFactories proxy method factories
      */
     public OperatorProxyFactory(
-        Crane4jGlobalConfiguration globalConfiguration, AnnotationFinder annotationFinder,
-        Collection<ProxyMethodFactory> proxyMethodFactories) {
+        Crane4jGlobalConfiguration globalConfiguration, AnnotationFinder annotationFinder) {
         this.globalConfiguration = globalConfiguration;
         this.annotationFinder = annotationFinder;
-        this.proxyMethodFactories = proxyMethodFactories.stream()
-            .distinct()
-            .sorted(Crane4jGlobalSorter.instance())
-            .collect(Collectors.toList());
+        this.proxyMethodFactories = new ArrayList<>();
+    }
+
+    /**
+     * Add a {@link OperatorProxyMethodFactory} instance.
+     *
+     * @param proxyMethodFactory proxy method factory
+     */
+    public void addProxyMethodFactory(OperatorProxyMethodFactory proxyMethodFactory) {
+        proxyMethodFactories.remove(proxyMethodFactory);
+        proxyMethodFactories.add(proxyMethodFactory);
+        proxyMethodFactories.sort(Crane4jGlobalSorter.INSTANCE);
     }
 
     /**
@@ -156,25 +161,4 @@ public class OperatorProxyFactory {
         }
     }
 
-    /**
-     * Operator proxy method factory.
-     *
-     * @author huangchengxing
-     * @see DefaultProxyMethodFactory
-     * @since  1.3.0
-     */
-    public interface ProxyMethodFactory extends Sorted {
-
-        /**
-         * Get operator proxy method.
-         *
-         * @param beanOperations bean operations
-         * @param method method with at least one parameter
-         * @param beanOperationExecutor bean operation executor
-         * @return operator proxy method if supported, null otherwise
-         */
-        @Nullable
-        MethodInvoker get(
-            BeanOperations beanOperations, Method method, BeanOperationExecutor beanOperationExecutor);
-    }
 }

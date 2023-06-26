@@ -61,8 +61,9 @@ public class SimpleCrane4jGlobalConfiguration
     public static SimpleCrane4jGlobalConfiguration create() {
         SimpleCrane4jGlobalConfiguration configuration = new SimpleCrane4jGlobalConfiguration();
         // basic components
-        ConverterManager register = new HutoolConverterManager();
-        PropertyOperator operator = new ReflectivePropertyOperator(register);
+        ConverterManager converter = new HutoolConverterManager();
+        configuration.setConverterManager(converter);
+        PropertyOperator operator = new ReflectivePropertyOperator(converter);
         operator = new MapAccessiblePropertyOperator(operator);
         operator = new ChainAccessiblePropertyOperator(operator);
         configuration.setPropertyOperator(operator);

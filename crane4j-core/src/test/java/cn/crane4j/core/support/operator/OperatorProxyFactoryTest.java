@@ -16,7 +16,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -35,7 +34,8 @@ public class OperatorProxyFactoryTest {
     public void init() {
         Crane4jGlobalConfiguration globalConfiguration = SimpleCrane4jGlobalConfiguration.create();
         AnnotationFinder annotationFinder = new SimpleAnnotationFinder();
-        this.operatorProxyFactory = new OperatorProxyFactory(globalConfiguration, annotationFinder, Collections.singletonList(new DefaultProxyMethodFactory(new SimpleConverterManager())));
+        this.operatorProxyFactory = new OperatorProxyFactory(globalConfiguration, annotationFinder);
+        this.operatorProxyFactory.addProxyMethodFactory(new DefaultOperatorProxyMethodFactory(new SimpleConverterManager()));
 
         LambdaContainer<Integer> container = LambdaContainer.forLambda(
             "test", ids -> ids.stream().collect(Collectors.toMap(id -> id, id -> "name" + id))

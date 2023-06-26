@@ -3,22 +3,19 @@ package cn.crane4j.core.support.operator;
 import cn.crane4j.annotation.ContainerParam;
 import cn.crane4j.core.container.ConstantContainer;
 import cn.crane4j.core.container.Container;
-import cn.crane4j.core.container.ContainerManager;
 import cn.crane4j.core.container.LambdaContainer;
-import cn.crane4j.core.exception.OperationParseException;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.parser.BeanOperations;
-import cn.crane4j.core.parser.operation.KeyTriggerOperation;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.DataProvider;
 import cn.crane4j.core.support.Grouped;
 import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.support.ParameterNameFinder;
+import cn.crane4j.core.support.container.DefaultMethodContainerFactory;
 import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.support.converter.ParameterConvertibleMethodInvoker;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.ReflectUtils;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -34,36 +31,52 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
+ * An operator proxy method factory that
+ * supports dynamic setting container before operations executed.
+ *
  * @author huangchengxing
+ * @since 2.0.0
+ * @see ContainerParam
+ * @see BeanOperationExecutor.Options
  */
 @Slf4j
-public class DynamicContainerProxyMethodFactory implements OperatorProxyFactory.ProxyMethodFactory {
+public class DynamicContainerOperatorProxyMethodFactory implements OperatorProxyMethodFactory {
 
+    public static final int ORDER = DefaultMethodContainerFactory.ORDER - 1;
     private final ConverterManager converterManager;
     private final ParameterNameFinder parameterNameFinder;
     private final AnnotationFinder annotationFinder;
-    @Getter
     private final Map<Class<?>, ContainerParameterAdaptorProvider> adaptorProviders;
 
     /**
-     * Create a {@link DynamicContainerProxyMethodFactory} instance.
+     * Create a {@link DynamicContainerOperatorProxyMethodFactory} instance.
      *
      * @param converterManager converter manager
      * @param parameterNameFinder parameter name finder
      * @param annotationFinder annotation finder
      */
-    public DynamicContainerProxyMethodFactory(
+    public DynamicContainerOperatorProxyMethodFactory(
             ConverterManager converterManager, ParameterNameFinder parameterNameFinder, AnnotationFinder annotationFinder) {
         this.converterManager = converterManager;
         this.parameterNameFinder = parameterNameFinder;
         this.annotationFinder = annotationFinder;
         this.adaptorProviders = new LinkedHashMap<>();
         initAdaptorProvider();
+    }
+
+    /**
+     * <p>Gets the sorting value.<br />
+     * The smaller the value, the higher the priority of the object.
+     *
+     * @return sorting value
+     */
+    @Override
+    public int getSort() {
+        return ORDER;
     }
 
     @SuppressWarnings("unchecked")
@@ -80,14 +93,9 @@ public class DynamicContainerProxyMethodFactory implements OperatorProxyFactory.
         adaptorProviders.put(DataProvider.class, (n, p) ->
             arg -> LambdaContainer.forLambda(n, (DataProvider<Object, Object>)arg)
         );
-        // adapt for lambda
-        adaptorProviders.put(Function.class, (n, p) ->
-            arg -> LambdaContainer.forLambda(
-                n, ((Function<Collection<Object>, Map<Object, Object>>)arg)::apply
-            )
-        );
     }
 
+    @Nullable
     private Function<Object, Container<Object>> findAdaptor(
         String namespace, String parameterName, Parameter parameter, Method method) {
         Class<?> parameterType = parameter.getType();
@@ -95,15 +103,15 @@ public class DynamicContainerProxyMethodFactory implements OperatorProxyFactory.
         if (Objects.nonNull(provider)) {
             return provider.getAdaptor(namespace, parameter);
         }
-        provider = adaptorProviders.entrySet().stream()
+        Optional<ContainerParameterAdaptorProvider> optional = adaptorProviders.entrySet().stream()
             .filter(e -> e.getKey().isAssignableFrom(parameterType))
             .findFirst()
-            .map(Map.Entry::getValue)
-            .orElseThrow(() -> new OperationParseException(
-                "cannot find adaptor provider for type [{}] of param [{}] in method [{}]",
-                parameterType, parameterName, method)
-            );
-        return provider.getAdaptor(namespace, parameter);
+            .map(Map.Entry::getValue);
+        if (!optional.isPresent()) {
+            log.warn("cannot find adaptor provider for type [{}] of param [{}] in method [{}]", parameterType, parameterName, method);
+            return null;
+        }
+        return optional.get().getAdaptor(namespace, parameter);
     }
 
     /**
@@ -186,24 +194,14 @@ public class DynamicContainerProxyMethodFactory implements OperatorProxyFactory.
                 return bean;
             }
             // has any temporary containers
-            Map<String, Container<Object>> temporaryContainers = IntStream.rangeClosed(0, args.length)
+            Map<String, Container<Object>> temporaryContainers = IntStream.rangeClosed(0, args.length - 1)
                 .filter(i -> Objects.nonNull(args[i]) && Objects.nonNull(adaptors[i]))
                 .mapToObj(i -> adaptors[i].apply(args[i]))
                 .collect(Collectors.toMap(Container::getNamespace, Function.identity()));
-            beanOperationExecutor.execute(targets, operations, new Options(temporaryContainers));
+            beanOperationExecutor.execute(
+                targets, operations, new BeanOperationExecutor.Options.DynamicContainerOption(Grouped.alwaysMatch(), temporaryContainers)
+            );
             return bean;
-        }
-
-        @RequiredArgsConstructor
-        private static class Options implements BeanOperationExecutor.Options {
-            // TODO support filter operations by specified group
-            @Getter
-            private final Predicate<? super KeyTriggerOperation> filter = Grouped.alwaysMatch();
-            private final Map<String, Container<Object>> containerMap;
-            @Override
-            public Container<?> getContainer(ContainerManager containerManager, String namespace) {
-                return containerMap.getOrDefault(namespace, containerManager.getContainer(namespace));
-            }
         }
     }
 
