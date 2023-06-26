@@ -56,6 +56,7 @@ public class MethodArgumentAutoOperateAdvisorTest {
 
     @Test
     public void test() {
+        Assert.assertFalse(methodArgumentAutoOperateAdvisor.isPerInstance());
         TargetService service = applicationContext.getBean(TargetService.class);
         List<Foo> list = service.getFooList(
             new Foo("1", null, new NestedFoo("2", null)),

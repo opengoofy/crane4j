@@ -51,7 +51,7 @@ public class DisassembleAnnotationHandler implements OperationAnnotationHandler 
     protected final Comparator<KeyTriggerOperation> operationComparator;
 
     /**
-     * <p>Create a {@link DisassembleAnnotationHandler} instance.<br />
+     * <p>Create a {@link DisassembleAnnotationHandler} comparator.<br />
      * The order of operation configurations is {@link Sorted#getSort} from small to large.
      *
      * @param annotationFinder annotation finder
@@ -59,7 +59,7 @@ public class DisassembleAnnotationHandler implements OperationAnnotationHandler 
      */
     public DisassembleAnnotationHandler(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration globalConfiguration) {
-        this(annotationFinder, globalConfiguration, Crane4jGlobalSorter.instance());
+        this(annotationFinder, globalConfiguration, Crane4jGlobalSorter.comparator());
     }
 
     /**
@@ -118,7 +118,7 @@ public class DisassembleAnnotationHandler implements OperationAnnotationHandler 
     }
 
     /**
-     * Create {@link DisassembleOperation} instance from annotation.
+     * Create {@link DisassembleOperation} comparator from annotation.
      *
      * @param type type
      * @param annotation annotation

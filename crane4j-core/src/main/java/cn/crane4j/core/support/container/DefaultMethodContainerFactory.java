@@ -29,7 +29,7 @@ public class DefaultMethodContainerFactory implements MethodContainerFactory {
     protected final AnnotationFinder annotationFinder;
 
     /**
-     * Create a {@link MethodContainerFactory} instance.
+     * Create a {@link MethodContainerFactory} comparator.
      *
      * @param methodInvokerContainerCreator method invoker container creator
      * @param annotationFinder annotation finder

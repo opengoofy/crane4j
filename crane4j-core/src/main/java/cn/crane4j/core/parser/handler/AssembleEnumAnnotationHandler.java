@@ -40,7 +40,7 @@ public class AssembleEnumAnnotationHandler extends AbstractAssembleAnnotationHan
     private final PropertyOperator propertyOperator;
 
     /**
-     * Create an {@link AbstractAssembleAnnotationHandler} instance.
+     * Create an {@link AbstractAssembleAnnotationHandler} comparator.
      *
      * @param annotationFinder    annotation finder
      * @param globalConfiguration globalConfiguration
@@ -49,11 +49,11 @@ public class AssembleEnumAnnotationHandler extends AbstractAssembleAnnotationHan
     public AssembleEnumAnnotationHandler(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration globalConfiguration,
         PropertyOperator propertyOperator, ContainerManager containerManager) {
-        this(annotationFinder, Crane4jGlobalSorter.instance(), globalConfiguration, propertyOperator, containerManager);
+        this(annotationFinder, Crane4jGlobalSorter.comparator(), globalConfiguration, propertyOperator, containerManager);
     }
 
     /**
-     * Create an {@link AbstractAssembleAnnotationHandler} instance.
+     * Create an {@link AbstractAssembleAnnotationHandler} comparator.
      *
      * @param annotationFinder    annotation finder
      * @param operationComparator operation comparator
@@ -112,7 +112,7 @@ public class AssembleEnumAnnotationHandler extends AbstractAssembleAnnotationHan
      * @param beanOperations bean operations
      * @param element        element
      * @param annotation     annotation
-     * @return {@link StandardAnnotation} instance
+     * @return {@link StandardAnnotation} comparator
      */
     @Override
     protected StandardAnnotation getStandardAnnotation(
@@ -161,10 +161,10 @@ public class AssembleEnumAnnotationHandler extends AbstractAssembleAnnotationHan
         private final Map<String, Container<Object>> enumCaches = new ConcurrentHashMap<>();
 
         /**
-         * Get container instance by given namespace
+         * Get container comparator by given namespace
          *
          * @param namespace namespace of container
-         * @return container instance
+         * @return container comparator
          */
         @SuppressWarnings("unchecked")
         @Nullable

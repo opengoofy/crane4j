@@ -53,7 +53,7 @@ public class DynamicContainerOperatorProxyMethodFactory implements OperatorProxy
     private final Map<Class<?>, ContainerParameterAdaptorProvider> adaptorProviders;
 
     /**
-     * Create a {@link DynamicContainerOperatorProxyMethodFactory} instance.
+     * Create a {@link DynamicContainerOperatorProxyMethodFactory} comparator.
      *
      * @param converterManager converter manager
      * @param parameterNameFinder parameter name finder
@@ -218,7 +218,7 @@ public class DynamicContainerOperatorProxyMethodFactory implements OperatorProxy
          *
          * @param namespace namespace of container
          * @param parameter method parameter
-         * @return functional interface for adapting argument to container instance
+         * @return functional interface for adapting argument to container comparator
          */
         @Nullable
         Function<Object, Container<Object>> getAdaptor(String namespace, Parameter parameter);

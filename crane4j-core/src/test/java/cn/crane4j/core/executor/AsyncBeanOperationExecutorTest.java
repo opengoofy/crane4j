@@ -6,6 +6,7 @@ import cn.crane4j.annotation.Mapping;
 import cn.crane4j.core.container.ConstantContainer;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.parser.BeanOperations;
+import cn.crane4j.core.parser.SimpleBeanOperations;
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +51,14 @@ public class AsyncBeanOperationExecutorTest extends BaseExecutorTest {
     @SuppressWarnings("all")
     @Test
     public void execute() {
+        // for not active bean
+        BeanOperations notActiveBeanOperations = new SimpleBeanOperations(null);
+        operationExecutor.setWaitTimeoutMillisecondIfOperationNotActive(1000L);
+        operationExecutor.setEnableExecuteNotActiveOperation(false);
+        notActiveBeanOperations.setActive(false);
+        operationExecutor.execute(Collections.singleton(new Bean()), notActiveBeanOperations);
+
+        // for normal bean
         Bean bean1 = new Bean().setId(1).setNestedBean(new NestedBean().setType(2));
         Bean bean2 = new Bean().setId(2).setNestedBean(new NestedBean().setType(1));
         List<Bean> beanList = Arrays.asList(bean1, bean2);

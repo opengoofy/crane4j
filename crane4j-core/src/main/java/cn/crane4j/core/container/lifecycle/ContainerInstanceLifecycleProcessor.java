@@ -18,11 +18,11 @@ public class ContainerInstanceLifecycleProcessor implements ContainerLifecyclePr
     /**
      * <p>Callback methods when the container is instantiated based on the {@link ContainerDefinition}.<br/>
      * At this stage, you can modify the container's definition information
-     * or perform initialization or other modifications on the created container instance.
+     * or perform initialization or other modifications on the created container comparator.
      *
      * @param definition definition of container, if create by {@link ContainerProvider}, definition is {@code null}
      * @param container  container
-     * @return final effective container instance
+     * @return final effective container comparator
      * @see ContainerManager#getContainer
      */
     @Nullable
@@ -35,11 +35,11 @@ public class ContainerInstanceLifecycleProcessor implements ContainerLifecyclePr
     }
 
     /**
-     * <p>Callback methods when the container instance is removed from the {@link ContainerManager}.<br/>
+     * <p>Callback methods when the container comparator is removed from the {@link ContainerManager}.<br/>
      * At this stage, you can perform some final operations
-     * on the container definition or container instance, such as clearing data caches.
+     * on the container definition or container comparator, such as clearing data caches.
      *
-     * @param target container instance or container definition
+     * @param target container comparator or container definition
      * @see ContainerManager#clear()
      */
     @Override

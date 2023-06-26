@@ -64,18 +64,32 @@ public class NamespaceResolvableQueryContainerProviderTest {
         COLUMNS.forEach((p, c) -> Assert.assertEquals(c, repository.propertyToColumn(c, c)));
         QUERY_COLUMNS.forEach((p, c) -> Assert.assertEquals(c, repository.propertyToQueryColumn(c, c)));
 
-        // check recorder
+        // check determine namespace
+        String namespace = containerCreator.determineNamespace("test", "id", Collections.singletonList("name"));
+        Assert.assertNotNull(namespace);
+        Assert.assertEquals(
+            containerCreator.getQueryContainer("test", "id", Collections.singletonList("name")),
+            containerCreator.getContainer(namespace)
+        );
+
+        // check method invoker (recorder)
+        int offset = containerCreator.recorders.size();
         containerCreator.getQueryContainer("test", null, Collections.emptyList());
-        Recorder recorder = containerCreator.recorders.get(0);
+        Recorder recorder = containerCreator.recorders.get(offset);
         checkRecorder(recorder, repository, null, Collections.emptyList());
 
         containerCreator.getQueryContainer("test", "id", Arrays.asList("name", "age"));
-        recorder = containerCreator.recorders.get(1);
+        recorder = containerCreator.recorders.get(offset + 1);
         checkRecorder(recorder, repository, "id", Arrays.asList("name", "age"));
 
         containerCreator.getQueryContainer("test", "id", Arrays.asList("id", "name", "age"));
-        recorder = containerCreator.recorders.get(2);
+        recorder = containerCreator.recorders.get(offset + 2);
         checkRecorder(recorder, repository, "id", Arrays.asList("id", "name", "age"));
+
+        // test destroy
+        containerCreator.destroy();
+        Assert.assertTrue(containerCreator.registeredRepositories.isEmpty());
+        Assert.assertTrue(containerCreator.containerCaches.isEmpty());
     }
 
     private void checkRecorder(

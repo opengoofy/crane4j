@@ -83,7 +83,7 @@ public class MethodInvokerContainerCreator {
      * @param namespace namespace
      * @param keyExtractor key extractor, if mapping type is {@link MappingType#MAPPED}, this parameter is ignored
      * @param methodInvoker method invoker
-     * @return {@link MethodInvokerContainer} instance
+     * @return {@link MethodInvokerContainer} comparator
      */
     @NonNull
     protected MethodInvokerContainer createMethodInvokerContainer(

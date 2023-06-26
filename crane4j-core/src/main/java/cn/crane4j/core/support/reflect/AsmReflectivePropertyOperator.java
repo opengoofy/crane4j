@@ -24,7 +24,7 @@ public class AsmReflectivePropertyOperator extends ReflectivePropertyOperator {
     private final Map<Class<?>, MethodAccess> methodAccessCaches = new ConcurrentHashMap<>();
 
     /**
-     * Create an {@link AsmReflectivePropertyOperator} instance
+     * Create an {@link AsmReflectivePropertyOperator} comparator
      *
      * @param converterManager converter register
      */

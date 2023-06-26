@@ -16,13 +16,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 /**
  * <p>General implementation of {@link BeanOperationParser}.
@@ -31,7 +28,7 @@ import java.util.stream.Collectors;
  * as the context for this execution, Then successively call all registered {@link OperationAnnotationHandler}
  * to collect the configuration information into the {@link BeanOperations} in context.
  *
- * <p>After the parsing is completed, the {@link BeanOperations} instance
+ * <p>After the parsing is completed, the {@link BeanOperations} comparator
  * corresponding to the {@link AnnotatedElement} will be cached,
  * and the cache will be used preferentially for the next access.
  *
@@ -75,7 +72,7 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
     /**
      * registered operation annotation resolvers.
      */
-    protected Set<OperationAnnotationHandler> operationAnnotationHandlers;
+    protected List<OperationAnnotationHandler> operationAnnotationHandlers = new ArrayList<>(5);
 
     /**
      * Whether to cache hierarchy operation info of element.
@@ -86,35 +83,20 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
     protected boolean enableHierarchyCache = false;
 
     /**
-     * Create a {@link TypeHierarchyBeanOperationParser} instance.
-     *
-     * @param operationAnnotationHandlers operationAnnotationHandlers
-     */
-    public TypeHierarchyBeanOperationParser(
-        Collection<OperationAnnotationHandler> operationAnnotationHandlers) {
-        this.operationAnnotationHandlers = operationAnnotationHandlers.stream()
-            .sorted(Crane4jGlobalSorter.INSTANCE)
-            .collect(Collectors.toCollection(LinkedHashSet::new));
-    }
-
-    /**
      * Add bean operations resolvers.
      *
      * @param resolver handler
      */
     public void addBeanOperationsResolver(OperationAnnotationHandler resolver) {
         Objects.requireNonNull(resolver);
-        if (!operationAnnotationHandlers.contains(resolver)) {
-            operationAnnotationHandlers.add(resolver);
-            this.operationAnnotationHandlers = operationAnnotationHandlers.stream()
-                .sorted(Crane4jGlobalSorter.instance())
-                .collect(Collectors.toCollection(LinkedHashSet::new));
-        }
+        operationAnnotationHandlers.remove(resolver);
+        operationAnnotationHandlers.add(resolver);
+        operationAnnotationHandlers.sort(Crane4jGlobalSorter.comparator());
     }
 
     /**
      * <p>Parse the class and class attribute information,
-     * and generate the corresponding {@link BeanOperations} instance.<br />
+     * and generate the corresponding {@link BeanOperations} comparator.<br />
      * If there is a cache, it will be obtained from the cache first.
      *
      * <p><b>NOTE:</b>The {@link BeanOperations} obtained may still be being parsed.
@@ -191,7 +173,7 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
     }
 
     /**
-     * Create {@link BeanOperations} instance
+     * Create {@link BeanOperations} comparator
      *
      * @param element element
      * @return {@link BeanOperations}

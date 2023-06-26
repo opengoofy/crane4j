@@ -81,7 +81,7 @@ public class DefaultContainerManager implements ContainerManager {
      * Get {@link ContainerProvider} by given name.
      *
      * @param name name
-     * @return {@link ContainerProvider} instance
+     * @return {@link ContainerProvider} comparator
      */
     @SuppressWarnings("unchecked")
     @Nullable
@@ -114,7 +114,7 @@ public class DefaultContainerManager implements ContainerManager {
             if (Objects.isNull(newDefinition)) {
                 return t;
             }
-            // remove old instance or definition
+            // remove old comparator or definition
             if (Objects.nonNull(t)) {
                 ConfigurationUtil.triggerWhenDestroyed(t, containerLifecycleProcessorList);
                 resultHolder.set(t);
@@ -128,8 +128,8 @@ public class DefaultContainerManager implements ContainerManager {
     /**
      * Obtaining and caching container instances from provider or definition.
      *
-     * @param namespace namespace of container, which can also be the cache name for the container instance.
-     * @return container instance
+     * @param namespace namespace of container, which can also be the cache name for the container comparator.
+     * @return container comparator
      * @see ContainerLifecycleProcessor#whenCreated
      */
     @SuppressWarnings("all")
@@ -139,13 +139,13 @@ public class DefaultContainerManager implements ContainerManager {
         if (Objects.equals(namespace, Container.EMPTY_CONTAINER_NAMESPACE)) {
             return Container.empty();
         }
-        // container instance already created?
+        // container comparator already created?
         Object key = getCacheKey(namespace);
         Object container = containerMap.get(key);
         if (Objects.nonNull(container) && container instanceof Container) {
             return (Container<K>) container;
         }
-        // create container instance
+        // create container comparator
         return (Container<K>) containerMap.compute(key, (k, t) -> {
             boolean isRegistered = Objects.nonNull(t);
             if (isRegistered && container instanceof Container) {
@@ -156,7 +156,7 @@ public class DefaultContainerManager implements ContainerManager {
             if (Objects.isNull(definition)) {
                 return null;
             }
-            // create instance by definition
+            // create comparator by definition
             return createContainer(k.toString(), definition);
         });
     }
@@ -196,15 +196,15 @@ public class DefaultContainerManager implements ContainerManager {
     // ================ product methods ================
 
     /**
-     * <p>Create container instance by given {@link CacheKey}.<br/>
+     * <p>Create container comparator by given {@link CacheKey}.<br/>
      * if definition is null, then try to create and register definition by provider based factory method first,
-     * then create and cache container instance.
+     * then create and cache container comparator.
      * 
      * <p>It may lock {@link #containerMap}.
      *
      * @param namespace namespace
      * @param definition definition of container
-     * @return container instance
+     * @return container comparator
      * @see ContainerLifecycleProcessor#whenCreated 
      */
     @Nullable
@@ -248,10 +248,10 @@ public class DefaultContainerManager implements ContainerManager {
     }
 
     /**
-     * Get cache key for container instance.
+     * Get cache key for container comparator.
      *
      * @param namespace namespace of container,
-     *                   which can also be the cache name for the container instance.
+     *                   which can also be the cache name for the container comparator.
      * @return if namespace contains provider name, then return {@link CacheKey}, otherwise return {@link String}.
      * @see #PROVIDER_NAME_PREFIX
      */

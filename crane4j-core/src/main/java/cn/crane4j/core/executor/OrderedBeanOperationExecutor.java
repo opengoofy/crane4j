@@ -24,7 +24,7 @@ public class OrderedBeanOperationExecutor extends AbstractBeanOperationExecutor 
     private final Comparator<AssembleOperation> comparator;
 
     /**
-     * Create a new {@link OrderedBeanOperationExecutor} instance.
+     * Create a new {@link OrderedBeanOperationExecutor} comparator.
      *
      * @param containerManager container manager
      * @param comparator       comparator

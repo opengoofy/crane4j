@@ -1,8 +1,5 @@
 package cn.crane4j.core.support;
 
-import cn.crane4j.core.util.Asserts;
-import lombok.Getter;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -23,18 +20,17 @@ public final class Crane4jGlobalSorter implements Comparator<Object> {
     public static final Crane4jGlobalSorter INSTANCE = new Crane4jGlobalSorter();
 
     /**
-     * Get comparator instance.
+     * Get comparator comparator.
      *
      * @return comparator
      */
-    public static <T> Comparator<T> instance() {
+    public static <T> Comparator<T> comparator() {
         return (Comparator<T>) INSTANCE;
     }
 
     /**
      * Comparator chain.
      */
-    @Getter
     public List<Function<Object, Integer>> keyExtractors = new ArrayList<>();
 
     static {
@@ -50,16 +46,6 @@ public final class Crane4jGlobalSorter implements Comparator<Object> {
         Objects.requireNonNull(compareValueExtractor);
         keyExtractors.remove(compareValueExtractor);
         keyExtractors.add(compareValueExtractor);
-    }
-
-    /**
-     * Set comparator chain.
-     *
-     * @param keyExtractors comparators
-     */
-    public synchronized void setKeyExtractors(List<Function<Object, Integer>> keyExtractors) {
-        Asserts.isNotEmpty(keyExtractors, "compare value extractors must not empty");
-        this.keyExtractors = keyExtractors;
     }
 
     /**

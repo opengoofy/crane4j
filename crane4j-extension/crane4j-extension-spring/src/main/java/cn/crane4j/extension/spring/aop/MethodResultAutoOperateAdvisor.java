@@ -36,7 +36,7 @@ public class MethodResultAutoOperateAdvisor
     );
 
     /**
-     * Create a {@link MethodResultAutoOperateSupport} instance
+     * Create a {@link MethodResultAutoOperateSupport} comparator
      *
      * @param elementResolver           element handler
      * @param expressionExecuteDelegate method base expression evaluator delegate

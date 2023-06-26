@@ -11,8 +11,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
-
 /**
  * @author huangchengxing
  */
@@ -29,10 +27,10 @@ public class BaseExecutorTest {
     @Before
     public void initParser() {
         configuration = SimpleCrane4jGlobalConfiguration.create();
-        parser = new TypeHierarchyBeanOperationParser(Arrays.asList(
-            new AssembleAnnotationHandler(new SimpleAnnotationFinder(), configuration),
-            new DisassembleAnnotationHandler(new SimpleAnnotationFinder(), configuration)
-        ));
+        TypeHierarchyBeanOperationParser typeHierarchyBeanOperationParser = new TypeHierarchyBeanOperationParser();
+        typeHierarchyBeanOperationParser.addBeanOperationsResolver(new AssembleAnnotationHandler(new SimpleAnnotationFinder(), configuration));
+        typeHierarchyBeanOperationParser.addBeanOperationsResolver(new DisassembleAnnotationHandler(new SimpleAnnotationFinder(), configuration));
+        parser = typeHierarchyBeanOperationParser;
     }
 
     protected BeanOperations parseOperations(Class<?> type) {

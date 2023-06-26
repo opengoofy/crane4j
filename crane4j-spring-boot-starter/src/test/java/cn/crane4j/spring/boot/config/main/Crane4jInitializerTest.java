@@ -22,8 +22,8 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * test for {@link Crane4jAutoConfiguration.Properties}
@@ -59,7 +59,7 @@ public class Crane4jInitializerTest {
 
         // 配置解析器
         if (beanOperationParser instanceof TypeHierarchyBeanOperationParser) {
-            Set<OperationAnnotationHandler> resolvers = ReflectUtils.getFieldValue(beanOperationParser, "operationAnnotationHandlers");
+            List<OperationAnnotationHandler> resolvers = ReflectUtils.getFieldValue(beanOperationParser, "operationAnnotationHandlers");
             Assert.assertEquals(applicationContext.getBeanNamesForType(OperationAnnotationHandler.class).length, resolvers.size());
         }
 

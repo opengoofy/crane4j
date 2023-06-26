@@ -51,7 +51,7 @@ public class SpringAssembleAnnotationHandler
         AnnotationFinder annotationFinder,
         Crane4jGlobalConfiguration globalConfiguration,
         ExpressionEvaluator evaluator, BeanResolver beanResolver) {
-        super(annotationFinder, globalConfiguration, Crane4jGlobalSorter.instance());
+        super(annotationFinder, globalConfiguration, Crane4jGlobalSorter.comparator());
         this.evaluator = evaluator;
         this.beanResolver = beanResolver;
     }

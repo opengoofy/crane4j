@@ -18,7 +18,7 @@ public interface BeanOperationParser {
 
     /**
      * Parse the {@link AnnotatedElement} annotation information,
-     * and generate the corresponding {@link BeanOperations} instance.
+     * and generate the corresponding {@link BeanOperations} comparator.
      *
      * @param element element to parse
      * @return {@link BeanOperations}

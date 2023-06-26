@@ -4,6 +4,8 @@ import cn.crane4j.extension.spring.expression.SpelExpressionContext;
 import cn.crane4j.extension.spring.expression.SpelExpressionEvaluator;
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.beans.factory.config.EmbeddedValueResolver;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.util.ReflectionUtils;
@@ -24,6 +26,7 @@ public class ResolvableExpressionEvaluatorTest {
             new SpelExpressionEvaluator(new SpelExpressionParser()),
             method -> new SpelExpressionContext()
         );
+        evaluator.setEmbeddedValueResolver(new EmbeddedValueResolver(new DefaultListableBeanFactory()));
 
         Method method = ReflectionUtils.findMethod(ResolvableExpressionEvaluatorTest.class, "compute", Integer.class, Integer.class);
         Assert.assertNotNull(method);

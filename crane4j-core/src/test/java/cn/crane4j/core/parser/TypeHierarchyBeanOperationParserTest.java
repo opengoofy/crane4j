@@ -16,10 +16,13 @@ import cn.crane4j.core.parser.operation.TypeFixedDisassembleOperation;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.SimpleCrane4jGlobalConfiguration;
 import cn.crane4j.core.util.CollectionUtils;
+import cn.crane4j.core.util.ReflectUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -48,6 +51,16 @@ public class TypeHierarchyBeanOperationParserTest {
         configuration = SimpleCrane4jGlobalConfiguration.create();
         configuration.registerContainer(CONTAINER);
         parser = configuration.getBeanOperationsParser(BeanOperationParser.class.getSimpleName());
+        ((TypeHierarchyBeanOperationParser)parser).setEnableHierarchyCache(true);
+    }
+
+    @Test
+    public void parseOther() {
+        Method checkNestedBean = ReflectUtils.getDeclaredMethod(this.getClass(), "checkNestedBean", BeanOperations.class, BeanOperations.class);
+        Assert.assertNotNull(checkNestedBean);
+        Parameter[] parameters = checkNestedBean.getParameters();
+        BeanOperations beanOperations = parser.parse(parameters[0]);
+        Assert.assertTrue(beanOperations.isEmpty());
     }
 
     @Test
@@ -147,6 +160,7 @@ public class TypeHierarchyBeanOperationParserTest {
     /**
      * 父类的装配操作将会传递到子类
      */
+    @SuppressWarnings("unused")
     private static class BaseBean {
         @Assemble(
             container = CONTAINER_NAME,
@@ -162,6 +176,7 @@ public class TypeHierarchyBeanOperationParserTest {
      * 由于在@Assemble中指定排序值小于父类中@Assemble的排序值，
      * 因此子类的操作会更优先执行
      */
+    @SuppressWarnings("unused")
     private static class Bean extends BaseBean {
         // 装配操作
         @Assemble(
@@ -193,6 +208,7 @@ public class TypeHierarchyBeanOperationParserTest {
     @Disassemble(key = "bean", type = Bean.class, sort = SUB_SORT, groups = GROUP)
     // 此处嵌套对象类型为无法确定的泛型，故不指定类型而等到执行时再推断
     @Disassemble(key = "dynamicBean", groups = GROUP)
+    @SuppressWarnings("unused")
     private static class NestedBean<T> extends BaseBean {
         private String key;
         private String value;

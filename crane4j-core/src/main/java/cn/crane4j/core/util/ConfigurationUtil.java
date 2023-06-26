@@ -32,7 +32,7 @@ public class ConfigurationUtil {
     /**
      * trigger {@link ContainerLifecycleProcessor#whenDestroyed}
      *
-     * @param target container instance or container definition
+     * @param target container comparator or container definition
      */
     public static void triggerWhenDestroyed(
         Object target, Collection<ContainerLifecycleProcessor> containerLifecycleProcessorList) {
@@ -44,7 +44,7 @@ public class ConfigurationUtil {
      *
      * @param definition definition
      * @param namespace namespace
-     * @param old old container instance or container definition
+     * @param old old container comparator or container definition
      * @return container definition
      */
     @Nullable
@@ -67,7 +67,7 @@ public class ConfigurationUtil {
      * @param namespace namespace
      * @param container container
      * @param definition definition
-     * @return container instance
+     * @return container comparator
      */
     @Nullable
     public static Container<Object> triggerWhenCreated(

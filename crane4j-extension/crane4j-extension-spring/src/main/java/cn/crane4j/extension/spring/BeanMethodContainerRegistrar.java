@@ -18,7 +18,7 @@ import java.util.Collection;
 /**
  * <p>Post process the bean, scan the method with
  * {@link ContainerMethod} annotation in the class or method of class,
- * and adapt it to {@link Container} instance
+ * and adapt it to {@link Container} comparator
  * according to {@link MethodContainerFactory} registered in the Spring context.
  *
  * @author huangchengxing
@@ -37,7 +37,7 @@ public class BeanMethodContainerRegistrar
     private final Crane4jGlobalConfiguration configuration;
 
     /**
-     * Create an {@link BeanMethodContainerRegistrar} instance.
+     * Create an {@link BeanMethodContainerRegistrar} comparator.
      *
      * @param factories factories
      * @param annotationFinder annotation finder
