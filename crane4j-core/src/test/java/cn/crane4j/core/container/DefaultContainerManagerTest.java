@@ -72,7 +72,7 @@ public class DefaultContainerManagerTest {
         Assert.assertTrue(containerManager.containsContainer(definition.getNamespace()));
         Assert.assertSame(container, containerManager.getContainer(definition.getNamespace()));
 
-        // register container by instance
+        // register container by comparator
         old = containerManager.registerContainer(container);
         Assert.assertSame(old, container);
         Assert.assertTrue(containerManager.containsContainer(definition.getNamespace()));

@@ -2,17 +2,21 @@ package cn.crane4j.extension.spring;
 
 import cn.crane4j.core.container.ConstantContainer;
 import cn.crane4j.core.container.Container;
+import cn.crane4j.core.container.ContainerProvider;
 import cn.crane4j.core.container.LambdaContainer;
 import cn.crane4j.core.container.lifecycle.ContainerLifecycleProcessor;
 import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
 import cn.crane4j.core.executor.handler.OneToOneAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.ReflectiveDisassembleOperationHandler;
 import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
+import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.util.ReflectUtils;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -31,6 +35,8 @@ public class Crane4jApplicationContextTest {
 
     @Autowired
     private Crane4jApplicationContext context;
+    @Autowired
+    private ApplicationContext applicationContext;
 
     @Test
     public void test() {
@@ -54,6 +60,17 @@ public class Crane4jApplicationContextTest {
         Assert.assertFalse(containerMap.isEmpty());
         context.destroy();
         Assert.assertTrue(containerMap.isEmpty());
+
+        // get by bean name
+        Assert.assertEquals(
+            applicationContext.getBean("testBean"), context.getContainer("testBean")
+        );
+        Assert.assertEquals(
+            applicationContext.getBean("testProvider"), context.getContainerProvider("testProvider")
+        );
+        Assert.assertEquals(
+            applicationContext.getBean(ConverterManager.class), context.getConverterManager()
+        );
     }
 
     @Test
@@ -72,6 +89,16 @@ public class Crane4jApplicationContextTest {
         @Bean("testBean")
         public ConstantContainer<String> container() {
             return ConstantContainer.forMap("test", Collections.singletonMap("key", "value"));
+        }
+
+        @Bean("testProvider")
+        public ContainerProvider testContainerProvider() {
+            return new ContainerProvider() {
+                @Override
+                public @Nullable <K> Container<K> getContainer(String namespace) {
+                    return null;
+                }
+            };
         }
     }
 }

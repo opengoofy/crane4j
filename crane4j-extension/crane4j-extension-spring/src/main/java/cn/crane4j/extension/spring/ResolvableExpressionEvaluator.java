@@ -4,6 +4,7 @@ import cn.crane4j.core.support.ParameterNameFinder;
 import cn.crane4j.core.support.expression.ExpressionContext;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
 import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.context.EmbeddedValueResolverAware;
 import org.springframework.util.StringValueResolver;
@@ -26,7 +27,7 @@ public class ResolvableExpressionEvaluator
     private StringValueResolver resolver;
 
     /**
-     * Create an {@link ResolvableExpressionEvaluator} instance.
+     * Create an {@link ResolvableExpressionEvaluator} comparator.
      *
      * @param parameterNameDiscoverer parameter name discoverer
      * @param  expressionEvaluator expression evaluator
@@ -64,7 +65,7 @@ public class ResolvableExpressionEvaluator
      * @param resolver handler
      */
     @Override
-    public void setEmbeddedValueResolver(StringValueResolver resolver) {
+    public void setEmbeddedValueResolver(@NonNull StringValueResolver resolver) {
         this.resolver = resolver;
     }
 }

@@ -30,7 +30,6 @@ import cn.crane4j.core.support.container.DefaultMethodContainerFactory;
 import cn.crane4j.core.support.container.MethodContainerFactory;
 import cn.crane4j.core.support.container.MethodInvokerContainerCreator;
 import cn.crane4j.core.support.converter.ConverterManager;
-import cn.crane4j.core.support.converter.HutoolConverterManager;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
 import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
 import cn.crane4j.core.support.operator.DefaultOperatorProxyMethodFactory;
@@ -57,6 +56,7 @@ import org.springframework.context.expression.BeanFactoryResolver;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.expression.BeanResolver;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 
@@ -75,9 +75,9 @@ public class Crane4jSpringTestConfiguration {
 
     // ============== basic components ==============
 
-    @Bean({"hutoolConverterRegister", "HutoolConverterManager"})
-    public HutoolConverterManager hutoolConverterRegister() {
-        return new HutoolConverterManager();
+    @Bean({"SpringConverterManager", "springConverterManager"})
+    public SpringConverterManager springConverterManager() {
+        return new SpringConverterManager(DefaultConversionService.getSharedInstance());
     }
 
     @Primary
@@ -159,7 +159,9 @@ public class Crane4jSpringTestConfiguration {
 
     @Bean({"TypeHierarchyBeanOperationParser", "typeHierarchyBeanOperationParser"})
     public TypeHierarchyBeanOperationParser typeHierarchyBeanOperationParser(Collection<OperationAnnotationHandler> resolvers) {
-        return new TypeHierarchyBeanOperationParser(resolvers);
+        TypeHierarchyBeanOperationParser parser =  new TypeHierarchyBeanOperationParser();
+        resolvers.forEach(parser::addBeanOperationsResolver);
+        return parser;
     }
 
     @Primary

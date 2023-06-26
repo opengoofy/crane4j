@@ -1,6 +1,12 @@
 package cn.crane4j.core.util;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.BiConsumer;
 
 /**
@@ -12,10 +18,10 @@ import java.util.function.BiConsumer;
 public interface MultiMap<K, V> {
 
     /**
-     * Create a new {@link MultiMap} instance with {@link HashMap}
+     * Create a new {@link MultiMap} comparator with {@link HashMap}
      * as the underlying map and {@link ArrayList} as the collection.
      *
-     * @return a new {@link MultiMap} instance
+     * @return a new {@link MultiMap} comparator
      * @see HashMap
      * @see ArrayList
      */
@@ -24,10 +30,10 @@ public interface MultiMap<K, V> {
     }
 
     /**
-     * Create a new {@link MultiMap} instance with {@link LinkedHashMap}
+     * Create a new {@link MultiMap} comparator with {@link LinkedHashMap}
      * as the underlying map and {@link ArrayList} as the collection.
      *
-     * @return a new {@link MultiMap} instance
+     * @return a new {@link MultiMap} comparator
      * @see LinkedHashMap
      * @see ArrayList
      */
@@ -36,10 +42,10 @@ public interface MultiMap<K, V> {
     }
 
     /**
-     * Create a new {@link MultiMap} instance with {@link LinkedHashMap}
+     * Create a new {@link MultiMap} comparator with {@link LinkedHashMap}
      * as the underlying map and {@link LinkedHashSet} as the collection.
      *
-     * @return a new {@link MultiMap} instance
+     * @return a new {@link MultiMap} comparator
      * @see LinkedHashMap
      * @see LinkedHashSet
      */

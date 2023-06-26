@@ -58,7 +58,7 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
     protected final Crane4jGlobalConfiguration globalConfiguration;
 
     /**
-     * Create an {@link AbstractAssembleAnnotationHandler} instance.
+     * Create an {@link AbstractAssembleAnnotationHandler} comparator.
      *
      * @param annotationType annotation type
      * @param annotationFinder annotation finder
@@ -156,7 +156,7 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
      * @param beanOperations bean operations to resolve
      * @param element element
      * @param annotation annotation
-     * @return {@link AssembleOperation} instance if element and annotation is resolvable, null otherwise
+     * @return {@link AssembleOperation} comparator if element and annotation is resolvable, null otherwise
      */
     @Nullable
     protected AssembleOperation createAssembleOperation(
@@ -184,7 +184,7 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
      * @param key key
      * @param handler assemble operation handler
      * @param propertyMappings property mappings
-     * @return {@link AssembleOperation} instance
+     * @return {@link AssembleOperation} comparator
      */
     protected AssembleOperation createAssembleOperation(
         T annotation, int sort, String key, AssembleOperationHandler handler, Set<PropertyMapping> propertyMappings) {
@@ -209,7 +209,7 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
      * @param beanOperations bean operations
      * @param element element
      * @param annotation annotation
-     * @return {@link StandardAnnotation} instance
+     * @return {@link StandardAnnotation} comparator
      */
     protected abstract StandardAnnotation getStandardAnnotation(
         BeanOperations beanOperations, AnnotatedElement element, T annotation);

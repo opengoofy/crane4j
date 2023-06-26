@@ -31,7 +31,7 @@ import java.util.Objects;
 
 /**
  * <p>The global configuration class implemented based on the Spring context,
- * when obtaining the required components from the instance,
+ * when obtaining the required components from the comparator,
  * will directly obtain the corresponding bean through the {@link ApplicationContext} held.
  *
  * @author huangchengxing
@@ -107,7 +107,7 @@ public class Crane4jApplicationContext extends DefaultContainerManager
      * Get {@link ContainerProvider} by given name.
      *
      * @param name name
-     * @return {@link ContainerProvider} instance
+     * @return {@link ContainerProvider} comparator
      */
     @SuppressWarnings("unchecked")
     @Nullable
@@ -121,8 +121,8 @@ public class Crane4jApplicationContext extends DefaultContainerManager
     /**
      * Obtaining and caching container instances from provider or definition.
      *
-     * @param namespace namespace of container, which can also be the cache name for the container instance.
-     * @return container instance
+     * @param namespace namespace of container, which can also be the cache name for the container comparator.
+     * @return container comparator
      * @see ContainerLifecycleProcessor#whenCreated
      */
     @SuppressWarnings("unchecked")

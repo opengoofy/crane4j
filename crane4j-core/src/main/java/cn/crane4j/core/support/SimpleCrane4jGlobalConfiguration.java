@@ -29,7 +29,6 @@ import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -75,11 +74,11 @@ public class SimpleCrane4jGlobalConfiguration
 
         // operation parser
         AnnotationFinder annotationFinder = new SimpleAnnotationFinder();
-        BeanOperationParser beanOperationParser = new TypeHierarchyBeanOperationParser(Arrays.asList(
-            new AssembleAnnotationHandler(annotationFinder, configuration),
-            new DisassembleAnnotationHandler(annotationFinder, configuration),
-            new AssembleEnumAnnotationHandler(annotationFinder, configuration, operator, configuration)
-        ));
+        TypeHierarchyBeanOperationParser beanOperationParser = new TypeHierarchyBeanOperationParser();
+        beanOperationParser.addBeanOperationsResolver(new AssembleAnnotationHandler(annotationFinder, configuration));
+        beanOperationParser.addBeanOperationsResolver(new DisassembleAnnotationHandler(annotationFinder, configuration));
+        beanOperationParser.addBeanOperationsResolver(new AssembleEnumAnnotationHandler(annotationFinder, configuration, operator, configuration));
+
         configuration.getBeanOperationParserMap().put(BeanOperationParser.class.getSimpleName(), beanOperationParser);
         configuration.getBeanOperationParserMap().put(beanOperationParser.getClass().getSimpleName(), beanOperationParser);
 
@@ -87,7 +86,7 @@ public class SimpleCrane4jGlobalConfiguration
         DisorderedBeanOperationExecutor disorderedBeanOperationExecutor = new DisorderedBeanOperationExecutor(configuration);
         configuration.getBeanOperationExecutorMap().put(BeanOperationExecutor.class.getSimpleName(), disorderedBeanOperationExecutor);
         configuration.getBeanOperationExecutorMap().put(disorderedBeanOperationExecutor.getClass().getSimpleName(), disorderedBeanOperationExecutor);
-        OrderedBeanOperationExecutor orderedBeanOperationExecutor = new OrderedBeanOperationExecutor(configuration, Crane4jGlobalSorter.instance());
+        OrderedBeanOperationExecutor orderedBeanOperationExecutor = new OrderedBeanOperationExecutor(configuration, Crane4jGlobalSorter.comparator());
         configuration.getBeanOperationExecutorMap().put(orderedBeanOperationExecutor.getClass().getSimpleName(), orderedBeanOperationExecutor);
 
         // operation handlers

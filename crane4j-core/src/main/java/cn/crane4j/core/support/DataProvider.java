@@ -3,6 +3,7 @@ package cn.crane4j.core.support;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 /**
@@ -35,6 +36,7 @@ public interface DataProvider<K, V> extends Function<Collection<K>, Map<K, V>> {
      * @return data provider
      */
     static <K, V> DataProvider<K, V> fixed(Map<K, V> data) {
-        return ids -> data;
+        return Objects.isNull(data) ?
+            ids -> Collections.emptyMap() : ids -> data;
     }
 }

@@ -48,7 +48,7 @@ public class OneToOneAssembleOperationHandler extends ReflectiveAssembleOperatio
     }
 
     /**
-     * Create a {@link Target} instance.
+     * Create a {@link Target} comparator.
      *
      * @param execution execution
      * @param origin    origin

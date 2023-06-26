@@ -12,6 +12,7 @@ import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.MultiMap;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -67,6 +68,24 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
     private final ContainerManager containerManager;
 
     /**
+     * <p>Wait time in milliseconds if the operation is not active.<br/>
+     * In normal cases, this time is unnecessary set to a large value,
+     * because the operation is usually active when the {@link #execute} method is called,
+     * Unless there is a circular dependency between the operation and the resolution of another object during the parsing process.
+     *
+     * <p>NOTE: This is not a good solution, so in future versions,
+     * we will try to solve this problem in the {@link cn.crane4j.core.parser.BeanOperationParser}.
+     */
+    @Setter
+    public long waitTimeoutMillisecondIfOperationNotActive = 50L;
+
+    /**
+     * Whether to enable the execution of operations that are not active.
+     */
+    @Setter
+    public boolean enableExecuteNotActiveOperation = false;
+
+    /**
      * Complete operations on all objects in {@code targets} according to the specified {@link BeanOperations} and {@link Options}.
      *
      * @param targets targets
@@ -78,8 +97,14 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
         if (CollectionUtils.isEmpty(targets) || Objects.isNull(operations)) {
             return;
         }
-        if (!operations.isActive()) {
-            log.warn("bean operation of [{}] is still not ready, please try again", operations.getSource());
+        // When the following all conditions are met, the operation will be abandoned:
+        // 1. the operation is not active;
+        // 2. the operation is still not active after waiting for a period of time;
+        // 3. the execution of non-active operations is not enabled.
+        if (!operations.isActive() &&
+            !waitForOperationActiveUntilTimeout(operations)
+            && !enableExecuteNotActiveOperation) {
+            log.warn("bean operation of [{}] is still not ready, abort execution of the operation", operations.getSource());
             return;
         }
         // complete the disassembly first if necessary
@@ -162,6 +187,17 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
         collector.putAll(internalOperations, internalTargets);
         // recurse process if still have nested objects
         disassembleIfNecessary(internalTargets, internalOperations, filter, collector);
+    }
+
+    private boolean waitForOperationActiveUntilTimeout(BeanOperations operations) {
+        // rotate training and wait within the specified timeout period
+        long start = System.currentTimeMillis();
+        while (!operations.isActive()) {
+            if (System.currentTimeMillis() - start > waitTimeoutMillisecondIfOperationNotActive) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

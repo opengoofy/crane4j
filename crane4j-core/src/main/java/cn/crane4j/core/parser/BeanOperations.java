@@ -24,7 +24,7 @@ import java.util.List;
  *
  * <p>Since the configuration may be nested,
  * such as when an attribute type that needs to be disassembled in an object is another object,
- * the object operation configuration instance may still be in recursive resolution when obtained.
+ * the object operation configuration comparator may still be in recursive resolution when obtained.
  * Therefore, it is essential to ensure that
  * the configuration object has completed resolution through {@link #isActive} before use.
  *

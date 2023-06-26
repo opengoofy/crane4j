@@ -75,15 +75,20 @@ public interface BeanOperationExecutor {
          *
          * @param containerManager container manager
          * @param namespace namespace of container
-         * @return container instance
+         * @return container comparator
          */
         default Container<?> getContainer(ContainerManager containerManager, String namespace) {
             return containerManager.getContainer(namespace);
         }
 
+        /**
+         * An option that can dynamically change the container in the execution process.
+         *
+         * @author huangchengxing
+         */
         @RequiredArgsConstructor
-        @Getter
-        public class DynamicContainerOption implements Options {
+        class DynamicContainerOption implements Options {
+            @Getter
             private final Predicate<? super KeyTriggerOperation> filter;
             private final Map<String, Container<Object>> dynamicContainers;
             @Override

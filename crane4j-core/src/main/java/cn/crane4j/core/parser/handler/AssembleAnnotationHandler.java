@@ -30,7 +30,7 @@ import java.util.Comparator;
 public class AssembleAnnotationHandler extends AbstractAssembleAnnotationHandler<Assemble> {
 
     /**
-     * Create a {@link AssembleAnnotationHandler} instance.
+     * Create a {@link AssembleAnnotationHandler} comparator.
      *
      * @param annotationFinder annotation finder
      * @param globalConfiguration global configuration
@@ -44,7 +44,7 @@ public class AssembleAnnotationHandler extends AbstractAssembleAnnotationHandler
     }
 
     /**
-     * <p>Create a {@link AssembleAnnotationHandler} instance.<br />
+     * <p>Create a {@link AssembleAnnotationHandler} comparator.<br />
      * The order of operation configurations is {@link Sorted#getSort} from small to large.
      *
      * @param annotationFinder annotation finder
@@ -52,7 +52,7 @@ public class AssembleAnnotationHandler extends AbstractAssembleAnnotationHandler
      */
     public AssembleAnnotationHandler(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration globalConfiguration) {
-        this(annotationFinder, globalConfiguration, Crane4jGlobalSorter.instance());
+        this(annotationFinder, globalConfiguration, Crane4jGlobalSorter.comparator());
     }
 
     /**
@@ -76,7 +76,7 @@ public class AssembleAnnotationHandler extends AbstractAssembleAnnotationHandler
      * @param beanOperations bean operations
      * @param element        element
      * @param annotation     annotation
-     * @return {@link StandardAnnotation} instance
+     * @return {@link StandardAnnotation} comparator
      */
     @Override
     protected StandardAnnotation getStandardAnnotation(

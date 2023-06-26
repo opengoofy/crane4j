@@ -37,7 +37,7 @@ public class ManyToManyAssembleOperationHandler extends OneToManyAssembleOperati
     private final Function<Object, Collection<Object>> keySplitter;
 
     /**
-     * Create an {@link ManyToManyAssembleOperationHandler} instance.
+     * Create an {@link ManyToManyAssembleOperationHandler} comparator.
      *
      * @param propertyOperator propertyOperator
      */
@@ -47,7 +47,7 @@ public class ManyToManyAssembleOperationHandler extends OneToManyAssembleOperati
     }
 
     /**
-     * Create a {@link ManyToManyAssembleOperationHandler} instance
+     * Create a {@link ManyToManyAssembleOperationHandler} comparator
      * and use the default {@link DefaultSplitter} split key value
      *
      * @param propertyOperator property operator
@@ -57,7 +57,7 @@ public class ManyToManyAssembleOperationHandler extends OneToManyAssembleOperati
     }
 
     /**
-     * Create a {@link Target} instance.
+     * Create a {@link Target} comparator.
      *
      * @param execution execution
      * @param origin    origin

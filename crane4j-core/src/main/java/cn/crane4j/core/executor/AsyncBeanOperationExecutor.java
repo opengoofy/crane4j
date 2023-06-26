@@ -29,7 +29,7 @@ public class AsyncBeanOperationExecutor extends AbstractBeanOperationExecutor {
     private final ExecutorService executorService;
 
     /**
-     * Create an instance of {@link AsyncBeanOperationExecutor}.
+     * Create an comparator of {@link AsyncBeanOperationExecutor}.
      *
      * @param containerManager container manager
      * @param executorService thread pool used to perform operations

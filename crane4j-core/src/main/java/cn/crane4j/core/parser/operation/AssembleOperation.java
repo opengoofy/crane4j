@@ -15,7 +15,7 @@ import java.util.Set;
  *     <li>map the specific attribute values of the data source object to the attributes of the target object;</li>
  * </ol>
  *
- * <p>The necessary components for completing the above operations can be obtained through the instance:
+ * <p>The necessary components for completing the above operations can be obtained through the comparator:
  * <ol>
  *     <li>{@link #getKey()}: which field of the target object is the key field;</li>
  *     <li>{@link #getContainer()}: which container to get the corresponding data source object through the key field value;</li>

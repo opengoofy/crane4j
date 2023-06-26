@@ -35,7 +35,7 @@ public class AssembleMpAnnotationHandler extends AbstractAssembleAnnotationHandl
     private final MybatisPlusQueryContainerProvider containerRegister;
 
     /**
-     * Create a {@link AssembleMpAnnotationHandler} instance.
+     * Create a {@link AssembleMpAnnotationHandler} comparator.
      *
      * @param annotationFinder annotation finder
      * @param containerRegister mybatis plus query container register
@@ -45,11 +45,11 @@ public class AssembleMpAnnotationHandler extends AbstractAssembleAnnotationHandl
         AnnotationFinder annotationFinder,
         MybatisPlusQueryContainerProvider containerRegister,
         Crane4jGlobalConfiguration globalConfiguration) {
-        this(annotationFinder, Crane4jGlobalSorter.instance(), containerRegister, globalConfiguration);
+        this(annotationFinder, Crane4jGlobalSorter.comparator(), containerRegister, globalConfiguration);
     }
 
     /**
-     * Create a {@link AssembleMpAnnotationHandler} instance.
+     * Create a {@link AssembleMpAnnotationHandler} comparator.
      *
      * @param annotationFinder annotation finder
      * @param operationComparator operation comparator
@@ -88,7 +88,7 @@ public class AssembleMpAnnotationHandler extends AbstractAssembleAnnotationHandl
      * @param beanOperations bean operations
      * @param element        element
      * @param annotation     annotation
-     * @return {@link StandardAnnotation} instance
+     * @return {@link StandardAnnotation} comparator
      */
     @Override
     protected StandardAnnotation getStandardAnnotation(

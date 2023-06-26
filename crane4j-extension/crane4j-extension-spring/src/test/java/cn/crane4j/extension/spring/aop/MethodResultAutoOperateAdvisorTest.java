@@ -52,6 +52,7 @@ public class MethodResultAutoOperateAdvisorTest {
 
     @Test
     public void test() {
+        Assert.assertFalse(methodResultAutoOperateAdvisor.isPerInstance());
         TargetService service = applicationContext.getBean(TargetService.class);
         service.noneResult();
         List<Foo> list = service.getFooList().getData();

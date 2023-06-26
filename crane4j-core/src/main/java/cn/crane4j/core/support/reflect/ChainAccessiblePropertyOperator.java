@@ -30,7 +30,7 @@ public class ChainAccessiblePropertyOperator implements PropertyOperator {
     private final Function<String, String[]> splitter;
 
     /**
-     * Create an {@link ChainAccessiblePropertyOperator} instance,
+     * Create an {@link ChainAccessiblePropertyOperator} comparator,
      * and use the default splitter to separate input chain operators based on the {@code "."} character.
      *
      * @param propertyOperator property operator
