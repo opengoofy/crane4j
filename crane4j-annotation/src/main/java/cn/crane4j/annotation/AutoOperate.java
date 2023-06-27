@@ -28,13 +28,16 @@ public @interface AutoOperate {
     String value() default "";
 
     /**
-     * The object type to be processed in the return value of the method.
+     * <p>The object type to be processed in the return value of the method.<br />
      * It will be parsed by the parser specified in {@link #parser()} when it is first executed,
      * and then the operation configuration will be obtained.
      *
+     * <p>If the object is generic or cannot be confirmed, the default value is {@link Object},
+     * and the type will be automatically inferred.
+     *
      * @return type to be processed
      */
-    Class<?> type();
+    Class<?> type() default Object.class;
 
     /**
      * <p>When the return value is a wrapper class,

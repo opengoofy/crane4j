@@ -42,7 +42,7 @@ public class MethodResultAutoOperateSupportTest {
         MethodBaseExpressionExecuteDelegate expressionExecuteDelegate = new MethodBaseExpressionExecuteDelegate(
             parameterNameFinder, new OgnlExpressionEvaluator(), method -> new OgnlExpressionContext()
         );
-        AutoOperateAnnotatedElementResolver resolver = new AutoOperateAnnotatedElementResolver(configuration);
+        AutoOperateAnnotatedElementResolver resolver = new AutoOperateAnnotatedElementResolver(configuration, configuration.getTypeResolver());
         support = new MethodResultAutoOperateSupport(resolver, expressionExecuteDelegate);
 
         configuration.registerContainer(LambdaContainer.<Integer>forLambda(
@@ -63,7 +63,7 @@ public class MethodResultAutoOperateSupportTest {
         support.afterMethodInvoke(null, method, foo, new Object[]{ Arrays.asList(1, 2) });
     }
 
-    @AutoOperate(type = Foo.class, on = "data", condition = "true")
+    @AutoOperate(on = "data", condition = "true")
     private Result<Collection<Foo>> method(Collection<Integer> ids) {
         return new Result<>(ids.stream().map(Foo::new).collect(Collectors.toList()));
     }

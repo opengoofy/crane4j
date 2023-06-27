@@ -5,7 +5,6 @@ import cn.crane4j.core.support.container.MethodInvokerContainerCreator;
 import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.StringUtils;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -107,7 +106,6 @@ public abstract class NamespaceResolvableQueryContainerProvider<T> extends Abstr
      */
     @Getter
     @RequiredArgsConstructor
-    @EqualsAndHashCode
     protected static class QueryInfoImpl implements QueryInfo {
         private final String repository;
         @Nullable

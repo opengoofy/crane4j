@@ -353,8 +353,9 @@ public class Crane4jAutoConfiguration {
 
     @ConditionalOnMissingBean
     @Bean({"AutoOperateAnnotatedElementResolver", "autoOperateMethodAnnotatedElementResolver"})
-    public AutoOperateAnnotatedElementResolver autoOperateMethodAnnotatedElementResolver(Crane4jGlobalConfiguration crane4jGlobalConfiguration) {
-        return new AutoOperateAnnotatedElementResolver(crane4jGlobalConfiguration);
+    public AutoOperateAnnotatedElementResolver autoOperateMethodAnnotatedElementResolver(
+        Crane4jGlobalConfiguration crane4jGlobalConfiguration, TypeResolver typeResolver) {
+        return new AutoOperateAnnotatedElementResolver(crane4jGlobalConfiguration, typeResolver);
     }
 
     @ConditionalOnMissingBean

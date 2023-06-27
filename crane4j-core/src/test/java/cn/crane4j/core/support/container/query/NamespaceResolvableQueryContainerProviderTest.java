@@ -1,5 +1,6 @@
 package cn.crane4j.core.support.container.query;
 
+import cn.crane4j.annotation.MappingType;
 import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.support.container.MethodInvokerContainerCreator;
 import cn.crane4j.core.support.converter.ConverterManager;
@@ -67,6 +68,7 @@ public class NamespaceResolvableQueryContainerProviderTest {
         // check determine namespace
         String namespace = containerCreator.determineNamespace("test", "id", Collections.singletonList("name"));
         Assert.assertNotNull(namespace);
+        containerCreator.setMappingType(namespace, MappingType.ONE_TO_MANY);
         Assert.assertEquals(
             containerCreator.getQueryContainer("test", "id", Collections.singletonList("name")),
             containerCreator.getContainer(namespace)

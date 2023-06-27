@@ -9,6 +9,7 @@ import cn.crane4j.core.parser.operation.KeyTriggerOperation;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.Grouped;
 import cn.crane4j.core.support.MethodInvoker;
+import cn.crane4j.core.support.TypeResolver;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.StringUtils;
@@ -20,6 +21,7 @@ import java.lang.reflect.Parameter;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -33,6 +35,7 @@ import java.util.function.Predicate;
 public class AutoOperateAnnotatedElementResolver {
 
     private final Crane4jGlobalConfiguration configuration;
+    private final TypeResolver typeResolver;
 
     /**
      * Resolve the {@link AutoOperate} annotation on the element
@@ -46,11 +49,26 @@ public class AutoOperateAnnotatedElementResolver {
         MethodInvoker extractor = resolveExtractor(element, annotation);
         // prepare components for use
         BeanOperationParser parser = configuration.getBeanOperationsParser(annotation.parser());
-        BeanOperations beanOperations = parser.parse(annotation.type());
         BeanOperationExecutor executor = configuration.getBeanOperationExecutor(annotation.executor());
-        // check groups
         Predicate<? super KeyTriggerOperation> filter = resolveFilter(annotation);
-        return new AutoOperateAnnotatedElement(annotation, element, extractor, filter, beanOperations, executor);
+
+        AutoOperateAnnotatedElement result = null;
+        // not specify type, delay parsing until execution time
+        Class<?> type = annotation.type();
+        if (Objects.equals(Object.class, type) || Objects.equals(Void.TYPE, type)) {
+            Function<Object, BeanOperations> dynamicParser = t -> parser.parse(typeResolver.resolve(t));
+            result = AutoOperateAnnotatedElement.forDynamicOperation(
+                annotation, element, extractor, filter, executor, dynamicParser
+            );
+        }
+        // specify type, parse immediately
+        else {
+            BeanOperations beanOperations = parser.parse(annotation.type());
+            result = AutoOperateAnnotatedElement.forStaticOperation(
+                annotation, element, extractor, filter, beanOperations, executor
+            );
+        }
+        return result;
     }
 
     private MethodInvoker resolveExtractor(AnnotatedElement element, AutoOperate annotation) {
