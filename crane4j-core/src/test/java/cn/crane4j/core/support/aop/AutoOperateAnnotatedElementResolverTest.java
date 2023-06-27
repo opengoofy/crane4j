@@ -7,6 +7,7 @@ import cn.crane4j.core.container.LambdaContainer;
 import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.SimpleCrane4jGlobalConfiguration;
+import cn.crane4j.core.support.SimpleTypeResolver;
 import cn.crane4j.core.util.ReflectUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -36,7 +37,7 @@ public class AutoOperateAnnotatedElementResolverTest {
     @Before
     public void init() {
         configuration = SimpleCrane4jGlobalConfiguration.create();
-        resolver = new AutoOperateAnnotatedElementResolver(configuration);
+        resolver = new AutoOperateAnnotatedElementResolver(configuration, new SimpleTypeResolver());
         configuration.registerContainer(LambdaContainer.<Integer>forLambda(
             "test", ids -> ids.stream().map(id -> new Foo(id, "name" + id))
                 .collect(Collectors.toMap(Foo::getId, Function.identity()))
