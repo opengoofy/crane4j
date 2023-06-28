@@ -134,7 +134,9 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
                         doParse(result);
                         resolvedElements.put(element, currentlyInParsing.remove(element));
                         result.setActive(true);
+                        log.debug("operations of element [{}] is parsed", element);
                     } else {
+                        log.debug("target [{}] is in parsing, get early cache", element);
                         // FIXME： If the current configuration is not yet activated,
                         //  it may not be appropriate to directly return it to the caller.
                         //  A better approach is to have the caller thread

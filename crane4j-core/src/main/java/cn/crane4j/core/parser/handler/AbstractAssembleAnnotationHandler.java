@@ -144,7 +144,8 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
      */
     protected MultiMap<AnnotatedElement, T> parseAnnotationForFields(Class<?> beanType) {
         MultiMap<AnnotatedElement, T> result = MultiMap.arrayListMultimap();
-        ReflectUtils.parseAnnotationForDeclaredFields(annotationFinder, beanType, annotationType, (annotation, field) -> result.put(field, annotation));
+        ReflectUtils.scanAllAnnotationFromElements(
+            annotationFinder, annotationType, ReflectUtils.getDeclaredFields(beanType), result::put);
         return result;
     }
 
