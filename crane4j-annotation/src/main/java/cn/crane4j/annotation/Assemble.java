@@ -8,7 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * <p>Declare an assembly operation。<br />
+ * <p>Declare an operation of assemble。<br />
  * Specify the specific attribute of the current object as the key.
  * When the operation is executed,
  * the key value will be extracted and the data source object
@@ -75,7 +75,7 @@ import java.lang.annotation.Target;
  * is equivalent to that declared directly in {@link #props()}。
  *
  * @author huangchengxing
- * @see cn.crane4j.core.executor.handler.AssembleOperationHandler;
+ * @see cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
  * @see cn.crane4j.core.parser.handler.AssembleAnnotationHandler;
  */
 @Repeatable(value = Assemble.List.class)
@@ -121,6 +121,7 @@ public @interface Assemble {
      * The name of the handler to be used.
      *
      * @return name
+     * @see cn.crane4j.core.executor.handler.AssembleOperationHandler;
      */
     String handler() default "OneToOneAssembleOperationHandler";
 

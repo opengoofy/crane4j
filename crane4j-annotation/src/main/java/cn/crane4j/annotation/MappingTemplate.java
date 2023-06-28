@@ -14,6 +14,7 @@ import java.lang.annotation.Target;
  *
  * @author huangchengxing
  * @see Assemble#propTemplates()
+ * @see cn.crane4j.core.parser.PropertyMapping
  */
 @Documented
 @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
