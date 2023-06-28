@@ -3,8 +3,8 @@ package cn.crane4j.core.support.reflect;
 import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.support.converter.ParameterConvertibleMethodInvoker;
+import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.ReflectUtils;
-import lombok.AllArgsConstructor;
 import lombok.Setter;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -18,7 +18,6 @@ import java.util.function.Function;
  *
  * @author huangchengxing
  */
-@AllArgsConstructor
 public class ReflectivePropertyOperator implements PropertyOperator {
 
     /**
@@ -27,6 +26,21 @@ public class ReflectivePropertyOperator implements PropertyOperator {
     @Nullable
     @Setter
     protected ConverterManager converterManager;
+
+    /**
+     * Whether to throw an exception if no matching method is found.
+     */
+    @Setter
+    private boolean throwIfNoMatchedMethod = false;
+
+    /**
+     * Create a property operator.
+     *
+     * @param converterManager converter manager
+     */
+    public ReflectivePropertyOperator(@Nullable ConverterManager converterManager) {
+        this.converterManager = converterManager;
+    }
 
     /**
      * Get getter method.
@@ -39,6 +53,10 @@ public class ReflectivePropertyOperator implements PropertyOperator {
     @Override
     public MethodInvoker findGetter(Class<?> targetType, String propertyName) {
         Method method = findGetterMethod(targetType, propertyName);
+        Asserts.isFalse(
+            Objects.isNull(method) && throwIfNoMatchedMethod,
+            "No getter method found for property [{}] in [{}] ", propertyName, targetType.getName()
+        );
         return resolveInvoker(targetType, propertyName, method);
     }
 
@@ -53,6 +71,10 @@ public class ReflectivePropertyOperator implements PropertyOperator {
     @Override
     public MethodInvoker findSetter(Class<?> targetType, String propertyName) {
         Method method = findSetterMethod(targetType, propertyName);
+        Asserts.isFalse(
+            Objects.isNull(method) && throwIfNoMatchedMethod,
+            "No setter method found for property [{}] in [{}] ", propertyName, targetType.getName()
+        );
         return resolveInvoker(targetType, propertyName, method);
     }
 
