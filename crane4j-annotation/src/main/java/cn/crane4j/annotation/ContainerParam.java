@@ -7,10 +7,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marker a parameter as temporary container data in shared context of current thread when execute operation.
+ * <p>Marker a parameter as dynamic container in execution.<br />
+ * support following types of parameter:
+ * <ul>
+ *     <li>{@link cn.crane4j.core.container.Container}</li>
+ *     <li>{@link java.util.Map}</li>
+ *     <li>{@link cn.crane4j.core.support.DataProvider}</li>
+ * </ul>
  *
  * @author huangchengxing
- * @see cn.crane4j.core.support.operator.DynamicContainerProxyMethodFactory
+ * @see cn.crane4j.core.support.operator.DynamicContainerOperatorProxyMethodFactory
  */
 @Documented
 @Target({ElementType.ANNOTATION_TYPE, ElementType.PARAMETER})

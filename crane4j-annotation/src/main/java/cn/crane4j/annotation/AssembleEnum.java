@@ -8,9 +8,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Declare an operation of assemble based on enum container.
+ *
  * @author huangchengxing
- * @see cn.crane4j.core.executor.handler.AssembleOperationHandler;
- * @see cn.crane4j.core.parser.handler.AssembleEnumAnnotationHandler;
+ * @see cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
+ * @see cn.crane4j.core.parser.handler.AssembleAnnotationHandler;
  */
 @Repeatable(value = AssembleEnum.List.class)
 @Documented
@@ -77,6 +79,7 @@ public @interface AssembleEnum {
      * The name of the handler to be used.
      *
      * @return name
+     * @see cn.crane4j.core.executor.handler.AssembleOperationHandler;
      */
     String handler() default "OneToOneAssembleOperationHandler";
 

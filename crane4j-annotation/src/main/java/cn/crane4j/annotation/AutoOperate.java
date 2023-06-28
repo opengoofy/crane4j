@@ -36,6 +36,7 @@ public @interface AutoOperate {
      * and the type will be automatically inferred.
      *
      * @return type to be processed
+     * @see cn.crane4j.core.support.TypeResolver
      */
     Class<?> type() default Object.class;
 
@@ -68,6 +69,7 @@ public @interface AutoOperate {
      * The name of the executor to be used.
      *
      * @return executor name
+     * @see cn.crane4j.core.executor.BeanOperationExecutor
      */
     String executor() default "DisorderedBeanOperationExecutor";
 
@@ -75,6 +77,7 @@ public @interface AutoOperate {
      * The name of the operation parser to be used.
      *
      * @return parser name
+     * @see cn.crane4j.core.parser.BeanOperationParser
      */
     String parser() default "TypeHierarchyBeanOperationParser";
 

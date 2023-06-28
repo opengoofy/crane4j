@@ -45,7 +45,7 @@ import java.util.Map;
  * When the id set is entered into the container, the Foo set grouped by <i>"id"</i> will be returned.
  *
  * @author huangchengxing
- * @see cn.crane4j.core.support.container.MethodContainerFactory
+ * @see cn.crane4j.core.support.container.DefaultMethodContainerFactory
  * @see cn.crane4j.core.support.container.ContainerMethodAnnotationProcessor
  */
 @Repeatable(ContainerMethod.List.class)

@@ -42,7 +42,7 @@ import java.lang.annotation.Target;
  * but there will be additional performance consumption for the fixed type.
  *
  * @author huangchengxing
- * @see cn.crane4j.core.executor.handler.DisassembleOperationHandler;
+ * @see cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
  * @see cn.crane4j.core.parser.handler.DisassembleAnnotationHandler
  */
 @Repeatable(value = Disassemble.List.class)

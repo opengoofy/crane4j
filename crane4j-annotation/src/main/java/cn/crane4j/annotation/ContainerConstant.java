@@ -1,6 +1,10 @@
 package cn.crane4j.annotation;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * Indicates that member variables in a class can be used as containers.

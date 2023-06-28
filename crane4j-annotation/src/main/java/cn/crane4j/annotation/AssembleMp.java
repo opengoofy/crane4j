@@ -8,11 +8,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Declare an assembly operation using the mybatis plus default interface method as the data source.
+ * Declare an operation of assemble using the mybatis plus default interface method as the data source.
  *
  * @author huangchengxing
- * @see cn.crane4j.core.parser.handler.OperationAnnotationHandler
- * @see cn.crane4j.extension.mybatis.plus.AssembleMpAnnotationHandler
+ * @see cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
+ * @see cn.crane4j.core.parser.handler.AssembleAnnotationHandler;
  * @since 1.2.0
  */
 @Repeatable(value = AssembleMp.List.class)
@@ -70,6 +70,7 @@ public @interface AssembleMp {
      * The name of the handler to be used.
      *
      * @return name
+     * @see cn.crane4j.core.executor.handler.AssembleOperationHandler;
      */
     String handler() default "OneToOneAssembleOperationHandler";
 

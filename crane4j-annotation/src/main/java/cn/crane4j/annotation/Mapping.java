@@ -13,6 +13,7 @@ import java.lang.annotation.Target;
  * @author huangchengxing
  * @see Assemble#props()
  * @see MappingTemplate
+ * @see cn.crane4j.core.parser.PropertyMapping
  */
 @Documented
 @Target({ElementType.TYPE, ElementType.FIELD, ElementType.METHOD})
