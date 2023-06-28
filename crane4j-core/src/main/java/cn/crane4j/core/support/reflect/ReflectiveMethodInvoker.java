@@ -4,6 +4,7 @@ import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.util.ReflectUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -31,7 +32,7 @@ public abstract class ReflectiveMethodInvoker implements MethodInvoker {
      * @param alignArguments align arguments
      * @return {@link ReflectiveMethodInvoker}
      */
-    public static ReflectiveMethodInvoker create(Object target, Method method, boolean alignArguments) {
+    public static ReflectiveMethodInvoker create(@Nullable Object target, Method method, boolean alignArguments) {
         if (Objects.nonNull(target)
             && Proxy.isProxyClass(target.getClass())
             && !Proxy.isProxyClass(method.getDeclaringClass())) {

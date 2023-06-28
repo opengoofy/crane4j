@@ -1,5 +1,6 @@
 package cn.crane4j.core.support.reflect;
 
+import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.support.converter.HutoolConverterManager;
 import lombok.AllArgsConstructor;
@@ -30,6 +31,10 @@ public class ReflectivePropertyOperatorTest {
         MethodInvoker getter = operator.findGetter(Foo.class, "id");
         Assert.assertNotNull(getter);
         Assert.assertNull(operator.findGetter(Foo.class, "none"));
+
+        operator.setThrowIfNoMatchedMethod(true);
+        Assert.assertThrows(Crane4jException.class, () -> operator.findGetter(Foo.class, "none"));
+        operator.setThrowIfNoMatchedMethod(false);
     }
 
     @Test
@@ -44,9 +49,15 @@ public class ReflectivePropertyOperatorTest {
 
     @Test
     public void findSetter() {
+        operator.setConverterManager(null);
+
         MethodInvoker setter = operator.findSetter(Foo.class, "id");
         Assert.assertNotNull(setter);
         Assert.assertNull(operator.findSetter(Foo.class, "none"));
+
+        operator.setThrowIfNoMatchedMethod(true);
+        Assert.assertThrows(Crane4jException.class, () -> operator.findSetter(Foo.class, "none"));
+        operator.setThrowIfNoMatchedMethod(false);
     }
 
     @Getter
