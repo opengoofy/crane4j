@@ -209,20 +209,12 @@ public class ReflectUtilsTest {
     }
 
     @Test
-    public void getAnnotationAttributes() {
-        Annotation annotation = Foo.class.getAnnotation(Annotation.class);
-        Assert.assertNotNull(annotation);
-        Map<String, Object> attributes = ReflectUtils.getAnnotationAttributes(annotation);
-        Assert.assertEquals(1, attributes.size());
-        Assert.assertTrue(attributes.containsKey("value"));
-    }
-
-    @Test
-    public void parseAnnotationForDeclaredFields() {
-        List<Annotation> annotationList = ReflectUtils.parseAnnotationForDeclaredFields(
-            new SimpleAnnotationFinder(), Foo.class, Annotation.class, (a, f) -> a
+    public void scanAllAnnotationFromElements() {
+        List<Annotation> annotations = new ArrayList<>();
+        ReflectUtils.scanAllAnnotationFromElements(
+            new SimpleAnnotationFinder(), Annotation.class, ReflectUtils.getDeclaredFields(Foo.class), (f, a) -> annotations.add(a)
         );
-        Assert.assertEquals(2, annotationList.size());
+        Assert.assertEquals(2, annotations.size());
     }
 
     @Test

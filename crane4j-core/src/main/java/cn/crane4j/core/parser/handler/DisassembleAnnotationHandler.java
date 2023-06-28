@@ -110,10 +110,9 @@ public class DisassembleAnnotationHandler implements OperationAnnotationHandler 
      */
     protected Map<Field, Disassemble> resolveFieldLevelAnnotations(Class<?> beanType) {
         Map<Field, Disassemble> disassembles = new LinkedHashMap<>();
-        ReflectUtils.parseAnnotationForDeclaredFields(annotationFinder, beanType, Disassemble.class, (a, f) -> {
-            disassembles.put(f, a);
-            return a;
-        });
+        ReflectUtils.scanAllAnnotationFromElements(
+            annotationFinder, Disassemble.class, ReflectUtils.getDeclaredFields(beanType), disassembles::put
+        );
         return disassembles;
     }
 

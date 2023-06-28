@@ -27,10 +27,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.BiFunction;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -322,19 +321,6 @@ public class ReflectUtils {
     // ====================== annotation ======================
 
     /**
-     * Get all attribute value of annotation.
-     *
-     * @param annotation annotation
-     * @return all attribute value of annotation
-     */
-    public static Map<String, Object> getAnnotationAttributes(Annotation annotation) {
-        return Stream.of(getDeclaredMethods(annotation.annotationType()))
-            .filter(m -> m.getParameterCount() == 0)
-            .filter(m -> !Objects.equals(m.getReturnType(), Void.TYPE))
-            .collect(Collectors.toMap(Method::getName, m -> ReflectUtils.invoke(annotation, m)));
-    }
-
-    /**
      * Whether the {@code element} is from jdk.
      *
      * @param element element
@@ -355,29 +341,28 @@ public class ReflectUtils {
     }
 
     /**
-     * Get annotation for declared fields.
+     * Get annotations for elements.
      *
      * @param annotationFinder annotation finder
-     * @param beanType bean type
      * @param annotationType annotation type
-     * @param mapper mapper
-     * @return result list
+     * @param elements elements
+     * @param consumer consumer
+     * @param <A> annotation type
+     * @param <E> element type
+     * @see AnnotationFinder#getAllAnnotations
      */
-    public static <T extends Annotation, R> List<R> parseAnnotationForDeclaredFields(
-        AnnotationFinder annotationFinder, Class<?> beanType, Class<T> annotationType, BiFunction<T, Field, R> mapper) {
-        Field[] fields = ReflectUtils.getDeclaredFields(beanType);
-        List<R> results = new ArrayList<>(fields.length);
-        for (Field field : fields) {
-            Set<T> annotation = annotationFinder.getAllAnnotations(field, annotationType);
-            if (CollectionUtils.isEmpty(annotation)) {
+    public static <A extends Annotation, E extends AnnotatedElement> void scanAllAnnotationFromElements(
+        AnnotationFinder annotationFinder, Class<A> annotationType, E[] elements, BiConsumer<E, A> consumer) {
+        if (ArrayUtils.isEmpty(elements)) {
+            return;
+        }
+        for (E element : elements) {
+            Set<A> annotations = annotationFinder.getAllAnnotations(element, annotationType);
+            if (CollectionUtils.isEmpty(annotations)) {
                 continue;
             }
-            for (T t : annotation) {
-                R r = mapper.apply(t, field);
-                results.add(r);
-            }
+            annotations.forEach(a -> consumer.accept(element, a));
         }
-        return results;
     }
 
     // ====================== class ======================
