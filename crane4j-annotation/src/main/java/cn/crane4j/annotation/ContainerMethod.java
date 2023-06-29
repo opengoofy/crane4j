@@ -85,12 +85,20 @@ public @interface ContainerMethod {
     Class<?> resultType();
 
     /**
-     * When annotations are used on a class,
-     * they are used to bind the corresponding methods in the class.
+     * The name of method which will be used to adapt the method container.<br/>
+     * If annotation is annotated on the method, this parameter is ignored.
      *
-     * @return method to find
+     * @return method name, if empty, find method by {@link #namespace()}
      */
-    Bind bind() default @Bind("");
+    String bindMethod() default "";
+
+    /**
+     * The parameter types of the method which will be used to adapt the method container.<br/>
+     * If annotation is annotated on the method, this parameter is ignored.
+     *
+     * @return parameter types
+     */
+    Class<?>[] bindMethodParamTypes() default {};
 
     /**
      * Batch operation.
