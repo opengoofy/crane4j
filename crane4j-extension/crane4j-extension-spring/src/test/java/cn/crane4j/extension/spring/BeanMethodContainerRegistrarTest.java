@@ -1,6 +1,5 @@
 package cn.crane4j.extension.spring;
 
-import cn.crane4j.annotation.Bind;
 import cn.crane4j.annotation.ContainerCache;
 import cn.crane4j.annotation.ContainerMethod;
 import cn.crane4j.annotation.MappingType;
@@ -76,12 +75,10 @@ public class BeanMethodContainerRegistrarTest {
     @ContainerMethod(namespace = "noneResultMethod", type = MappingType.MAPPED, resultType = Foo.class)
     // 通过类注解声明父类中的容器方法
     @ContainerMethod(
-        namespace = "noneResultMethod", type = MappingType.MAPPED, resultType = Foo.class,
-        bind = @Bind("noneResultMethod")
+        namespace = "noneResultMethod", type = MappingType.MAPPED, resultType = Foo.class, bindMethod = "noneResultMethod"
     )
     @ContainerMethod(
-        namespace = "mappedMethod", type = MappingType.MAPPED, resultType = Foo.class,
-        bind = @Bind(value = "mappedMethod", paramTypes = List.class)
+        namespace = "mappedMethod", type = MappingType.MAPPED, resultType = Foo.class
     )
     protected static class Service extends BaseService {
         @ContainerMethod(namespace = "onoToOneMethod", type = MappingType.ONE_TO_ONE, resultType = Foo.class)

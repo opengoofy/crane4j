@@ -4,15 +4,16 @@ import cn.crane4j.annotation.Bind;
 import cn.crane4j.annotation.ContainerMethod;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.support.AnnotationFinder;
-import cn.crane4j.core.util.ArrayUtils;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.MultiMap;
 import cn.crane4j.core.util.ReflectUtils;
 import cn.crane4j.core.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -126,19 +127,6 @@ public class ContainerMethodAnnotationProcessor {
     }
 
     /**
-     * Check whether {@code method} is the method bound by the annotation.
-     *
-     * @param annotation class level annotation
-     * @param method method to be checked
-     * @return boolean
-     */
-    protected boolean checkMethodMatch(ContainerMethod annotation, Method method) {
-        Bind bind = annotation.bind();
-        return Objects.equals(method.getName(), bind.value())
-            && ArrayUtils.isEquals(method.getParameterTypes(), bind.paramTypes());
-    }
-
-    /**
      * process annotated method.
      *
      * @param target target
@@ -184,16 +172,89 @@ public class ContainerMethodAnnotationProcessor {
 
     @Nullable
     private Method resolveMethodForClassLevelAnnotation(Map<String, List<Method>> methodGroup, ContainerMethod annotation) {
-        Bind bind = annotation.bind();
-        String methodName = StringUtils.emptyToDefault(bind.value(), annotation.namespace());
-        Method resolvedMethod = methodGroup.getOrDefault(methodName, Collections.emptyList()).stream()
-            .filter(method -> checkMethodMatch(annotation, method))
-            .findFirst()
-            .orElse(null);
-        if (Objects.isNull(resolvedMethod)) {
-            log.debug("bound method not found: [{}]", bind);
-            return null;
+        String methodName = StringUtils.emptyToDefault(annotation.bindMethod(), annotation.namespace());
+        List<Method> candidates = methodGroup.get(methodName);
+        if (CollectionUtils.isEmpty(candidates)) {
+            log.debug("bound method not found: [{}] ({})", annotation.bindMethod(), Arrays.asList(annotation.bindMethodParamTypes()));
         }
-        return resolvedMethod;
+        if (candidates.size() == 1) {
+            return candidates.get(0);
+        }
+        Method matched = findMostMatchMethod(candidates, annotation.bindMethodParamTypes());
+        if (Objects.nonNull(matched)) {
+            return matched;
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("bound method not found: [{}] ({})", annotation.bindMethod(), Arrays.asList(annotation.bindMethodParamTypes()));
+        }
+        return null;
+    }
+
+    /**
+     * <p>Find most matched method by given method name and param types,
+     * the method with the most matched parameter types will be returned.<br/>
+     * If there are multiple methods with the same number of matched parameter types or no matched method,
+     * the first one will be returned.
+     *
+     * @param candidates methods which have the same name, list size must be greater than 0
+     * @param expectedTypes param types
+     * @return most matched method
+     */
+    @Nullable
+    protected Method findMostMatchMethod(@NonNull List<Method> candidates, @NonNull Class<?>[] expectedTypes) {
+        // record the number of matched parameter types for each method:
+        // n < 0: no match
+        // n == 0: match but method has no parameter
+        // n > 0: match and the parameter type is the same as expected
+        int[] matchCounts = new int[candidates.size()];
+        Arrays.fill(matchCounts, 0);
+        Method mostMatchedMethod = matchMethods(candidates, matchCounts, expectedTypes);
+        if (Objects.nonNull(mostMatchedMethod)) {
+            return mostMatchedMethod;
+        }
+
+        // get index of the most matched method
+        // if there are multiple methods with the same number of matched parameter types or no method is matched,
+        // the first method will be returned
+        int indexOfMostMatchMethod = -1;
+        for (int i = 1; i < matchCounts.length; i++) {
+            int matchCount = matchCounts[i];
+            if (matchCount < 0) {
+                continue;
+            }
+            if (indexOfMostMatchMethod < 0
+                || matchCount > matchCounts[indexOfMostMatchMethod]) {
+                indexOfMostMatchMethod = i;
+            }
+        }
+        return indexOfMostMatchMethod < 0 ? null : candidates.get(indexOfMostMatchMethod);
+    }
+
+    private Method matchMethods(List<Method> candidates, int[] matchCounts, Class<?>[] expectedTypes) {
+        int expectedCount = expectedTypes.length;
+        for (int i = 0; i < candidates.size(); i++) {
+            Method curr = candidates.get(i);
+            Class<?>[] actualTypes = curr.getParameterTypes();
+            int actualCount = actualTypes.length;
+            if (actualCount < expectedCount) {
+                matchCounts[i] = -1; // is not matched
+                continue;
+            }
+            // record the number of matched parameter types
+            int matchCount = 0;
+            for (int j = 0; j < expectedCount; j++) {
+                if (!expectedTypes[j].isAssignableFrom(actualTypes[j])) {
+                    matchCounts[i] = -1; // is not matched
+                    break;
+                }
+                matchCount++;
+            }
+            // all parameter types are matched, it must be the most matched method
+            if (matchCount == expectedCount && actualCount == expectedCount) {
+                return curr;
+            }
+            matchCounts[i] = matchCount;
+        }
+        return null;
     }
 }

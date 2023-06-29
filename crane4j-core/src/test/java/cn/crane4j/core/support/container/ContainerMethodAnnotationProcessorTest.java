@@ -1,6 +1,5 @@
 package cn.crane4j.core.support.container;
 
-import cn.crane4j.annotation.Bind;
 import cn.crane4j.annotation.ContainerCache;
 import cn.crane4j.annotation.ContainerMethod;
 import cn.crane4j.annotation.MappingType;
@@ -87,18 +86,22 @@ public class ContainerMethodAnnotationProcessorTest {
                 .map(key -> new Foo(key, key))
                 .collect(Collectors.toMap(Foo::getId, Function.identity()));
         }
+        public Map<String, Foo> mappedMethod(List<String> args, Object other) {
+            return args.stream()
+                .map(key -> new Foo(key, key))
+                .collect(Collectors.toMap(Foo::getId, Function.identity()));
+        }
     }
 
-    // 若不指定bind则无法正确找到对应方法
     @ContainerMethod(namespace = "noneResultMethod", type = MappingType.MAPPED, resultType = Foo.class)
     // 通过类注解声明父类中的容器方法
     @ContainerMethod(
         namespace = "noneResultMethod", type = MappingType.MAPPED, resultType = Foo.class,
-        bind = @Bind("noneResultMethod")
+        bindMethod = "noneResultMethod"
     )
     @ContainerMethod(
         namespace = "mappedMethod", type = MappingType.MAPPED, resultType = Foo.class,
-        bind = @Bind(value = "mappedMethod", paramTypes = List.class)
+        bindMethod = "mappedMethod", bindMethodParamTypes = List.class
     )
     protected static class Service extends BaseService {
         @ContainerMethod(namespace = "onoToOneMethod", type = MappingType.ONE_TO_ONE, resultType = Foo.class)
