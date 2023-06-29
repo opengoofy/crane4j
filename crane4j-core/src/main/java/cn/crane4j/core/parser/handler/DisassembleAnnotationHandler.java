@@ -2,7 +2,6 @@ package cn.crane4j.core.parser.handler;
 
 import cn.crane4j.annotation.Disassemble;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
-import cn.crane4j.core.executor.handler.ReflectiveDisassembleOperationHandler;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.operation.DisassembleOperation;
@@ -13,9 +12,7 @@ import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.Crane4jGlobalSorter;
 import cn.crane4j.core.support.Sorted;
-import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.ReflectUtils;
-import cn.crane4j.core.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -125,13 +122,9 @@ public class DisassembleAnnotationHandler implements OperationAnnotationHandler 
      */
     protected DisassembleOperation createDisassembleOperation(
         Class<?> type, AnnotatedElement element, Disassemble annotation, BeanOperationParser parser) {
-        // get handler
-        String handler = StringUtils.emptyToDefault(annotation.handler(), ReflectiveDisassembleOperationHandler.class.getSimpleName());
-        DisassembleOperationHandler disassembleOperationHandler = globalConfiguration.getDisassembleOperationHandler(handler);
-        Asserts.isNotNull(
-            disassembleOperationHandler, "disassemble handler [{}] not found", annotation.handler()
+        DisassembleOperationHandler disassembleOperationHandler = globalConfiguration.getDisassembleOperationHandler(
+            annotation.handler(), annotation.handlerType()
         );
-
         // resolve trigger key
         String key = parseKey(element, annotation);
         // resolve sort value

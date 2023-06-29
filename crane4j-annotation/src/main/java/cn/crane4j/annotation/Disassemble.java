@@ -81,7 +81,14 @@ public @interface Disassemble {
      *
      * @return name
      */
-    String handler() default "ReflectiveDisassembleOperationHandler";
+    String handler() default "";
+
+    /**
+     * The type of the handler to be used.
+     *
+     * @return type
+     */
+    Class<?> handlerType() default Object.class;
 
     /**
      * The group to which the current operation belongs.

@@ -47,6 +47,7 @@ import java.lang.annotation.Target;
  * <table type="text">
  *     <tr><td>mapping configuration                       </td><td><td>source     </td><td>target</td></tr>
  *     <tr><td>{@code @Mapping(src = "name", ref = "name")}</td><td><td>S.name     </td><td>T.name</td></tr>
+ *     <tr><td>{@code @Mapping("name")}                    </td><td><td>S.name     </td><td>T.name</td></tr>
  *     <tr><td>{@code @Mapping(ref = "name")}              </td><td><td>S.name     </td><td>T.id</td></tr>
  *     <tr><td>{@code @Mapping(src = "name")}              </td><td><td>S          </td><td>T.name</td></tr>
  *     <tr><td>{@code @Mapping}                            </td><td><td>S          </td><td>T.id</td></tr>
@@ -123,7 +124,15 @@ public @interface Assemble {
      * @return name
      * @see cn.crane4j.core.executor.handler.AssembleOperationHandler;
      */
-    String handler() default "OneToOneAssembleOperationHandler";
+    String handler() default "";
+
+    /**
+     * The type of the handler to be used.
+     *
+     * @return name
+     * @see cn.crane4j.core.executor.handler.AssembleOperationHandler;
+     */
+    Class<?> handlerType() default Object.class;
 
     /**
      * Attributes that need to be mapped

@@ -36,10 +36,10 @@ public class OperateTemplateTest {
     @Before
     public void init() {
         SimpleCrane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create();
-        parser = configuration.getBeanOperationsParser(BeanOperationParser.class.getSimpleName());
+        parser = configuration.getBeanOperationsParser(BeanOperationParser.class);
         beanOperationExecutor = new DisorderedBeanOperationExecutor(configuration);
         template = new OperateTemplate(
-            configuration.getBeanOperationsParser(BeanOperationParser.class.getSimpleName()),
+            configuration.getBeanOperationsParser(BeanOperationParser.class),
             beanOperationExecutor, configuration.getTypeResolver()
         );
 

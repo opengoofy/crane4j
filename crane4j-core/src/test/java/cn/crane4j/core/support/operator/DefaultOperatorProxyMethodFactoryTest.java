@@ -34,9 +34,9 @@ public class DefaultOperatorProxyMethodFactoryTest {
         configuration.registerContainer(LambdaContainer.forLambda(
             "test", ids -> ids.stream().collect(Collectors.toMap(Function.identity(), String::valueOf))
         ));
-        BeanOperationParser operationParser = configuration.getBeanOperationsParser(BeanOperationParser.class.getSimpleName());
+        BeanOperationParser operationParser = configuration.getBeanOperationsParser(BeanOperationParser.class);
         BeanOperations beanOperations = operationParser.parse(Foo.class);
-        BeanOperationExecutor operationExecutor = configuration.getBeanOperationExecutor(BeanOperationExecutor.class.getSimpleName());
+        BeanOperationExecutor operationExecutor = configuration.getBeanOperationExecutor(BeanOperationExecutor.class);
         DefaultOperatorProxyMethodFactory proxyMethodFactory = new DefaultOperatorProxyMethodFactory(configuration.getConverterManager());
 
         // order

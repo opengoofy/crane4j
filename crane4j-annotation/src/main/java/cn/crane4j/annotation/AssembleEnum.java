@@ -81,7 +81,15 @@ public @interface AssembleEnum {
      * @return name
      * @see cn.crane4j.core.executor.handler.AssembleOperationHandler;
      */
-    String handler() default "OneToOneAssembleOperationHandler";
+    String handler() default "";
+
+    /**
+     * The type of the handler to be used.
+     *
+     * @return name
+     * @see cn.crane4j.core.executor.handler.AssembleOperationHandler;
+     */
+    Class<?> handlerType() default Object.class;
 
     /**
      * Attributes that need to be mapped

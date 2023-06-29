@@ -38,7 +38,7 @@ public class AssembleMpAnnotationResolverTest extends MpBaseTest {
     public void afterInit() {
         AnnotationFinder annotationFinder = new SimpleAnnotationFinder();
         configuration = SimpleCrane4jGlobalConfiguration.create();
-        beanOperationParser = configuration.getBeanOperationsParser(BeanOperationParser.class.getSimpleName());
+        beanOperationParser = configuration.getBeanOperationsParser(BeanOperationParser.class);
         ConverterManager converterManager = new HutoolConverterManager();
         MybatisPlusQueryContainerProvider register = new MybatisPlusQueryContainerProvider(
             new MethodInvokerContainerCreator(new ReflectivePropertyOperator(new HutoolConverterManager()), converterManager), configuration

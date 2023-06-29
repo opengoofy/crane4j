@@ -7,6 +7,8 @@ import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.support.reflect.PropertyOperator;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Framework global configuration.
@@ -40,9 +42,43 @@ public interface Crane4jGlobalConfiguration extends ContainerManager {
      * Get bean operation executor.
      *
      * @param executorName executor name
+     * @param executorType executor type
      * @return executor
      */
-    BeanOperationExecutor getBeanOperationExecutor(String executorName);
+    @NonNull
+    BeanOperationExecutor getBeanOperationExecutor(@Nullable String executorName, Class<?> executorType);
+
+    /**
+     * Get bean operation executor.
+     *
+     * @param executorName executor name
+     * @return executor
+     */
+    @NonNull
+    default BeanOperationExecutor getBeanOperationExecutor(String executorName) {
+        return getBeanOperationExecutor(executorName, BeanOperationExecutor.class);
+    }
+
+    /**
+     * Get bean operation executor.
+     *
+     * @param executorType executor type
+     * @return executor
+     */
+    @NonNull
+    default BeanOperationExecutor getBeanOperationExecutor(Class<?> executorType) {
+        return getBeanOperationExecutor(null, executorType);
+    }
+
+    /**
+     * Get bean operation parser.
+     *
+     * @param parserName parser name
+     * @param parserType parser type
+     * @return parser
+     */
+    @NonNull
+    BeanOperationParser getBeanOperationsParser(@Nullable String parserName, Class<?> parserType);
 
     /**
      * Get bean operation parser.
@@ -50,7 +86,31 @@ public interface Crane4jGlobalConfiguration extends ContainerManager {
      * @param parserName parser name
      * @return parser
      */
-    BeanOperationParser getBeanOperationsParser(String parserName);
+    @NonNull
+    default BeanOperationParser getBeanOperationsParser(String parserName) {
+        return getBeanOperationsParser(parserName, BeanOperationParser.class);
+    }
+
+    /**
+     * Get bean operation parser.
+     *
+     * @param parserType parser type
+     * @return parser
+     */
+    @NonNull
+    default BeanOperationParser getBeanOperationsParser(Class<?> parserType) {
+        return getBeanOperationsParser(null, parserType);
+    }
+
+    /**
+     * Get assemble operation handler.
+     *
+     * @param  handlerName handler name
+     * @param handlerType handler type
+     * @return handler
+     */
+    @NonNull
+    AssembleOperationHandler getAssembleOperationHandler(@Nullable String handlerName, Class<?> handlerType);
 
     /**
      * Get assemble operation handler.
@@ -58,7 +118,31 @@ public interface Crane4jGlobalConfiguration extends ContainerManager {
      * @param  handlerName handler name
      * @return handler
      */
-    AssembleOperationHandler getAssembleOperationHandler(String handlerName);
+    @NonNull
+    default AssembleOperationHandler getAssembleOperationHandler(String handlerName) {
+        return getAssembleOperationHandler(handlerName, AssembleOperationHandler.class);
+    }
+
+    /**
+     * Get assemble operation handler.
+     *
+     * @param handlerType handler type
+     * @return handler
+     */
+    @NonNull
+    default AssembleOperationHandler getAssembleOperationHandler(Class<?> handlerType) {
+        return getAssembleOperationHandler(null, handlerType);
+    }
+
+    /**
+     * Get disassemble operation handler.
+     *
+     * @param handlerName handler name
+     * @param handlerType handler type
+     * @return handler
+     */
+    @NonNull
+    DisassembleOperationHandler getDisassembleOperationHandler(@Nullable String handlerName, Class<?> handlerType);
 
     /**
      * Get disassemble operation handler.
@@ -66,5 +150,19 @@ public interface Crane4jGlobalConfiguration extends ContainerManager {
      * @param handlerName handler name
      * @return handler
      */
-    DisassembleOperationHandler getDisassembleOperationHandler(String handlerName);
+    @NonNull
+    default DisassembleOperationHandler getDisassembleOperationHandler(String handlerName) {
+        return getDisassembleOperationHandler(handlerName, DisassembleOperationHandler.class);
+    }
+
+    /**
+     * Get disassemble operation handler.
+     *
+     * @param handlerType handler type
+     * @return handler
+     */
+    @NonNull
+    default DisassembleOperationHandler getDisassembleOperationHandler(Class<?> handlerType) {
+        return getDisassembleOperationHandler(null, handlerType);
+    }
 }

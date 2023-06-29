@@ -3,6 +3,7 @@ package cn.crane4j.spring.boot.example;
 import cn.crane4j.annotation.Assemble;
 import cn.crane4j.annotation.Mapping;
 import cn.crane4j.core.container.ConstantContainer;
+import cn.crane4j.core.executor.handler.ManyToManyAssembleOperationHandler;
 import cn.crane4j.core.support.OperateTemplate;
 import cn.crane4j.extension.spring.Crane4jApplicationContext;
 import lombok.Data;
@@ -156,7 +157,7 @@ public class PropMappingExampleTest {
     private static class Classroom {
         // 批量装配，这里选择的是多对多装配
         @Assemble(
-            container = "student", handler = "ManyToManyAssembleOperationHandler",
+            container = "student", handlerType = ManyToManyAssembleOperationHandler.class,
             props = {
                 @Mapping(src = "name", ref = "studentNames"), // [s, s, s] -> [s.name, s.name, s.name] -> t.studentNames
                 @Mapping(ref = "students")                    // [s, s, s] -> [s, s, s] -> t.students

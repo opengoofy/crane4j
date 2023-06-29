@@ -14,8 +14,10 @@ import cn.crane4j.core.support.Crane4jGlobalSorter;
 import cn.crane4j.core.support.TypeResolver;
 import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.support.reflect.PropertyOperator;
+import cn.crane4j.core.util.ConfigurationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -149,44 +151,65 @@ public class Crane4jApplicationContext extends DefaultContainerManager
      * Get bean operation executor.
      *
      * @param executorName executor name
+     * @param executorType executor type
      * @return executor
      */
+    @NonNull
     @Override
-    public BeanOperationExecutor getBeanOperationExecutor(String executorName) {
-        return applicationContext.getBean(executorName, BeanOperationExecutor.class);
+    public BeanOperationExecutor getBeanOperationExecutor(
+        @Nullable String executorName, Class<?> executorType) {
+        return ConfigurationUtil.getComponentFromConfiguration(
+            BeanOperationExecutor.class, executorType, executorName,
+            (t, n) -> applicationContext.getBean(n, t), applicationContext::getBean
+        );
     }
 
     /**
      * Get bean operation parser.
      *
      * @param parserName parser name
+     * @param parserType parser type
      * @return parser
      */
+    @NonNull
     @Override
-    public BeanOperationParser getBeanOperationsParser(String parserName) {
-        return applicationContext.getBean(parserName, BeanOperationParser.class);
+    public BeanOperationParser getBeanOperationsParser(@Nullable String parserName, Class<?> parserType) {
+        return ConfigurationUtil.getComponentFromConfiguration(
+            BeanOperationParser.class, parserType, parserName,
+            (t, n) -> applicationContext.getBean(n, t), applicationContext::getBean
+        );
     }
 
     /**
      * Get assemble operation handler.
      *
-     * @param  handlerName handler name
+     * @param handlerName handler name
+     * @param handlerType handler type
      * @return handler
      */
+    @NonNull
     @Override
-    public AssembleOperationHandler getAssembleOperationHandler(String handlerName) {
-        return applicationContext.getBean(handlerName, AssembleOperationHandler.class);
+    public AssembleOperationHandler getAssembleOperationHandler(@Nullable String handlerName, Class<?> handlerType) {
+        return ConfigurationUtil.getComponentFromConfiguration(
+            AssembleOperationHandler.class, handlerType, handlerName,
+            (t, n) -> applicationContext.getBean(n, t), applicationContext::getBean
+        );
     }
 
     /**
      * Get disassemble operation handler.
      *
      * @param handlerName handler name
+     * @param handlerType handler type
      * @return handler
      */
+    @NonNull
     @Override
-    public DisassembleOperationHandler getDisassembleOperationHandler(String handlerName) {
-        return applicationContext.getBean(handlerName, DisassembleOperationHandler.class);
+    public DisassembleOperationHandler getDisassembleOperationHandler(@Nullable String handlerName, Class<?> handlerType) {
+        return ConfigurationUtil.getComponentFromConfiguration(
+            DisassembleOperationHandler.class, handlerType, handlerName,
+            (t, n) -> applicationContext.getBean(n, t), applicationContext::getBean
+        );
     }
 
     // ============================ life cycle ============================

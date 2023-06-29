@@ -3,6 +3,7 @@ package cn.crane4j.spring.boot.example;
 import cn.crane4j.annotation.Assemble;
 import cn.crane4j.annotation.Mapping;
 import cn.crane4j.core.container.LambdaContainer;
+import cn.crane4j.core.executor.handler.OneToManyAssembleOperationHandler;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.OperateTemplate;
 import lombok.AllArgsConstructor;
@@ -92,7 +93,8 @@ public class ChainPropMappingExampleTest {
         @Assemble(
             container = "OneToMany", groups = "testOneToMany",
             props = @Mapping(src = "foo.name", ref = "names"),
-            handler = "oneToManyReflexAssembleOperationHandler"
+            handler = "oneToManyAssembleOperationHandler",
+            handlerType = OneToManyAssembleOperationHandler.class
         )
         private Integer id;
         private Foo nested;

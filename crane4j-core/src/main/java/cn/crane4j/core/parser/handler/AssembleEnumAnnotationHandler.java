@@ -119,7 +119,7 @@ public class AssembleEnumAnnotationHandler extends AbstractAssembleAnnotationHan
         BeanOperations beanOperations, AnnotatedElement element, AssembleEnum annotation) {
         return new StandardAnnotationAdapter(
             annotation, annotation.key(), annotation.sort(),
-            annotation.handler(),
+            annotation.handler(), annotation.handlerType(),
             annotation.propTemplates(), annotation.props(), annotation.groups()
         );
     }

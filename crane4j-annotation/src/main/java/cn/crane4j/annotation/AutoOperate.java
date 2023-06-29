@@ -71,7 +71,15 @@ public @interface AutoOperate {
      * @return executor name
      * @see cn.crane4j.core.executor.BeanOperationExecutor
      */
-    String executor() default "DisorderedBeanOperationExecutor";
+    String executor() default "";
+
+    /**
+     * The type of the executor to be used.
+     *
+     * @return executor name
+     * @see cn.crane4j.core.executor.BeanOperationExecutor
+     */
+    Class<?> executorType() default Object.class;
 
     /**
      * The name of the operation parser to be used.
@@ -79,7 +87,15 @@ public @interface AutoOperate {
      * @return parser name
      * @see cn.crane4j.core.parser.BeanOperationParser
      */
-    String parser() default "TypeHierarchyBeanOperationParser";
+    String parser() default "";
+
+    /**
+     * The type of the operation parser to be used.
+     *
+     * @return parser name
+     * @see cn.crane4j.core.parser.BeanOperationParser
+     */
+    Class<?> parserType() default Object.class;
 
     /**
      * The group of operations to be performed. <br />

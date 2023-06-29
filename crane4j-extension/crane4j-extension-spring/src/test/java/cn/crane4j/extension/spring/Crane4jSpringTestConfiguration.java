@@ -75,18 +75,18 @@ public class Crane4jSpringTestConfiguration {
 
     // ============== basic components ==============
 
-    @Bean({"SpringConverterManager", "springConverterManager"})
+    @Bean
     public SpringConverterManager springConverterManager() {
         return new SpringConverterManager(DefaultConversionService.getSharedInstance());
     }
 
     @Primary
-    @Bean({"crane4jApplicationContext", "Crane4jApplicationContext"})
+    @Bean
     public Crane4jApplicationContext crane4jApplicationContext(ApplicationContext applicationContext) {
         return new Crane4jApplicationContext(applicationContext);
     }
 
-    @Bean({"PropertyOperator", "propertyOperator"})
+    @Bean
     public PropertyOperator propertyOperator(ConverterManager converterManager) {
         return Optional.of(new ReflectivePropertyOperator(converterManager))
                 .map(ChainAccessiblePropertyOperator::new)
@@ -95,34 +95,34 @@ public class Crane4jSpringTestConfiguration {
                 .get();
     }
 
-    @Bean({"MergedAnnotationFinder", "mergedAnnotationFinder"})
+    @Bean
     public MergedAnnotationFinder mergedAnnotationFinder() {
         return new MergedAnnotationFinder();
     }
 
-    @Bean({"SimpleTypeResolver", "simpleTypeResolver"})
+    @Bean
     public SimpleTypeResolver simpleTypeResolver() {
         return new SimpleTypeResolver();
     }
 
-    @Bean({"SpelExpressionEvaluator", "spelExpressionEvaluator"})
+    @Bean
     public SpelExpressionEvaluator spelExpressionEvaluator() {
         return new SpelExpressionEvaluator(new SpelExpressionParser());
     }
 
-    @Bean({"ConcurrentMapCacheManager", "concurrentMapCacheManager"})
+    @Bean
     public ConcurrentMapCacheManager concurrentMapCacheManager() {
         return new ConcurrentMapCacheManager(CollectionUtils::newWeakConcurrentMap);
     }
 
     @Order(0)
-    @Bean({"ContainerInstanceLifecycleProcessor", "containerInstanceLifecycleProcessor"})
+    @Bean
     public ContainerInstanceLifecycleProcessor containerInstanceLifecycleProcessor() {
         return new ContainerInstanceLifecycleProcessor();
     }
 
     @Order(1)
-    @Bean({"ContainerRegisterLogger", "containerRegisterLogger"})
+    @Bean
     public ContainerRegisterLogger containerRegisterLogger() {
         Logger logger = LoggerFactory.getLogger(ContainerRegisterLogger.class);
         return new ContainerRegisterLogger(logger::info);
@@ -130,12 +130,12 @@ public class Crane4jSpringTestConfiguration {
 
     // ============== execute components ==============
 
-    @Bean({"BeanFactoryResolver", "beanFactoryResolver"})
+    @Bean
     public BeanFactoryResolver beanFactoryResolver(ApplicationContext applicationContext) {
         return new BeanFactoryResolver(applicationContext);
     }
 
-    @Bean({"SpringAssembleAnnotationHandler", "springAssembleAnnotationResolver"})
+    @Bean
     public SpringAssembleAnnotationHandler springAssembleAnnotationResolver(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration,
         ExpressionEvaluator evaluator, BeanResolver beanResolver) {
@@ -144,20 +144,20 @@ public class Crane4jSpringTestConfiguration {
         );
     }
 
-    @Bean({"DisassembleAnnotationHandler", "disassembleAnnotationOperationsResolver"})
+    @Bean
     public DisassembleAnnotationHandler disassembleAnnotationOperationsResolver(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration) {
         return new DisassembleAnnotationHandler(annotationFinder, configuration);
     }
 
-    @Bean({"AssembleEnumAnnotationHandler", "assembleEnumAnnotationResolver"})
+    @Bean
     public AssembleEnumAnnotationHandler assembleEnumAnnotationResolver(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration globalConfiguration,
         PropertyOperator propertyOperator, ContainerManager containerManager) {
         return new AssembleEnumAnnotationHandler(annotationFinder, globalConfiguration, propertyOperator, containerManager);
     }
 
-    @Bean({"TypeHierarchyBeanOperationParser", "typeHierarchyBeanOperationParser"})
+    @Bean
     public TypeHierarchyBeanOperationParser typeHierarchyBeanOperationParser(Collection<OperationAnnotationHandler> resolvers) {
         TypeHierarchyBeanOperationParser parser =  new TypeHierarchyBeanOperationParser();
         resolvers.forEach(parser::addBeanOperationsResolver);
@@ -165,72 +165,72 @@ public class Crane4jSpringTestConfiguration {
     }
 
     @Primary
-    @Bean({"DisorderedBeanOperationExecutor", "disorderedBeanOperationExecutor"})
+    @Bean
     public DisorderedBeanOperationExecutor disorderedBeanOperationExecutor(ContainerManager containerManager) {
         return new DisorderedBeanOperationExecutor(containerManager);
     }
 
-    @Bean({"OrderedBeanOperationExecutor", "orderedBeanOperationExecutor"})
+    @Bean
     public OrderedBeanOperationExecutor orderedBeanOperationExecutor(ContainerManager containerManager) {
         return new OrderedBeanOperationExecutor(containerManager, Comparator.comparing(AssembleOperation::getSort));
     }
 
-    @Bean({"MethodInvokerContainerCreator", "methodInvokerContainerCreator"})
+    @Bean
     public MethodInvokerContainerCreator methodInvokerContainerCreator(PropertyOperator propertyOperator, ConverterManager converterManager) {
         return new MethodInvokerContainerCreator(propertyOperator, converterManager);
     }
 
     @Order
-    @Bean({"DefaultMethodContainerFactory", "defaultMethodContainerFactory"})
+    @Bean
     public DefaultMethodContainerFactory defaultMethodContainerFactory(
         MethodInvokerContainerCreator methodInvokerContainerCreator, AnnotationFinder annotationFinder) {
         return new DefaultMethodContainerFactory(methodInvokerContainerCreator, annotationFinder);
     }
 
     @Order
-    @Bean({"DynamicContainerOperatorProxyMethodFactory", "dynamicContainerOperatorProxyMethodFactory"})
+    @Bean
     public DynamicContainerOperatorProxyMethodFactory dynamicContainerOperatorProxyMethodFactory(
         ConverterManager converterManager, ParameterNameFinder parameterNameFinder, AnnotationFinder annotationFinder) {
         return new DynamicContainerOperatorProxyMethodFactory(converterManager, parameterNameFinder, annotationFinder);
     }
 
     @Order(Ordered.LOWEST_PRECEDENCE - 1)
-    @Bean({"CacheableMethodContainerFactory", "cacheableMethodContainerFactory"})
+    @Bean
     public CacheableMethodContainerFactory cacheableMethodContainerFactory(
         CacheManager cacheManager, MethodInvokerContainerCreator methodInvokerContainerCreator, AnnotationFinder annotationFinder) {
         return new CacheableMethodContainerFactory(methodInvokerContainerCreator, annotationFinder, cacheManager);
     }
 
     @Primary
-    @Bean({"OneToOneAssembleOperationHandler", "oneToOneReflexAssembleOperationHandler"})
-    public OneToOneAssembleOperationHandler oneToOneReflexAssembleOperationHandler(PropertyOperator propertyOperator) {
+    @Bean
+    public OneToOneAssembleOperationHandler oneToOneAssembleOperationHandler(PropertyOperator propertyOperator) {
         return new OneToOneAssembleOperationHandler(propertyOperator);
     }
 
-    @Bean({"ManyToManyAssembleOperationHandler", "manyToManyReflexAssembleOperationHandler"})
-    public ManyToManyAssembleOperationHandler manyToManyReflexAssembleOperationHandler(PropertyOperator propertyOperator) {
+    @Bean
+    public ManyToManyAssembleOperationHandler manyToManyAssembleOperationHandler(PropertyOperator propertyOperator) {
         return new ManyToManyAssembleOperationHandler(propertyOperator);
     }
 
-    @Bean({"OneToManyAssembleOperationHandler", "oneToManyReflexAssembleOperationHandler"})
-    public OneToManyAssembleOperationHandler oneToManyReflexAssembleOperationHandler(PropertyOperator propertyOperator) {
+    @Bean
+    public OneToManyAssembleOperationHandler oneToManyAssembleOperationHandler(PropertyOperator propertyOperator) {
         return new OneToManyAssembleOperationHandler(propertyOperator);
     }
 
     @Primary
-    @Bean({"ReflectiveDisassembleOperationHandler", "reflectiveDisassembleOperationHandler"})
+    @Bean
     public ReflectiveDisassembleOperationHandler reflectiveDisassembleOperationHandler(PropertyOperator propertyOperator) {
         return new ReflectiveDisassembleOperationHandler(propertyOperator);
     }
 
     // ============== operator interface components ==============
 
-    @Bean({"DefaultProxyMethodFactory", "defaultProxyMethodFactory"})
+    @Bean
     public DefaultOperatorProxyMethodFactory defaultProxyMethodFactory(ConverterManager converterManager) {
         return new DefaultOperatorProxyMethodFactory(converterManager);
     }
 
-    @Bean({"OperatorProxyFactory", "operatorProxyFactory"})
+    @Bean
     public OperatorProxyFactory operatorProxyFactory(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration,
         Collection<OperatorProxyMethodFactory> factories) {
@@ -241,24 +241,24 @@ public class Crane4jSpringTestConfiguration {
 
     // ============== extension components ==============
 
-    @Bean({"OperateTemplate", "operateTemplate"})
+    @Bean
     public OperateTemplate operateTemplate(
         BeanOperationParser parser, BeanOperationExecutor executor, TypeResolver typeResolver) {
         return new OperateTemplate(parser, executor, typeResolver);
     }
 
-    @Bean({"SpringParameterNameFinder", "springParameterNameFinder"})
+    @Bean
     public SpringParameterNameFinder springParameterNameFinder() {
         return new SpringParameterNameFinder(new DefaultParameterNameDiscoverer());
     }
 
-    @Bean({"AutoOperateAnnotatedElementResolver", "autoOperateMethodAnnotatedElementResolver"})
+    @Bean
     public AutoOperateAnnotatedElementResolver autoOperateMethodAnnotatedElementResolver(
         Crane4jGlobalConfiguration crane4jGlobalConfiguration, TypeResolver typeResolver) {
         return new AutoOperateAnnotatedElementResolver(crane4jGlobalConfiguration, typeResolver);
     }
 
-    @Bean({"ResolvableExpressionEvaluator", "resolvableExpressionEvaluator"})
+    @Bean
     public ResolvableExpressionEvaluator resolvableExpressionEvaluator(
         ExpressionEvaluator expressionEvaluator, ParameterNameFinder parameterNameFinder, BeanResolver beanResolver) {
         return new ResolvableExpressionEvaluator(
@@ -266,18 +266,17 @@ public class Crane4jSpringTestConfiguration {
             SpelExpressionContext context = new SpelExpressionContext(method);
             context.setBeanResolver(beanResolver);
             return context;
-        }
-        );
+        });
     }
 
-    @Bean({"MethodResultAutoOperateAdvisor", "methodResultAutoOperateAdvisor"})
+    @Bean
     public MethodResultAutoOperateAdvisor methodResultAutoOperateAdvisor(
         AutoOperateAnnotatedElementResolver autoOperateAnnotatedElementResolver,
         ResolvableExpressionEvaluator resolvableExpressionEvaluator) {
         return new MethodResultAutoOperateAdvisor(autoOperateAnnotatedElementResolver, resolvableExpressionEvaluator);
     }
 
-    @Bean({"methodArgumentAutoOperateAdvisor", "methodArgumentAutoOperateAdvisor"})
+    @Bean
     public MethodArgumentAutoOperateAdvisor methodArgumentAutoOperateAdvisor(
         MethodBaseExpressionExecuteDelegate methodBaseExpressionExecuteDelegate,
         AutoOperateAnnotatedElementResolver autoOperateAnnotatedElementResolver,
@@ -288,7 +287,7 @@ public class Crane4jSpringTestConfiguration {
         );
     }
 
-    @Bean({"BeanMethodContainerRegistrar", "beanMethodContainerRegistrar"})
+    @Bean
     public BeanMethodContainerRegistrar beanMethodContainerRegistrar(
         AnnotationFinder annotationFinder, Collection<MethodContainerFactory> factories, Crane4jGlobalConfiguration configuration) {
         return new BeanMethodContainerRegistrar(factories, annotationFinder, configuration);

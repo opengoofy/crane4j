@@ -62,12 +62,12 @@ public class ContainerRegisterLogger implements ContainerLifecycleProcessor {
     public void whenDestroyed(Object target) {
         if (target instanceof ContainerDefinition) {
             String namespace = ((ContainerDefinition) target).getNamespace();
-            logConsumer.accept("destroy container comparator [{}] of [{}]", new Object[]{ namespace });
+            logConsumer.accept("destroy container definition [{}] of [{}]", new Object[]{ namespace });
             return;
         }
         Container<?> container = (Container<?>) target;
         logConsumer.accept(
-                "destroy container comparator [{}] of [{}]",
+                "destroy container comparator [{}]",
                 new Object[]{ container.hashCode(), container.getNamespace() }
         );
     }

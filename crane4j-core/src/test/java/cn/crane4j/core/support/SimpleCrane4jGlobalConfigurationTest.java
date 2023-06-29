@@ -61,21 +61,21 @@ public class SimpleCrane4jGlobalConfigurationTest {
 
     @Test
     public void getBeanOperationsParser() {
-        Assert.assertNotNull(configuration.getBeanOperationsParser(TypeHierarchyBeanOperationParser.class.getSimpleName()));
+        Assert.assertNotNull(configuration.getBeanOperationsParser(TypeHierarchyBeanOperationParser.class));
     }
 
     @Test
     public void getAssembleOperationHandler() {
-        Assert.assertNotNull(configuration.getAssembleOperationHandler(ManyToManyAssembleOperationHandler.class.getSimpleName()));
+        Assert.assertNotNull(configuration.getAssembleOperationHandler(ManyToManyAssembleOperationHandler.class));
     }
 
     @Test
     public void getGetBeanOperationExecutor() {
-        Assert.assertNotNull(configuration.getBeanOperationExecutor(DisorderedBeanOperationExecutor.class.getSimpleName()));
+        Assert.assertNotNull(configuration.getBeanOperationExecutor(DisorderedBeanOperationExecutor.class));
     }
 
     @Test
     public void getDisassembleOperationHandler() {
-        Assert.assertNotNull(configuration.getDisassembleOperationHandler(ReflectiveDisassembleOperationHandler.class.getSimpleName()));
+        Assert.assertNotNull(configuration.getDisassembleOperationHandler(ReflectiveDisassembleOperationHandler.class));
     }
 }
