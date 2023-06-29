@@ -4,6 +4,7 @@ import cn.crane4j.annotation.Assemble;
 import cn.crane4j.annotation.Mapping;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.LambdaContainer;
+import cn.crane4j.core.executor.handler.OneToManyAssembleOperationHandler;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.OperateTemplate;
 import lombok.AllArgsConstructor;
@@ -76,7 +77,8 @@ public class OneToManyAssembleExampleTest {
         @Assemble(
             container = "customer-group",
             props = @Mapping(src = "name", ref = "customerNames"),
-            handler = "oneToManyReflexAssembleOperationHandler"
+            handler = "oneToManyAssembleOperationHandler",
+            handlerType = OneToManyAssembleOperationHandler.class
         )
         private final Integer groupId;
         private List<String> customerNames;

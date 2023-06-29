@@ -4,6 +4,7 @@ import cn.crane4j.annotation.Assemble;
 import cn.crane4j.annotation.Mapping;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.LambdaContainer;
+import cn.crane4j.core.executor.handler.ManyToManyAssembleOperationHandler;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.OperateTemplate;
 import lombok.AllArgsConstructor;
@@ -72,7 +73,7 @@ public class ManyToManyAssembleExampleTest {
         @Assemble(
             container = "foo",
             props = @Mapping(src = "name", ref = "names"),
-            handler = "manyToManyReflexAssembleOperationHandler"
+            handlerType = ManyToManyAssembleOperationHandler.class
         )
         private final List<Integer> ids;
         private List<String> names;

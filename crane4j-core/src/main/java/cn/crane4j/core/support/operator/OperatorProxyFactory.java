@@ -94,10 +94,8 @@ public class OperatorProxyFactory {
         }
 
         // get component of executor and parser
-        BeanOperationExecutor executor = globalConfiguration.getBeanOperationExecutor(annotation.executor());
-        Asserts.isNotNull(executor, "the executor of the operator [{}] is not found.", operatorType.getName());
-        BeanOperationParser parser = globalConfiguration.getBeanOperationsParser(annotation.parser());
-        Asserts.isNotNull(parser, "the parser of the operator [{}] is not found.", operatorType.getName());
+        BeanOperationExecutor executor = globalConfiguration.getBeanOperationExecutor(annotation.executor(), annotation.executorType());
+        BeanOperationParser parser = globalConfiguration.getBeanOperationsParser(annotation.parser(), annotation.executorType());
 
         // create proxy by executor and parser
         log.debug("create operator proxy for interface [{}].", operatorType);

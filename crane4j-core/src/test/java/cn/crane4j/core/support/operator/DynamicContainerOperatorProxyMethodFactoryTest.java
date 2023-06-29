@@ -45,9 +45,9 @@ public class DynamicContainerOperatorProxyMethodFactoryTest {
         configuration.registerContainer(LambdaContainer.forLambda(
             "test", ids -> ids.stream().collect(Collectors.toMap(Function.identity(), String::valueOf))
         ));
-        BeanOperationParser operationParser = configuration.getBeanOperationsParser(BeanOperationParser.class.getSimpleName());
+        BeanOperationParser operationParser = configuration.getBeanOperationsParser(BeanOperationParser.class);
         beanOperations = operationParser.parse(Foo.class);
-        operationExecutor = configuration.getBeanOperationExecutor(BeanOperationExecutor.class.getSimpleName());
+        operationExecutor = configuration.getBeanOperationExecutor(BeanOperationExecutor.class);
         proxyMethodFactory = new DynamicContainerOperatorProxyMethodFactory(
             configuration.getConverterManager(), new SimpleParameterNameFinder(), new SimpleAnnotationFinder()
         );
@@ -79,6 +79,7 @@ public class DynamicContainerOperatorProxyMethodFactoryTest {
         Assert.assertNull(invoker);
     }
 
+    @SuppressWarnings("all")
     @Test
     public void invokeWithDynamicContainer() {
         // invoke with default container

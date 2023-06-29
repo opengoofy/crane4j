@@ -50,7 +50,7 @@ public class TypeHierarchyBeanOperationParserTest {
     public void init() {
         configuration = SimpleCrane4jGlobalConfiguration.create();
         configuration.registerContainer(CONTAINER);
-        parser = configuration.getBeanOperationsParser(BeanOperationParser.class.getSimpleName());
+        parser = configuration.getBeanOperationsParser(null, BeanOperationParser.class);
         ((TypeHierarchyBeanOperationParser)parser).setEnableHierarchyCache(true);
     }
 
@@ -84,7 +84,7 @@ public class TypeHierarchyBeanOperationParserTest {
         Assert.assertEquals("nestedBean", nestedBean.getKey());
         Assert.assertEquals(Bean.class, nestedBean.getSourceType());
         checkGroups(nestedBean.getGroups(), GROUP);
-        Assert.assertEquals(configuration.getDisassembleOperationHandler(ReflectiveDisassembleOperationHandler.class.getSimpleName()), nestedBean.getDisassembleOperationHandler());
+        Assert.assertEquals(configuration.getDisassembleOperationHandler(ReflectiveDisassembleOperationHandler.class), nestedBean.getDisassembleOperationHandler());
 
         // 获取NestedBean操作配置
         BeanOperations nestedBeanOperations = nestedBean.getInternalBeanOperations(null);
@@ -119,7 +119,7 @@ public class TypeHierarchyBeanOperationParserTest {
         Assert.assertEquals("bean", bean.getKey());
         Assert.assertEquals(NestedBean.class, bean.getSourceType());
         checkGroups(bean.getGroups(), GROUP);
-        Assert.assertEquals(configuration.getDisassembleOperationHandler(ReflectiveDisassembleOperationHandler.class.getSimpleName()), bean.getDisassembleOperationHandler());
+        Assert.assertEquals(configuration.getDisassembleOperationHandler(ReflectiveDisassembleOperationHandler.class), bean.getDisassembleOperationHandler());
         Assert.assertSame(beanOperations, bean.getInternalBeanOperations(null));
 
         // disassemble: dynamicBean
@@ -128,7 +128,7 @@ public class TypeHierarchyBeanOperationParserTest {
         Assert.assertEquals("dynamicBean", dynamicBean.getKey());
         Assert.assertEquals(NestedBean.class, dynamicBean.getSourceType());
         checkGroups(dynamicBean.getGroups(), GROUP);
-        Assert.assertEquals(configuration.getDisassembleOperationHandler(DisassembleOperationHandler.class.getSimpleName()), dynamicBean.getDisassembleOperationHandler());
+        Assert.assertEquals(configuration.getDisassembleOperationHandler(DisassembleOperationHandler.class), dynamicBean.getDisassembleOperationHandler());
 
         // 运行时再解析类型
         Assert.assertSame(beanOperations, dynamicBean.getInternalBeanOperations(new Bean()));
@@ -138,7 +138,7 @@ public class TypeHierarchyBeanOperationParserTest {
     private void checkAssembleOperation(AssembleOperation assembleOperation, String id, int supSort) {
         Assert.assertNotNull(assembleOperation);
         Assert.assertEquals(id, assembleOperation.getKey());
-        Assert.assertSame(configuration.getAssembleOperationHandler(OneToOneAssembleOperationHandler.class.getSimpleName()), assembleOperation.getAssembleOperationHandler());
+        Assert.assertSame(configuration.getAssembleOperationHandler(OneToOneAssembleOperationHandler.class), assembleOperation.getAssembleOperationHandler());
         Assert.assertEquals(CONTAINER.getNamespace(), assembleOperation.getContainer());
         Assert.assertEquals(supSort, assembleOperation.getSort());
         checkGroups(assembleOperation.getGroups(), GROUP);

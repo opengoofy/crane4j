@@ -16,6 +16,8 @@ import org.slf4j.Logger;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -26,6 +28,27 @@ import java.util.stream.Stream;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ConfigurationUtil {
+
+    /**
+     * Get component from configuration,
+     *
+     * @param resultType result type
+     * @param componentType component type
+     * @param componentName component name
+     * @param getByTypeAndName get by type and name method
+     * @param getByType get by type method
+     * @return component instance
+     */
+    public static <T> T getComponentFromConfiguration(
+        Class<T> resultType, Class<?> componentType, String componentName,
+        BiFunction<Class<T>, String, T> getByTypeAndName, Function<Class<T>, T> getByType) {
+        // resolved type
+        @SuppressWarnings("unchecked")
+        Class<T> actualComponentType = Objects.equals(componentType, Object.class)
+            || Objects.equals(componentType, Void.class) ? resultType : (Class<T>)componentType;
+        return StringUtils.isEmpty(componentName) ?
+            getByType.apply(actualComponentType) : getByTypeAndName.apply(actualComponentType, componentName);
+    }
 
     // ================ trigger lifecycle callback ================
 

@@ -95,7 +95,7 @@ public class AssembleMpAnnotationHandler extends AbstractAssembleAnnotationHandl
         BeanOperations beanOperations, AnnotatedElement element, AssembleMp annotation) {
         return new StandardAnnotationAdapter(
             annotation, annotation.key(), annotation.sort(),
-            annotation.handler(),
+            annotation.handler(), annotation.handlerType(),
             annotation.propTemplates(), annotation.props(), annotation.groups()
         );
     }

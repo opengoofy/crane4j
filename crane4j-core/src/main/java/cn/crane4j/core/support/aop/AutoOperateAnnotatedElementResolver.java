@@ -48,8 +48,8 @@ public class AutoOperateAnnotatedElementResolver {
     public AutoOperateAnnotatedElement resolve(AnnotatedElement element, AutoOperate annotation) {
         MethodInvoker extractor = resolveExtractor(element, annotation);
         // prepare components for use
-        BeanOperationParser parser = configuration.getBeanOperationsParser(annotation.parser());
-        BeanOperationExecutor executor = configuration.getBeanOperationExecutor(annotation.executor());
+        BeanOperationParser parser = configuration.getBeanOperationsParser(annotation.parser(), annotation.parserType());
+        BeanOperationExecutor executor = configuration.getBeanOperationExecutor(annotation.executor(), annotation.executorType());
         Predicate<? super KeyTriggerOperation> filter = resolveFilter(annotation);
 
         AutoOperateAnnotatedElement result = null;

@@ -83,7 +83,7 @@ public class AssembleAnnotationHandler extends AbstractAssembleAnnotationHandler
         BeanOperations beanOperations, AnnotatedElement element, Assemble annotation) {
         return new StandardAnnotationAdapter(
             annotation, annotation.key(), annotation.sort(),
-            annotation.handler(),
+            annotation.handler(), annotation.handlerType(),
             annotation.propTemplates(), annotation.props(), annotation.groups()
         );
     }

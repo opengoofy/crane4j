@@ -5,7 +5,6 @@ import cn.crane4j.annotation.MappingTemplate;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerManager;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
-import cn.crane4j.core.executor.handler.OneToOneAssembleOperationHandler;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.PropertyMapping;
@@ -240,10 +239,9 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
      */
     protected AssembleOperationHandler parseAssembleOperationHandler(
         AnnotatedElement element, StandardAnnotation standardAnnotation) {
-        String handler = StringUtils.emptyToDefault(standardAnnotation.getHandler(), OneToOneAssembleOperationHandler.class.getSimpleName());
-        AssembleOperationHandler assembleOperationHandler = globalConfiguration.getAssembleOperationHandler(handler);
-        Asserts.isNotNull(assembleOperationHandler, "assemble operation handler [{}] not found", handler);
-        return assembleOperationHandler;
+        return globalConfiguration.getAssembleOperationHandler(
+            standardAnnotation.getHandler(), standardAnnotation.getHandlerType()
+        );
     }
 
     /**
@@ -322,6 +320,13 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
         String getHandler();
 
         /**
+         * The type of the handler to be used.
+         *
+         * @return name of the handler
+         */
+        Class<?> getHandlerType();
+
+        /**
          * <p>Mapping template classes.
          * specify a class, if {@link MappingTemplate} exists on the class,
          * it will scan and add {@link Mapping} to {@link #getProps}。
@@ -358,6 +363,7 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
         private final String key;
         private final int sort;
         private final String handler;
+        private final Class<?> handlerType;
         private final Class<?>[] mappingTemplates;
         private final Mapping[] props;
         private final String[] groups;

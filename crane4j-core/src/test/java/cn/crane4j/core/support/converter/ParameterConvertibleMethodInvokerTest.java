@@ -27,6 +27,7 @@ public class ParameterConvertibleMethodInvokerTest {
         converterManager = new SimpleConverterManager();
     }
 
+    @SuppressWarnings("all")
     @Test
     public void create() {
         // if no parameter, return original invoker

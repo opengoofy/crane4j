@@ -24,8 +24,11 @@ import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.support.reflect.ReflectivePropertyOperator;
 import cn.crane4j.core.util.Asserts;
+import cn.crane4j.core.util.ConfigurationUtil;
 import lombok.Getter;
 import lombok.Setter;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -112,12 +115,22 @@ public class SimpleCrane4jGlobalConfiguration
      * Get bean operation executor.
      *
      * @param executorName executor name
+     * @param executorType executor type
      * @return executor
      */
+    @NonNull
     @Override
-    public BeanOperationExecutor getBeanOperationExecutor(String executorName) {
-        BeanOperationExecutor executor = beanOperationExecutorMap.get(executorName);
-        Asserts.isNotNull(executor, "cannot find executor [{}]", executorName);
+    public BeanOperationExecutor getBeanOperationExecutor(
+        @Nullable String executorName, Class<?> executorType) {
+        BeanOperationExecutor executor = ConfigurationUtil.getComponentFromConfiguration(
+            BeanOperationExecutor.class, executorType, executorName,
+            (t, n) -> {
+                BeanOperationExecutor r = beanOperationExecutorMap.get(n);
+                return t.isAssignableFrom(r.getClass()) ? r : null;
+            },
+            t -> beanOperationExecutorMap.get(t.getSimpleName())
+        );
+        Asserts.isNotNull(executor, "cannot find executor [{}]({})", executorName, executorType);
         return executor;
     }
 
@@ -125,38 +138,65 @@ public class SimpleCrane4jGlobalConfiguration
      * Get bean operation parser.
      *
      * @param parserName parser name
+     * @param parserType parser type
      * @return parser
      */
+    @NonNull
     @Override
-    public BeanOperationParser getBeanOperationsParser(String parserName) {
-        BeanOperationParser parser = beanOperationParserMap.get(parserName);
-        Asserts.isNotNull(parser, "cannot find parser [{}]", parserName);
+    public BeanOperationParser getBeanOperationsParser(@Nullable String parserName, Class<?> parserType) {
+        BeanOperationParser parser = ConfigurationUtil.getComponentFromConfiguration(
+            BeanOperationParser.class, parserType, parserName,
+            (t, n) -> {
+                BeanOperationParser r = beanOperationParserMap.get(n);
+                return t.isAssignableFrom(r.getClass()) ? r : null;
+            },
+            t -> beanOperationParserMap.get(t.getSimpleName())
+        );
+        Asserts.isNotNull(parser, "cannot find parser [{}]({})", parserName, parserType);
         return parser;
     }
 
     /**
      * Get assemble operation handler.
      *
-     * @param  handlerName handler name
+     * @param handlerName handler name
+     * @param handlerType handler type
      * @return handler
      */
+    @NonNull
     @Override
-    public AssembleOperationHandler getAssembleOperationHandler(String handlerName) {
-        AssembleOperationHandler handler = assembleOperationHandlerMap.get(handlerName);
-        Asserts.isNotNull(handler, "cannot find assemble handler [{}]", handlerName);
-        return handler;
+    public AssembleOperationHandler getAssembleOperationHandler(@Nullable String handlerName, Class<?> handlerType) {
+        AssembleOperationHandler parser = ConfigurationUtil.getComponentFromConfiguration(
+            AssembleOperationHandler.class, handlerType, handlerName,
+            (t, n) -> {
+                AssembleOperationHandler r = assembleOperationHandlerMap.get(n);
+                return t.isAssignableFrom(r.getClass()) ? r : null;
+            },
+            t -> assembleOperationHandlerMap.get(t.getSimpleName())
+        );
+        Asserts.isNotNull(parser, "cannot find assemble handler [{}]({})", handlerName, handlerType);
+        return parser;
     }
 
     /**
-     * Get disassemble operation handler.
+     * Get assemble operation handler.
      *
      * @param handlerName handler name
+     * @param handlerType handler type
      * @return handler
      */
+    @NonNull
     @Override
-    public DisassembleOperationHandler getDisassembleOperationHandler(String handlerName) {
-        DisassembleOperationHandler handler = disassembleOperationHandlerMap.get(handlerName);
-        Asserts.isNotNull(handler, "cannot find disassemble handler [{}]", handlerName);
-        return handler;
+    public DisassembleOperationHandler getDisassembleOperationHandler(@Nullable String handlerName, Class<?> handlerType) {
+        DisassembleOperationHandler parser = ConfigurationUtil.getComponentFromConfiguration(
+            DisassembleOperationHandler.class, handlerType, handlerName,
+            (t, n) -> {
+                DisassembleOperationHandler r = disassembleOperationHandlerMap.get(n);
+                return t.isAssignableFrom(r.getClass()) ? r : null;
+            },
+            t -> disassembleOperationHandlerMap.get(t.getSimpleName())
+        );
+        Asserts.isNotNull(parser, "cannot find disassemble handler [{}]({})", handlerName, handlerType);
+        return parser;
     }
 }

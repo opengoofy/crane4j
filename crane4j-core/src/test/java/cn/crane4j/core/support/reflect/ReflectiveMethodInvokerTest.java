@@ -34,6 +34,7 @@ public class ReflectiveMethodInvokerTest {
         );
     }
 
+    @SuppressWarnings("all")
     @Test
     public void create() {
         Method method = ReflectUtils.getDeclaredMethod(Service.class, "testMethod", null);

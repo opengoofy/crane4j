@@ -126,13 +126,13 @@ public class Crane4jAutoConfiguration {
 
     @ConditionalOnBean(ConversionService.class)
     @ConditionalOnMissingBean(ConverterManager.class)
-    @Bean({"SpringConverterManager", "springConverterManager"})
+    @Bean
     public SpringConverterManager springConverterManager(ConversionService conversionService) {
         return new SpringConverterManager(conversionService);
     }
 
     @ConditionalOnMissingBean({ConversionService.class, ConverterManager.class})
-    @Bean({"SpringConverterManager", "springConverterManager"})
+    @Bean
     public SpringConverterManager newSpringConverterManager() {
         log.info("No ConversionService or ConverterManager bean found, use default ConversionService.");
         return new SpringConverterManager(DefaultConversionService.getSharedInstance());
@@ -140,12 +140,12 @@ public class Crane4jAutoConfiguration {
 
     @Primary
     @ConditionalOnMissingBean
-    @Bean({"crane4jApplicationContext", "Crane4jApplicationContext"})
+    @Bean
     public Crane4jApplicationContext crane4jApplicationContext(ApplicationContext applicationContext) {
         return new Crane4jApplicationContext(applicationContext);
     }
 
-    @Bean({"PropertyOperator", "propertyOperator"})
+    @Bean
     public PropertyOperator propertyOperator(Properties properties, ConverterManager converterManager) {
         PropertyOperator operator = properties.isEnableAsmReflect() ?
             new AsmReflectivePropertyOperator(converterManager) : new ReflectivePropertyOperator(converterManager);
@@ -160,37 +160,37 @@ public class Crane4jAutoConfiguration {
     }
 
     @ConditionalOnMissingBean(AnnotationFinder.class)
-    @Bean({"MergedAnnotationFinder", "mergedAnnotationFinder"})
+    @Bean
     public MergedAnnotationFinder mergedAnnotationFinder() {
         return new MergedAnnotationFinder();
     }
 
     @ConditionalOnMissingBean(TypeResolver.class)
-    @Bean({"SimpleTypeResolver", "simpleTypeResolver"})
+    @Bean
     public SimpleTypeResolver simpleTypeResolver() {
         return new SimpleTypeResolver();
     }
 
     @ConditionalOnMissingBean(ExpressionEvaluator.class)
-    @Bean({"SpelExpressionEvaluator", "spelExpressionEvaluator"})
+    @Bean
     public SpelExpressionEvaluator spelExpressionEvaluator() {
         return new SpelExpressionEvaluator(new SpelExpressionParser());
     }
 
     @ConditionalOnMissingBean(CacheManager.class)
-    @Bean({"ConcurrentMapCacheManager", "concurrentMapCacheManager"})
+    @Bean
     public ConcurrentMapCacheManager concurrentMapCacheManager() {
         return new ConcurrentMapCacheManager(CollectionUtils::newWeakConcurrentMap);
     }
 
     @Order(0)
-    @Bean({"ContainerInstanceLifecycleProcessor", "containerInstanceLifecycleProcessor"})
+    @Bean
     public ContainerInstanceLifecycleProcessor containerInstanceLifecycleProcessor() {
         return new ContainerInstanceLifecycleProcessor();
     }
 
     @Order(1)
-    @Bean({"ContainerRegisterLogger", "containerRegisterLogger"})
+    @Bean
     public ContainerRegisterLogger containerRegisterLogger() {
         Logger logger = LoggerFactory.getLogger(ContainerRegisterLogger.class);
         return new ContainerRegisterLogger(logger::info);
@@ -199,7 +199,7 @@ public class Crane4jAutoConfiguration {
     @Order(2)
     @ConditionalOnMissingBean
     @ConditionalOnBean(CacheManager.class)
-    @Bean({"CacheableContainerProcessor", "cacheableContainerProcessor"})
+    @Bean
     public CacheableContainerProcessor cacheableContainerProcessor(CacheManager cacheManager, Properties properties) {
         Map<String, String> cacheMap = new HashMap<>(16);
         properties.getCacheContainers().forEach((cacheName, namespaces) ->
@@ -213,13 +213,13 @@ public class Crane4jAutoConfiguration {
     // ============== execute components ==============
 
     @ConditionalOnMissingBean(BeanResolver.class)
-    @Bean({"BeanFactoryResolver", "beanFactoryResolver"})
+    @Bean
     public BeanFactoryResolver beanFactoryResolver(ApplicationContext applicationContext) {
         return new BeanFactoryResolver(applicationContext);
     }
 
     @ConditionalOnMissingBean(AssembleAnnotationHandler.class)
-    @Bean({"SpringAssembleAnnotationHandler", "springAssembleAnnotationResolver"})
+    @Bean
     public SpringAssembleAnnotationHandler springAssembleAnnotationResolver(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration,
         ExpressionEvaluator evaluator, BeanResolver beanResolver, Properties properties) {
@@ -229,14 +229,14 @@ public class Crane4jAutoConfiguration {
     }
 
     @ConditionalOnMissingBean
-    @Bean({"DisassembleAnnotationHandler", "disassembleAnnotationOperationsResolver"})
+    @Bean
     public DisassembleAnnotationHandler disassembleAnnotationOperationsResolver(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration) {
         return new DisassembleAnnotationHandler(annotationFinder, configuration);
     }
 
     @ConditionalOnMissingBean
-    @Bean({"AssembleEnumAnnotationHandler", "assembleEnumAnnotationResolver"})
+    @Bean
     public AssembleEnumAnnotationHandler assembleEnumAnnotationResolver(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration globalConfiguration,
         PropertyOperator propertyOperator, ContainerManager containerManager) {
@@ -244,7 +244,7 @@ public class Crane4jAutoConfiguration {
     }
 
     @ConditionalOnMissingBean
-    @Bean({"TypeHierarchyBeanOperationParser", "typeHierarchyBeanOperationParser"})
+    @Bean
     public TypeHierarchyBeanOperationParser typeHierarchyBeanOperationParser(Collection<OperationAnnotationHandler> resolvers) {
         TypeHierarchyBeanOperationParser parser =  new TypeHierarchyBeanOperationParser();
         resolvers.forEach(parser::addBeanOperationsResolver);
@@ -253,25 +253,25 @@ public class Crane4jAutoConfiguration {
 
     @Primary
     @ConditionalOnMissingBean
-    @Bean({"DisorderedBeanOperationExecutor", "disorderedBeanOperationExecutor"})
+    @Bean
     public DisorderedBeanOperationExecutor disorderedBeanOperationExecutor(ContainerManager containerManager) {
         return new DisorderedBeanOperationExecutor(containerManager);
     }
 
     @ConditionalOnMissingBean
-    @Bean({"OrderedBeanOperationExecutor", "orderedBeanOperationExecutor"})
+    @Bean
     public OrderedBeanOperationExecutor orderedBeanOperationExecutor(ContainerManager containerManager) {
         return new OrderedBeanOperationExecutor(containerManager, Comparator.comparing(AssembleOperation::getSort));
     }
 
     @ConditionalOnMissingBean
-    @Bean({"MethodInvokerContainerCreator", "methodInvokerContainerCreator"})
+    @Bean
     public MethodInvokerContainerCreator methodInvokerContainerCreator(PropertyOperator propertyOperator, ConverterManager converterManager) {
         return new MethodInvokerContainerCreator(propertyOperator, converterManager);
     }
 
     @Order
-    @Bean({"DefaultMethodContainerFactory", "defaultMethodContainerFactory"})
+    @Bean
     public DefaultMethodContainerFactory defaultMethodContainerFactory(
         MethodInvokerContainerCreator methodInvokerContainerCreator, AnnotationFinder annotationFinder) {
         return new DefaultMethodContainerFactory(methodInvokerContainerCreator, annotationFinder);
@@ -279,31 +279,31 @@ public class Crane4jAutoConfiguration {
 
     @Order(Ordered.LOWEST_PRECEDENCE - 1)
     @ConditionalOnBean(CacheManager.class)
-    @Bean({"CacheableMethodContainerFactory", "cacheableMethodContainerFactory"})
+    @Bean
     public CacheableMethodContainerFactory cacheableMethodContainerFactory(
         CacheManager cacheManager, MethodInvokerContainerCreator methodInvokerContainerCreator, AnnotationFinder annotationFinder) {
         return new CacheableMethodContainerFactory(methodInvokerContainerCreator, annotationFinder, cacheManager);
     }
 
     @Primary
-    @Bean({"OneToOneAssembleOperationHandler", "oneToOneReflexAssembleOperationHandler"})
-    public OneToOneAssembleOperationHandler oneToOneReflexAssembleOperationHandler(PropertyOperator propertyOperator) {
+    @Bean
+    public OneToOneAssembleOperationHandler oneToOneAssembleOperationHandler(PropertyOperator propertyOperator) {
         return new OneToOneAssembleOperationHandler(propertyOperator);
     }
 
-    @Bean({"ManyToManyAssembleOperationHandler", "manyToManyReflexAssembleOperationHandler"})
-    public ManyToManyAssembleOperationHandler manyToManyReflexAssembleOperationHandler(PropertyOperator propertyOperator) {
+    @Bean
+    public ManyToManyAssembleOperationHandler manyToManyAssembleOperationHandler(PropertyOperator propertyOperator) {
         return new ManyToManyAssembleOperationHandler(propertyOperator);
     }
 
-    @Bean({"OneToManyAssembleOperationHandler", "oneToManyReflexAssembleOperationHandler"})
-    public OneToManyAssembleOperationHandler oneToManyReflexAssembleOperationHandler(PropertyOperator propertyOperator) {
+    @Bean
+    public OneToManyAssembleOperationHandler oneToManyAssembleOperationHandler(PropertyOperator propertyOperator) {
         return new OneToManyAssembleOperationHandler(propertyOperator);
     }
 
     @Primary
     @ConditionalOnMissingBean
-    @Bean({"ReflectiveDisassembleOperationHandler", "reflectiveDisassembleOperationHandler"})
+    @Bean
     public ReflectiveDisassembleOperationHandler reflectiveDisassembleOperationHandler(PropertyOperator propertyOperator) {
         return new ReflectiveDisassembleOperationHandler(propertyOperator);
     }
@@ -311,7 +311,7 @@ public class Crane4jAutoConfiguration {
     // ============== operator interface components ==============
 
     @ConditionalOnMissingBean(OperatorProxyMethodFactory.class)
-    @Bean({"OperatorProxyFactory", "operatorProxyFactory"})
+    @Bean
     public OperatorProxyFactory operatorProxyFactory(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration,
         Collection<OperatorProxyMethodFactory> factories) {
@@ -322,7 +322,7 @@ public class Crane4jAutoConfiguration {
 
     @ConditionalOnBean(OperatorProxyFactory.class)
     @ConditionalOnMissingBean
-    @Bean({"DefaultProxyMethodFactory", "defaultProxyMethodFactory"})
+    @Bean
     public DefaultOperatorProxyMethodFactory defaultProxyMethodFactory(ConverterManager converterManager) {
         return new DefaultOperatorProxyMethodFactory(converterManager);
     }
@@ -330,7 +330,7 @@ public class Crane4jAutoConfiguration {
     @ConditionalOnBean(OperatorProxyFactory.class)
     @ConditionalOnMissingBean
     @Order
-    @Bean({"DynamicContainerOperatorProxyMethodFactory", "dynamicContainerOperatorProxyMethodFactory"})
+    @Bean
     public DynamicContainerOperatorProxyMethodFactory dynamicContainerOperatorProxyMethodFactory(
         ConverterManager converterManager, ParameterNameFinder parameterNameFinder, AnnotationFinder annotationFinder) {
         return new DynamicContainerOperatorProxyMethodFactory(converterManager, parameterNameFinder, annotationFinder);
@@ -339,27 +339,27 @@ public class Crane4jAutoConfiguration {
     // ============== extension components ==============
 
     @ConditionalOnMissingBean
-    @Bean({"OperateTemplate", "operateTemplate"})
+    @Bean
     public OperateTemplate operateTemplate(
         BeanOperationParser parser, BeanOperationExecutor executor, TypeResolver typeResolver) {
         return new OperateTemplate(parser, executor, typeResolver);
     }
 
     @ConditionalOnMissingBean(ParameterNameFinder.class)
-    @Bean({"SpringParameterNameFinder", "springParameterNameFinder"})
+    @Bean
     public SpringParameterNameFinder springParameterNameFinder() {
         return new SpringParameterNameFinder(new DefaultParameterNameDiscoverer());
     }
 
     @ConditionalOnMissingBean
-    @Bean({"AutoOperateAnnotatedElementResolver", "autoOperateMethodAnnotatedElementResolver"})
+    @Bean
     public AutoOperateAnnotatedElementResolver autoOperateMethodAnnotatedElementResolver(
         Crane4jGlobalConfiguration crane4jGlobalConfiguration, TypeResolver typeResolver) {
         return new AutoOperateAnnotatedElementResolver(crane4jGlobalConfiguration, typeResolver);
     }
 
     @ConditionalOnMissingBean
-    @Bean({"ResolvableExpressionEvaluator", "resolvableExpressionEvaluator"})
+    @Bean
     public ResolvableExpressionEvaluator resolvableExpressionEvaluator(
         ExpressionEvaluator expressionEvaluator, ParameterNameFinder parameterNameFinder, BeanResolver beanResolver) {
         return new ResolvableExpressionEvaluator(
@@ -377,7 +377,7 @@ public class Crane4jAutoConfiguration {
         name = "enable-method-result-auto-operate",
         havingValue = "true", matchIfMissing = true
     )
-    @Bean({"MethodResultAutoOperateAdvisor", "methodResultAutoOperateAdvisor"})
+    @Bean
     public MethodResultAutoOperateAdvisor methodResultAutoOperateAdvisor(
         AutoOperateAnnotatedElementResolver autoOperateAnnotatedElementResolver,
         ResolvableExpressionEvaluator resolvableExpressionEvaluator) {
@@ -390,7 +390,7 @@ public class Crane4jAutoConfiguration {
         name = "enable-method-argument-auto-operate",
         havingValue = "true", matchIfMissing = true
     )
-    @Bean({"MethodArgumentAutoOperateAdvisor", "methodArgumentAutoOperateAdvisor"})
+    @Bean
     public MethodArgumentAutoOperateAdvisor methodArgumentAutoOperateAdvisor(
         MethodBaseExpressionExecuteDelegate methodBaseExpressionExecuteDelegate,
         AutoOperateAnnotatedElementResolver autoOperateAnnotatedElementResolver,
@@ -407,7 +407,7 @@ public class Crane4jAutoConfiguration {
         name = "enable-method-container",
         havingValue = "true", matchIfMissing = true
     )
-    @Bean({"BeanMethodContainerRegistrar", "beanMethodContainerPostProcessor"})
+    @Bean
     public BeanMethodContainerRegistrar beanMethodContainerPostProcessor(
         AnnotationFinder annotationFinder, Collection<MethodContainerFactory> factories, Crane4jGlobalConfiguration configuration) {
         return new BeanMethodContainerRegistrar(factories, annotationFinder, configuration);
@@ -415,7 +415,7 @@ public class Crane4jAutoConfiguration {
 
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @ConditionalOnMissingBean
-    @Bean({"Crane4jInitializer", "crane4jInitializer"})
+    @Bean
     public Crane4jInitializer crane4jInitializer(
         MetadataReaderFactory readerFactory, ResourcePatternResolver resolver, PropertyOperator propertyOperator,
         ApplicationContext applicationContext, AnnotationFinder annotationFinder,
@@ -425,7 +425,7 @@ public class Crane4jAutoConfiguration {
         );
     }
 
-    @Bean({"InitializationLogger", "initializationLogger"})
+    @Bean
     public InitializationLogger initializationLogger() {
         return new InitializationLogger();
     }
