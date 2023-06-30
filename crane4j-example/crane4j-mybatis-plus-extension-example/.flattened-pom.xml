@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>cn.crane4j</groupId>
+    <artifactId>crane4j-example</artifactId>
+    <version>1.0.0</version>
+  </parent>
+  <groupId>cn.crane4j</groupId>
+  <artifactId>crane4j-mybaits-plus-extension-example</artifactId>
+  <version>1.0.0</version>
+  <name>crane4j-mybatis-plus-extension-example</name>
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <properties>
+    <maven.install.skip>true</maven.install.skip>
+    <maven.deploy.skip>true</maven.deploy.skip>
+  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>cn.crane4j</groupId>
+      <artifactId>crane4j-mybatis-plus-extension</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-jdbc</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>
