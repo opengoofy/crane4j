@@ -22,7 +22,8 @@ import java.util.stream.Collectors;
  * @see PropertyOperator
  */
 @RequiredArgsConstructor
-public class OneToOneAssembleOperationHandler extends ReflectiveAssembleOperationHandler<ReflectiveAssembleOperationHandler.Target> {
+public class OneToOneAssembleOperationHandler
+    extends AbstractAssembleOperationHandler<AbstractAssembleOperationHandler.Target> {
 
     /**
      * propertyOperator

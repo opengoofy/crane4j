@@ -31,11 +31,12 @@ import java.util.Map;
  * )
  * public List<Foo> requestFoo(Set<Integer> ids) { // do something }
  * }</pre>
- * The second way is to annotate the annotation on the class, and then bind the method through {@link Bind}：
+ * The second way is to annotate the annotation on the class,
+ * and then bind the method through {@link #bindMethod()} and {@link #bindMethodParamTypes()}:
  * <pre type="code">{@code
  * @ContainerMethod(
  *     namespace = "foo", resultType = Foo.class,
- *     bind = @Bind(value = "requestFoo", paramTypes = Set.class)
+ *     bindMethod =  "requestFoo", bindMethodParamTypes = Set.class
  * )
  * public class Foo {
  *     public List<Foo> requestFoo(Set<Integer> ids) { // do something }

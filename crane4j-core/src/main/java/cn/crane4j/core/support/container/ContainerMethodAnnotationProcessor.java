@@ -1,6 +1,5 @@
 package cn.crane4j.core.support.container;
 
-import cn.crane4j.annotation.Bind;
 import cn.crane4j.annotation.ContainerMethod;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.support.AnnotationFinder;
@@ -89,7 +88,7 @@ public class ContainerMethodAnnotationProcessor {
     }
 
     /**
-     * Collect methods bound by class level annotation {@link Bind}.
+     * Collect methods bound by class level annotation.
      *
      * @param type type
      * @param allMethods all methods in type

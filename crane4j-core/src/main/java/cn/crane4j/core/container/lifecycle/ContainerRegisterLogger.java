@@ -67,8 +67,8 @@ public class ContainerRegisterLogger implements ContainerLifecycleProcessor {
         }
         Container<?> container = (Container<?>) target;
         logConsumer.accept(
-                "destroy container comparator [{}]",
-                new Object[]{ container.hashCode(), container.getNamespace() }
+            "destroy container comparator [{}]",
+            new Object[]{ container.hashCode(), container.getNamespace() }
         );
     }
 }
