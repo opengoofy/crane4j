@@ -147,7 +147,8 @@ public class Crane4jAutoConfiguration {
 
     @Bean
     public PropertyOperator propertyOperator(Properties properties, ConverterManager converterManager) {
-        PropertyOperator operator = properties.isEnableAsmReflect() ?
+        // reflect asm may only support jdk 1.8
+        PropertyOperator operator = properties.isEnableAsmReflect() && System.getProperty("java.version").contains("1.8") ?
             new AsmReflectivePropertyOperator(converterManager) : new ReflectivePropertyOperator(converterManager);
         operator = new CacheablePropertyOperator(operator);
         if (properties.isEnableMapOperate()) {

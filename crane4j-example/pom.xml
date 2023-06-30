@@ -21,7 +21,6 @@
     <properties>
         <maven.install.skip>true</maven.install.skip>
         <maven.deploy.skip>true</maven.deploy.skip>
-        <java.version>1.8</java.version>
         <mybatis-plus.version>3.4.2</mybatis-plus.version>
     </properties>
 
