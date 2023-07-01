@@ -115,6 +115,18 @@ public class DynamicContainerOperatorProxyMethodFactory implements OperatorProxy
     }
 
     /**
+     * Add adaptor provider for specific type.
+     *
+     * @param type type
+     * @param adaptorProvider adaptor provider
+     */
+    public void addAdaptorProvider(
+        Class<?> type, ContainerParameterAdaptorProvider adaptorProvider) {
+        Objects.requireNonNull(adaptorProvider);
+        adaptorProviders.put(type, adaptorProvider);
+    }
+
+    /**
      * Get operator proxy method.
      *
      * @param beanOperations        bean operations

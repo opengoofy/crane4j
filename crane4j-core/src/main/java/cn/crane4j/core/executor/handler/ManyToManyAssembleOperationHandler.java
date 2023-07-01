@@ -4,6 +4,8 @@ import cn.crane4j.core.container.Container;
 import cn.crane4j.core.executor.AssembleExecution;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,7 +36,9 @@ public class ManyToManyAssembleOperationHandler extends OneToManyAssembleOperati
      *
      * @see ManyToManyAssembleOperationHandler.DefaultSplitter
      */
-    private final Function<Object, Collection<Object>> keySplitter;
+    @Setter
+    @NonNull
+    private Function<Object, Collection<Object>> keySplitter;
 
     /**
      * Create an {@link ManyToManyAssembleOperationHandler} comparator.
