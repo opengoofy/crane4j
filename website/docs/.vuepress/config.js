@@ -52,14 +52,7 @@ const sidebarConfig = [
             { title: "2.5.可调用方法", path: "/container/2.5.方法容器.md" },
             { title: "2.6.对象内省", path: "/container/2.6.对象内省.md" },
             { title: "2.7.接口/自定义", path: "/container/2.7.自定义容器.md" },
-            {
-                title: "2.8.容器提供者",
-                path: "/container/provider/2.8.0.容器提供者.html",
-                children: [
-                    { title: "2.8.1.可配置容器提供者", path: "/container/provider/2.8.1.可配置容器提供者.md" },
-                    { title: "2.8.2.动态数据源容器提供者", path: "/container/provider/2.8.2.动态数据源容器提供者.md" }
-                ]
-            }
+            { title: "2.8.容器提供者", path: "/container/2.8.容器提供者.html" }
         ]
     },
     {
@@ -68,13 +61,11 @@ const sidebarConfig = [
         path: "/operation/3.0.操作配置.html",
         children: [
             { title: "3.1.声明装配操作", path: "/operation/3.1.声明装配操作.md" },
-            { title: "3.2.一对多装配", path: "/operation/3.2.一对多装配.md" },
-            { title: "3.3.多对多装配", path: "/operation/3.3.多对多装配.md" },
-            { title: "3.4.配置字段映射", path: "/operation/3.4.配置字段映射.md" },
-            { title: "3.5.拆卸嵌套对象", path: "/operation/3.5.拆卸嵌套对象.md" },
-            { title: "3.6.链式操作符", path: "/operation/3.6.链式操作符.md" },
-            { title: "3.7.操作分组", path: "/operation/3.7.操作分组.md" },
-            { title: "3.8.操作排序", path: "/operation/3.8.操作排序.md" }
+            { title: "3.2.配置属性映射", path: "/operation/3.2.配置属性映射.md" },
+            { title: "3.3.指定装配处理器", path: "/operation/3.3.指定装配处理器.md" },
+            { title: "3.4.拆卸嵌套对象", path: "/operation/3.4.拆卸嵌套对象.md" },
+            { title: "3.5.操作分组", path: "/operation/3.5.操作分组.md" },
+            { title: "3.6.操作排序", path: "/operation/3.6.操作排序.md" }
         ]
     },
     {
@@ -93,20 +84,17 @@ const sidebarConfig = [
         children: [
             { title: "5.1.缓存", path: "/advance/5.1.缓存.md" },
             { title: "5.2.组合注解", path: "/advance/5.2.组合注解.md" },
-            { title: "5.3.容器注册回调", path: "/advance/5.3.容器注册回调.md" },
+            { title: "5.3.容器的生命周期回调", path: "/advance/5.3.容器的生命周期回调.md" },
             { title: "5.4.反射工厂", path: "/advance/5.4.反射工厂.md" },
-            { title: "5.5.自定义配置注解", path: "/advance/5.5.自定义配置注解.md" },
+            { title: "5.5.操作注解解析器", path: "/advance/5.5.操作注解解析器.md" },
             { title: "5.5.类型转换", path: "/advance/5.6.类型转换.md" }
         ],
     },
     {
-        title: "6.MybatisPlus扩展",
+        title: "6.扩展组件",
         collapsable: false, // 不折叠
         children: [
-            { title: "6.1.安装", path: "/extension.mp/6.1.安装.md" },
-            { title: "6.2.注册Mapper", path: "/extension.mp/6.2.注册Mapper.md" },
-            { title: "6.3.使用MP方法容器", path: "/extension.mp/6.3.使用MP方法容器.md" },
-            { title: "6.4.指定查询字段", path: "/extension.mp/6.4.指定查询字段.md" }
+            { title: "6.1.MybatisPlus扩展.md", path: "/extension/6.1.MybatisPlus扩展.md" },
         ],
     },
     {
