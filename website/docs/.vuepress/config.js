@@ -1,7 +1,13 @@
 // 配置首页导航栏
 const navConfig = [
     { text: '首页', link: '/' },
-    { text: '文档', link: '/basic/1.用户指南.md' },
+    {
+        text: '源码',
+        items: [
+            { text: 'GitHub', link: 'https://github.com/opengoofy/crane4j' },
+            { text: 'Gitee', link: 'https://gitee.com/CreateSequence/crane4j' }
+        ]
+    },
     {
         text: '关于作者',
         items: [
@@ -10,13 +16,7 @@ const navConfig = [
             { text: 'Blog', link: 'https://blog.xiajibagao.top' }
         ]
     },
-    {
-        text: '源码',
-        items: [
-            { text: 'GitHub', link: 'https://github.com/opengoofy/crane4j' },
-            { text: 'Gitee', link: 'https://gitee.com/CreateSequence/crane4j' }
-        ]
-    }
+    { text: '关于我们', link: 'https://github.com/opengoofy' }
 ];
 
 // 侧边栏
