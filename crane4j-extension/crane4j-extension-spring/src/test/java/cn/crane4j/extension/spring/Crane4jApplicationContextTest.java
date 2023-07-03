@@ -30,7 +30,7 @@ import java.util.Map;
  * @author huangchengxing
  */
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {Crane4jSpringTestConfiguration.class, Crane4jApplicationContextTest.TestConfig.class})
+@ContextConfiguration(classes = {DefaultCrane4jSpringConfiguration.class, Crane4jApplicationContextTest.TestConfig.class})
 public class Crane4jApplicationContextTest {
 
     @Autowired
@@ -43,9 +43,13 @@ public class Crane4jApplicationContextTest {
         Assert.assertNotNull(context.getTypeResolver());
         Assert.assertNotNull(context.getPropertyOperator());
         Assert.assertNotNull(context.getBeanOperationsParser(TypeHierarchyBeanOperationParser.class));
+        Assert.assertNotNull(context.getBeanOperationsParser("typeHierarchyBeanOperationParser"));
         Assert.assertNotNull(context.getBeanOperationExecutor(DisorderedBeanOperationExecutor.class));
+        Assert.assertNotNull(context.getBeanOperationExecutor("disorderedBeanOperationExecutor"));
         Assert.assertNotNull(context.getAssembleOperationHandler(OneToOneAssembleOperationHandler.class));
+        Assert.assertNotNull(context.getAssembleOperationHandler("oneToOneAssembleOperationHandler"));
         Assert.assertNotNull(context.getDisassembleOperationHandler(ReflectiveDisassembleOperationHandler.class));
+        Assert.assertNotNull(context.getDisassembleOperationHandler("reflectiveDisassembleOperationHandler"));
         Assert.assertNotNull(context.getContainer("test"));
         Assert.assertNotNull(context.getContainer("testBean"));
 
@@ -57,6 +61,7 @@ public class Crane4jApplicationContextTest {
         Assert.assertEquals(size + 2, context.getContainerLifecycleProcessors().size());
 
         Map<String, Container<?>> containerMap = ReflectUtils.getFieldValue(context, "containerMap");
+        Assert.assertNotNull(containerMap);
         Assert.assertFalse(containerMap.isEmpty());
         context.destroy();
         Assert.assertTrue(containerMap.isEmpty());

@@ -31,7 +31,7 @@ import java.util.Map;
  */
 @TestPropertySource(properties = "crane4j.container-name = testContainer")
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {Crane4jSpringTestConfiguration.class, SpringAssembleAnnotationHandlerTest.TestConfig.class})
+@ContextConfiguration(classes = {DefaultCrane4jSpringConfiguration.class, SpringAssembleAnnotationHandlerTest.TestConfig.class})
 public class SpringAssembleAnnotationHandlerTest {
 
     @Autowired

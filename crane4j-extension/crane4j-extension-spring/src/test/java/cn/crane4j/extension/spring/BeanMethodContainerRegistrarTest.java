@@ -13,7 +13,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -29,11 +28,9 @@ import java.util.stream.Collectors;
  * @author huangchengxing
  */
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {Crane4jSpringTestConfiguration.class, BeanMethodContainerRegistrarTest.Service.class})
+@ContextConfiguration(classes = {DefaultCrane4jSpringConfiguration.class, BeanMethodContainerRegistrarTest.Service.class})
 public class BeanMethodContainerRegistrarTest {
 
-    @Autowired
-    private ApplicationContext applicationContext;
     @Autowired
     private Crane4jApplicationContext context;
     @Autowired
@@ -61,6 +58,7 @@ public class BeanMethodContainerRegistrarTest {
         beanMethodContainerRegistrar.destroy();
     }
 
+    @SuppressWarnings("unused")
     protected static class BaseService {
         public void noneResultMethod() { }
         public Map<String, Foo> mappedMethod(List<String> args) {

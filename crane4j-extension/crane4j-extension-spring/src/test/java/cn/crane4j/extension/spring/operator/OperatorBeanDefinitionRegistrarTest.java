@@ -5,7 +5,7 @@ import cn.crane4j.annotation.Mapping;
 import cn.crane4j.annotation.Operator;
 import cn.crane4j.core.container.LambdaContainer;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
-import cn.crane4j.extension.spring.Crane4jSpringTestConfiguration;
+import cn.crane4j.extension.spring.DefaultCrane4jSpringConfiguration;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,13 +28,14 @@ import java.util.stream.IntStream;
  * @author huangchengxing
  */
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {Crane4jSpringTestConfiguration.class, OperatorBeanDefinitionRegistrarTest.Config.class})
+@ContextConfiguration(classes = {DefaultCrane4jSpringConfiguration.class, OperatorBeanDefinitionRegistrarTest.Config.class})
 public class OperatorBeanDefinitionRegistrarTest {
 
     @Autowired
     private Crane4jGlobalConfiguration globalConfiguration;
     @Autowired
     private ApplicationContext applicationContext;
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     private OperatorInterface operatorInterface;
 

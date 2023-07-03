@@ -7,7 +7,7 @@ import cn.crane4j.annotation.Disassemble;
 import cn.crane4j.annotation.Mapping;
 import cn.crane4j.annotation.MappingType;
 import cn.crane4j.core.util.CollectionUtils;
-import cn.crane4j.extension.spring.Crane4jSpringTestConfiguration;
+import cn.crane4j.extension.spring.DefaultCrane4jSpringConfiguration;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
  */
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {
-    Crane4jSpringTestConfiguration.class,
+    DefaultCrane4jSpringConfiguration.class,
     MethodResultAutoOperateAdvisorTest.SourceService.class,
     MethodResultAutoOperateAdvisorTest.TargetService.class
 })
@@ -72,6 +72,7 @@ public class MethodResultAutoOperateAdvisorTest {
         methodResultAutoOperateAdvisor.destroy();
     }
 
+    @SuppressWarnings("unused")
     protected static class SourceService {
         @ContainerMethod(
             namespace = "onoToOneMethod", type = MappingType.ONE_TO_ONE,
