@@ -65,7 +65,8 @@ const sidebarConfig = [
             { title: "3.3.指定装配处理器", path: "/operation/3.3.指定装配处理器.md" },
             { title: "3.4.拆卸嵌套对象", path: "/operation/3.4.拆卸嵌套对象.md" },
             { title: "3.5.操作分组", path: "/operation/3.5.操作分组.md" },
-            { title: "3.6.操作排序", path: "/operation/3.6.操作排序.md" }
+            { title: "3.6.操作排序", path: "/operation/3.6.操作排序.md" },
+            { title: "3.7.操作者接口", path: "/operation/3.7.操作者接口.md" }
         ]
     },
     {
@@ -74,8 +75,7 @@ const sidebarConfig = [
         children: [
             { title: "4.1.手动填充", path: "/execute/4.1.手动填充.md" },
             { title: "4.2.自动填充", path: "/execute/4.2.自动填充.md" },
-            { title: "4.3.操作者接口", path: "/execute/4.3.操作者接口.md" },
-            { title: "4.4.操作执行器", path: "/execute/4.4.操作执行器.md" }
+            { title: "4.3.操作执行器", path: "/execute/4.3.操作执行器.md" }
         ]
     },
     {
