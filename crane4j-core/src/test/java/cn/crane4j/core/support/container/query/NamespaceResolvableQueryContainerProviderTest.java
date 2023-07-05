@@ -69,7 +69,7 @@ public class NamespaceResolvableQueryContainerProviderTest {
         String namespace = containerCreator.determineNamespace("test", "id", Collections.singletonList("name"));
         Assert.assertNotNull(namespace);
         containerCreator.setMappingType(namespace, MappingType.ONE_TO_MANY);
-        Assert.assertEquals(
+        Assert.assertNotSame(
             containerCreator.getQueryContainer("test", "id", Collections.singletonList("name")),
             containerCreator.getContainer(namespace)
         );
@@ -91,7 +91,6 @@ public class NamespaceResolvableQueryContainerProviderTest {
         // test destroy
         containerCreator.destroy();
         Assert.assertTrue(containerCreator.registeredRepositories.isEmpty());
-        Assert.assertTrue(containerCreator.containerCaches.isEmpty());
     }
 
     private void checkRecorder(

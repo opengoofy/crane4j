@@ -53,24 +53,24 @@ public class MybatisPlusQueryContainerProviderTest extends MpBaseTest {
         Assert.assertTrue(infoMap.isEmpty());
 
         // check container
-        Container<Object> container = (Container<Object>) mybatisPlusQueryContainerProvider.getQueryContainer("fooMapper", null, null);
+        Container<Object> container = mybatisPlusQueryContainerProvider.getQueryContainer("fooMapper", null, null);
 
         // check lazy load
         AbstractQueryContainerProvider.Repository<BaseMapper<?>> mapperInfo = infoMap.get("fooMapper");
         Assert.assertNotNull(mapperInfo);
         Assert.assertSame(fooMapper, mapperInfo.getTarget());
 
-        checkContainer(container, "id");
-        Assert.assertSame(container, mybatisPlusQueryContainerProvider.getQueryContainer("fooMapper", null, null));
+        checkContainer(container);
+        Assert.assertNotSame(container, mybatisPlusQueryContainerProvider.getQueryContainer("fooMapper", null, null));
         container = mybatisPlusQueryContainerProvider.getQueryContainer("fooMapper", null, Arrays.asList("age", "name"));
-        checkContainer(container, "id", "age", "name", "id");
+        checkContainer(container);
         container = mybatisPlusQueryContainerProvider.getQueryContainer("fooMapper", "userName", null);
-        checkContainer(container, "name");
+        checkContainer(container);
         container = mybatisPlusQueryContainerProvider.getQueryContainer("fooMapper", "id", Arrays.asList("name", "age"));
-        checkContainer(container, "id", "name", "age");
+        checkContainer(container);
     }
 
-    private void checkContainer(Container<Object> container, String keyColumn, String... queryColumns) {
+    private void checkContainer(Container<Object> container) {
         Assert.assertNotNull(container);
         Assert.assertTrue(container instanceof MethodInvokerContainer);
     }

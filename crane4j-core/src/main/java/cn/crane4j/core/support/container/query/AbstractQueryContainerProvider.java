@@ -56,7 +56,6 @@ public abstract class AbstractQueryContainerProvider<T> implements ContainerProv
 
     @Getter
     protected final Map<String, Repository<T>> registeredRepositories = new ConcurrentHashMap<>(32);
-    protected final Map<String, Container<?>> containerCaches = new ConcurrentHashMap<>(32);
     protected final MethodInvokerContainerCreator methodInvokerContainerCreator;
 
     // =================== repository ===================
@@ -94,7 +93,8 @@ public abstract class AbstractQueryContainerProvider<T> implements ContainerProv
     @Nullable
     @Override
     public <K> Container<K> getContainer(String namespace) {
-        return (Container<K>) CollectionUtils.computeIfAbsent(containerCaches, namespace, this::createQueryContainer);
+        // is a heavy operation, but manager will cache it
+        return (Container<K>) createQueryContainer(namespace);
     }
 
     /**
@@ -107,10 +107,10 @@ public abstract class AbstractQueryContainerProvider<T> implements ContainerProv
      * @param properties fields to query, if it is empty, all table columns will be queried by default.
      * @return container
      */
-    @SuppressWarnings("unchecked")
-    public <K> Container<K> getQueryContainer(String name, @Nullable String keyProperty, @Nullable List<String> properties) {
+    public <K> Container<K> getQueryContainer(
+        String name, @Nullable String keyProperty, @Nullable List<String> properties) {
         String namespace = determineNamespace(name, keyProperty, properties);
-        return (Container<K>) CollectionUtils.computeIfAbsent(containerCaches, namespace, this::createQueryContainer);
+        return getContainer(namespace);
     }
 
     /**
@@ -194,7 +194,6 @@ public abstract class AbstractQueryContainerProvider<T> implements ContainerProv
      */
     public void destroy() {
         this.registeredRepositories.clear();
-        this.containerCaches.clear();
     }
 
     /**
