@@ -22,9 +22,7 @@
 
 ## 文档
 
-项目文档 document：[GitHub](https://opengoofy.github.io/crane4j/#/)
-
-示例项目 crane4j-example：[GitHub](https://github.com/opengoofy/crane4j/tree/dev/crane4j-example) / [Gitee](https://gitee.com/CreateSequence/crane4j/tree/dev/crane4j-example)
+项目文档 document：[GitHub](https://opengoofy.github.io/crane4j/#/) / [Gitee](https://createsequence.gitee.io/crane4j-doc/#/)
 
 ## 快速开始
 
