@@ -80,6 +80,7 @@ public @interface Disassemble {
      * The name of the handler to be used.
      *
      * @return name
+     * @see cn.crane4j.core.executor.handler.DisassembleOperationHandler;
      */
     String handler() default "";
 
@@ -87,6 +88,8 @@ public @interface Disassemble {
      * The type of the handler to be used.
      *
      * @return type
+     * @see cn.crane4j.core.executor.handler.DisassembleOperationHandler;
+     *
      */
     Class<?> handlerType() default Object.class;
 

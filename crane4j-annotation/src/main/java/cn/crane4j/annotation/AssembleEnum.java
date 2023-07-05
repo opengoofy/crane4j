@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
  *
  * @author huangchengxing
  * @see cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
- * @see cn.crane4j.core.parser.handler.AssembleAnnotationHandler;
+ * @see cn.crane4j.core.parser.handler.AssembleEnumAnnotationHandler;
  */
 @Repeatable(value = AssembleEnum.List.class)
 @Documented

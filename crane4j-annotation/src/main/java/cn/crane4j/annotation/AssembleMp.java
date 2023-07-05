@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
  *
  * @author huangchengxing
  * @see cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
- * @see cn.crane4j.core.parser.handler.AssembleAnnotationHandler;
+ * @see cn.crane4j.extension.mybatis.plus.AssembleMpAnnotationHandler;
  * @since 1.2.0
  */
 @Repeatable(value = AssembleMp.List.class)
@@ -48,6 +48,13 @@ public @interface AssembleMp {
      * @return mapping type
      */
     MappingType mappingType() default MappingType.ONE_TO_ONE;
+
+    /**
+     * The data source to be used.
+     *
+     * @return data source
+     */
+    String datasource() default "";
 
     // ================= common =================
 
