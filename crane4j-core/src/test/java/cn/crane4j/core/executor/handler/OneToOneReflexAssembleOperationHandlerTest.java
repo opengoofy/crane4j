@@ -41,10 +41,17 @@ public class OneToOneReflexAssembleOperationHandlerTest extends BaseExecutorTest
         executor = new DisorderedBeanOperationExecutor(configuration);
         Container<Integer> container = LambdaContainer.forLambda(
             "test", ids -> ids.stream().filter(id -> id != 0).collect(Collectors.toMap(
-                Function.identity(), id -> new Bean(id, "name" + id)
+                Function.identity(), id -> new Bean(id, "name" + id, null)
             ))
         );
         configuration.registerContainer(container);
+
+        @SuppressWarnings("all")
+        Container<Bean> container2 = LambdaContainer.forLambda(
+            "identity", beans -> beans.stream()
+                .collect(Collectors.toMap(Function.identity(), Function.identity()))
+        );
+        configuration.registerContainer(container2);
     }
 
     @Test
@@ -54,10 +61,12 @@ public class OneToOneReflexAssembleOperationHandlerTest extends BaseExecutorTest
         executor.execute(beanList, operations);
         for (int i = 0; i < beanList.size(); i++) {
             Assert.assertEquals("name" + (i + 1), beanList.get(i).getName());
+            Assert.assertEquals((Integer)(i + 1), beanList.get(i).getOtherId());
         }
         executor.execute(Collections.singletonList(new Bean(0)), operations);
     }
 
+    @Assemble(container = "identity", props = @Mapping(src = "id", ref = "otherId"))
     @RequiredArgsConstructor
     @AllArgsConstructor
     @Data
@@ -68,5 +77,6 @@ public class OneToOneReflexAssembleOperationHandlerTest extends BaseExecutorTest
         )
         private final Integer id;
         private String name;
+        private Integer otherId;
     }
 }

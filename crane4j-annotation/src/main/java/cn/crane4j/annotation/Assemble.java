@@ -94,11 +94,26 @@ public @interface Assemble {
     int sort() default Integer.MAX_VALUE;
 
     /**
-     * <p>Field name of key.
+     * <p>Field name of key.<br />
      * This field value will be used to obtain the associated
      * data source object from the data source container later.
-     * <p>When the annotation is on the attribute,
-     * it will be forced to specify the name of the annotated attribute.
+     * 
+     * <p>When the annotation is on:
+     * <ul>
+     *     <li>
+     *         field of this class,
+     *         it will be forced to specify the name of the annotated attribute,
+     *         the key value is the field value of current object;
+     *     </li>
+     *     <li>
+     *         this class, and specify key,
+     *         equivalent to directly annotating on a specified field;
+     *     </li>
+     *     <li>
+     *         this class, and key is empty,
+     *         the key value is the current object itself.
+     *     </li>
+     * </ul>
      *
      * @return field name of key
      */

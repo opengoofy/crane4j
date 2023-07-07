@@ -14,12 +14,10 @@ import cn.crane4j.core.parser.operation.SimpleAssembleOperation;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.Crane4jGlobalSorter;
-import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.ConfigurationUtil;
 import cn.crane4j.core.util.MultiMap;
 import cn.crane4j.core.util.ReflectUtils;
-import cn.crane4j.core.util.StringUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
@@ -224,10 +222,10 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
      * @return groups
      */
     protected String parseKey(AnnotatedElement element, StandardAnnotation standardAnnotation) {
-        String key = (element instanceof Field) ?
+        // we should allow the key to be empty,
+        // where the key value is the targets themselves.
+        return (element instanceof Field) ?
             ((Field) element).getName() : standardAnnotation.getKey();
-        Asserts.isTrue(StringUtils.isNotBlank(key), "the key of assemble operation must not blank");
-        return key;
     }
 
     /**
