@@ -61,9 +61,28 @@ public @interface AssembleEnum {
     // ================= common =================
 
     /**
-     * Key field name for query, if it is empty, it defaults to the field annotated by {@code @TableId}.
+     * <p>Field name of key.<br />
+     * This field value will be used to obtain the associated
+     * data source object from the data source container later.
      *
-     * @return field name
+     * <p>When the annotation is on:
+     * <ul>
+     *     <li>
+     *         field of this class,
+     *         it will be forced to specify the name of the annotated attribute,
+     *         the key value is the field value of current object;
+     *     </li>
+     *     <li>
+     *         this class, and specify key,
+     *         equivalent to directly annotating on a specified field;
+     *     </li>
+     *     <li>
+     *         this class, and key is empty,
+     *         the key value is the current object itself.
+     *     </li>
+     * </ul>
+     *
+     * @return field name of key
      */
     String key() default "";
 

@@ -4,6 +4,7 @@ import cn.crane4j.core.container.Container;
 import cn.crane4j.core.executor.AssembleExecution;
 import cn.crane4j.core.parser.PropertyMapping;
 import cn.crane4j.core.support.reflect.PropertyOperator;
+import cn.crane4j.core.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 /**
@@ -41,8 +43,12 @@ public class OneToOneAssembleOperationHandler
         List<Target> targets = new ArrayList<>();
         for (AssembleExecution execution : executions) {
             String key = execution.getOperation().getKey();
+            // TODO perhaps we need to use the key extractor as a standalone component in the AssembleOperation?
+            // if no key is specified, key value is the targets themselves.
+            UnaryOperator<Object> keyExtractor = StringUtils.isEmpty(key) ?
+                UnaryOperator.identity() : t -> propertyOperator.readProperty(t.getClass(), t, key);
             execution.getTargets().stream()
-                .map(t -> createTarget(execution, t, propertyOperator.readProperty(t.getClass(), t, key)))
+                .map(t -> createTarget(execution, t, keyExtractor.apply(t)))
                 .forEach(targets::add);
         }
         return targets;
