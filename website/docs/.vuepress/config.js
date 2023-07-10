@@ -36,8 +36,7 @@ const sidebarConfig = [
                 ]
             },
             { title: "1.3.配置文件", path: "/basic/1.3.配置文件.md" },
-            { title: "1.4.源码设计", path: "/basic/1.4.源码设计.md" },
-            { title: "1.5.更新日志", path: "/basic/1.5.更新日志.md" }
+            { title: "1.4.常见问题", path: "/basic/1.4.常见问题.md" }
         ]
     },
     {
@@ -102,7 +101,9 @@ const sidebarConfig = [
         collapsable: false, // 不折叠
         children: [
             { title: "联系作者", path: "/other/联系作者.md" },
-            { title: "提问的智慧", path: "/other/提问的智慧.md" }
+            { title: "提问的智慧", path: "/other/提问的智慧.md" },
+            { title: "源码设计", path: "/other/源码设计.md" },
+            { title: "更新日志", path: "/other/更新日志.md" }
         ],
     }
 ]
