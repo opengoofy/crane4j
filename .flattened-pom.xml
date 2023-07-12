@@ -4,21 +4,22 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>cn.crane4j</groupId>
   <artifactId>crane4j</artifactId>
-  <version>0.0.1-alpha</version>
+  <version>2.0.0-ALPHA</version>
   <packaging>pom</packaging>
   <name>crane4j</name>
+  <description>powerful and easy-to-use data filling framework</description>
   <url>https://opengoofy.github.io/crane4j/</url>
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
       <distribution>repo</distribution>
     </license>
   </licenses>
   <developers>
     <developer>
       <name>Createsequence</name>
-      <email>841396397@qq.com</email>
+      <email>cn.createsequence@gmail.com</email>
       <organization>opengoofy</organization>
     </developer>
   </developers>
@@ -26,7 +27,8 @@
     <module>crane4j-core</module>
     <module>crane4j-spring-boot-starter</module>
     <module>crane4j-annotation</module>
-    <module>crane4j-mybatis-plus-extension</module>
+    <module>crane4j-example</module>
+    <module>crane4j-extension</module>
   </modules>
   <scm>
     <connection>scm:git@github.com:opengoofy/crane4j.git</connection>
@@ -46,38 +48,31 @@
     </snapshotRepository>
   </distributionManagement>
   <properties>
-    <springboot.version>2.3.5.RELEASE</springboot.version>
-    <lombok.version>1.18.12</lombok.version>
-    <mybatis-plus.version>3.4.2</mybatis-plus.version>
-    <server.id>maven-central</server.id>
-    <skip.maven.gpg.plugin>true</skip.maven.gpg.plugin>
-    <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
-    <revision>0.0.1-alpha</revision>
-    <junit.version>4.13.1</junit.version>
-    <maven-javadoc-plugin>3.2.0</maven-javadoc-plugin>
-    <maven-gpg-plugin>1.6</maven-gpg-plugin>
-    <ognl.version>3.3.4</ognl.version>
-    <java.version>1.8</java.version>
-    <slf4j.version>2.0.0-alpha1</slf4j.version>
-    <maven-source-plugin>3.2.1</maven-source-plugin>
     <hutool.version>5.8.10</hutool.version>
-    <maven-compiler-plugin>3.8.0</maven-compiler-plugin>
-    <reflectasm.version>1.11.9</reflectasm.version>
-    <guava.version>31.1-jre</guava.version>
+    <server.id>maven-central</server.id>
     <skip.jacoco.plugin>true</skip.jacoco.plugin>
+    <java.version>1.8</java.version>
+    <maven-javadoc-plugin>3.2.0</maven-javadoc-plugin>
+    <guava.version>31.1-jre</guava.version>
+    <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
+    <mybatis-plus.version>3.4.2</mybatis-plus.version>
+    <maven-source-plugin>3.2.1</maven-source-plugin>
+    <springboot.version>2.3.5.RELEASE</springboot.version>
+    <ognl.version>3.1.19</ognl.version>
+    <skip.maven.gpg.plugin>true</skip.maven.gpg.plugin>
+    <maven-gpg-plugin>1.6</maven-gpg-plugin>
+    <revision>2.0.0-ALPHA</revision>
+    <reflectasm.version>1.11.9</reflectasm.version>
+    <maven-compiler-plugin>3.8.0</maven-compiler-plugin>
   </properties>
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
-        <version>${slf4j.version}</version>
-        <optional>true</optional>
-      </dependency>
-      <dependency>
-        <groupId>org.projectlombok</groupId>
-        <artifactId>lombok</artifactId>
-        <version>${lombok.version}</version>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>${springboot.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
         <optional>true</optional>
       </dependency>
       <dependency>
@@ -90,13 +85,12 @@
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
         <version>${guava.version}</version>
-        <optional>true</optional>
-      </dependency>
-      <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>${junit.version}</version>
-        <scope>test</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+          </exclusion>
+        </exclusions>
         <optional>true</optional>
       </dependency>
       <dependency>
@@ -106,17 +100,14 @@
         <optional>true</optional>
       </dependency>
       <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-dependencies</artifactId>
-        <version>${springboot.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-        <optional>true</optional>
-      </dependency>
-      <dependency>
         <groupId>com.baomidou</groupId>
         <artifactId>mybatis-plus-boot-starter</artifactId>
         <version>${mybatis-plus.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ognl</groupId>
+        <artifactId>ognl</artifactId>
+        <version>${ognl.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -124,7 +115,6 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.projectlombok</groupId>
@@ -141,6 +131,17 @@
       <groupId>org.jacoco</groupId>
       <artifactId>jacoco-maven-plugin</artifactId>
       <version>${jacoco-maven-plugin.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.17</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
   <build>
@@ -247,4 +248,15 @@
       </plugin>
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <id>expensive-modules-to-build</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>crane4j-example</module>
+      </modules>
+    </profile>
+  </profiles>
 </project>
