@@ -6,6 +6,7 @@ import cn.crane4j.core.parser.handler.OperationAnnotationHandler;
 import cn.crane4j.core.support.Crane4jGlobalSorter;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.ReflectUtils;
+import cn.crane4j.core.util.TimerUtil;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -128,13 +129,11 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
                     result = currentlyInParsing.get(element);
                     // target need parse, do it!
                     if (Objects.isNull(result)) {
-                        result = createBeanOperations(element);
-                        result.setActive(false);
-                        currentlyInParsing.put(element, result);
-                        doParse(result);
-                        resolvedElements.put(element, currentlyInParsing.remove(element));
-                        result.setActive(true);
-                        log.debug("operations of element [{}] is parsed", element);
+                        result = TimerUtil.getExecutionTime(
+                            log.isDebugEnabled(),
+                            time -> log.debug("parsing of element [{}] completed in {} ms", element, time),
+                            () -> doParse(element)
+                        );
                     } else {
                         log.debug("target [{}] is in parsing, get early cache", element);
                         // FIXME： If the current configuration is not yet activated,
@@ -146,6 +145,17 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
                 }
             }
         }
+        return result;
+    }
+
+    private BeanOperations doParse(AnnotatedElement element) {
+        BeanOperations result;
+        result = createBeanOperations(element);
+        result.setActive(false);
+        currentlyInParsing.put(element, result);
+        doParse(result);
+        resolvedElements.put(element, currentlyInParsing.remove(element));
+        result.setActive(true);
         return result;
     }
 

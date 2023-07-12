@@ -5,8 +5,10 @@ import cn.crane4j.core.container.EmptyContainer;
 import cn.crane4j.core.executor.AssembleExecution;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.ObjectUtils;
+import cn.crane4j.core.util.TimerUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collection;
 import java.util.Map;
@@ -45,6 +47,7 @@ import java.util.Objects;
  * @author huangchengxing
  * @param <T> target type
  */
+@Slf4j
 public abstract class AbstractAssembleOperationHandler<T extends AbstractAssembleOperationHandler.Target> implements AssembleOperationHandler {
 
     /**
@@ -55,6 +58,14 @@ public abstract class AbstractAssembleOperationHandler<T extends AbstractAssembl
      */
     @Override
     public void process(Container<?> container, Collection<AssembleExecution> executions) {
+        TimerUtil.getExecutionTime(
+            log.isDebugEnabled(),
+            time -> log.debug("operation of container [{}] completed in {} ms", container.getNamespace(), time),
+            () -> doProcess(container, executions)
+        );
+    }
+
+    private void doProcess(Container<?> container, Collection<AssembleExecution> executions) {
         Collection<T> targets = collectToEntities(executions);
         if (container instanceof EmptyContainer || Objects.isNull(container)) {
             introspectForEntities(targets);

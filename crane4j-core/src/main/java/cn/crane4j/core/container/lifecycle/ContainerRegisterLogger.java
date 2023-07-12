@@ -49,7 +49,7 @@ public class ContainerRegisterLogger implements ContainerLifecycleProcessor {
     @Nullable
     @Override
     public Container<Object> whenCreated(ContainerDefinition definition, Container<Object> container) {
-        logConsumer.accept("create container comparator [{}] from definition [{}]", new Object[]{ container.hashCode(), definition.getNamespace() });
+        logConsumer.accept("create container [{}] from definition [{}]", new Object[]{ container.hashCode(), definition.getNamespace() });
         return container;
     }
 

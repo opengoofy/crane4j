@@ -11,6 +11,7 @@ import cn.crane4j.core.parser.operation.KeyTriggerOperation;
 import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.MultiMap;
+import cn.crane4j.core.util.TimerUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -97,6 +98,7 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
         if (CollectionUtils.isEmpty(targets) || Objects.isNull(operations)) {
             return;
         }
+
         // When the following all conditions are met, the operation will be abandoned:
         // 1. the operation is not active;
         // 2. the operation is still not active after waiting for a period of time;
@@ -111,7 +113,11 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
         MultiMap<BeanOperations, Object> collector = MultiMap.linkedListMultimap();
         collector.putAll(operations, targets);
         Predicate<? super KeyTriggerOperation> filter = options.getFilter();
-        disassembleIfNecessary(targets, operations, filter, collector);
+        TimerUtil.getExecutionTime(
+            log.isDebugEnabled(),
+            time -> log.debug("disassemble operations completed in {} ms", time),
+            () -> disassembleIfNecessary(targets, operations, filter, collector)
+        );
 
         // flattened objects are grouped according to assembly operations, then encapsulated as execution objects
         List<AssembleExecution> executions = new ArrayList<>();
@@ -123,7 +129,11 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
         );
 
         // complete assembly operation
-        executeOperations(executions, options);
+        TimerUtil.getExecutionTime(
+            log.isDebugEnabled(),
+            time -> log.debug("assemble operations completed in {} ms", time),
+            () -> executeOperations(executions, options)
+        );
     }
 
     /**

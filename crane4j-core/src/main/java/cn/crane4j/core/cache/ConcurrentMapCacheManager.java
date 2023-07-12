@@ -43,7 +43,7 @@ public class ConcurrentMapCacheManager implements CacheManager {
     public void removeCache(String cacheName) {
         caches.compute(cacheName, (name, cache) -> {
             if (Objects.nonNull(cache)) {
-                log.info("remove cache [{}]", cacheName);
+                log.debug("remove cache [{}]", cacheName);
                 cache.setExpired(true);
                 cache.cacheMap.clear();
             }
@@ -65,7 +65,7 @@ public class ConcurrentMapCacheManager implements CacheManager {
     public <K> Cache<K> getCache(String cacheName) {
         return (Cache<K>) CollectionUtils.computeIfAbsent(caches, cacheName, n -> {
             ConcurrentMap<K, Object> map = (ConcurrentMap<K, Object>)mapFactory.get();
-            log.info("create cache [{}]", cacheName);
+            log.debug("create cache [{}]", cacheName);
             return new CacheImpl<>(map);
         });
     }

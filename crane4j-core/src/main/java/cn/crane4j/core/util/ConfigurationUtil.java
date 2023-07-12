@@ -100,8 +100,8 @@ public class ConfigurationUtil {
             container = containerLifecycleProcessor.whenCreated(definition, container);
             if (Objects.isNull(container)) {
                 log.warn(
-                        "not create container for [{}], because of container lifecycle processor [{}]",
-                        namespace, containerLifecycleProcessor.getClass().getName()
+                        "not create container for [{}], because of container lifecycle processor [{}] return null",
+                        namespace, containerLifecycleProcessor.getClass().getSimpleName()
                 );
                 break;
             }

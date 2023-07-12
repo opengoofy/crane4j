@@ -60,7 +60,7 @@ public class MethodResultAutoOperateSupport {
             return;
         }
         // get and build method cache
-        log.debug("process result for [{}]", method.getName());
+        log.debug("process result for [{}]", method);
         AutoOperateAnnotatedElement element = CollectionUtils.computeIfAbsent(methodCaches, method.getName(), m -> elementResolver.resolve(method, annotation));
         // whether to apply the operation?
         String condition = element.getAnnotation().condition();
