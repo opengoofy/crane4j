@@ -13,7 +13,9 @@ import java.util.function.Supplier;
 @RequiredArgsConstructor
 public class Lazy<T> implements Supplier<T> {
 
-    private volatile T value;
+    private static final Object UNINITIALIZED_VALUE = new Object();
+
+    private volatile Object value = UNINITIALIZED_VALUE;
     private final Supplier<T> supplier;
 
     /**
@@ -21,20 +23,29 @@ public class Lazy<T> implements Supplier<T> {
      *
      * @return the value
      */
+    @SuppressWarnings("unchecked")
     public T get() {
-        if (value == null) {
+        if (value == UNINITIALIZED_VALUE) {
             synchronized (this) {
-                if (value == null) {
+                if (value == UNINITIALIZED_VALUE) {
                     value = supplier.get();
                 }
             }
         }
-        return value;
+        return (T) value;
     }
 
+    @SuppressWarnings("unchecked")
     public synchronized T refresh() {
-        T oldValue = this.value;
-        this.value = null;
-        return oldValue;
+        Object oldValue = this.value;
+        this.value = UNINITIALIZED_VALUE;
+        return (T) oldValue;
+    }
+
+    /**
+     * Returns `true` if a value for this Lazy instance has been already initialized, and `false` otherwise.
+     */
+    public Boolean isInitialized() {
+        return value != UNINITIALIZED_VALUE;
     }
 }
