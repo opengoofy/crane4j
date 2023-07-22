@@ -3,7 +3,7 @@ package cn.crane4j.spring.boot.example;
 import cn.crane4j.annotation.Assemble;
 import cn.crane4j.annotation.ContainerEnum;
 import cn.crane4j.annotation.Mapping;
-import cn.crane4j.core.container.ConstantContainer;
+import cn.crane4j.core.container.Containers;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.OperateTemplate;
 import cn.crane4j.core.support.reflect.PropertyOperator;
@@ -45,11 +45,11 @@ public class ContainerEnumExampleTest {
     public void init() {
         // 手动指定key为code属性，而value直接为枚举项本身
         if (!context.containsContainer("sex")) {
-            context.registerContainer("sex", () -> ConstantContainer.forEnum("sex", Sex.class, Sex::getCode));
+            context.registerContainer("sex", () -> Containers.forEnum("sex", Sex.class, Sex::getCode));
         }
         // 通过注解，配置了key为code属性，而value为name属性
         if (!context.containsContainer("gender")) {
-            context.registerContainer("gender", () -> ConstantContainer.forEnum(Gender.class, annotationFinder, propertyOperator));
+            context.registerContainer("gender", () -> Containers.forEnum(Gender.class, annotationFinder, propertyOperator));
         }
     }
 

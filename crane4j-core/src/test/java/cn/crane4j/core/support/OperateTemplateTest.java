@@ -3,7 +3,7 @@ package cn.crane4j.core.support;
 import cn.crane4j.annotation.Assemble;
 import cn.crane4j.annotation.Disassemble;
 import cn.crane4j.annotation.Mapping;
-import cn.crane4j.core.container.ConstantContainer;
+import cn.crane4j.core.container.Containers;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
 import cn.crane4j.core.parser.BeanOperationParser;
@@ -15,11 +15,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * test for {@link OperateTemplate}
@@ -47,7 +43,7 @@ public class OperateTemplateTest {
         sources.put("1", "1");
         sources.put("2", "2");
         sources.put("3", "3");
-        configuration.registerContainer(ConstantContainer.forMap("test", sources));
+        configuration.registerContainer(Containers.forMap("test", sources));
 
     }
 
@@ -95,8 +91,8 @@ public class OperateTemplateTest {
 
     private static void checkBean(Foo foo, String name, String nestedName, String value) {
         Assert.assertEquals(foo.getName(), name);
-        Assert.assertEquals(((NestedFoo)foo.getNestedFoo()).getName(), nestedName);
-        Assert.assertEquals(((NestedFoo)foo.getNestedFoo()).getValue(), value);
+        Assert.assertEquals(((NestedFoo) foo.getNestedFoo()).getName(), nestedName);
+        Assert.assertEquals(((NestedFoo) foo.getNestedFoo()).getValue(), value);
     }
 
     private static List<Foo> getFooList() {

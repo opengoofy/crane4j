@@ -1,9 +1,6 @@
 package cn.crane4j.extension.spring;
 
-import cn.crane4j.core.container.ConstantContainer;
-import cn.crane4j.core.container.Container;
-import cn.crane4j.core.container.ContainerProvider;
-import cn.crane4j.core.container.LambdaContainer;
+import cn.crane4j.core.container.*;
 import cn.crane4j.core.container.lifecycle.ContainerLifecycleProcessor;
 import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
 import cn.crane4j.core.executor.handler.OneToOneAssembleOperationHandler;
@@ -54,7 +51,8 @@ public class Crane4jApplicationContextTest {
         Assert.assertNotNull(context.getContainer("testBean"));
 
         int size = context.getContainerLifecycleProcessors().size();
-        ContainerLifecycleProcessor processor = new ContainerLifecycleProcessor() { };
+        ContainerLifecycleProcessor processor = new ContainerLifecycleProcessor() {
+        };
         context.registerContainerLifecycleProcessor(processor);
         Assert.assertEquals(size + 1, context.getContainerLifecycleProcessors().size());
         context.registerContainerLifecycleProcessor(processor);
@@ -92,8 +90,8 @@ public class Crane4jApplicationContextTest {
 
     protected static class TestConfig {
         @Bean("testBean")
-        public ConstantContainer<String> container() {
-            return ConstantContainer.forMap("test", Collections.singletonMap("key", "value"));
+        public Container<String> container() {
+            return Containers.forMap("test", Collections.singletonMap("key", "value"));
         }
 
         @Bean("testProvider")

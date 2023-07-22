@@ -2,8 +2,8 @@ package cn.crane4j.core.executor;
 
 import cn.crane4j.annotation.Assemble;
 import cn.crane4j.annotation.Mapping;
-import cn.crane4j.core.container.ConstantContainer;
 import cn.crane4j.core.container.Container;
+import cn.crane4j.core.container.Containers;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.operation.AssembleOperation;
 import lombok.Data;
@@ -32,7 +32,7 @@ public class OrderedBeanOperationExecutorTest extends BaseExecutorTest {
         Map<Object, Object> sources = new HashMap<>();
         sources.put(1, "two");
         sources.put("two", "three");
-        Container<Object> container = ConstantContainer.forMap("test", sources);
+        Container<Object> container = Containers.forMap("test", sources);
         configuration.registerContainer(container);
     }
 

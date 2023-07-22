@@ -1,16 +1,12 @@
 package cn.crane4j.core.support.operator;
 
 import cn.crane4j.annotation.ContainerParam;
-import cn.crane4j.core.container.ConstantContainer;
 import cn.crane4j.core.container.Container;
+import cn.crane4j.core.container.ImmutableMapContainer;
 import cn.crane4j.core.container.LambdaContainer;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.parser.BeanOperations;
-import cn.crane4j.core.support.AnnotationFinder;
-import cn.crane4j.core.support.DataProvider;
-import cn.crane4j.core.support.Grouped;
-import cn.crane4j.core.support.MethodInvoker;
-import cn.crane4j.core.support.ParameterNameFinder;
+import cn.crane4j.core.support.*;
 import cn.crane4j.core.support.container.DefaultMethodContainerFactory;
 import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.support.converter.ParameterConvertibleMethodInvoker;
@@ -23,12 +19,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -39,9 +30,9 @@ import java.util.stream.IntStream;
  * supports dynamic setting container before operations executed.
  *
  * @author huangchengxing
- * @since 2.0.0
  * @see ContainerParam
  * @see BeanOperationExecutor.Options
+ * @since 2.0.0
  */
 @Slf4j
 public class DynamicContainerOperatorProxyMethodFactory implements OperatorProxyMethodFactory {
@@ -55,12 +46,12 @@ public class DynamicContainerOperatorProxyMethodFactory implements OperatorProxy
     /**
      * Create a {@link DynamicContainerOperatorProxyMethodFactory} comparator.
      *
-     * @param converterManager converter manager
+     * @param converterManager    converter manager
      * @param parameterNameFinder parameter name finder
-     * @param annotationFinder annotation finder
+     * @param annotationFinder    annotation finder
      */
     public DynamicContainerOperatorProxyMethodFactory(
-            ConverterManager converterManager, ParameterNameFinder parameterNameFinder, AnnotationFinder annotationFinder) {
+        ConverterManager converterManager, ParameterNameFinder parameterNameFinder, AnnotationFinder annotationFinder) {
         this.converterManager = converterManager;
         this.parameterNameFinder = parameterNameFinder;
         this.annotationFinder = annotationFinder;
@@ -83,15 +74,15 @@ public class DynamicContainerOperatorProxyMethodFactory implements OperatorProxy
     private void initAdaptorProvider() {
         // adapt for map
         adaptorProviders.put(Map.class, (n, p) ->
-            arg -> ConstantContainer.forMap(n, (Map<Object, ?>) arg)
+            arg -> ImmutableMapContainer.forMap(n, (Map<Object, ?>) arg)
         );
         // adapt for container
         adaptorProviders.put(Container.class, (n, p) ->
-            arg -> (Container<Object>)arg
+            arg -> (Container<Object>) arg
         );
         // adapt for data provider
         adaptorProviders.put(DataProvider.class, (n, p) ->
-            arg -> LambdaContainer.forLambda(n, (DataProvider<Object, Object>)arg)
+            arg -> LambdaContainer.forLambda(n, (DataProvider<Object, Object>) arg)
         );
     }
 
@@ -117,7 +108,7 @@ public class DynamicContainerOperatorProxyMethodFactory implements OperatorProxy
     /**
      * Add adaptor provider for specific type.
      *
-     * @param type type
+     * @param type            type
      * @param adaptorProvider adaptor provider
      */
     public void addAdaptorProvider(
@@ -130,7 +121,7 @@ public class DynamicContainerOperatorProxyMethodFactory implements OperatorProxy
      * Get operator proxy method.
      *
      * @param beanOperations        bean operations
-     * @param method with at least one parameter
+     * @param method                with at least one parameter
      * @param beanOperationExecutor bean operation executor
      * @return operator proxy method if supported, null otherwise
      */
@@ -224,7 +215,7 @@ public class DynamicContainerOperatorProxyMethodFactory implements OperatorProxy
      */
     @FunctionalInterface
     public interface ContainerParameterAdaptorProvider {
-        
+
         /**
          * Get container parameter adaptor by given namespace and parameter.
          *

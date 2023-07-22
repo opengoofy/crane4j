@@ -1,9 +1,9 @@
 package cn.crane4j.extension.spring;
 
 import cn.crane4j.annotation.Assemble;
-import cn.crane4j.core.container.ConstantContainer;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerManager;
+import cn.crane4j.core.container.ImmutableMapContainer;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.operation.AssembleOperation;
@@ -71,7 +71,7 @@ public class SpringAssembleAnnotationHandlerTest {
         public Container<String> testContainer() {
             Map<String, Object> map = new HashMap<>();
             map.put("1", 1);
-            return ConstantContainer.forMap("testContainer", map);
+            return ImmutableMapContainer.forMap("testContainer", map);
         }
     }
 

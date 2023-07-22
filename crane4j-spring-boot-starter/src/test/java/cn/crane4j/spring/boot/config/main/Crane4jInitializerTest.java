@@ -2,8 +2,8 @@ package cn.crane4j.spring.boot.config.main;
 
 import cn.crane4j.core.cache.CacheManager;
 import cn.crane4j.core.container.CacheableContainer;
-import cn.crane4j.core.container.ConstantContainer;
 import cn.crane4j.core.container.Container;
+import cn.crane4j.core.container.ImmutableMapContainer;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
@@ -69,10 +69,10 @@ public class Crane4jInitializerTest {
             Collections.singleton("cn.crane4j.spring.boot.config.main.*"),
             properties.getContainerEnumPackages()
         );
-        Assert.assertTrue(context.getContainer("test1") instanceof ConstantContainer);
+        Assert.assertTrue(context.getContainer("test1") instanceof ImmutableMapContainer);
         Container<?> container = context.getContainer("test2");
         Assert.assertTrue(container instanceof CacheableContainer);
-        Assert.assertTrue(((CacheableContainer<?>)container).getContainer() instanceof ConstantContainer);
+        Assert.assertTrue(((CacheableContainer<?>)container).getContainer() instanceof ImmutableMapContainer);
         Assert.assertSame(
             applicationContext.getBean(CacheManager.class),
             ((CacheableContainer<?>)container).getCacheManager()
@@ -87,7 +87,7 @@ public class Crane4jInitializerTest {
             properties.getContainerConstantPackages()
         );
         Container<?> constant = context.getContainer("constant");
-        Assert.assertTrue(constant instanceof ConstantContainer);
+        Assert.assertTrue(constant instanceof ImmutableMapContainer);
         Map<?, ?> constantData = constant.get(null);
         Assert.assertEquals("one", constantData.get("one"));
         Assert.assertEquals("two", constantData.get("two"));

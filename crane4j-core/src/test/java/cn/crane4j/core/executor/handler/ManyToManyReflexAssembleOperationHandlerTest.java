@@ -2,8 +2,8 @@ package cn.crane4j.core.executor.handler;
 
 import cn.crane4j.annotation.Assemble;
 import cn.crane4j.annotation.Mapping;
-import cn.crane4j.core.container.ConstantContainer;
 import cn.crane4j.core.container.Container;
+import cn.crane4j.core.container.Containers;
 import cn.crane4j.core.executor.BaseExecutorTest;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
@@ -19,11 +19,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -50,7 +46,7 @@ public class ManyToManyReflexAssembleOperationHandlerTest extends BaseExecutorTe
             source.put("name", "id" + i);
             sources.put(String.valueOf(i), source);
         }
-        Container<String> container = ConstantContainer.forMap("test", sources);
+        Container<String> container = Containers.forMap("test", sources);
         configuration.registerContainer(container);
     }
 

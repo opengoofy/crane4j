@@ -60,7 +60,7 @@ public void init() {
     Map<Integer, String> sources = new HashMap<>();
     sources.put(0, "女");
     sources.put(1, "男");
-    Container<String> genderContainer = ConstantContainer.forMap("gender", sources);
+    Container<String> genderContainer = Containers.forMap("gender", sources);
     configuration.registerContainer(genderContainer); // 将其注册到全局配置中
 }
 ~~~
