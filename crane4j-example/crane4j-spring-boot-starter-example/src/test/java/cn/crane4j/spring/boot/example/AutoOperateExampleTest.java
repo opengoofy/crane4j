@@ -4,9 +4,9 @@ import cn.crane4j.annotation.ArgAutoOperate;
 import cn.crane4j.annotation.Assemble;
 import cn.crane4j.annotation.AutoOperate;
 import cn.crane4j.annotation.Mapping;
-import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.LambdaContainer;
 import cn.crane4j.extension.spring.Crane4jApplicationContext;
+import cn.crane4j.spring.boot.config.Crane4jAutoConfiguration;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.junit.Assert;
@@ -15,14 +15,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.stereotype.Component;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -32,8 +33,14 @@ import java.util.stream.IntStream;
  * @author huangchengxing
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {Crane4jSpringBootStarterExampleApplication.class, AutoOperateTestExample.Service.class})
-public class AutoOperateTestExample {
+@SpringBootTest(classes = {Crane4jSpringBootStarterExampleApplication.class, AutoOperateExampleTest.Service.class,
+        Crane4jAutoConfiguration.class})
+@TestPropertySource(properties = {
+        "crane4j.enable-method-result-auto-operate=true",
+        "crane4j.enable-method-argument-auto-operate=true",
+})
+@EnableAspectJAutoProxy
+public class AutoOperateExampleTest {
 
     @Autowired
     private Crane4jApplicationContext context;
@@ -42,10 +49,6 @@ public class AutoOperateTestExample {
 
     @Before
     public void init() {
-        Supplier<Container<Integer>> supplier = () -> LambdaContainer.forLambda(
-            "student", ids -> ids.stream()
-                .collect(Collectors.toMap(Function.identity(), id -> "student" + id))
-        );
         if (!context.containsContainer("student")) {
             context.registerContainer("student", () -> LambdaContainer.forLambda(
                     "student", ids -> ids.stream().collect(Collectors.toMap(Function.identity(), id -> "student" + id))
