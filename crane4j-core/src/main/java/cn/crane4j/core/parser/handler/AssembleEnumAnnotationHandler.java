@@ -1,11 +1,10 @@
 package cn.crane4j.core.parser.handler;
 
 import cn.crane4j.annotation.AssembleEnum;
-import cn.crane4j.annotation.ContainerEnum;
-import cn.crane4j.core.container.ConstantContainer;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerManager;
 import cn.crane4j.core.container.ContainerProvider;
+import cn.crane4j.core.container.EnumContainerBuilder;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.PropertyMapping;
 import cn.crane4j.core.parser.SimplePropertyMapping;
@@ -21,11 +20,8 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import java.lang.reflect.AnnotatedElement;
 import java.util.Comparator;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * An {@link AbstractAssembleAnnotationHandler} implementation for {@link AssembleEnum} annotation.
@@ -44,7 +40,7 @@ public class AssembleEnumAnnotationHandler extends AbstractAssembleAnnotationHan
      *
      * @param annotationFinder    annotation finder
      * @param globalConfiguration globalConfiguration
-     * @param propertyOperator property operator
+     * @param propertyOperator    property operator
      */
     public AssembleEnumAnnotationHandler(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration globalConfiguration,
@@ -58,7 +54,7 @@ public class AssembleEnumAnnotationHandler extends AbstractAssembleAnnotationHan
      * @param annotationFinder    annotation finder
      * @param operationComparator operation comparator
      * @param globalConfiguration globalConfiguration
-     * @param propertyOperator property operator
+     * @param propertyOperator    property operator
      */
     public AssembleEnumAnnotationHandler(
         AnnotationFinder annotationFinder, Comparator<KeyTriggerOperation> operationComparator,
@@ -77,7 +73,7 @@ public class AssembleEnumAnnotationHandler extends AbstractAssembleAnnotationHan
      */
     protected String getNamespace(AssembleEnum annotation) {
         return StringUtils.format(
-                "@{}:{}#{}#{}", getClass().getSimpleName(), annotation.type(), annotation.enumKey(), annotation.enumValue()
+            "@{}:{}#{}#{}", getClass().getSimpleName(), annotation.type(), annotation.enumKey(), annotation.enumValue()
         );
     }
 
@@ -90,18 +86,22 @@ public class AssembleEnumAnnotationHandler extends AbstractAssembleAnnotationHan
     @Override
     protected String getContainerNamespace(AssembleEnum annotation) {
         Class<? extends Enum<?>> enumType = annotation.type();
-        String namespace;
-        // TODO use container builder
-        if (annotation.useContainerEnum()) {
-            ContainerEnum containerEnum = annotationFinder.findAnnotation(enumType, ContainerEnum.class);
-            namespace = StringUtils.emptyToDefault(containerEnum.namespace(), containerEnum.getClass().getSimpleName());
-        } else {
-            namespace = getNamespace(annotation);
+        EnumContainerBuilder<Object, ? extends Enum<?>> enumContainerBuilder = EnumContainerBuilder.of(enumType)
+            .annotationFinder(annotationFinder)
+            .propertyOperator(propertyOperator);
+        if (!annotation.useContainerEnum()) {
+            enumContainerBuilder.key(annotation.enumKey());
+            enumContainerBuilder.value(annotation.enumValue());
+            enumContainerBuilder.namespace(getNamespace(annotation));
         }
+        Container<Object> container = enumContainerBuilder
+            .build();
+
         // register to container manager
+        String namespace = container.getNamespace();
         CollectionUtils.computeIfAbsent(
             internalEnumContainerProvider.enumCaches,
-            namespace, ns -> createContainer(annotation, enumType, namespace)
+            namespace, ns -> container
         );
         return ContainerManager.canonicalNamespace(namespace, INTERNAL_ENUM_CONTAINER_PROVIDER);
     }
@@ -127,33 +127,19 @@ public class AssembleEnumAnnotationHandler extends AbstractAssembleAnnotationHan
     /**
      * Get property mapping from given {@link StandardAnnotation}.
      *
-     * @param element element
+     * @param element            element
      * @param standardAnnotation standard annotation
-     * @param key key
+     * @param key                key
      * @return assemble operation groups
      */
     @Override
     protected Set<PropertyMapping> parsePropertyMappings(AnnotatedElement element, StandardAnnotation standardAnnotation, String key) {
         Set<PropertyMapping> propertyMappings = super.parsePropertyMappings(element, standardAnnotation, key);
-        AssembleEnum annotation = (AssembleEnum)((StandardAnnotationAdapter)standardAnnotation).getAnnotation();
+        AssembleEnum annotation = (AssembleEnum) ((StandardAnnotationAdapter) standardAnnotation).getAnnotation();
         if (StringUtils.isNotEmpty(annotation.ref())) {
             propertyMappings.add(new SimplePropertyMapping("", annotation.ref()));
         }
         return propertyMappings;
-    }
-
-    private ConstantContainer<Object> createContainer(
-        AssembleEnum annotation, Class<? extends Enum<?>> enumType, String namespace) {
-        if (annotation.useContainerEnum()) {
-            return ConstantContainer.forEnum(enumType, annotationFinder, propertyOperator);
-        }
-        boolean hasKey = StringUtils.isNotEmpty(annotation.enumKey());
-        boolean hasValue = StringUtils.isNotEmpty(annotation.enumValue());
-        return ConstantContainer.forMap(namespace, Stream.of(enumType.getEnumConstants())
-            .collect(Collectors.toMap(
-                    e -> hasKey ? Objects.requireNonNull(propertyOperator.readProperty(enumType, e, annotation.enumKey())) : e,
-                    e -> hasValue ? Objects.requireNonNull(propertyOperator.readProperty(enumType, e, annotation.enumValue())) : e)
-            ));
     }
 
     private static class InternalEnumContainerProvider implements ContainerProvider {
@@ -170,7 +156,7 @@ public class AssembleEnumAnnotationHandler extends AbstractAssembleAnnotationHan
         @Nullable
         @Override
         public <K> Container<K> getContainer(String namespace) {
-            return (Container<K>)enumCaches.get(namespace);
+            return (Container<K>) enumCaches.get(namespace);
         }
 
         /**

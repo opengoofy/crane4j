@@ -3,8 +3,8 @@ package cn.crane4j.core.executor;
 import cn.crane4j.annotation.Assemble;
 import cn.crane4j.annotation.Disassemble;
 import cn.crane4j.annotation.Mapping;
-import cn.crane4j.core.container.ConstantContainer;
 import cn.crane4j.core.container.Container;
+import cn.crane4j.core.container.Containers;
 import cn.crane4j.core.parser.BeanOperations;
 import lombok.Data;
 import lombok.Getter;
@@ -35,7 +35,7 @@ public class DisorderedBeanOperationExecutorTest extends BaseExecutorTest {
         Map<Integer, Object> sources = new HashMap<>();
         sources.put(1, new Source(1, "one"));
         sources.put(2, new Source(2, "two"));
-        Container<Integer> container = ConstantContainer.forMap("test", sources);
+        Container<Integer> container = Containers.forMap("test", sources);
         configuration.registerContainer(container);
     }
 

@@ -3,8 +3,8 @@ package cn.crane4j.core.executor;
 import cn.crane4j.annotation.Assemble;
 import cn.crane4j.annotation.Disassemble;
 import cn.crane4j.annotation.Mapping;
-import cn.crane4j.core.container.ConstantContainer;
 import cn.crane4j.core.container.Container;
+import cn.crane4j.core.container.Containers;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.SimpleBeanOperations;
 import lombok.Data;
@@ -15,11 +15,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -44,7 +40,7 @@ public class AsyncBeanOperationExecutorTest extends BaseExecutorTest {
         Map<Integer, Object> sources = new HashMap<>();
         sources.put(1, new Source(1, "one"));
         sources.put(2, new Source(2, "two"));
-        Container<Integer> container = ConstantContainer.forMap("test", sources);
+        Container<Integer> container = Containers.forMap("test", sources);
         configuration.registerContainer(container);
     }
 
@@ -68,7 +64,8 @@ public class AsyncBeanOperationExecutorTest extends BaseExecutorTest {
 
         // waiting for shutdown
         executor.shutdown();
-        while (!executor.isShutdown()) { }
+        while (!executor.isShutdown()) {
+        }
 
         Assert.assertEquals("one", bean1.getName());
         Assert.assertEquals("two", bean1.getNestedBean().getTypeName());

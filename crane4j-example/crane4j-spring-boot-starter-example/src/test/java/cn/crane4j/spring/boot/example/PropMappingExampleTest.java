@@ -2,7 +2,7 @@ package cn.crane4j.spring.boot.example;
 
 import cn.crane4j.annotation.Assemble;
 import cn.crane4j.annotation.Mapping;
-import cn.crane4j.core.container.ConstantContainer;
+import cn.crane4j.core.container.ImmutableMapContainer;
 import cn.crane4j.core.executor.handler.ManyToManyAssembleOperationHandler;
 import cn.crane4j.core.support.OperateTemplate;
 import cn.crane4j.extension.spring.Crane4jApplicationContext;
@@ -48,7 +48,7 @@ public class PropMappingExampleTest {
             source.put("age", 18 + i);
             sources.put(i, source);
         }
-        context.registerContainer(ConstantContainer.forMap("student", sources));
+        context.registerContainer(ImmutableMapContainer.forMap("student", sources));
     }
 
     /**
@@ -61,7 +61,7 @@ public class PropMappingExampleTest {
         for (int i = 0; i < students.size(); i++) {
             StudentVO studentVO = students.get(i);
             Assert.assertEquals("student" + i, studentVO.getName());
-            Assert.assertEquals((Integer)(18 + i), studentVO.getAge());
+            Assert.assertEquals((Integer) (18 + i), studentVO.getAge());
             System.out.println(studentVO);
         }
     }
@@ -139,6 +139,7 @@ public class PropMappingExampleTest {
         public StudentVO(Integer key) {
             this.key = key;
         }
+
         // 默认为一对一装配
         @Assemble(container = "student", props = {
             @Mapping(src = "name", ref = "name"), // s.name -> t.name
