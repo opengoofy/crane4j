@@ -3,11 +3,13 @@ package cn.crane4j.extension.spring.aop;
 import cn.crane4j.core.util.ReflectUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.springframework.aop.ClassFilter;
 import org.springframework.aop.MethodMatcher;
 import org.springframework.aop.Pointcut;
 
 import java.lang.reflect.Method;
+import java.util.Objects;
 import java.util.function.BiPredicate;
 
 /**
@@ -26,8 +28,9 @@ public class AutoOperatePointcut implements Pointcut {
     }
 
     public static AutoOperatePointcut forAnnotatedMethod(BiPredicate<Method, Class<?>> predicate) {
-        ClassFilter filter = t -> !ReflectUtils.isJdkElement(t)
-            && !t.getPackage().getName().startsWith("org.springframework");
+        // unable to determine the package in which it is located, maybe is a proxy class？
+        ClassFilter filter = t -> Objects.isNull(t.getPackage())
+            || (!ReflectUtils.isJdkElement(t) && !t.getPackage().getName().startsWith("org.springframework."));
         return create(filter, predicate);
     }
 
@@ -53,7 +56,7 @@ public class AutoOperatePointcut implements Pointcut {
          * @return false
          */
         @Override
-        default boolean matches(Method method, Class<?> aClass, Object... objects) {
+        default boolean matches(@NonNull Method method, @NonNull Class<?> aClass, @NonNull Object... objects) {
             return false;
         }
     }
