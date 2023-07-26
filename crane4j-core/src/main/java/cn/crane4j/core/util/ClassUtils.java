@@ -23,6 +23,10 @@ public class ClassUtils {
     public static boolean isJdkClass(Class<?> clazz) {
         Objects.requireNonNull(clazz);
         final Package objectPackage = clazz.getPackage();
+        // unable to determine the package in which it is located, maybe is a proxy class？
+        if (Objects.isNull(objectPackage)) {
+            return false;
+        }
         final String objectPackageName = objectPackage.getName();
         return objectPackageName.startsWith("java.")
             || objectPackageName.startsWith("javax.")
