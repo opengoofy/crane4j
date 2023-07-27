@@ -44,13 +44,13 @@ public class AutoOperateAnnotatedElement {
     private final BeanOperationExecutor executor;
     private final Function<Object, BeanOperations> parser;
 
-    public static AutoOperateAnnotatedElement forStaticOperation(
+    public static AutoOperateAnnotatedElement forStaticTypeOperation(
         AutoOperate annotation, AnnotatedElement element, MethodInvoker extractor,
         Predicate<? super KeyTriggerOperation> filter, BeanOperations operations, BeanOperationExecutor executor) {
         return new AutoOperateAnnotatedElement(annotation, element, extractor, filter, operations, executor, null);
     }
 
-    public static AutoOperateAnnotatedElement forDynamicOperation(
+    public static AutoOperateAnnotatedElement forDynamicTypeOperation(
         AutoOperate annotation, AnnotatedElement element, MethodInvoker extractor,
         Predicate<? super KeyTriggerOperation> filter, BeanOperationExecutor executor, Function<Object, BeanOperations> parser) {
         return new AutoOperateAnnotatedElement(annotation, element, extractor, filter, null, executor, parser);
@@ -59,8 +59,11 @@ public class AutoOperateAnnotatedElement {
     public void execute(Object data) {
         // if the beanOperations is null, then use the parser to parse the annotation type
         Object target = extractor.invoke(data);
+        if (Objects.isNull(target)) {
+            return;
+        }
         BeanOperations bo = Objects.isNull(beanOperations) ? parser.apply(target) : beanOperations;
-        if (Objects.nonNull(target)) {
+        if (Objects.nonNull(bo) && !bo.isEmpty()) {
             executor.execute(CollectionUtils.adaptObjectToCollection(target), bo, filter);
         }
     }
