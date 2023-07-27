@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -56,15 +57,18 @@ public class AutoOperateAnnotatedElementResolver {
         // not specify type, delay parsing until execution time
         Class<?> type = annotation.type();
         if (Objects.equals(Object.class, type) || Objects.equals(Void.TYPE, type)) {
-            Function<Object, BeanOperations> dynamicParser = t -> parser.parse(typeResolver.resolve(t));
-            result = AutoOperateAnnotatedElement.forDynamicOperation(
+            Function<Object, BeanOperations> dynamicParser = t -> Optional.ofNullable(t)
+                .map(typeResolver::resolve)
+                .map(parser::parse)
+                .orElse(BeanOperations.empty());
+            result = AutoOperateAnnotatedElement.forDynamicTypeOperation(
                 annotation, element, extractor, filter, executor, dynamicParser
             );
         }
         // specify type, parse immediately
         else {
             BeanOperations beanOperations = parser.parse(annotation.type());
-            result = AutoOperateAnnotatedElement.forStaticOperation(
+            result = AutoOperateAnnotatedElement.forStaticTypeOperation(
                 annotation, element, extractor, filter, beanOperations, executor
             );
         }

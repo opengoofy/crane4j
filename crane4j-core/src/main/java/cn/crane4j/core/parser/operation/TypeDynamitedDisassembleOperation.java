@@ -4,9 +4,11 @@ import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.support.TypeResolver;
-import cn.crane4j.core.util.Asserts;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.Objects;
 
 /**
  * <p>The {@link DisassembleOperation} implementation that
@@ -16,6 +18,7 @@ import lombok.NonNull;
  * @author huangchengxing
  * @see TypeResolver
  */
+@Slf4j
 public class TypeDynamitedDisassembleOperation extends SimpleKeyTriggerOperation implements DisassembleOperation {
 
     @Getter
@@ -54,7 +57,10 @@ public class TypeDynamitedDisassembleOperation extends SimpleKeyTriggerOperation
     @Override
     public BeanOperations getInternalBeanOperations(Object internalBean) {
         Class<?> internalType = typeResolver.resolve(internalBean);
-        Asserts.isNotNull(internalType, "cannot resolve type for object: [{}]", internalBean);
+        if (Objects.isNull(internalType)) {
+            log.warn("cannot resolve disassemble target type for object: [{}]", internalBean);
+            return BeanOperations.empty();
+        }
         return beanOperationParser.parse(internalType);
     }
 }

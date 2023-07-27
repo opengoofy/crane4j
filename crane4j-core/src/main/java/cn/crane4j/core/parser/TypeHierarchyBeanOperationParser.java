@@ -110,7 +110,7 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
     @NonNull
     @Override
     public BeanOperations parse(AnnotatedElement element) throws OperationParseException {
-        Objects.requireNonNull(element);
+        Objects.requireNonNull(element, "the element to be parsed cannot be null");
         try {
             return parseIfNecessary(element);
         } catch (Exception e) {
