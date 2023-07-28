@@ -86,12 +86,12 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
     /**
      * Add bean operations resolvers.
      *
-     * @param resolver handler
+     * @param handler handler
      */
-    public void addBeanOperationsResolver(OperationAnnotationHandler resolver) {
-        Objects.requireNonNull(resolver);
-        operationAnnotationHandlers.remove(resolver);
-        operationAnnotationHandlers.add(resolver);
+    public void addBeanOperationsResolver(OperationAnnotationHandler handler) {
+        Objects.requireNonNull(handler, "handler must not null");
+        operationAnnotationHandlers.remove(handler);
+        operationAnnotationHandlers.add(handler);
         operationAnnotationHandlers.sort(Crane4jGlobalSorter.comparator());
     }
 

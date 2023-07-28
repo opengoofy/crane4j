@@ -56,13 +56,13 @@ public class MethodInvokerContainer implements Container<Object> {
         String namespace,
         MethodInvoker methodInvoker, Object methodSource,
         KeyExtractor keyExtractor, MappingType mappingType) {
-        this.namespace = Objects.requireNonNull(namespace);
-        this.methodInvoker = Objects.requireNonNull(methodInvoker);
+        this.namespace = Objects.requireNonNull(namespace, "container namespace must not null");
+        this.methodInvoker = Objects.requireNonNull(methodInvoker, "method invoker must not null");
         this.methodSource = methodSource;
 
         // if the return value is not Map, the key extractor is required
         this.keyExtractor = keyExtractor;
-        this.mappingType = Objects.requireNonNull(mappingType);
+        this.mappingType = Objects.requireNonNull(mappingType, "mapping type must not null");
         Asserts.isTrue(
             mappingType == MappingType.MAPPED || Objects.nonNull(keyExtractor), "keyExtractor must not null"
         );

@@ -35,7 +35,7 @@ public class SimpleBeanOperations implements BeanOperations {
      */
     @Override
     public void addAssembleOperations(AssembleOperation operation) {
-        Objects.requireNonNull(operation);
+        Objects.requireNonNull(operation, "operation must not null");
         assembleOperations.remove(operation);
         assembleOperations.add(operation);
     }
@@ -48,7 +48,7 @@ public class SimpleBeanOperations implements BeanOperations {
      */
     @Override
     public void addDisassembleOperations(DisassembleOperation operation) {
-        Objects.requireNonNull(operation);
+        Objects.requireNonNull(operation, "operation must not null");
         disassembleOperations.remove(operation);
         disassembleOperations.add(operation);
     }

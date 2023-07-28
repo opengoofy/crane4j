@@ -31,8 +31,8 @@ public class ParameterConvertibleMethodInvoker implements MethodInvoker {
      */
     public static MethodInvoker create(
         MethodInvoker methodInvoker, ConverterManager converterManager, Class<?>[] parameterTypes) {
-        Objects.requireNonNull(methodInvoker);
-        Objects.requireNonNull(converterManager);
+        Objects.requireNonNull(methodInvoker, "methodInvoker name must not null");
+        Objects.requireNonNull(converterManager, "converterManager name must not null");
         return ArrayUtils.length(parameterTypes) == 0 ?
             methodInvoker : new ParameterConvertibleMethodInvoker(methodInvoker, converterManager, parameterTypes);
     }

@@ -34,8 +34,8 @@ public class LambdaContainer<K> implements Container<K> {
      * @return container
      */
     public static <K> LambdaContainer<K> forLambda(String namespace, DataProvider<K, ?> lambda) {
-        Objects.requireNonNull(namespace);
-        Objects.requireNonNull(lambda);
+        Objects.requireNonNull(namespace, "container namespace must not null");
+        Objects.requireNonNull(lambda, "lambda must not null");
         return new LambdaContainer<>(namespace, lambda);
     }
 

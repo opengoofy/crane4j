@@ -21,7 +21,7 @@ public class ClassUtils {
      * @return is jdk class
      */
     public static boolean isJdkClass(Class<?> clazz) {
-        Objects.requireNonNull(clazz);
+        Objects.requireNonNull(clazz, "class name must not null");
         final Package objectPackage = clazz.getPackage();
         // unable to determine the package in which it is located, maybe is a proxy class？
         if (Objects.isNull(objectPackage)) {
@@ -41,7 +41,7 @@ public class ClassUtils {
      * @throws Crane4jException if class not found
      */
     public static Class<?> forName(String className) throws Crane4jException {
-        Objects.requireNonNull(className);
+        Objects.requireNonNull(className, "class name must not null");
         try {
             return Class.forName(className);
         } catch (ClassNotFoundException e) {
@@ -57,7 +57,7 @@ public class ClassUtils {
      * @return resource path
      */
     public static String packageToPath(String packagePath) {
-        Objects.requireNonNull(packagePath);
+        Objects.requireNonNull(packagePath, "packagePath must not null");
         return packagePath.replace(".", "/");
     }
 }
