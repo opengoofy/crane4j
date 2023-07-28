@@ -233,7 +233,7 @@ public class CollectionUtils {
     @SafeVarargs
     public static <T, C extends Collection<T>> C newCollection(Supplier<C> collectionFactory, T... elements) {
         C collection = collectionFactory.get();
-        Objects.requireNonNull(collection);
+        Objects.requireNonNull(collection, "the collection obtained from the collection factory cannot be null");
         if (Objects.isNull(elements) || elements.length == 0) {
             return collection;
         }

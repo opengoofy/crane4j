@@ -6,7 +6,11 @@ import cn.crane4j.core.container.ImmutableMapContainer;
 import cn.crane4j.core.container.LambdaContainer;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.parser.BeanOperations;
-import cn.crane4j.core.support.*;
+import cn.crane4j.core.support.AnnotationFinder;
+import cn.crane4j.core.support.DataProvider;
+import cn.crane4j.core.support.Grouped;
+import cn.crane4j.core.support.MethodInvoker;
+import cn.crane4j.core.support.ParameterNameFinder;
 import cn.crane4j.core.support.container.DefaultMethodContainerFactory;
 import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.support.converter.ParameterConvertibleMethodInvoker;
@@ -19,7 +23,12 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -113,7 +122,7 @@ public class DynamicContainerOperatorProxyMethodFactory implements OperatorProxy
      */
     public void addAdaptorProvider(
         Class<?> type, ContainerParameterAdaptorProvider adaptorProvider) {
-        Objects.requireNonNull(adaptorProvider);
+        Objects.requireNonNull(adaptorProvider, "adaptorProvider name must not null");
         adaptorProviders.put(type, adaptorProvider);
     }
 

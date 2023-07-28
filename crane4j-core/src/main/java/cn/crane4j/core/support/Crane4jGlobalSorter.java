@@ -43,7 +43,7 @@ public final class Crane4jGlobalSorter implements Comparator<Object> {
      * @param compareValueExtractor comparator
      */
     public synchronized void addCompareValueExtractor(Function<Object, Integer> compareValueExtractor) {
-        Objects.requireNonNull(compareValueExtractor);
+        Objects.requireNonNull(compareValueExtractor, "compareValueExtractor must not null");
         keyExtractors.remove(compareValueExtractor);
         keyExtractors.add(compareValueExtractor);
     }

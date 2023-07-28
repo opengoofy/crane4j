@@ -161,9 +161,9 @@ public class OperateTemplate {
         if (CollectionUtils.isEmpty(targets)) {
             return;
         }
-        Objects.requireNonNull(targetType);
-        Objects.requireNonNull(parser);
-        Objects.requireNonNull(executor);
+        Objects.requireNonNull(targetType, "targetType must not null");
+        Objects.requireNonNull(parser, "parser must not null");
+        Objects.requireNonNull(executor, "executor must not null");
         BeanOperations beanOperations = parser.parse(targetType);
         executor.execute(targets, beanOperations, filter);
     }

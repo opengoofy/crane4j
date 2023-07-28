@@ -67,8 +67,8 @@ public abstract class AbstractQueryContainerProvider<T> implements ContainerProv
      * @param target repository object.
      */
     public final void registerRepository(String name, T target) {
-        Objects.requireNonNull(name);
-        Objects.requireNonNull(target);
+        Objects.requireNonNull(name, "repository name must not null");
+        Objects.requireNonNull(target, "repository must not null");
         CollectionUtils.computeIfAbsent(registeredRepositories, name, n -> createRepository(n, target));
     }
 
