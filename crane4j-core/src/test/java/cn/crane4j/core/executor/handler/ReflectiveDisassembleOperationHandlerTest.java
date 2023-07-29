@@ -1,7 +1,6 @@
 package cn.crane4j.core.executor.handler;
 
 import cn.crane4j.annotation.Disassemble;
-import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.executor.BaseExecutorTest;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.operation.DisassembleOperation;
@@ -78,11 +77,13 @@ public class ReflectiveDisassembleOperationHandlerTest extends BaseExecutorTest 
         Assert.assertEquals("noneGetter", operation.getKey());
 
         // 输入null
-        Assert.assertTrue(handler.process(operation, null).isEmpty());
+        Assert.assertTrue(handler.process(operation, null)
+            .isEmpty());
 
         // 没有getter方法
-        Runnable runnable = () -> handler.process(operation, Collections.singleton(new Bean()));
-        Assert.assertThrows(Crane4jException.class, runnable::run);
+        Bean bean = new Bean();
+        bean.noneGetter = new Bean();
+        Assert.assertEquals(1,handler.process(operation, Collections.singleton(bean)).size());
     }
 
     @Accessors(chain = true)

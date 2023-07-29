@@ -318,6 +318,40 @@ public class ReflectUtils {
         return Optional.ofNullable(getMethod(beanType, booleanSetterName, fieldType));
     }
 
+    /**
+     * find setter method
+     *
+     * @param beanType  bean's type
+     * @param fieldName field's name
+     * @return java.util.Optional<java.lang.reflect.Method>
+     */
+    public static Optional<Method> findSetterMethod(Class<?> beanType, String fieldName) {
+        // find setXXX method
+        String setterName = StringUtils.upperFirstAndAddPrefix(fieldName, SET_PREFIX);
+        Optional<Method> method = findMethod(beanType, setterName, 1);
+        if (method.isPresent()) {
+            return method;
+        }
+
+        // find fluent method
+        Optional<Method> fluentSetter = findMethod(beanType, fieldName, 1);
+        if (fluentSetter.isPresent()) {
+            return fluentSetter;
+        }
+
+        // find isXXX method
+        String booleanSetterName = StringUtils.upperFirstAndAddPrefix(fieldName, IS_PREFIX);
+        return findMethod(beanType, booleanSetterName, 1);
+    }
+
+    public static Optional<Method> findMethod(Class<?> beanType, String methodName, int parameterCount) {
+        Method[] methods = getMethods(beanType);
+        return Stream.of(methods)
+            .filter(m -> m.getName().equals(methodName))
+            .filter(m -> m.getParameterCount() == parameterCount)
+            .findFirst();
+    }
+
     // ====================== annotation ======================
 
     /**
@@ -498,7 +532,7 @@ public class ReflectUtils {
         }
     }
 
-    private static <T extends AccessibleObject> void setAccessible(T accessibleObject) {
+    public static <T extends AccessibleObject> void setAccessible(T accessibleObject) {
         if (!accessibleObject.isAccessible()) {
             accessibleObject.setAccessible(true);
         }
