@@ -6,7 +6,6 @@ import cn.crane4j.core.support.converter.HutoolConverterManager;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.val;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
@@ -43,9 +42,9 @@ public class ReflectivePropertyOperatorTest {
         Assert.assertNull(operator.findGetter(Foo.class, "none"));
         Assert.assertNotNull(operator.findGetter(Foo.class, "shared"));
 
-        operator.setThrowIfNoMatchedMethod(true);
+        operator.setThrowIfNoAnyMatched(true);
         Assert.assertThrows(Crane4jException.class, () -> operator.findGetter(Foo.class, "none"));
-        operator.setThrowIfNoMatchedMethod(false);
+        operator.setThrowIfNoAnyMatched(false);
     }
 
     @Test
@@ -75,9 +74,9 @@ public class ReflectivePropertyOperatorTest {
         Assert.assertNotNull(operator.findSetter(Foo.class, "shared"));
         Assert.assertNull(operator.findSetter(Foo.class, "none"));
 
-        operator.setThrowIfNoMatchedMethod(true);
+        operator.setThrowIfNoAnyMatched(true);
         Assert.assertThrows(Crane4jException.class, () -> operator.findSetter(Foo.class, "none"));
-        operator.setThrowIfNoMatchedMethod(false);
+        operator.setThrowIfNoAnyMatched(false);
     }
 
     @Test
@@ -98,9 +97,9 @@ public class ReflectivePropertyOperatorTest {
         operator.writeProperty(Foo.class, foo, "shade", "another");
         Assert.assertEquals("shade", foo.getShade());
 
-        operator.setThrowIfNoMatchedMethod(true);
+        operator.setThrowIfNoAnyMatched(true);
         Assert.assertThrows(Crane4jException.class, () -> operator.findSetter(Foo.class, "none"));
-        operator.setThrowIfNoMatchedMethod(false);
+        operator.setThrowIfNoAnyMatched(false);
     }
 
     @AllArgsConstructor

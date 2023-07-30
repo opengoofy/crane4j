@@ -18,6 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * A {@link PropertyOperator} implementation based on {@link com.esotericsoftware.reflectasm}.
  *
  * @author huangchengxing
+ * @author tangcent
  */
 public class AsmReflectivePropertyOperator extends ReflectivePropertyOperator {
 
@@ -110,12 +111,12 @@ public class AsmReflectivePropertyOperator extends ReflectivePropertyOperator {
     /**
      * {@link MethodInvoker} implementation based on {@link FieldAccess}
      */
-    public static abstract class ReflectAsmFieldInvoker implements MethodInvoker {
+    public abstract static class ReflectAsmFieldInvoker implements MethodInvoker {
 
         private final FieldAccess fieldAccess;
         private final int fieldIndex;
 
-        public ReflectAsmFieldInvoker(FieldAccess fieldAccess, int fieldIndex) {
+        protected ReflectAsmFieldInvoker(FieldAccess fieldAccess, int fieldIndex) {
             this.fieldAccess = fieldAccess;
             this.fieldIndex = fieldIndex;
         }

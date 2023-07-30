@@ -37,9 +37,9 @@ public class AsmReflectivePropertyOperatorTest {
         Assert.assertNotNull(operator.findGetter(Foo.class, "shared"));
         Assert.assertNull(operator.findGetter(Foo.class, "none"));
 
-        operator.setThrowIfNoMatchedMethod(true);
+        operator.setThrowIfNoAnyMatched(true);
         Assert.assertThrows(Crane4jException.class, () -> operator.findGetter(Foo.class, "none"));
-        operator.setThrowIfNoMatchedMethod(false);
+        operator.setThrowIfNoAnyMatched(false);
     }
 
     @Test
@@ -68,9 +68,9 @@ public class AsmReflectivePropertyOperatorTest {
         Assert.assertNotNull(operator.findSetter(Foo.class, "shared"));
         Assert.assertNull(operator.findSetter(Foo.class, "none"));
 
-        operator.setThrowIfNoMatchedMethod(true);
+        operator.setThrowIfNoAnyMatched(true);
         Assert.assertThrows(Crane4jException.class, () -> operator.findSetter(Foo.class, "none"));
-        operator.setThrowIfNoMatchedMethod(false);
+        operator.setThrowIfNoAnyMatched(false);
     }
 
     @AllArgsConstructor

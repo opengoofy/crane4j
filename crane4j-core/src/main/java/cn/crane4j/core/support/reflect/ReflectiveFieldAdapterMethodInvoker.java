@@ -56,6 +56,8 @@ public abstract class ReflectiveFieldAdapterMethodInvoker implements MethodInvok
 
     /**
      * An implementation of the {@link ReflectiveFieldAdapterMethodInvoker} for getter.
+     *
+     * @author tangcent
      */
     private static class ReflectiveFieldGetterInvoker extends ReflectiveFieldAdapterMethodInvoker {
 
@@ -83,6 +85,8 @@ public abstract class ReflectiveFieldAdapterMethodInvoker implements MethodInvok
 
     /**
      * An implementation of the {@link ReflectiveFieldAdapterMethodInvoker} for setter.
+     *
+     * @author tangcent
      */
     private static class ReflectiveFieldSetterInvoker extends ReflectiveFieldAdapterMethodInvoker {
 

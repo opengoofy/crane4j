@@ -13,9 +13,37 @@ import java.lang.reflect.Method;
 import java.util.Objects;
 
 /**
- * A {@link PropertyOperator} abstract implementation class.
+ * <p>Implementation of {@link PropertyOperator} based on Java reflection.<br />
+ * Supports reading and writing JavaBean properties via Field or getter/setter methods.
+ * 
+ * <p><strong>supports</strong>:
+ * <p>This property operator can be used to handle the following scenarios:
+ * <ul>
+ *     <li>
+ *         The property actually exists, and there is a corresponding getter or setter method:
+ *         the getter/setter method is preferred to complete the reading and writing of the property value;
+ *     </li>
+ *     <li>
+ *         The property actually exists, but there is no corresponding getter or setter method:
+ *         directly use Field to complete the reading and writing of the property value;
+ *     </li>
+ *     <li>
+ *         The property does not actually exist, but there are getter or setter methods that conform to the specification:
+ *         use the getter/setter method to complete the reading and writing of the property value;
+ *     </li>
+ * </ul>
+ *
+ * <p><strong>throws exception</strong>:
+ * <p>If the specified property cannot find a Field or getter/setter method that supports read and write,
+ * the operation will be aborted and null (if there is a return value) will be returned.<br />
+ * We can set {@link #throwIfNoAnyMatched} to {@code true} to throw an exception in this case.
+ *
+ * <p><strong>type conversion</strong>:
+ * <p>Setting {@link ConverterManager}, the class supports a certain degree of automatic conversion
+ * of parameter types when writing property values.
  *
  * @author huangchengxing
+ * @author tangcent
  */
 public class ReflectivePropertyOperator implements PropertyOperator {
 
@@ -27,10 +55,10 @@ public class ReflectivePropertyOperator implements PropertyOperator {
     protected ConverterManager converterManager;
 
     /**
-     * Whether to throw an exception if no matching method is found.
+     * Whether to throw an exception if no matching method or field is found.
      */
     @Setter
-    private boolean throwIfNoMatchedMethod = false;
+    private boolean throwIfNoAnyMatched = false;
 
     /**
      * Create a property operator.
@@ -63,7 +91,7 @@ public class ReflectivePropertyOperator implements PropertyOperator {
             return methodInvokerForGetter;
         }
 
-        Asserts.isFalse(throwIfNoMatchedMethod, "No getter method found for property [{}] in [{}] ", propertyName, targetType.getName());
+        Asserts.isFalse(throwIfNoAnyMatched, "No getter method found for property [{}] in [{}] ", propertyName, targetType.getName());
         return null;
     }
 
@@ -89,7 +117,7 @@ public class ReflectivePropertyOperator implements PropertyOperator {
             return methodInvokerForSetter;
         }
 
-        Asserts.isFalse(throwIfNoMatchedMethod, "No setter method found for property [{}] in [{}] ", propertyName, targetType.getName());
+        Asserts.isFalse(throwIfNoAnyMatched, "No setter method found for property [{}] in [{}] ", propertyName, targetType.getName());
         return null;
     }
 
