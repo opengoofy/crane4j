@@ -46,10 +46,10 @@ public class EnumContainerBuilderTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void annotatedEnumDefault() {
         // annotated
         Container<Object> container = EnumContainerBuilder.of(AnnotatedEnum.class)
+            .enableContainerEnumAnnotation(true)
             .annotationFinder(new SimpleAnnotationFinder())
             .propertyOperator(new ReflectivePropertyOperator(new HutoolConverterManager()))
             .build();

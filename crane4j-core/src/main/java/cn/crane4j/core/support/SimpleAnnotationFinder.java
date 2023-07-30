@@ -15,6 +15,8 @@ import java.util.stream.Stream;
  */
 public class SimpleAnnotationFinder implements AnnotationFinder {
 
+    public static final AnnotationFinder INSTANCE = new SimpleAnnotationFinder();
+
     /**
      * Get the specified annotation from the element.
      *

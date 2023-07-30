@@ -32,6 +32,13 @@ public class ContainersTest {
         Assert.assertTrue(container.get(null).isEmpty());
     }
 
+    @Test
+    public void forEmptyData() {
+        Container<Object> container = Containers.forEmptyData("test");
+        Assert.assertEquals("test", container.getNamespace());
+        Assert.assertTrue(container.get(null).isEmpty());
+    }
+
     @SuppressWarnings("unchecked")
     @Test
     public void forEnum() {

@@ -2,10 +2,13 @@ package cn.crane4j.core.container;
 
 import cn.crane4j.annotation.ContainerConstant;
 import cn.crane4j.core.support.AnnotationFinder;
+import cn.crane4j.core.support.SimpleAnnotationFinder;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.ObjectUtils;
 import cn.crane4j.core.util.ReflectUtils;
 import cn.crane4j.core.util.StringUtils;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -15,8 +18,6 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static java.util.Objects.requireNonNull;
-
 /**
  * A builder class for creating {@link Container}s from public static constants in a specified class.
  *
@@ -25,20 +26,49 @@ import static java.util.Objects.requireNonNull;
  */
 public class ConstantContainerBuilder {
 
+    /**
+     * The class containing the public static constants.
+     */
+    @NonNull
     private final Class<?> constantClass;
-    private AnnotationFinder annotationFinder;
+
+    /**
+     * Whether to include only public constants.
+     */
+    @Nullable
     private Boolean onlyPublic = null;
+
+    /**
+     * Whether to include only constants that are explicitly annotated with {@link ContainerConstant.Include}.
+     */
+    @Nullable
     private Boolean onlyExplicitlyIncluded = null;
+
+    /**
+     * Whether to reverse the order of the constant values in the container.
+     */
+    @Nullable
     private Boolean reverse = null;
+
+    /**
+     * The namespace for the container.
+     */
+    @Nullable
     private String namespace = null;
+
+    /**
+     * The annotation finder to use when reading {@link ContainerConstant} annotation.
+     */
+    @NonNull
+    private AnnotationFinder annotationFinder = SimpleAnnotationFinder.INSTANCE;
 
     /**
      * Creates a new instance of the builder with the specified constant class.
      *
      * @param constantClass the class containing the public static constants
      */
-    private ConstantContainerBuilder(Class<?> constantClass) {
-        this.constantClass = constantClass;
+    private ConstantContainerBuilder(@NonNull Class<?> constantClass) {
+        this.constantClass = Objects.requireNonNull(constantClass, "constantClass must not null");
     }
 
     /**
@@ -47,7 +77,7 @@ public class ConstantContainerBuilder {
      * @param constantClass the class containing the public static constants
      * @return a new builder instance
      */
-    public static ConstantContainerBuilder of(Class<?> constantClass) {
+    public static ConstantContainerBuilder of(@NonNull Class<?> constantClass) {
         return new ConstantContainerBuilder(constantClass);
     }
 
@@ -57,7 +87,7 @@ public class ConstantContainerBuilder {
      * @param annotationFinder the annotation finder to use
      * @return this builder instance
      */
-    public ConstantContainerBuilder annotationFinder(AnnotationFinder annotationFinder) {
+    public ConstantContainerBuilder annotationFinder(@NonNull AnnotationFinder annotationFinder) {
         this.annotationFinder = annotationFinder;
         return this;
     }
@@ -112,9 +142,6 @@ public class ConstantContainerBuilder {
      * @return an immutable container
      */
     public Container<Object> build() {
-        requireNonNull(constantClass);
-        requireNonNull(annotationFinder);
-
         // process annotation
         ContainerConstant annotation = annotationFinder.getAnnotation(constantClass, ContainerConstant.class);
         if (annotation != null) {
@@ -133,16 +160,16 @@ public class ConstantContainerBuilder {
         }
 
         // use default values
-        boolean onlyPublic = ObjectUtils.defaultIfNull(this.onlyPublic, true);
-        boolean onlyExplicitlyIncluded = ObjectUtils.defaultIfNull(this.onlyExplicitlyIncluded, false);
-        boolean reverse = ObjectUtils.defaultIfNull(this.reverse, false);
+        boolean isOnlyPublic = ObjectUtils.defaultIfNull(this.onlyPublic, true);
+        boolean isOnlyExplicitlyIncluded = ObjectUtils.defaultIfNull(this.onlyExplicitlyIncluded, false);
+        boolean isReverse = ObjectUtils.defaultIfNull(this.reverse, false);
 
         // build fieldFilter
         Predicate<Field> fieldFilter = field -> Modifier.isStatic(field.getModifiers());
-        if (onlyPublic) {
+        if (isOnlyPublic) {
             fieldFilter = fieldFilter.and(field -> Modifier.isPublic(field.getModifiers()));
         }
-        if (onlyExplicitlyIncluded) {
+        if (isOnlyExplicitlyIncluded) {
             fieldFilter = fieldFilter.and(field -> annotationFinder.hasAnnotation(field, ContainerConstant.Include.class));
         }
         fieldFilter = fieldFilter.and(field -> !annotationFinder.hasAnnotation(field, ContainerConstant.Exclude.class));
@@ -160,7 +187,7 @@ public class ConstantContainerBuilder {
             });
 
         // build container
-        String namespace = StringUtils.emptyToDefault(this.namespace, constantClass.getSimpleName());
-        return ImmutableMapContainer.forMap(namespace, reverse ? CollectionUtils.reverse(data) : data);
+        String actualNamespace = StringUtils.emptyToDefault(this.namespace, constantClass.getSimpleName());
+        return ImmutableMapContainer.forMap(actualNamespace, isReverse ? CollectionUtils.reverse(data) : data);
     }
 }

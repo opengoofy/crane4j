@@ -2,8 +2,13 @@ package cn.crane4j.core.container;
 
 import cn.crane4j.annotation.ContainerEnum;
 import cn.crane4j.core.support.AnnotationFinder;
+import cn.crane4j.core.support.SimpleAnnotationFinder;
+import cn.crane4j.core.support.converter.SimpleConverterManager;
 import cn.crane4j.core.support.reflect.PropertyOperator;
+import cn.crane4j.core.support.reflect.ReflectivePropertyOperator;
 import cn.crane4j.core.util.StringUtils;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Map;
 import java.util.Objects;
@@ -21,23 +26,58 @@ import java.util.stream.Stream;
  */
 public class EnumContainerBuilder<K, T extends Enum<?>> {
 
-    private final Class<T> enumType;
-    private String namespace;
-    private Function<? super T, ?> keyGetter = DEFAULT_KEY_GETTER;
-    private Function<? super T, ?> valueGetter = DEFAULT_VALUE_GETTER;
-    private AnnotationFinder annotationFinder;
-    private PropertyOperator propertyOperator;
-
     private static final Function<? super Enum<?>, ?> DEFAULT_KEY_GETTER = Enum::name;
     private static final Function<? super Enum<?>, ?> DEFAULT_VALUE_GETTER = Function.identity();
+    private static final PropertyOperator DEFAULT_PROPERTY_OPERATOR = new ReflectivePropertyOperator(new SimpleConverterManager());
+
+    /**
+     * The enum type to create a container for.
+     */
+    @NonNull
+    private final Class<T> enumType;
+
+    /**
+     * The namespace for the container.
+     */
+    @Nullable
+    private String namespace;
+
+    /**
+     * The function to use for obtaining keys from enum values.
+     */
+    @NonNull
+    private Function<? super T, ?> keyGetter = DEFAULT_KEY_GETTER;
+
+    /**
+     * The function to use for obtaining values from enum values.
+     */
+    @NonNull
+    private Function<? super T, ?> valueGetter = DEFAULT_VALUE_GETTER;
+
+    /**
+     * Whether to enable the {@link ContainerEnum} annotation on the enum type.
+     */
+    private boolean enableContainerEnumAnnotation = true;
+
+    /**
+     * The annotation finder to use for finding annotations on the enum type.
+     */
+    @NonNull
+    private AnnotationFinder annotationFinder = SimpleAnnotationFinder.INSTANCE;
+
+    /**
+     * The property operator to use for accessing properties on the enum type.
+     */
+    @NonNull
+    private PropertyOperator propertyOperator = DEFAULT_PROPERTY_OPERATOR;
 
     /**
      * Creates a new instance of the builder with the specified enum type.
      *
      * @param enumType the enum type to create a container for
      */
-    private EnumContainerBuilder(Class<T> enumType) {
-        this.enumType = enumType;
+    private EnumContainerBuilder(@NonNull Class<T> enumType) {
+        this.enumType = Objects.requireNonNull(enumType);
     }
 
     /**
@@ -47,9 +87,11 @@ public class EnumContainerBuilder<K, T extends Enum<?>> {
      * @param <T>      the type of the enum values
      * @return a new builder instance
      */
-    public static <T extends Enum<?>> EnumContainerBuilder<Object, T> of(Class<T> enumType) {
+    public static <T extends Enum<?>> EnumContainerBuilder<Object, T> of(@NonNull Class<T> enumType) {
         return new EnumContainerBuilder<>(enumType);
     }
+
+    // ============== attribute ==============
 
     /**
      * Sets the namespace for the container.
@@ -57,7 +99,7 @@ public class EnumContainerBuilder<K, T extends Enum<?>> {
      * @param namespace the namespace to set
      * @return this builder instance
      */
-    public EnumContainerBuilder<K, T> namespace(String namespace) {
+    public EnumContainerBuilder<K, T> namespace(@Nullable String namespace) {
         this.namespace = namespace;
         return this;
     }
@@ -70,7 +112,7 @@ public class EnumContainerBuilder<K, T extends Enum<?>> {
      * @return this builder instance
      */
     @SuppressWarnings("unchecked")
-    public <K1> EnumContainerBuilder<K1, T> keyGetter(Function<? super T, K1> keyGetter) {
+    public <K1> EnumContainerBuilder<K1, T> keyGetter(@NonNull Function<? super T, K1> keyGetter) {
         this.keyGetter = keyGetter;
         return (EnumContainerBuilder<K1, T>) this;
     }
@@ -82,8 +124,8 @@ public class EnumContainerBuilder<K, T extends Enum<?>> {
      * @return this builder instance
      */
     @SuppressWarnings("unchecked")
-    public EnumContainerBuilder<Object, T> key(String key) {
-        this.keyGetter = (e) -> this.propertyOperator.readProperty(enumType, e, key);
+    public EnumContainerBuilder<Object, T> key(@NonNull String key) {
+        this.keyGetter = e -> this.propertyOperator.readProperty(enumType, e, key);
         return (EnumContainerBuilder<Object, T>) this;
     }
 
@@ -94,7 +136,7 @@ public class EnumContainerBuilder<K, T extends Enum<?>> {
      * @param valueGetter the value getter function to set
      * @return this builder instance
      */
-    public EnumContainerBuilder<K, T> valueGetter(Function<? super T, Object> valueGetter) {
+    public EnumContainerBuilder<K, T> valueGetter(@NonNull Function<? super T, Object> valueGetter) {
         this.valueGetter = valueGetter;
         return this;
     }
@@ -105,10 +147,23 @@ public class EnumContainerBuilder<K, T extends Enum<?>> {
      * @param value the value to set
      * @return this builder instance
      */
-    public EnumContainerBuilder<K, T> value(String value) {
-        this.valueGetter = (e) -> this.propertyOperator.readProperty(enumType, e, value);
+    public EnumContainerBuilder<K, T> value(@NonNull String value) {
+        this.valueGetter = e -> this.propertyOperator.readProperty(enumType, e, value);
         return this;
     }
+
+    /**
+     * Whether to enable resolves configuration from the specified {@link ContainerEnum} annotation.
+     *
+     * @param enableContainerEnumAnnotation enable container enum annotation
+     * @return this builder instance
+     */
+    public EnumContainerBuilder<K, T> enableContainerEnumAnnotation(boolean enableContainerEnumAnnotation) {
+        this.enableContainerEnumAnnotation = enableContainerEnumAnnotation;
+        return this;
+    }
+
+    // ============== component ==============
 
     /**
      * Sets the annotation finder to use for reading the {@link ContainerEnum} annotation.
@@ -116,11 +171,10 @@ public class EnumContainerBuilder<K, T extends Enum<?>> {
      * @param annotationFinder the annotation finder to set
      * @return this builder instance
      */
-    public EnumContainerBuilder<K, T> annotationFinder(AnnotationFinder annotationFinder) {
+    public EnumContainerBuilder<K, T> annotationFinder(@NonNull AnnotationFinder annotationFinder) {
         this.annotationFinder = annotationFinder;
         return this;
     }
-
 
     /**
      * Sets the property operator to use for reading properties from enum values.
@@ -128,7 +182,7 @@ public class EnumContainerBuilder<K, T extends Enum<?>> {
      * @param propertyOperator the property operator to set
      * @return this builder instance
      */
-    public EnumContainerBuilder<K, T> propertyOperator(PropertyOperator propertyOperator) {
+    public EnumContainerBuilder<K, T> propertyOperator(@NonNull PropertyOperator propertyOperator) {
         this.propertyOperator = propertyOperator;
         return this;
     }
@@ -140,32 +194,31 @@ public class EnumContainerBuilder<K, T extends Enum<?>> {
      */
     @SuppressWarnings("unchecked")
     public Container<K> build() {
-        Objects.requireNonNull(enumType);
-
-        if (annotationFinder != null) {
+        // read config from annotation
+        if (enableContainerEnumAnnotation) {
             ContainerEnum annotation = annotationFinder.getAnnotation(enumType, ContainerEnum.class);
             if (Objects.nonNull(annotation)) {
-                // enumeration is annotated
-                if (namespace == null) {
-                    namespace = StringUtils.emptyToDefault(annotation.namespace(), enumType.getSimpleName());
-                }
-                boolean hasKey = StringUtils.isNotEmpty(annotation.key());
-                boolean hasValue = StringUtils.isNotEmpty(annotation.value());
-                if (propertyOperator != null) {
-                    if (hasKey && keyGetter == DEFAULT_KEY_GETTER) {
-                        keyGetter = (e) -> propertyOperator.readProperty(enumType, e, annotation.key());
-                    }
-                    if (hasValue && valueGetter == DEFAULT_VALUE_GETTER) {
-                        valueGetter = (e) -> propertyOperator.readProperty(enumType, e, annotation.value());
-                    }
-                }
+                resolveConfigFromAnnotation(annotation);
             }
         }
-
+        // build container
         Map<K, T> enumMap = (Map<K, T>) (Map<?, ?>) Stream.of(enumType.getEnumConstants())
             .collect(Collectors.toMap(keyGetter, valueGetter));
         namespace = StringUtils.emptyToDefault(this.namespace, enumType.getSimpleName());
-
         return ImmutableMapContainer.forMap(namespace, enumMap);
+    }
+
+    private void resolveConfigFromAnnotation(ContainerEnum annotation) {
+        if (namespace == null) {
+            namespace = StringUtils.emptyToDefault(annotation.namespace(), enumType.getSimpleName());
+        }
+        boolean hasKey = StringUtils.isNotEmpty(annotation.key());
+        boolean hasValue = StringUtils.isNotEmpty(annotation.value());
+        if (hasKey && keyGetter == DEFAULT_KEY_GETTER) {
+            keyGetter = e -> propertyOperator.readProperty(enumType, e, annotation.key());
+        }
+        if (hasValue && valueGetter == DEFAULT_VALUE_GETTER) {
+            valueGetter = e -> propertyOperator.readProperty(enumType, e, annotation.value());
+        }
     }
 }

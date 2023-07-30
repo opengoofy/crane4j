@@ -1,10 +1,10 @@
 package cn.crane4j.core.container;
 
-import cn.crane4j.annotation.ContainerEnum;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.Collection;
 import java.util.Map;
@@ -25,7 +25,6 @@ import java.util.Objects;
  *
  * @param <K> key type
  * @author tangcent
- * @see ContainerEnum
  */
 @EqualsAndHashCode
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
@@ -43,16 +42,16 @@ public class ImmutableMapContainer<K> implements Container<K>, Container.Lifecyc
     private final Map<K, ?> data;
 
     /**
-     * <p>Create a key-value pair container based on the specified type enumeration.<br />
-     * The key value is the enumeration attribute value obtained by {@code keyGetter}.
+     * <p>Create a key-value pair container based on the specified {@link Map} instance.
      *
      * @param namespace namespace
      * @param data      data source objects grouped by key value
      * @param <K>       key type
      * @return container
      */
-    public static <K> ImmutableMapContainer<K> forMap(String namespace, Map<K, ?> data) {
-        Objects.requireNonNull(namespace);
+    public static <K> ImmutableMapContainer<K> forMap(String namespace, @NonNull Map<K, ?> data) {
+        Objects.requireNonNull(namespace, "namespace must not null");
+        Objects.requireNonNull(data, "data must not null");
         return new ImmutableMapContainer<>(namespace, data);
     }
 
