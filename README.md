@@ -82,7 +82,7 @@ public class Foo {
 **执行填充**
 
 ~~~java
-@Autowrite
+@Autowired
 public OperateTemplate operateTemplate; // 注入快速填充工具类
 
 // 使用工具类填充对象
