@@ -51,7 +51,8 @@ const sidebarConfig = [
             { title: "2.5.可调用方法", path: "/container/2.5.方法容器.md" },
             { title: "2.6.对象内省", path: "/container/2.6.对象内省.md" },
             { title: "2.7.接口/自定义", path: "/container/2.7.自定义容器.md" },
-            { title: "2.8.容器提供者", path: "/container/2.8.容器提供者.html" }
+            { title: "2.8.容器提供者", path: "/container/2.8.容器提供者.md" },
+            { title: "2.9.对象容器", path: "/container/2.9.对象容器.md" }
         ]
     },
     {
