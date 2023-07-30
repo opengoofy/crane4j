@@ -51,16 +51,16 @@ public class Application {  
 **添加数据源**
 
 ~~~java
-@Autowrite
+@Autowired
 public Crane4jGlobalConfiguration configuration; // 注入全局配置
 
-@PostConst
+@PostConstruct
 public void init() {
     // 基于 Map 缓存，创建一个数据源
     Map<Integer, String> sources = new HashMap<>();
     sources.put(0, "女");
     sources.put(1, "男");
-    Container<String> genderContainer = Containers.forMap("gender", sources);
+    Container<Integer> genderContainer = Containers.forMap("gender", sources);
     configuration.registerContainer(genderContainer); // 将其注册到全局配置中
 }
 ~~~
