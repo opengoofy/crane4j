@@ -50,7 +50,7 @@ public class AsmReflectivePropertyOperator extends ReflectivePropertyOperator {
      * @return {@link MethodInvoker}
      */
     @Override
-    protected MethodInvoker createInvoker(Class<?> targetType, String propertyName, Method method) {
+    protected MethodInvoker createInvokerForMethod(Class<?> targetType, String propertyName, Method method) {
         MethodAccess access = CollectionUtils.computeIfAbsent(methodAccessCaches, targetType, MethodAccess::get);
         int methodIndex = access.getIndex(method.getName(), method.getParameterTypes());
         return new ReflectAsmMethodInvoker(methodIndex, access);
@@ -81,30 +81,30 @@ public class AsmReflectivePropertyOperator extends ReflectivePropertyOperator {
     }
 
     @Override
-    protected MethodInvoker createInvokerForSetter(Class<?> targetType, String propertyName, Field field) {
+    protected MethodInvoker createSetterInvokerForField(Class<?> targetType, String propertyName, Field field) {
         if (Modifier.isPrivate(field.getModifiers())) {
-            return super.createInvokerForSetter(targetType, propertyName, field);
+            return super.createSetterInvokerForField(targetType, propertyName, field);
         }
         FieldAccess access = CollectionUtils.computeIfAbsent(fieldAccessCaches, targetType, FieldAccess::get);
         try {
             int fieldIndex = access.getIndex(field.getName());
             return new ReflectAsmFieldAdapterSetterInvoker(access, fieldIndex);
         } catch (IllegalArgumentException e) {
-            return super.createInvokerForSetter(targetType, propertyName, field);
+            return super.createSetterInvokerForField(targetType, propertyName, field);
         }
     }
 
     @Override
-    protected MethodInvoker createInvokerForGetter(Class<?> targetType, String propertyName, Field field) {
+    protected MethodInvoker createGetterInvokerForField(Class<?> targetType, String propertyName, Field field) {
         if (Modifier.isPrivate(field.getModifiers())) {
-            return super.createInvokerForGetter(targetType, propertyName, field);
+            return super.createGetterInvokerForField(targetType, propertyName, field);
         }
         FieldAccess access = CollectionUtils.computeIfAbsent(fieldAccessCaches, targetType, FieldAccess::get);
         try {
             int fieldIndex = access.getIndex(field.getName());
             return new ReflectAsmFieldAdapterGetterInvoker(access, fieldIndex);
         } catch (IllegalArgumentException e) {
-            return super.createInvokerForGetter(targetType, propertyName, field);
+            return super.createGetterInvokerForField(targetType, propertyName, field);
         }
     }
 

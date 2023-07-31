@@ -70,6 +70,13 @@ public class ReflectivePropertyOperator implements PropertyOperator {
     }
 
     /**
+     * Create a property operator.
+     */
+    public ReflectivePropertyOperator() {
+        this(null);
+    }
+
+    /**
      * Get getter method.
      *
      * @param targetType   target type
@@ -80,13 +87,13 @@ public class ReflectivePropertyOperator implements PropertyOperator {
     @Override
     public MethodInvoker findGetter(Class<?> targetType, String propertyName) {
         Method method = findGetterMethod(targetType, propertyName);
-        MethodInvoker methodInvoker = resolveInvoker(targetType, propertyName, method);
+        MethodInvoker methodInvoker = resolveInvokerForMethod(targetType, propertyName, method);
         if (methodInvoker != null) {
             return methodInvoker;
         }
 
         Field field = ReflectUtils.getField(targetType, propertyName);
-        MethodInvoker methodInvokerForGetter = resolveInvokerForGetter(targetType, propertyName, field);
+        MethodInvoker methodInvokerForGetter = resolveGetterInvokerForField(targetType, propertyName, field);
         if (methodInvokerForGetter != null) {
             return methodInvokerForGetter;
         }
@@ -106,13 +113,13 @@ public class ReflectivePropertyOperator implements PropertyOperator {
     @Override
     public MethodInvoker findSetter(Class<?> targetType, String propertyName) {
         Method method = findSetterMethod(targetType, propertyName);
-        MethodInvoker methodInvoker = resolveInvoker(targetType, propertyName, method);
+        MethodInvoker methodInvoker = resolveInvokerForMethod(targetType, propertyName, method);
         if (methodInvoker != null) {
             return methodInvoker;
         }
 
         Field field = ReflectUtils.getField(targetType, propertyName);
-        MethodInvoker methodInvokerForSetter = resolveInvokerForSetter(targetType, propertyName, field);
+        MethodInvoker methodInvokerForSetter = resolveSetterInvokerForField(targetType, propertyName, field);
         if (methodInvokerForSetter != null) {
             return methodInvokerForSetter;
         }
@@ -120,6 +127,116 @@ public class ReflectivePropertyOperator implements PropertyOperator {
         Asserts.isFalse(throwIfNoAnyMatched, "No setter method found for property [{}] in [{}] ", propertyName, targetType.getName());
         return null;
     }
+
+    // region ========= find by method =========
+
+    /**
+     * Resolve the invoker which finally to used.
+     *
+     * @param targetType target type
+     * @param propertyName property name
+     * @param method method
+     * @return method invoker comparator
+     * @see #createInvokerForMethod
+     * @see ParameterConvertibleMethodInvoker
+     */
+    @Nullable
+    protected final MethodInvoker resolveInvokerForMethod(Class<?> targetType, String propertyName, @Nullable Method method) {
+        if (Objects.isNull(method)) {
+            return null;
+        }
+        MethodInvoker invoker = createInvokerForMethod(targetType, propertyName, method);
+        if (Objects.isNull(invoker)) {
+            return null;
+        }
+        if (Objects.isNull(converterManager)) {
+            return invoker;
+        }
+        return ParameterConvertibleMethodInvoker.create(invoker, converterManager, method.getParameterTypes());
+    }
+
+    /**
+     * Create {@link MethodInvoker} according to the specified method.
+     *
+     * @param targetType   target type
+     * @param propertyName property name
+     * @param method       getter method or setter method
+     * @return {@link MethodInvoker}
+     */
+    @Nullable
+    protected MethodInvoker createInvokerForMethod(Class<?> targetType, String propertyName, Method method) {
+        return ReflectiveMethodInvoker.create(null, method, false);
+    }
+
+    // endregion
+
+    // region ========= find by field =========
+
+    /**
+     * Resolve invoker which finally be used to set the value of the specified field.
+     *
+     * @param targetType   target type
+     * @param propertyName property name
+     * @param field        field to be set.
+     * @return the {@link MethodInvoker} instance for setting the value of the specified field.
+     */
+    @Nullable
+    protected final MethodInvoker resolveSetterInvokerForField(Class<?> targetType, String propertyName, @Nullable Field field) {
+        if (Objects.isNull(field)) {
+            return null;
+        }
+        MethodInvoker invoker = createSetterInvokerForField(targetType, propertyName, field);
+        if (Objects.isNull(invoker)) {
+            return null;
+        }
+        if (Objects.isNull(converterManager)) {
+            return invoker;
+        }
+        return ParameterConvertibleMethodInvoker.create(invoker, converterManager, new Class[] {field.getType()});
+    }
+
+    /**
+     * Creates a {@link MethodInvoker} for setting the value of the specified field.
+     *
+     * @param targetType   target type
+     * @param propertyName property name
+     * @param field        field to be set.
+     * @return The {@link MethodInvoker} instance for setting the value of the specified field.
+     */
+    protected MethodInvoker createSetterInvokerForField(Class<?> targetType, String propertyName, Field field) {
+        return ReflectiveFieldAdapterMethodInvoker.createSetter(field);
+    }
+
+    /**
+     * Resolve invoker which finally be used to get the value of the specified field.
+     *
+     * @param targetType   target type
+     * @param propertyName property name
+     * @param field        field to be got.
+     * @return the {@link MethodInvoker} instance for getting the value of the specified field.
+     */
+    protected final MethodInvoker resolveGetterInvokerForField(Class<?> targetType, String propertyName, @Nullable Field field) {
+        if (Objects.isNull(field)) {
+            return null;
+        }
+        return createGetterInvokerForField(targetType, propertyName, field);
+    }
+
+    /**
+     * Creates a {@link MethodInvoker} for getting the value of the specified field.
+     *
+     * @param targetType   target type
+     * @param propertyName property name
+     * @param field        field to be got.
+     * @return The {@link MethodInvoker} instance for getting the value of the specified field.
+     */
+    protected MethodInvoker createGetterInvokerForField(Class<?> targetType, String propertyName, Field field) {
+        return ReflectiveFieldAdapterMethodInvoker.createGetter(field);
+    }
+
+    // ================== static methods ==================
+
+    // endregion
 
     /**
      * Find setter method by given type and field name.
@@ -129,7 +246,7 @@ public class ReflectivePropertyOperator implements PropertyOperator {
      * @return setter method
      */
     @Nullable
-    protected Method findSetterMethod(Class<?> targetType, String propertyName) {
+    private static Method findSetterMethod(Class<?> targetType, String propertyName) {
         Field field = ReflectUtils.getField(targetType, propertyName);
         if (Objects.isNull(field)) {
             return ReflectUtils.findSetterMethod(targetType, propertyName)
@@ -148,7 +265,7 @@ public class ReflectivePropertyOperator implements PropertyOperator {
      * @return getter method
      */
     @Nullable
-    protected Method findGetterMethod(Class<?> targetType, String propertyName) {
+    private static Method findGetterMethod(Class<?> targetType, String propertyName) {
         Field field = ReflectUtils.getField(targetType, propertyName);
         if (Objects.isNull(field)) {
             return ReflectUtils.findGetterMethod(targetType, propertyName)
@@ -157,105 +274,5 @@ public class ReflectivePropertyOperator implements PropertyOperator {
             return ReflectUtils.findGetterMethod(targetType, field)
                 .orElse(null);
         }
-    }
-
-    /**
-     * Create {@link MethodInvoker} according to the specified method.
-     *
-     * @param targetType   target type
-     * @param propertyName property name
-     * @param method       getter method or setter method
-     * @return {@link MethodInvoker}
-     */
-    @Nullable
-    protected MethodInvoker createInvoker(Class<?> targetType, String propertyName, Method method) {
-        return ReflectiveMethodInvoker.create(null, method, false);
-    }
-
-    /**
-     * Creates a {@link MethodInvoker} for setting the value of the specified field.
-     *
-     * @param targetType   target type
-     * @param propertyName property name
-     * @param field        field to be set.
-     * @return The {@link MethodInvoker} instance for setting the value of the specified field.
-     */
-    protected MethodInvoker createInvokerForSetter(Class<?> targetType, String propertyName, Field field) {
-        return ReflectiveFieldAdapterMethodInvoker.createSetter(field);
-    }
-
-    /**
-     * Creates a {@link MethodInvoker} for getting the value of the specified field.
-     *
-     * @param targetType   target type
-     * @param propertyName property name
-     * @param field        field to be got.
-     * @return The {@link MethodInvoker} instance for getting the value of the specified field.
-     */
-    protected MethodInvoker createInvokerForGetter(Class<?> targetType, String propertyName, Field field) {
-        return ReflectiveFieldAdapterMethodInvoker.createGetter(field);
-    }
-
-    /**
-     * Resolve the invoker which finally to used.
-     *
-     * @param targetType target type
-     * @param propertyName property name
-     * @param method method
-     * @return method invoker comparator
-     * @see #createInvoker
-     * @see ParameterConvertibleMethodInvoker
-     */
-    @Nullable
-    protected final MethodInvoker resolveInvoker(Class<?> targetType, String propertyName, @Nullable Method method) {
-        if (Objects.isNull(method)) {
-            return null;
-        }
-        MethodInvoker invoker = createInvoker(targetType, propertyName, method);
-        if (Objects.isNull(invoker)) {
-            return null;
-        }
-        if (Objects.isNull(converterManager)) {
-            return invoker;
-        }
-        return ParameterConvertibleMethodInvoker.create(invoker, converterManager, method.getParameterTypes());
-    }
-
-    /**
-     * Resolve invoker which finally be used to set the value of the specified field.
-     *
-     * @param targetType   target type
-     * @param propertyName property name
-     * @param field        field to be set.
-     * @return the {@link MethodInvoker} instance for setting the value of the specified field.
-     */
-    @Nullable
-    protected final MethodInvoker resolveInvokerForSetter(Class<?> targetType, String propertyName, @Nullable Field field) {
-        if (Objects.isNull(field)) {
-            return null;
-        }
-        MethodInvoker invoker = createInvokerForSetter(targetType, propertyName, field);
-        if (Objects.isNull(invoker)) {
-            return null;
-        }
-        if (Objects.isNull(converterManager)) {
-            return invoker;
-        }
-        return ParameterConvertibleMethodInvoker.create(invoker, converterManager, new Class[] {field.getType()});
-    }
-
-    /**
-     * Resolve invoker which finally be used to get the value of the specified field.
-     *
-     * @param targetType   target type
-     * @param propertyName property name
-     * @param field        field to be got.
-     * @return the {@link MethodInvoker} instance for getting the value of the specified field.
-     */
-    protected final MethodInvoker resolveInvokerForGetter(Class<?> targetType, String propertyName, @Nullable Field field) {
-        if (Objects.isNull(field)) {
-            return null;
-        }
-        return createInvokerForGetter(targetType, propertyName, field);
     }
 }

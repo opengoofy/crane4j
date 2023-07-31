@@ -3,7 +3,6 @@ package cn.crane4j.core.container;
 import cn.crane4j.annotation.ContainerEnum;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.SimpleAnnotationFinder;
-import cn.crane4j.core.support.converter.SimpleConverterManager;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.support.reflect.ReflectivePropertyOperator;
 import cn.crane4j.core.util.StringUtils;
@@ -28,7 +27,7 @@ public class EnumContainerBuilder<K, T extends Enum<?>> {
 
     private static final Function<? super Enum<?>, ?> DEFAULT_KEY_GETTER = Enum::name;
     private static final Function<? super Enum<?>, ?> DEFAULT_VALUE_GETTER = Function.identity();
-    private static final PropertyOperator DEFAULT_PROPERTY_OPERATOR = new ReflectivePropertyOperator(new SimpleConverterManager());
+    private static final PropertyOperator DEFAULT_PROPERTY_OPERATOR = new ReflectivePropertyOperator();
 
     /**
      * The enum type to create a container for.

@@ -137,19 +137,19 @@ public class ReflectivePropertyOperatorTest {
         }
 
         @Override
-        protected @Nullable MethodInvoker createInvoker(Class<?> targetType, String propertyName, Method method) {
+        protected @Nullable MethodInvoker createInvokerForMethod(Class<?> targetType, String propertyName, Method method) {
             if (immutableFields.contains(propertyName)) {
                 return null;
             }
-            return super.createInvoker(targetType, propertyName, method);
+            return super.createInvokerForMethod(targetType, propertyName, method);
         }
 
         @Override
-        protected MethodInvoker createInvokerForSetter(Class<?> targetType, String propertyName, Field field) {
+        protected MethodInvoker createSetterInvokerForField(Class<?> targetType, String propertyName, Field field) {
             if (immutableFields.contains(propertyName)) {
                 return null;
             }
-            return super.createInvokerForSetter(targetType, propertyName, field);
+            return super.createSetterInvokerForField(targetType, propertyName, field);
         }
     }
 
