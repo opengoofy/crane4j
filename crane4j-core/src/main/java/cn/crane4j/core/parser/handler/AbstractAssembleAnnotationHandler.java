@@ -20,8 +20,10 @@ import cn.crane4j.core.util.MultiMap;
 import cn.crane4j.core.util.ReflectUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.lang.annotation.Annotation;
@@ -51,11 +53,13 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
 
     protected final Class<T> annotationType;
     protected final AnnotationFinder annotationFinder;
-    protected final Comparator<KeyTriggerOperation> operationComparator;
+    @NonNull
+    @Setter
+    protected Comparator<KeyTriggerOperation> operationComparator;
     protected final Crane4jGlobalConfiguration globalConfiguration;
 
     /**
-     * Create an {@link AbstractAssembleAnnotationHandler} comparator.
+     * Create an {@link AbstractAssembleAnnotationHandler} instance.
      *
      * @param annotationType annotation type
      * @param annotationFinder annotation finder
@@ -64,11 +68,23 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
      */
     protected AbstractAssembleAnnotationHandler(
         Class<T> annotationType, AnnotationFinder annotationFinder,
-        Comparator<KeyTriggerOperation> operationComparator, Crane4jGlobalConfiguration globalConfiguration) {
+        @NonNull Comparator<KeyTriggerOperation> operationComparator, Crane4jGlobalConfiguration globalConfiguration) {
         this.annotationType = annotationType;
         this.annotationFinder = annotationFinder;
         this.operationComparator = operationComparator;
         this.globalConfiguration = globalConfiguration;
+    }
+
+    /**
+     * Create an {@link AbstractAssembleAnnotationHandler} instance.
+     *
+     * @param annotationType annotation type
+     * @param annotationFinder annotation finder
+     * @param globalConfiguration global configuration
+     */
+    protected AbstractAssembleAnnotationHandler(
+        Class<T> annotationType, AnnotationFinder annotationFinder, Crane4jGlobalConfiguration globalConfiguration) {
+        this(annotationType, annotationFinder, Crane4jGlobalSorter.comparator(), globalConfiguration);
     }
 
     /**
