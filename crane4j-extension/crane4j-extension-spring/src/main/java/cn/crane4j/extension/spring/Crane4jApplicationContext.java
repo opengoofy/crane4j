@@ -235,6 +235,8 @@ public class Crane4jApplicationContext extends DefaultContainerManager
             .values().forEach(this::registerContainer);
         applicationContext.getBeansOfType(Container.class)
             .values().forEach(this::registerContainer);
+        applicationContext.getBeansOfType(ContainerProvider.class)
+            .forEach(this::registerContainerProvider);
     }
 
     /**
