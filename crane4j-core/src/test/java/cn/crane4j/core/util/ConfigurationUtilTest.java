@@ -4,6 +4,7 @@ import cn.crane4j.annotation.Mapping;
 import cn.crane4j.annotation.MappingTemplate;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerDefinition;
+import cn.crane4j.core.container.Containers;
 import cn.crane4j.core.container.lifecycle.ContainerLifecycleProcessor;
 import cn.crane4j.core.parser.PropertyMapping;
 import cn.crane4j.core.support.SimpleAnnotationFinder;
@@ -13,7 +14,9 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * test for {@link ConfigurationUtil}
@@ -28,8 +31,11 @@ public class ConfigurationUtilTest {
         List<ContainerLifecycleProcessor> processors = Arrays.asList(
             AlwaysNullContainerLifecycleProcessor.INSTANCE, DoNothingContainerLifecycleProcessor.INSTANCE
         );
-        Container<Object> container = Container.empty();
+        Map<String, Object> map = new HashMap<>();
+        map.put("1", 1);
+        Container<String> container = Containers.forMap("test", map);
         ConfigurationUtil.triggerWhenDestroyed(container, processors);
+        Assert.assertTrue(map.isEmpty());
         ConfigurationUtil.triggerWhenDestroyed(null, processors);
     }
 

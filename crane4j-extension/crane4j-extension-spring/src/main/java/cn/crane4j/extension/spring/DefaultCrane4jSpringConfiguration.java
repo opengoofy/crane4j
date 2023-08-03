@@ -36,6 +36,7 @@ import cn.crane4j.core.support.operator.DefaultOperatorProxyMethodFactory;
 import cn.crane4j.core.support.operator.DynamicContainerOperatorProxyMethodFactory;
 import cn.crane4j.core.support.operator.OperatorProxyFactory;
 import cn.crane4j.core.support.operator.OperatorProxyMethodFactory;
+import cn.crane4j.core.support.reflect.CacheablePropertyOperator;
 import cn.crane4j.core.support.reflect.ChainAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.PropertyOperator;
@@ -65,7 +66,6 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Optional;
 
 /**
  * Default configuration class for crane4j.
@@ -91,11 +91,11 @@ public class DefaultCrane4jSpringConfiguration implements SmartInitializingSingl
 
     @Bean
     public PropertyOperator propertyOperator(ConverterManager converterManager) {
-        return Optional.of(new ReflectivePropertyOperator(converterManager))
-            .map(ChainAccessiblePropertyOperator::new)
-            .map(MapAccessiblePropertyOperator::new)
-            .map(ChainAccessiblePropertyOperator::new)
-            .get();
+        PropertyOperator operator = new ReflectivePropertyOperator(converterManager);
+        operator = new CacheablePropertyOperator(operator);
+        operator = new MapAccessiblePropertyOperator(operator);
+        operator = new ChainAccessiblePropertyOperator(operator);
+        return operator;
     }
 
     @Bean
