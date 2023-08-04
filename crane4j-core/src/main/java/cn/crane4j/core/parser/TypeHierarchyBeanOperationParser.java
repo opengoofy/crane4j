@@ -185,7 +185,7 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
     }
 
     /**
-     * Create {@link BeanOperations} comparator
+     * Create {@link BeanOperations} instance.
      *
      * @param element element
      * @return {@link BeanOperations}

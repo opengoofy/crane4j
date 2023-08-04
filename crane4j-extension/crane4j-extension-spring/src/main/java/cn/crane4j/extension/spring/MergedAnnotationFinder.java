@@ -2,6 +2,7 @@ package cn.crane4j.extension.spring;
 
 import cn.crane4j.core.support.AnnotationFinder;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.MergedAnnotation;
 
@@ -26,6 +27,7 @@ public class MergedAnnotationFinder implements AnnotationFinder {
      * @param <A> annotation type
      * @return annotation
      */
+    @Nullable
     @Override
     public <A extends Annotation> A getAnnotation(@NonNull AnnotatedElement element, Class<A> annotationType) {
         return AnnotatedElementUtils.getMergedAnnotation(element, annotationType);
@@ -51,6 +53,7 @@ public class MergedAnnotationFinder implements AnnotationFinder {
      * @param annotationType annotation type
      * @return annotation
      */
+    @Nullable
     @Override
     public <A extends Annotation> A findAnnotation(@NonNull AnnotatedElement element, Class<A> annotationType) {
         return AnnotatedElementUtils.findMergedAnnotation(element, annotationType);

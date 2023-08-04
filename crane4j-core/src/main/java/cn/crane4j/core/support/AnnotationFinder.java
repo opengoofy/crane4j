@@ -1,6 +1,7 @@
 package cn.crane4j.core.support;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
@@ -23,6 +24,7 @@ public interface AnnotationFinder {
      * @param <A> annotation type
      * @return annotation
      */
+    @Nullable
     <A extends Annotation> A getAnnotation(@NonNull AnnotatedElement element, Class<A> annotationType);
 
     /**
@@ -54,6 +56,7 @@ public interface AnnotationFinder {
      * @param <A> annotation type
      * @return annotation
      */
+    @Nullable
     <A extends Annotation> A findAnnotation(@NonNull AnnotatedElement element, Class<A> annotationType);
 
     /**

@@ -61,11 +61,25 @@ public class SimpleCrane4jGlobalConfiguration
      * @return configuration
      */
     public static SimpleCrane4jGlobalConfiguration create() {
+        AnnotationFinder af = SimpleAnnotationFinder.INSTANCE;
+        ConverterManager cm = new HutoolConverterManager();
+        PropertyOperator operator = new ReflectivePropertyOperator(cm);
+        return create(af, cm, operator);
+    }
+
+    /**
+     * Create a {@link SimpleCrane4jGlobalConfiguration} using the default configuration.
+     *
+     * @param annotationFinder annotation finder
+     * @param converter converter manager
+     * @param operator property operator
+     * @return configuration
+     */
+    public static SimpleCrane4jGlobalConfiguration create(
+        AnnotationFinder annotationFinder, ConverterManager converter, PropertyOperator operator) {
         SimpleCrane4jGlobalConfiguration configuration = new SimpleCrane4jGlobalConfiguration();
         // basic components
-        ConverterManager converter = new HutoolConverterManager();
         configuration.setConverterManager(converter);
-        PropertyOperator operator = new ReflectivePropertyOperator(converter);
         operator = new MapAccessiblePropertyOperator(operator);
         operator = new ChainAccessiblePropertyOperator(operator);
         configuration.setPropertyOperator(operator);
@@ -76,7 +90,6 @@ public class SimpleCrane4jGlobalConfiguration
         configuration.registerContainerLifecycleProcessor(new ContainerRegisterLogger(logger::info));
 
         // operation parser
-        AnnotationFinder annotationFinder = new SimpleAnnotationFinder();
         TypeHierarchyBeanOperationParser beanOperationParser = new TypeHierarchyBeanOperationParser();
         beanOperationParser.addBeanOperationsResolver(new AssembleAnnotationHandler(annotationFinder, configuration));
         beanOperationParser.addBeanOperationsResolver(new DisassembleAnnotationHandler(annotationFinder, configuration));

@@ -5,6 +5,7 @@ import cn.crane4j.annotation.MappingTemplate;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerDefinition;
 import cn.crane4j.core.container.Containers;
+import cn.crane4j.core.container.lifecycle.ContainerInstanceLifecycleProcessor;
 import cn.crane4j.core.container.lifecycle.ContainerLifecycleProcessor;
 import cn.crane4j.core.parser.PropertyMapping;
 import cn.crane4j.core.support.SimpleAnnotationFinder;
@@ -29,7 +30,9 @@ public class ConfigurationUtilTest {
     @Test
     public void triggerWhenDestroyed() {
         List<ContainerLifecycleProcessor> processors = Arrays.asList(
-            AlwaysNullContainerLifecycleProcessor.INSTANCE, DoNothingContainerLifecycleProcessor.INSTANCE
+            AlwaysNullContainerLifecycleProcessor.INSTANCE,
+            DoNothingContainerLifecycleProcessor.INSTANCE,
+            new ContainerInstanceLifecycleProcessor()
         );
         Map<String, Object> map = new HashMap<>();
         map.put("1", 1);
