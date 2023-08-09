@@ -16,6 +16,7 @@ public class EmptyContainerTest {
         Assert.assertSame(container, Container.empty());
         Assert.assertEquals(Container.EMPTY_CONTAINER_NAMESPACE, container.getNamespace());
         Assert.assertTrue(container.get(null).isEmpty());
+        Assert.assertTrue(((LimitedContainer<Object>)container).getAll().isEmpty());
     }
 
 }
