@@ -25,10 +25,12 @@ import java.util.Objects;
  *
  * @param <K> key type
  * @author tangcent
+ * @author huangchengxing
+ * @see LimitedContainer
  */
 @EqualsAndHashCode
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class ImmutableMapContainer<K> implements Container<K>, Container.Lifecycle {
+public class ImmutableMapContainer<K> implements LimitedContainer<K>, Container.Lifecycle {
 
     /**
      * namespace of the data source container,
@@ -63,6 +65,16 @@ public class ImmutableMapContainer<K> implements Container<K>, Container.Lifecyc
      */
     @Override
     public Map<K, ?> get(Collection<K> keys) {
+        return data;
+    }
+
+    /**
+     * Get all data source objects in the container.
+     *
+     * @return all elements
+     */
+    @Override
+    public Map<K, ?> getAll() {
         return data;
     }
 

@@ -12,9 +12,11 @@ import java.util.Map;
  *
  * @author huangchengxing
  */
-public class EmptyContainer implements Container<Object> {
+@SuppressWarnings("all")
+public class EmptyContainer implements LimitedContainer<Object> {
 
     public static final EmptyContainer INSTANCE = new EmptyContainer();
+
     /**
      * Gets the namespace of the data source container,
      * The value always defaults to an empty string
@@ -35,6 +37,16 @@ public class EmptyContainer implements Container<Object> {
      */
     @Override
     public Map<Object, ?> get(Collection<Object> keys) {
+        return Collections.emptyMap();
+    }
+
+    /**
+     * Get all data source objects in the container.
+     *
+     * @return all elements
+     */
+    @Override
+    public Map<Object, ?> getAll() {
         return Collections.emptyMap();
     }
 }
