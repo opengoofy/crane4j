@@ -91,7 +91,7 @@ public class Containers {
      *
      * @param namespace namespace
      * @param enumType  enum type
-     * @param keyGetter method to obtain the corresponding key value from the enumeration comparator
+     * @param keyGetter method to obtain the corresponding key value from the enumeration instance
      * @param <K>       key type
      * @param <T>       enumeration type
      * @return container

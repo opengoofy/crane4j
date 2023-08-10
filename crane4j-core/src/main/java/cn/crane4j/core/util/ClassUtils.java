@@ -37,7 +37,7 @@ public class ClassUtils {
      * <p>Get class by class name.
      *
      * @param className class name
-     * @return class comparator
+     * @return class instance
      * @throws Crane4jException if class not found
      */
     public static Class<?> forName(String className) throws Crane4jException {

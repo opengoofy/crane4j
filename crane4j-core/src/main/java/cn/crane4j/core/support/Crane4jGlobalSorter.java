@@ -20,7 +20,7 @@ public final class Crane4jGlobalSorter implements Comparator<Object> {
     public static final Crane4jGlobalSorter INSTANCE = new Crane4jGlobalSorter();
 
     /**
-     * Get comparator comparator.
+     * Get comparator instance.
      *
      * @return comparator
      */
@@ -29,7 +29,7 @@ public final class Crane4jGlobalSorter implements Comparator<Object> {
     }
 
     /**
-     * Comparator chain.
+     * key extractor chain.
      */
     public List<Function<Object, Integer>> keyExtractors = new ArrayList<>();
 
@@ -40,7 +40,7 @@ public final class Crane4jGlobalSorter implements Comparator<Object> {
     /**
      * Add comparator.
      *
-     * @param compareValueExtractor comparator
+     * @param compareValueExtractor instance
      */
     public synchronized void addCompareValueExtractor(Function<Object, Integer> compareValueExtractor) {
         Objects.requireNonNull(compareValueExtractor, "compareValueExtractor must not null");
@@ -49,7 +49,7 @@ public final class Crane4jGlobalSorter implements Comparator<Object> {
     }
 
     /**
-     * Compare by comparator chain.
+     * Compare instance.
      *
      * @param o1 the first object to be compared.
      * @param o2 the second object to be compared.

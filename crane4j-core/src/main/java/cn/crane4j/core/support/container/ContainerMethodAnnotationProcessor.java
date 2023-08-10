@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
  * <p>An {@link ContainerMethod} annotation processor.
  * Scan methods annotated directly by {@link ContainerMethod}
  * in the class or methods bound by annotations on class,
- * and adapt it to {@link Container} comparator according to given {@link MethodContainerFactory}.
+ * and adapt it to {@link Container} instance according to given {@link MethodContainerFactory}.
  *
  * @author huangchengxing
  * @see ContainerMethod
@@ -41,7 +41,7 @@ public class ContainerMethodAnnotationProcessor extends ContainerMethodSupport {
     protected final Set<Class<?>> nonAnnotatedClasses = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
 
     /**
-     * Create a {@link ContainerMethodAnnotationProcessor} comparator.
+     * Create a {@link ContainerMethodAnnotationProcessor} instance.
      *
      * @param methodContainerFactories method container factories
      * @param annotationFinder annotation finder

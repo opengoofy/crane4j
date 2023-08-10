@@ -37,14 +37,14 @@ import java.util.stream.Collectors;
 /**
  * <p>A {@link ContainerProvider} implementation based on mybatis-plus's {@link BaseMapper},
  * it's provides the ability that generate query container by the specified query information.<br/>
- * It is need register {@link BaseMapper} from mybatis-plus to this comparator before use it.
+ * It is need register {@link BaseMapper} from mybatis-plus to this instance before use it.
  *
  * @author huangchengxing
  */
 public class MybatisPlusQueryContainerProvider extends NamespaceResolvableQueryContainerProvider<BaseMapper<?>> {
 
     /**
-     * Factory for creating {@link BaseMapper} comparator if it is not registered.
+     * Factory for creating {@link BaseMapper} instance if it is not registered.
      */
     @Setter
     @Nullable
@@ -56,7 +56,7 @@ public class MybatisPlusQueryContainerProvider extends NamespaceResolvableQueryC
     protected final Crane4jGlobalConfiguration crane4jGlobalConfiguration;
 
     /**
-     * Create a {@link MybatisPlusQueryContainerProvider} comparator
+     * Create a {@link MybatisPlusQueryContainerProvider} instance
      *
      * @param methodInvokerContainerCreator method invoker container creator
      * @param globalConfiguration global configuration
@@ -67,7 +67,7 @@ public class MybatisPlusQueryContainerProvider extends NamespaceResolvableQueryC
     }
 
     /**
-     * Create a {@link MybatisPlusQueryContainerProvider} comparator
+     * Create a {@link MybatisPlusQueryContainerProvider} instance
      *
      * @param methodInvokerContainerCreator method invoker container creator
      * @param globalConfiguration global configuration
@@ -107,7 +107,7 @@ public class MybatisPlusQueryContainerProvider extends NamespaceResolvableQueryC
      *
      * @param name   name
      * @param target target
-     * @return {@link Repository} comparator
+     * @return {@link Repository} instance
      */
     @Override
     protected Repository<BaseMapper<?>> createRepository(String name, BaseMapper<?> target) {
@@ -172,7 +172,7 @@ public class MybatisPlusQueryContainerProvider extends NamespaceResolvableQueryC
         private final Map<String, String> queryColumnMap;
 
         /**
-         * Constructs a new comparator of MapperInfo with the provided TableInfo and BaseMapper.
+         * Constructs a new instance of MapperInfo with the provided TableInfo and BaseMapper.
          *
          * @param tableInfo the TableInfo object for the repository.
          * @param baseMapper the BaseMapper object for the repository.

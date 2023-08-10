@@ -26,13 +26,13 @@ import java.util.Collection;
 public interface AssembleExecution {
 
     /**
-     * Create an comparator of {@link AssembleExecution}.
+     * Create an instance of {@link AssembleExecution}.
      *
      * @param beanOperations bean operations
      * @param operation      operation
      * @param container      container
      * @param targets        targets
-     * @return execution comparator
+     * @return execution instance
      */
     static AssembleExecution create(
             BeanOperations beanOperations, AssembleOperation operation, Container<?> container, Collection<Object> targets) {

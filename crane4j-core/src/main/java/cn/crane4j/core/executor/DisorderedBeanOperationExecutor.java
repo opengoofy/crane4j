@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class DisorderedBeanOperationExecutor extends AbstractBeanOperationExecutor {
 
     /**
-     * Create an comparator of {@link DisorderedBeanOperationExecutor}.
+     * Create an instance of {@link DisorderedBeanOperationExecutor}.
      *
      * @param containerManager container manager
      */

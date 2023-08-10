@@ -34,7 +34,7 @@ public class MethodResultAutoOperateSupport {
     protected final MethodBaseExpressionExecuteDelegate expressionExecuteDelegate;
 
     /**
-     * Create a {@link MethodResultAutoOperateSupport} comparator
+     * Create a {@link MethodResultAutoOperateSupport} instance
      *
      * @param elementResolver element handler
      * @param expressionExecuteDelegate method base expression evaluator delegate

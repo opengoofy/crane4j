@@ -55,7 +55,7 @@ public class OneToOneAssembleOperationHandler
     }
 
     /**
-     * Create a {@link Target} comparator.
+     * Create a {@link Target} instance.
      *
      * @param execution execution
      * @param origin    origin

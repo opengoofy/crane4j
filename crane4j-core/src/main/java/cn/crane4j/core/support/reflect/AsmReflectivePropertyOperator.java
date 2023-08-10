@@ -33,7 +33,7 @@ public class AsmReflectivePropertyOperator extends ReflectivePropertyOperator {
     private final Map<Class<?>, FieldAccess> fieldAccessCaches = new ConcurrentHashMap<>();
 
     /**
-     * Create an {@link AsmReflectivePropertyOperator} comparator
+     * Create an {@link AsmReflectivePropertyOperator} instance
      *
      * @param converterManager converter register
      */

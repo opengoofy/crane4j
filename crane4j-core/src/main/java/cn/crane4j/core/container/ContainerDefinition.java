@@ -60,7 +60,7 @@ public interface ContainerDefinition {
     /**
      * Create {@link Container} by given {@code factory}.
      *
-     * @return {@link Container} comparator.
+     * @return {@link Container} instance.
      */
     @SuppressWarnings("unchecked")
     default <K> Container<K> createContainer() {
@@ -95,7 +95,7 @@ public interface ContainerDefinition {
         private Supplier<Container<Object>> containerFactory;
 
         /**
-         * Create an comparator.
+         * Create an instance.
          *
          * @param namespace namespace
          * @param providerName provider name

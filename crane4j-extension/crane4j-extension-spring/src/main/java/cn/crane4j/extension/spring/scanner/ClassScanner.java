@@ -39,7 +39,7 @@ public class ClassScanner {
     private final ResourcePatternResolver resourcePatternResolver;
 
     /**
-     * Create a {@link ClassScanner} comparator.
+     * Create a {@link ClassScanner} instance.
      */
     public ClassScanner() {
         this(new CachingMetadataReaderFactory(), new PathMatchingResourcePatternResolver());

@@ -36,7 +36,7 @@ public class AssembleEnumAnnotationHandler extends AbstractAssembleAnnotationHan
     private final PropertyOperator propertyOperator;
 
     /**
-     * Create an {@link AbstractAssembleAnnotationHandler} comparator.
+     * Create an {@link AbstractAssembleAnnotationHandler} instance.
      *
      * @param annotationFinder    annotation finder
      * @param globalConfiguration globalConfiguration
@@ -49,7 +49,7 @@ public class AssembleEnumAnnotationHandler extends AbstractAssembleAnnotationHan
     }
 
     /**
-     * Create an {@link AbstractAssembleAnnotationHandler} comparator.
+     * Create an {@link AbstractAssembleAnnotationHandler} instance.
      *
      * @param annotationFinder    annotation finder
      * @param operationComparator operation comparator
@@ -112,7 +112,7 @@ public class AssembleEnumAnnotationHandler extends AbstractAssembleAnnotationHan
      * @param beanOperations bean operations
      * @param element        element
      * @param annotation     annotation
-     * @return {@link StandardAnnotation} comparator
+     * @return {@link StandardAnnotation} instance
      */
     @Override
     protected StandardAnnotation getStandardAnnotation(
@@ -147,10 +147,10 @@ public class AssembleEnumAnnotationHandler extends AbstractAssembleAnnotationHan
         private final Map<String, Container<Object>> enumCaches = new ConcurrentHashMap<>();
 
         /**
-         * Get container comparator by given namespace
+         * Get container instance by given namespace
          *
          * @param namespace namespace of container
-         * @return container comparator
+         * @return container instance
          */
         @SuppressWarnings("unchecked")
         @Nullable
