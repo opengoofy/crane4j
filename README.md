@@ -1,3 +1,5 @@
+[English](https://github.com/opengoofy/crane4j/blob/dev/README-EN.md) | [中文](https://github.com/opengoofy/crane4j/blob/dev/README.md)
+
 <img src="https://user-images.githubusercontent.com/49221670/221162632-95465432-f2df-4286-a53a-af59d70b1958.png" alt="image-20230220150040070" style="zoom: 80%;" />
 
 ![codecov](https://img.shields.io/badge/license-Apache--2.0-green) [![codecov](https://codecov.io/gh/opengoofy/crane4j/branch/dev/graph/badge.svg?token=CF2Q60Q0VH)](https://codecov.io/gh/opengoofy/crane4j) ![stars](https://img.shields.io/github/stars/Createsequence/crane4j) ![maven-central](https://img.shields.io/github/v/release/Createsequence/crane4j?include_prereleases)
@@ -5,6 +7,8 @@
 # Crane4j
 
 强大又好用的数据填充框架，用少量注解搞定一切“根据 A 的 key 值拿到 B，再把 B 的属性映射到 A”的需求。
+
+![image-20230810233647099](http://img.xiajibagao.top/image-20230810233647099.png)
 
 ## 它是什么？
 
