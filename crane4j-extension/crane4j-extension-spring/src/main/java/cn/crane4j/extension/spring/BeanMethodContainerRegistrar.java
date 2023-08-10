@@ -7,6 +7,7 @@ import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.container.ContainerMethodAnnotationProcessor;
 import cn.crane4j.core.support.container.MethodContainerFactory;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
@@ -18,7 +19,7 @@ import java.util.Collection;
 /**
  * <p>Post process the bean, scan the method with
  * {@link ContainerMethod} annotation in the class or method of class,
- * and adapt it to {@link Container} comparator
+ * and adapt it to {@link Container} instance
  * according to {@link MethodContainerFactory} registered in the Spring context.
  *
  * @author huangchengxing
@@ -37,7 +38,7 @@ public class BeanMethodContainerRegistrar
     private final Crane4jGlobalConfiguration configuration;
 
     /**
-     * Create an {@link BeanMethodContainerRegistrar} comparator.
+     * Create an {@link BeanMethodContainerRegistrar} instance.
      *
      * @param factories factories
      * @param annotationFinder annotation finder
@@ -65,7 +66,7 @@ public class BeanMethodContainerRegistrar
      * @return bean
      */
     @Override
-    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+    public Object postProcessBeforeInitialization(@NonNull Object bean, @NonNull String beanName) throws BeansException {
         return bean;
     }
 
@@ -78,7 +79,7 @@ public class BeanMethodContainerRegistrar
      * @return bean
      */
     @Override
-    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+    public Object postProcessAfterInitialization(@NonNull Object bean, @NonNull String beanName) throws BeansException {
         Class<?> beanType = AopUtils.getTargetClass(bean);
         Collection<Container<Object>> containers = process(bean, beanType);
         log.debug("process [{}] annotated methods for bean [{}]", containers.size(), beanName);

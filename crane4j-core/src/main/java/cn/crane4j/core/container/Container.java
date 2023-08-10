@@ -17,13 +17,13 @@ import java.util.Map;
  * <ul>
  *     <li>
  *         <em>When registered</em>: when the container is registered
- *         as a {@link ContainerDefinition} comparator to the {@link ContainerManager};
+ *         as a {@link ContainerDefinition} instance to the {@link ContainerManager};
  *     </li>
  *     <li>
- *         <em>When created</em>: when the container transitions from a {@link ContainerDefinition} to an actual comparator;
+ *         <em>When created</em>: when the container transitions from a {@link ContainerDefinition} to an actual instance;
  *     </li>
  *     <li>
- *         <em>When destroyed</em>: when the container comparator is destroyed,
+ *         <em>When destroyed</em>: when the container instance is destroyed,
  *         this behavior may not affect the corresponding {@link ContainerDefinition};
  *     </li>
  * </ul>
@@ -37,7 +37,7 @@ import java.util.Map;
  * usage, and destruction process.<br />
  * This allows the associated {@link ContainerLifecycleProcessor} to fully handle the container's lifecycle.
  * <p>When delegating the container to the manager,
- * you have the option to directly register an comparator or a factory method used to create the comparator with the manager.
+ * you have the option to directly register an instance or a factory method used to create the instance with the manager.
  * Alternatively, you can register a {@link ContainerProvider},
  * allowing the container to automatically complete the registration logic when necessary,
  * similar to the internal BeanFactory in Spring, where beans are created using FactoryBean.

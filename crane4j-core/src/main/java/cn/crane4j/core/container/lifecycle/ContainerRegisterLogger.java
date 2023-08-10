@@ -24,9 +24,9 @@ public class ContainerRegisterLogger implements ContainerLifecycleProcessor {
 
     /**
      * <p>Callback before registering container.<br/>
-     * If the comparator is created through a container, this method will not be called
+     * If the instance is created through a container, this method will not be called
      *
-     * @param old old container comparator or container definition
+     * @param old old container instance or container definition
      * @param newDefinition new definition of container
      */
     @Override
@@ -44,7 +44,7 @@ public class ContainerRegisterLogger implements ContainerLifecycleProcessor {
      *
      * @param definition definition of container, if create by {@link ContainerProvider}, definition is {@code null}
      * @param container container
-     * @return final effective container comparator
+     * @return final effective container instance
      */
     @Nullable
     @Override
@@ -56,7 +56,7 @@ public class ContainerRegisterLogger implements ContainerLifecycleProcessor {
     /**
      * Callback when container is destroyed.
      *
-     * @param target container comparator or container definition
+     * @param target container instance or container definition
      */
     @Override
     public void whenDestroyed(Object target) {

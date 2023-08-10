@@ -40,7 +40,7 @@ public class CacheableContainerProcessor implements ContainerLifecycleProcessor 
      *
      * @param definition definition of container
      * @param container  container
-     * @return final effective container comparator
+     * @return final effective container instance
      */
     @Nullable
     @Override

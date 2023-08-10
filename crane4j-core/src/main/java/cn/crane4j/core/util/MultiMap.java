@@ -18,10 +18,10 @@ import java.util.function.BiConsumer;
 public interface MultiMap<K, V> {
 
     /**
-     * Create a new {@link MultiMap} comparator with {@link HashMap}
+     * Create a new {@link MultiMap} instance with {@link HashMap}
      * as the underlying map and {@link ArrayList} as the collection.
      *
-     * @return a new {@link MultiMap} comparator
+     * @return a new {@link MultiMap} instance
      * @see HashMap
      * @see ArrayList
      */
@@ -30,10 +30,10 @@ public interface MultiMap<K, V> {
     }
 
     /**
-     * Create a new {@link MultiMap} comparator with {@link LinkedHashMap}
+     * Create a new {@link MultiMap} instance with {@link LinkedHashMap}
      * as the underlying map and {@link ArrayList} as the collection.
      *
-     * @return a new {@link MultiMap} comparator
+     * @return a new {@link MultiMap} instance
      * @see LinkedHashMap
      * @see ArrayList
      */
@@ -42,10 +42,10 @@ public interface MultiMap<K, V> {
     }
 
     /**
-     * Create a new {@link MultiMap} comparator with {@link LinkedHashMap}
+     * Create a new {@link MultiMap} instance with {@link LinkedHashMap}
      * as the underlying map and {@link LinkedHashSet} as the collection.
      *
-     * @return a new {@link MultiMap} comparator
+     * @return a new {@link MultiMap} instance
      * @see LinkedHashMap
      * @see LinkedHashSet
      */
@@ -167,6 +167,7 @@ public interface MultiMap<K, V> {
      * @param o object
      * @return whether the map is equal to the specified object
      */
+    @Override
     boolean equals(Object o);
 
     /**
@@ -175,5 +176,6 @@ public interface MultiMap<K, V> {
      *
      * @return the hash code of the map
      */
+    @Override
     int hashCode();
 }

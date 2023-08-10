@@ -75,7 +75,7 @@ public interface BeanOperationExecutor {
          *
          * @param containerManager container manager
          * @param namespace namespace of container
-         * @return container comparator
+         * @return container instance
          */
         default Container<?> getContainer(ContainerManager containerManager, String namespace) {
             return containerManager.getContainer(namespace);

@@ -46,7 +46,7 @@ public class OperatorProxyFactory {
     private final Map<Class<?>, Object> proxyCaches = new ConcurrentHashMap<>(8);
 
     /**
-     * Create an {@link OperatorProxyFactory} comparator.
+     * Create an {@link OperatorProxyFactory} instance.
      *
      * @param globalConfiguration global configuration
      * @param annotationFinder annotation finder
@@ -59,7 +59,7 @@ public class OperatorProxyFactory {
     }
 
     /**
-     * Add a {@link OperatorProxyMethodFactory} comparator.
+     * Add a {@link OperatorProxyMethodFactory} instance.
      *
      * @param proxyMethodFactory proxy method factory
      */

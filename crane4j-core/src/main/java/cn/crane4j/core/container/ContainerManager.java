@@ -74,7 +74,7 @@ public interface ContainerManager extends ContainerProvider {
      * Get {@link ContainerProvider} by given name.
      *
      * @param name name
-     * @return {@link ContainerProvider} comparator
+     * @return {@link ContainerProvider} instance
      */
     @Nullable
     <T extends ContainerProvider> T getContainerProvider(String name);
@@ -86,7 +86,7 @@ public interface ContainerManager extends ContainerProvider {
      * This operation will overwrite the existing container definition.
      *
      * @param definition definition of container
-     * @return old container comparator or container definition
+     * @return old container instance or container definition
      * @see ContainerLifecycleProcessor#whenRegistered
      */
     @Nullable
@@ -97,8 +97,8 @@ public interface ContainerManager extends ContainerProvider {
      * This operation will overwrite the existing container definition.
      *
      * @param namespace namespace of container
-     * @param factory factory method of container comparator
-     * @return old container comparator or container definition
+     * @param factory factory method of container instance
+     * @return old container instance or container definition
      * @see ContainerLifecycleProcessor#whenRegistered
      */
     @Nullable
@@ -109,11 +109,11 @@ public interface ContainerManager extends ContainerProvider {
     }
 
     /**
-     * <p>Register container definition by given container comparator.<br />
+     * <p>Register container definition by given container instance.<br />
      * This operation will overwrite the existing container definition.
      *
      * @param container container
-     * @return old container comparator or container definition
+     * @return old container instance or container definition
      * @see ContainerLifecycleProcessor#whenRegistered
      */
     @SuppressWarnings("unchecked")
@@ -126,9 +126,9 @@ public interface ContainerManager extends ContainerProvider {
     /**
      * Obtaining and caching container instances from provider or definition.
      *
-     * @param namespace namespace of container, which can also be the cache name for the container comparator.
+     * @param namespace namespace of container, which can also be the cache name for the container instance.
      * @param <K> key type
-     * @return container comparator
+     * @return container instance
      * @see ContainerLifecycleProcessor#whenCreated
      */
     @Nullable

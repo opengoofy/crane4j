@@ -48,7 +48,7 @@ public class DisassembleAnnotationHandler implements OperationAnnotationHandler 
     protected final Comparator<KeyTriggerOperation> operationComparator;
 
     /**
-     * <p>Create a {@link DisassembleAnnotationHandler} comparator.<br />
+     * <p>Create a {@link DisassembleAnnotationHandler} instance.<br />
      * The order of operation configurations is {@link Sorted#getSort} from small to large.
      *
      * @param annotationFinder annotation finder
@@ -114,7 +114,7 @@ public class DisassembleAnnotationHandler implements OperationAnnotationHandler 
     }
 
     /**
-     * Create {@link DisassembleOperation} comparator from annotation.
+     * Create {@link DisassembleOperation} instance from annotation.
      *
      * @param type type
      * @param annotation annotation

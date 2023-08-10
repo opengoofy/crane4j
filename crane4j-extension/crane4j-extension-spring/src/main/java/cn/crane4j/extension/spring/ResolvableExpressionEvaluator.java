@@ -27,7 +27,7 @@ public class ResolvableExpressionEvaluator
     private StringValueResolver resolver;
 
     /**
-     * Create an {@link ResolvableExpressionEvaluator} comparator.
+     * Create an {@link ResolvableExpressionEvaluator} instance.
      *
      * @param parameterNameDiscoverer parameter name discoverer
      * @param  expressionEvaluator expression evaluator

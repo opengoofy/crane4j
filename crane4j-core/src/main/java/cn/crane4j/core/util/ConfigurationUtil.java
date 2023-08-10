@@ -55,7 +55,7 @@ public class ConfigurationUtil {
     /**
      * trigger {@link ContainerLifecycleProcessor#whenDestroyed}
      *
-     * @param target container comparator or container definition
+     * @param target container instance or container definition
      */
     public static void triggerWhenDestroyed(
         Object target, Collection<ContainerLifecycleProcessor> containerLifecycleProcessorList) {
@@ -67,7 +67,7 @@ public class ConfigurationUtil {
      *
      * @param definition definition
      * @param namespace namespace
-     * @param old old container comparator or container definition
+     * @param old old container instance or container definition
      * @return container definition
      */
     @Nullable
@@ -90,7 +90,7 @@ public class ConfigurationUtil {
      * @param namespace namespace
      * @param container container
      * @param definition definition
-     * @return container comparator
+     * @return container instance
      */
     @Nullable
     public static Container<Object> triggerWhenCreated(
@@ -114,6 +114,7 @@ public class ConfigurationUtil {
     public static List<PropertyMapping> parsePropTemplateClasses(Class<?>[] annotatedTypes, AnnotationFinder annotationFinder) {
         return Stream.of(annotatedTypes)
             .map(type -> annotationFinder.findAnnotation(type, MappingTemplate.class))
+            .filter(Objects::nonNull)
             .map(ConfigurationUtil::parsePropTemplate)
             .filter(Objects::nonNull)
             .flatMap(Collection::stream)

@@ -136,7 +136,7 @@ public class ReflectivePropertyOperator implements PropertyOperator {
      * @param targetType target type
      * @param propertyName property name
      * @param method method
-     * @return method invoker comparator
+     * @return method invoker instance
      * @see #createInvokerForMethod
      * @see ParameterConvertibleMethodInvoker
      */

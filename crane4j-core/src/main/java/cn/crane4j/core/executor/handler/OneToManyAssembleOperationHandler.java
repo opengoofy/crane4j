@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class OneToManyAssembleOperationHandler extends OneToOneAssembleOperationHandler {
 
     /**
-     * Create an {@link OneToManyAssembleOperationHandler} comparator.
+     * Create an {@link OneToManyAssembleOperationHandler} instance.
      *
      * @param propertyOperator property operator
      */

@@ -81,7 +81,7 @@ public class DefaultContainerManager implements ContainerManager {
      * Get {@link ContainerProvider} by given name.
      *
      * @param name name
-     * @return {@link ContainerProvider} comparator
+     * @return {@link ContainerProvider} instance
      */
     @SuppressWarnings("unchecked")
     @Nullable
@@ -114,7 +114,7 @@ public class DefaultContainerManager implements ContainerManager {
             if (Objects.isNull(newDefinition)) {
                 return t;
             }
-            // remove old comparator or definition
+            // remove old instance or definition
             if (Objects.nonNull(t)) {
                 ConfigurationUtil.triggerWhenDestroyed(t, containerLifecycleProcessorList);
                 resultHolder.set(t);

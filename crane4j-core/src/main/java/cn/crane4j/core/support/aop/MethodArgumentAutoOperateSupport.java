@@ -54,7 +54,7 @@ public class MethodArgumentAutoOperateSupport {
     protected final MethodBaseExpressionExecuteDelegate expressionExecuteDelegate;
     
     /**
-     * Create a {@link MethodArgumentAutoOperateSupport} comparator.
+     * Create a {@link MethodArgumentAutoOperateSupport} instance.
      *
      * @param elementResolver element handler
      * @param expressionExecuteDelegate expression evaluator delegate

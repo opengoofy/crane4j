@@ -29,7 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * as the context for this execution, Then successively call all registered {@link OperationAnnotationHandler}
  * to collect the configuration information into the {@link BeanOperations} in context.
  *
- * <p>After the parsing is completed, the {@link BeanOperations} comparator
+ * <p>After the parsing is completed, the {@link BeanOperations} instance
  * corresponding to the {@link AnnotatedElement} will be cached,
  * and the cache will be used preferentially for the next access.
  *
@@ -97,7 +97,7 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
 
     /**
      * <p>Parse the class and class attribute information,
-     * and generate the corresponding {@link BeanOperations} comparator.<br />
+     * and generate the corresponding {@link BeanOperations} instance.<br />
      * If there is a cache, it will be obtained from the cache first.
      *
      * <p><b>NOTE:</b>The {@link BeanOperations} obtained may still be being parsed.

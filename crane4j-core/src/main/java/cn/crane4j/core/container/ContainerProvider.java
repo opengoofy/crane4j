@@ -9,7 +9,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  *
  * <p>Since the manager caches all container instances created within its management scope,
  * the container provider does not need to cache the created container instances
- * unless there are specific cases where multiple namespaces require the same comparator.
+ * unless there are specific cases where multiple namespaces require the same instance.
  *
  * @author huangchengxing
  * @see ContainerManager
@@ -18,11 +18,11 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public interface ContainerProvider {
 
     /**
-     * Get container comparator by given namespace
+     * Get container instance by given namespace
      *
      * @param namespace namespace of container
      * @param <K> key type
-     * @return container comparator
+     * @return container instance
      */
     @Nullable
     <K> Container<K> getContainer(String namespace);
