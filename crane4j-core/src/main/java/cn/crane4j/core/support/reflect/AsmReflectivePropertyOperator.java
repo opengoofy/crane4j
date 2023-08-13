@@ -110,6 +110,9 @@ public class AsmReflectivePropertyOperator extends ReflectivePropertyOperator {
 
     /**
      * {@link MethodInvoker} implementation based on {@link FieldAccess}
+     *
+     * @author tangcent
+     * @since 2.0.0
      */
     public abstract static class ReflectAsmFieldInvoker implements MethodInvoker {
 
@@ -131,6 +134,9 @@ public class AsmReflectivePropertyOperator extends ReflectivePropertyOperator {
 
     /**
      * An implementation of the {@link ReflectAsmFieldInvoker} for getter.
+     *
+     * @author tangcent
+     * @since 2.0.0
      */
     public static class ReflectAsmFieldAdapterGetterInvoker extends ReflectAsmFieldInvoker {
 
@@ -146,6 +152,9 @@ public class AsmReflectivePropertyOperator extends ReflectivePropertyOperator {
 
     /**
      * An implementation of the {@link ReflectAsmFieldInvoker} for setter.
+     *
+     * @author tangcent
+     * @since 2.0.0
      */
     public static class ReflectAsmFieldAdapterSetterInvoker extends ReflectAsmFieldInvoker {
 

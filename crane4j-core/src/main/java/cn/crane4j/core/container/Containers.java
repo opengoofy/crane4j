@@ -15,6 +15,7 @@ import java.util.function.Function;
  * A utility class for creating containers from various data sources.
  *
  * @author tangcent
+ * @since 2.0.0
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Containers {

@@ -44,6 +44,7 @@ import java.util.Objects;
  *
  * @author huangchengxing
  * @author tangcent
+ * @since 2.0.0
  */
 public class ReflectivePropertyOperator implements PropertyOperator {
 

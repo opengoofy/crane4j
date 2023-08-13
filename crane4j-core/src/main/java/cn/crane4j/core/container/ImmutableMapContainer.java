@@ -27,6 +27,7 @@ import java.util.Objects;
  * @author tangcent
  * @author huangchengxing
  * @see LimitedContainer
+ * @since 2.0.0
  */
 @EqualsAndHashCode
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)

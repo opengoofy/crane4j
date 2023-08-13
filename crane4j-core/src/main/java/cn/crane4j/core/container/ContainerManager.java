@@ -13,6 +13,7 @@ import java.util.function.Supplier;
  * @author huangchengxing
  * @see ContainerLifecycleProcessor
  * @see ContainerDefinition
+ * @since 1.3.0
  */
 public interface ContainerManager extends ContainerProvider {
 

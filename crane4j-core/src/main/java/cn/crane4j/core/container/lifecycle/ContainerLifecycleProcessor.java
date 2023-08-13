@@ -13,6 +13,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * @author huangchengxing
  * @see ContainerDefinition
  * @see ContainerManager
+ * @since 2.0.0
  */
 public interface ContainerLifecycleProcessor extends Sorted {
 

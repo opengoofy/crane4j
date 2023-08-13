@@ -11,6 +11,7 @@ import java.lang.reflect.Field;
  * without explicit getter and setter methods.
  *
  * @author tangcent
+ * @since 2.0.0
  */
 @RequiredArgsConstructor
 public abstract class ReflectiveFieldAdapterMethodInvoker implements MethodInvoker {

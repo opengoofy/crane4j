@@ -13,6 +13,7 @@ import java.util.function.BiConsumer;
  * Logger for outputting logs during the lifecycle of a container.
  *
  * @author huangchengxing
+ * @since 2.0.0
  */
 @RequiredArgsConstructor
 public class ContainerRegisterLogger implements ContainerLifecycleProcessor {

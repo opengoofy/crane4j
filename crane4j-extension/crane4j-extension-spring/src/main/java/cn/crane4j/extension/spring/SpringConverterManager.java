@@ -12,6 +12,7 @@ import java.util.function.BiFunction;
  * A {@link ConverterManager} implementation based on Spring's {@link ConversionService}.
  *
  * @author huangchengxing
+ * @since 1.3.0
  */
 @RequiredArgsConstructor
 public class SpringConverterManager implements ConverterManager {

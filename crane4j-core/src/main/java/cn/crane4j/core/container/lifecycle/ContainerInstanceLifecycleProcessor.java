@@ -11,6 +11,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * Processor for init and destroy container.
  *
  * @author huangchengxing
+ * @since 2.0.0
  */
 @Slf4j
 public class ContainerInstanceLifecycleProcessor implements ContainerLifecycleProcessor {

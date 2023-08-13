@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
  * @author huangchengxing
  * @param <K> key type
  * @see CacheManager
+ * @since 2.0.0
  */
 @Getter
 @RequiredArgsConstructor

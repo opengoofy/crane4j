@@ -15,6 +15,7 @@ import java.util.function.BiFunction;
  * The wrapper class of {@link PropertyOperator} that adds support for invoker cache.
  *
  * @author huangchengxing
+ * @since 2.0.0
  */
 @RequiredArgsConstructor
 public class CacheablePropertyOperator implements PropertyOperator {

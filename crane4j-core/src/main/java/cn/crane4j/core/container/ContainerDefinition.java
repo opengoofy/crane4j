@@ -12,6 +12,7 @@ import java.util.function.Supplier;
  *
  * @author huangchengxing
  * @see ContainerLifecycleProcessor
+ * @since 1.3.0
  */
 public interface ContainerDefinition {
 
