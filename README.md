@@ -76,7 +76,7 @@ public void init() {
 public class Foo {
     @Assemble(
         container = "gender", // 使用名为的 gender 数据源
-        props = @Mapping(ref = "sexName") // 将根据 code 取得值映射到 name 上
+        props = @Mapping(src = "name") // 将根据 code 取得值映射到 name 上
     )
     private final Integer code; // 根据 code 获得对应的值
     private String name;
