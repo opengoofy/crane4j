@@ -1,27 +1,29 @@
-package cn.crane4j.extension.spring.operator;
+package cn.crane4j.extension.spring.scanner;
 
 import cn.crane4j.annotation.Operator;
 import cn.crane4j.core.support.operator.OperatorProxyFactory;
 import cn.crane4j.core.util.CollectionUtils;
-import cn.crane4j.core.util.StringUtils;
-import cn.crane4j.extension.spring.scanner.ClassScanner;
+import cn.crane4j.core.util.ObjectUtils;
+import cn.crane4j.extension.spring.annotation.OperatorScan;
+import cn.crane4j.extension.spring.util.ContainerScanUtils;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.context.EmbeddedValueResolverAware;
 import org.springframework.context.annotation.AnnotationBeanNameGenerator;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.util.StringValueResolver;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Registrar for proxy object bean of operator interfaces.
@@ -32,35 +34,43 @@ import java.util.stream.Stream;
  * @see OperatorScan
  * @since 1.3.0
  */
+@RequiredArgsConstructor
 @Slf4j
-public class OperatorBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar {
+public class OperatorBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar, EmbeddedValueResolverAware {
+
+    @Nullable
+    @Setter
+    private StringValueResolver embeddedValueResolver;
+    @Nullable
+    @Setter
+    private ClassScanner classScanner = ClassScanner.INSTANCE;
 
     @Override
-    public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
-        AnnotationAttributes annotationAttributes = AnnotationAttributes.fromMap(
-            importingClassMetadata.getAnnotationAttributes(OperatorScan.class.getName())
+    public void registerBeanDefinitions(@NonNull AnnotationMetadata importingClassMetadata, @NonNull BeanDefinitionRegistry registry) {
+        Class<OperatorScan> annotationType = OperatorScan.class;
+        Set<Class<?>> types = ContainerScanUtils.resolveComponentTypesFromMetadata(
+            AnnotationAttributes.fromMap(importingClassMetadata.getAnnotationAttributes(annotationType.getName())),
+            ObjectUtils.defaultIfNull(classScanner, ClassScanner.INSTANCE),
+            embeddedValueResolver
         );
-        if (annotationAttributes != null) {
-            doRegisterBeanDefinitions(annotationAttributes, registry);
+        if (CollectionUtils.isEmpty(types)) {
+            log.warn("cannot find any class by scan configuration for annotation: [{}]", annotationType.getName());
+            return;
         }
+        doRegisterBeanDefinitions(types, registry);
     }
 
-    private void doRegisterBeanDefinitions(AnnotationAttributes annotationAttributes, BeanDefinitionRegistry registry) {
-        ClassScanner classScanner = new ClassScanner();
-        Set<Class<?>> operatorTypes = Stream.of(annotationAttributes.getStringArray("scan"))
-            .filter(StringUtils::isNotEmpty)
-            .map(classScanner::scan)
-            .filter(CollectionUtils::isNotEmpty)
-            .flatMap(Collection::stream)
+    /**
+     * Register bean definitions.
+     *
+     * @param classes              classes which resolve from annotation attributes
+     * @param registry             bean definition registry
+     */
+    protected void doRegisterBeanDefinitions(Set<Class<?>> classes, BeanDefinitionRegistry registry) {
+        classes.stream()
             .filter(Class::isInterface)
             .filter(operatorType -> AnnotatedElementUtils.isAnnotated(operatorType, Operator.class))
-            .collect(Collectors.toSet());
-        CollectionUtils.addAll(operatorTypes, annotationAttributes.getClassArray("includes"));
-        Arrays.asList(annotationAttributes.getClassArray("excludes"))
-            .forEach(operatorTypes::remove);
-        for (Class<?> operatorType : operatorTypes) {
-            registerOperatorBeanDefinition(registry, operatorType);
-        }
+            .forEach(operator -> registerOperatorBeanDefinition(registry, operator));
     }
 
     private static void registerOperatorBeanDefinition(BeanDefinitionRegistry registry, Class<?> operatorType) {

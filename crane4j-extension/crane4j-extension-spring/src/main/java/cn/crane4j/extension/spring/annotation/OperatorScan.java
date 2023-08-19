@@ -1,5 +1,6 @@
-package cn.crane4j.extension.spring.operator;
+package cn.crane4j.extension.spring.annotation;
 
+import cn.crane4j.extension.spring.scanner.OperatorBeanDefinitionRegistrar;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.Documented;
@@ -21,23 +22,24 @@ import java.lang.annotation.Target;
 public @interface OperatorScan {
 
     /**
-     * Base packages to scan for annotated operator interfaces.
+     * The package path which will be scanned.
      *
-     * @return base packages to scan
+     * @return package path
      */
-    String[] scan() default "";
+    String[] includePackages() default {};
 
     /**
-     * Include type of operator.
+     * The class type which will be scanned.
      *
-     * @return type of operator
+     * @return class type
      */
-    Class<?>[] includes() default {};
+    Class<?>[] includeClasses() default {};
 
     /**
-     * Exclude type of operator.
+     * The class type which will not be scanned,
+     * it will exclude the class type which is specified in {@link #includeClasses()}.
      *
-     * @return type of operator
+     * @return class type
      */
-    Class<?>[] excludes() default {};
+    Class<?>[] excludeClasses() default {};
 }
