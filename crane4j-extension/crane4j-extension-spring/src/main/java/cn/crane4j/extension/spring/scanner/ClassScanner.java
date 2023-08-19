@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -26,6 +27,8 @@ import java.util.stream.Stream;
  * that scans all classes under the specified package.
  *
  * @author huangchengxing
+ * @see ResourcePatternResolver
+ * @see MetadataReaderFactory
  */
 @Slf4j
 @RequiredArgsConstructor
@@ -36,6 +39,7 @@ public class ClassScanner {
     public static final String ALL = "*";
     public static final String ALL_RECURSIVE = "**";
 
+    @SuppressWarnings("all")
     private final MetadataReaderFactory metadataReaderFactory;
     private final ResourcePatternResolver resourcePatternResolver;
 
@@ -53,10 +57,21 @@ public class ClassScanner {
      * @return a set of classes
      */
     public Set<Class<?>> scan(String... basePackages) {
+        return scan(Objects::nonNull, basePackages);
+    }
+
+    /**
+     * <p>Scan all classes under the specified package.
+     *
+     * @param basePackages the specified package
+     * @param classMetadataPredicate the predicate to filter classes
+     * @return a set of classes
+     */
+    public Set<Class<?>> scan(Predicate<ClassMetadata> classMetadataPredicate, String... basePackages) {
         return Stream.of(basePackages)
             .filter(StringUtils::isNotEmpty)
             .map(this::resolvePath)
-            .map(this::doScan)
+            .map(path -> doScan(path, classMetadataPredicate))
             .flatMap(Collection::stream)
             .collect(Collectors.toCollection(LinkedHashSet::new));
     }
@@ -77,13 +92,14 @@ public class ClassScanner {
         return path + "/**/*.class";
     }
 
-    private Set<Class<?>> doScan(String packageSearchPath) {
+    private Set<Class<?>> doScan(String packageSearchPath, Predicate<ClassMetadata> classMetadataPredicate) {
         try {
             return Stream.of(resourcePatternResolver.getResources(packageSearchPath))
                 .filter(Resource::isReadable)
                 .map(this::getMetadataReader)
                 .filter(Objects::nonNull)
                 .map(MetadataReader::getClassMetadata)
+                .filter(classMetadataPredicate)
                 .map(ClassMetadata::getClassName)
                 .map(ClassUtils::forName)
                 .collect(Collectors.toSet());
