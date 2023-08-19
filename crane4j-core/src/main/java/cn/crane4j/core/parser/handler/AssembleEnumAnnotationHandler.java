@@ -89,13 +89,18 @@ public class AssembleEnumAnnotationHandler extends AbstractAssembleAnnotationHan
         EnumContainerBuilder<Object, ? extends Enum<?>> enumContainerBuilder = EnumContainerBuilder.of(enumType)
             .annotationFinder(annotationFinder)
             .propertyOperator(propertyOperator);
+
+        // not using @ContainerEnum config
         if (!annotation.useContainerEnum()) {
-            enumContainerBuilder.key(annotation.enumKey());
-            enumContainerBuilder.value(annotation.enumValue());
+            if (StringUtils.isNotEmpty(annotation.enumKey())) {
+                enumContainerBuilder.key(annotation.enumKey());
+            }
+            if (StringUtils.isNotEmpty(annotation.enumValue())) {
+                enumContainerBuilder.value(annotation.enumValue());
+            }
             enumContainerBuilder.namespace(getNamespace(annotation));
         }
-        Container<Object> container = enumContainerBuilder
-            .build();
+        Container<Object> container = enumContainerBuilder.build();
 
         // register to container manager
         String namespace = container.getNamespace();
