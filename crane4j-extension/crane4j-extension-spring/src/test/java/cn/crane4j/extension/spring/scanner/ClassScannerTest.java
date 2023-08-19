@@ -23,16 +23,16 @@ public class ClassScannerTest {
     @Test
     public void scanAllClasses() {
         Set<Class<?>> classes = classScanner.scan("cn.crane4j.extension.spring.scanner");
-        Assert.assertEquals(5, classes.size());
+        Assert.assertEquals(8, classes.size());
 
         classes = classScanner.scan("cn.crane4j.extension.spring.scanner.**.*");
-        Assert.assertEquals(5, classes.size());
+        Assert.assertEquals(8, classes.size());
 
         classes = classScanner.scan("cn.crane4j.extension.spring.scanner.**");
-        Assert.assertEquals(5, classes.size());
+        Assert.assertEquals(8, classes.size());
 
         classes = classScanner.scan("cn.crane4j.extension.spring.scanner.*");
-        Assert.assertEquals(3, classes.size());
+        Assert.assertEquals(6, classes.size());
 
         classes = classScanner.scan("cn.crane4j.extension.spring.scanner.dir");
         Assert.assertEquals(2, classes.size());

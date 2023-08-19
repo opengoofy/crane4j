@@ -1,4 +1,4 @@
-package cn.crane4j.extension.spring.operator;
+package cn.crane4j.extension.spring.scanner;
 
 import cn.crane4j.annotation.Assemble;
 import cn.crane4j.annotation.Mapping;
@@ -6,6 +6,7 @@ import cn.crane4j.annotation.Operator;
 import cn.crane4j.core.container.LambdaContainer;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.extension.spring.DefaultCrane4jSpringConfiguration;
+import cn.crane4j.extension.spring.annotation.OperatorScan;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -62,7 +63,7 @@ public class OperatorBeanDefinitionRegistrarTest {
     }
 
 
-    @OperatorScan(includes = {OperatorBeanDefinitionRegistrarTest.OperatorInterface.class})
+    @OperatorScan(includeClasses = {OperatorBeanDefinitionRegistrarTest.OperatorInterface.class})
     @Configuration
     protected static class Config {
     }

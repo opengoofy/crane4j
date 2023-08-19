@@ -46,6 +46,8 @@ import cn.crane4j.extension.spring.aop.MethodArgumentAutoOperateAdvisor;
 import cn.crane4j.extension.spring.aop.MethodResultAutoOperateAdvisor;
 import cn.crane4j.extension.spring.expression.SpelExpressionContext;
 import cn.crane4j.extension.spring.expression.SpelExpressionEvaluator;
+import cn.crane4j.extension.spring.scanner.ClassScanner;
+import cn.crane4j.extension.spring.scanner.ScannedContainerRegister;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,6 +81,11 @@ public class DefaultCrane4jSpringConfiguration implements SmartInitializingSingl
     // ============== basic components ==============
 
     @Bean
+    public ClassScanner classScanner() {
+        return ClassScanner.INSTANCE;
+    }
+
+    @Bean
     public SpringConverterManager springConverterManager() {
         return new SpringConverterManager(DefaultConversionService.getSharedInstance());
     }
@@ -87,6 +94,11 @@ public class DefaultCrane4jSpringConfiguration implements SmartInitializingSingl
     @Bean
     public Crane4jApplicationContext crane4jApplicationContext(ApplicationContext applicationContext) {
         return new Crane4jApplicationContext(applicationContext);
+    }
+
+    @Bean
+    public ScannedContainerRegister scannedContainerRegister() {
+        return new ScannedContainerRegister();
     }
 
     @Bean
