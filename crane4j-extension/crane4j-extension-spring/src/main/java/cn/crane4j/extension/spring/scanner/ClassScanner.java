@@ -31,6 +31,7 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class ClassScanner {
 
+    public static final ClassScanner INSTANCE = new ClassScanner();
     public static final String CLASS_SUFFIX = ".class";
     public static final String ALL = "*";
     public static final String ALL_RECURSIVE = "**";
