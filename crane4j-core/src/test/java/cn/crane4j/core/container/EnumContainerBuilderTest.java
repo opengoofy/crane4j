@@ -1,6 +1,7 @@
 package cn.crane4j.core.container;
 
 import cn.crane4j.annotation.ContainerEnum;
+import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.support.SimpleAnnotationFinder;
 import cn.crane4j.core.support.converter.HutoolConverterManager;
 import cn.crane4j.core.support.reflect.ReflectivePropertyOperator;
@@ -33,6 +34,10 @@ public class EnumContainerBuilderTest {
     @SuppressWarnings("unchecked")
     @Test
     public void nonAnnotatedEnum() {
+        EnumContainerBuilder<?, FooEnum> builder = EnumContainerBuilder.of(FooEnum.class);
+        Assert.assertThrows(Crane4jException.class, () -> builder.key(""));
+        Assert.assertThrows(Crane4jException.class, () -> builder.value(""));
+
         Container<Integer> container = EnumContainerBuilder.of(FooEnum.class)
             .namespace("test")
             .keyGetter(FooEnum::ordinal)

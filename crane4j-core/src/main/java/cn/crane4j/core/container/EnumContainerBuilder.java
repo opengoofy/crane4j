@@ -1,10 +1,13 @@
 package cn.crane4j.core.container;
 
 import cn.crane4j.annotation.ContainerEnum;
+import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.support.AnnotationFinder;
+import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.support.SimpleAnnotationFinder;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.support.reflect.ReflectivePropertyOperator;
+import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.StringUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -121,10 +124,13 @@ public class EnumContainerBuilder<K, T extends Enum<?>> {
      *
      * @param key the key to set
      * @return this builder instance
+     * @throws Crane4jException throw when cannot find key getter of given property from enum type
      */
     @SuppressWarnings("unchecked")
     public EnumContainerBuilder<Object, T> key(@NonNull String key) {
-        this.keyGetter = e -> this.propertyOperator.readProperty(enumType, e, key);
+        MethodInvoker invoker = this.propertyOperator.findGetter(enumType, key);
+        Asserts.isNotNull(invoker, "cannot not find getter of property [{}] from [{}]", key, enumType);
+        this.keyGetter = invoker::invoke;
         return (EnumContainerBuilder<Object, T>) this;
     }
 
@@ -145,9 +151,12 @@ public class EnumContainerBuilder<K, T extends Enum<?>> {
      *
      * @param value the value to set
      * @return this builder instance
+     * @throws Crane4jException throw when cannot find value getter of given property from enum type
      */
     public EnumContainerBuilder<K, T> value(@NonNull String value) {
-        this.valueGetter = e -> this.propertyOperator.readProperty(enumType, e, value);
+        MethodInvoker invoker = this.propertyOperator.findGetter(enumType, value);
+        Asserts.isNotNull(invoker, "cannot not find getter of property [{}] from [{}]", value, enumType);
+        this.valueGetter = invoker::invoke;
         return this;
     }
 
