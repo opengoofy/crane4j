@@ -5,7 +5,6 @@ import cn.crane4j.annotation.ContainerEnum;
 import cn.crane4j.annotation.ContainerMethod;
 import cn.crane4j.core.cache.CacheManager;
 import cn.crane4j.core.cache.ConcurrentMapCacheManager;
-import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerManager;
 import cn.crane4j.core.container.Containers;
 import cn.crane4j.core.container.lifecycle.CacheableContainerProcessor;
@@ -25,7 +24,12 @@ import cn.crane4j.core.parser.handler.AssembleEnumAnnotationHandler;
 import cn.crane4j.core.parser.handler.DisassembleAnnotationHandler;
 import cn.crane4j.core.parser.handler.OperationAnnotationHandler;
 import cn.crane4j.core.parser.operation.AssembleOperation;
-import cn.crane4j.core.support.*;
+import cn.crane4j.core.support.AnnotationFinder;
+import cn.crane4j.core.support.Crane4jGlobalConfiguration;
+import cn.crane4j.core.support.OperateTemplate;
+import cn.crane4j.core.support.ParameterNameFinder;
+import cn.crane4j.core.support.SimpleTypeResolver;
+import cn.crane4j.core.support.TypeResolver;
 import cn.crane4j.core.support.aop.AutoOperateAnnotatedElementResolver;
 import cn.crane4j.core.support.container.CacheableMethodContainerFactory;
 import cn.crane4j.core.support.container.DefaultMethodContainerFactory;
@@ -38,14 +42,28 @@ import cn.crane4j.core.support.operator.DefaultOperatorProxyMethodFactory;
 import cn.crane4j.core.support.operator.DynamicContainerOperatorProxyMethodFactory;
 import cn.crane4j.core.support.operator.OperatorProxyFactory;
 import cn.crane4j.core.support.operator.OperatorProxyMethodFactory;
-import cn.crane4j.core.support.reflect.*;
-import cn.crane4j.core.util.ClassUtils;
+import cn.crane4j.core.support.reflect.AsmReflectivePropertyOperator;
+import cn.crane4j.core.support.reflect.CacheablePropertyOperator;
+import cn.crane4j.core.support.reflect.ChainAccessiblePropertyOperator;
+import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
+import cn.crane4j.core.support.reflect.PropertyOperator;
+import cn.crane4j.core.support.reflect.ReflectivePropertyOperator;
 import cn.crane4j.core.util.CollectionUtils;
-import cn.crane4j.extension.spring.*;
+import cn.crane4j.core.util.StringUtils;
+import cn.crane4j.extension.spring.BeanMethodContainerRegistrar;
+import cn.crane4j.extension.spring.Crane4jApplicationContext;
+import cn.crane4j.extension.spring.MergedAnnotationFinder;
+import cn.crane4j.extension.spring.ResolvableExpressionEvaluator;
+import cn.crane4j.extension.spring.SpringAssembleAnnotationHandler;
+import cn.crane4j.extension.spring.SpringConverterManager;
+import cn.crane4j.extension.spring.SpringParameterNameFinder;
 import cn.crane4j.extension.spring.aop.MethodArgumentAutoOperateAdvisor;
 import cn.crane4j.extension.spring.aop.MethodResultAutoOperateAdvisor;
 import cn.crane4j.extension.spring.expression.SpelExpressionContext;
 import cn.crane4j.extension.spring.expression.SpelExpressionEvaluator;
+import cn.crane4j.extension.spring.scanner.ClassScanner;
+import cn.crane4j.extension.spring.scanner.ScannedContainerRegister;
+import cn.crane4j.extension.spring.util.ContainerScanUtils;
 import cn.crane4j.spring.boot.annotation.EnableCrane4j;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -63,25 +81,28 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.EmbeddedValueResolverAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.expression.BeanFactoryResolver;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.ResourcePatternResolver;
-import org.springframework.core.type.classreading.MetadataReader;
-import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.expression.BeanResolver;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.util.StringValueResolver;
 
-import java.util.*;
-import java.util.function.Consumer;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * <p>The automatic configuration class of crane.<br />
@@ -102,6 +123,12 @@ public class Crane4jAutoConfiguration {
 
     // ============== basic components ==============
 
+    @ConditionalOnMissingBean(ClassScanner.class)
+    @Bean
+    public ClassScanner classScanner() {
+        return ClassScanner.INSTANCE;
+    }
+
     @ConditionalOnBean(ConversionService.class)
     @ConditionalOnMissingBean(ConverterManager.class)
     @Bean
@@ -121,6 +148,12 @@ public class Crane4jAutoConfiguration {
     @Bean
     public Crane4jApplicationContext crane4jApplicationContext(ApplicationContext applicationContext) {
         return new Crane4jApplicationContext(applicationContext);
+    }
+
+    @ConditionalOnMissingBean
+    @Bean
+    public ScannedContainerRegister scannedContainerRegister() {
+        return new ScannedContainerRegister();
     }
 
     @Bean
@@ -172,7 +205,7 @@ public class Crane4jAutoConfiguration {
     @Bean
     public ContainerRegisterLogger containerRegisterLogger() {
         Logger logger = LoggerFactory.getLogger(ContainerRegisterLogger.class);
-        return new ContainerRegisterLogger(logger::info);
+        return new ContainerRegisterLogger(logger::debug);
     }
 
     @Order(2)
@@ -392,15 +425,15 @@ public class Crane4jAutoConfiguration {
         return new BeanMethodContainerRegistrar(factories, annotationFinder, configuration);
     }
 
-    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @ConditionalOnMissingBean
     @Bean
     public Crane4jInitializer crane4jInitializer(
-        MetadataReaderFactory readerFactory, ResourcePatternResolver resolver, PropertyOperator propertyOperator,
+        ClassScanner classScanner, PropertyOperator propertyOperator,
         ApplicationContext applicationContext, AnnotationFinder annotationFinder,
         Crane4jGlobalConfiguration configuration, Properties properties) {
         return new Crane4jInitializer(
-            readerFactory, resolver, propertyOperator, applicationContext, properties, annotationFinder, configuration
+            propertyOperator, applicationContext, properties, annotationFinder,
+            configuration, classScanner
         );
     }
 
@@ -521,17 +554,35 @@ public class Crane4jAutoConfiguration {
      */
     @Slf4j
     @RequiredArgsConstructor
-    public static class Crane4jInitializer implements ApplicationRunner {
+    public static class Crane4jInitializer implements Ordered, ApplicationRunner, EmbeddedValueResolverAware {
 
-        @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-        private final MetadataReaderFactory readerFactory;
-        private final ResourcePatternResolver resolver;
+        public static final int CRANE4J_INITIALIZER_ORDER = 0;
 
         private final PropertyOperator propertyOperator;
         private final ApplicationContext applicationContext;
         private final Properties properties;
         private final AnnotationFinder annotationFinder;
         private final Crane4jGlobalConfiguration configuration;
+        private final ClassScanner classScanner;
+        @Setter
+        private StringValueResolver embeddedValueResolver;
+
+        /**
+         * Get the order value of this object.
+         * <p>Higher values are interpreted as lower priority. As a consequence,
+         * the object with the lowest value has the highest priority (somewhat
+         * analogous to Servlet {@code load-on-startup} values).
+         * <p>Same order values will result in arbitrary sort positions for the
+         * affected objects.
+         *
+         * @return the order value
+         * @see #HIGHEST_PRECEDENCE
+         * @see #LOWEST_PRECEDENCE
+         */
+        @Override
+        public int getOrder() {
+            return CRANE4J_INITIALIZER_ORDER;
+        }
 
         @SneakyThrows
         @Override
@@ -546,47 +597,33 @@ public class Crane4jAutoConfiguration {
         }
 
         private void loadConstantClass() {
-            Set<String> constantPackages = properties.getContainerConstantPackages();
-            constantPackages.forEach(path -> readMetadata(path, reader -> {
-                Class<?> targetType = ClassUtils.forName(reader.getClassMetadata().getClassName());
-                if (AnnotatedElementUtils.isAnnotated(targetType, ContainerConstant.class)) {
-                    Container<Object> container = Containers.forConstantClass(targetType, annotationFinder);
-                    configuration.registerContainer(container);
-                }
-            }));
+            ContainerScanUtils.loadConstantClass(
+                loadTypes(properties.getContainerConstantPackages()), configuration, annotationFinder
+            );
         }
 
-        @SuppressWarnings("unchecked")
         private void loadContainerEnum() {
-            Set<String> enumPackages = properties.getContainerEnumPackages();
-            enumPackages.forEach(path -> readMetadata(path, reader -> {
-                Class<?> targetType = ClassUtils.forName(reader.getClassMetadata().getClassName());
-                boolean supported = targetType.isEnum()
-                    && (!properties.isOnlyLoadAnnotatedEnum() || AnnotatedElementUtils.isAnnotated(targetType, ContainerEnum.class));
-                if (supported) {
-                    Container<Enum<?>> container = Containers.forEnum((Class<Enum<?>>) targetType, annotationFinder, propertyOperator);
-                    configuration.registerContainer(container);
-                }
-            }));
+            ContainerScanUtils.loadContainerEnum(
+                loadTypes(properties.getContainerEnumPackages()), properties.isOnlyLoadAnnotatedEnum(),
+                configuration, annotationFinder, propertyOperator
+            );
         }
 
         private void loadOperateEntity() {
-            Set<String> entityPackages = properties.getOperateEntityPackages();
-            entityPackages.forEach(path -> readMetadata(path, reader -> {
-                Class<?> targetType = ClassUtils.forName(reader.getClassMetadata().getClassName());
-                applicationContext.getBeansOfType(BeanOperationParser.class).values()
-                    .forEach(parser -> parser.parse(targetType));
-            }));
+            loadTypes(properties.getOperateEntityPackages())
+                .forEach(type -> applicationContext.getBeansOfType(BeanOperationParser.class)
+                    .values()
+                    .forEach(parser -> parser.parse(type))
+                );
         }
 
-        @SneakyThrows
-        private void readMetadata(String path, Consumer<MetadataReader> consumer) {
-            String actualPath = ClassUtils.packageToPath(path);
-            Resource[] resources = resolver.getResources(actualPath);
-            for (Resource resource : resources) {
-                MetadataReader reader = readerFactory.getMetadataReader(resource);
-                consumer.accept(reader);
-            }
+        private Set<Class<?>> loadTypes(Collection<String> packages) {
+            return packages.stream()
+                .map(embeddedValueResolver::resolveStringValue)
+                .filter(StringUtils::isNotEmpty)
+                .map(classScanner::scan)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toSet());
         }
     }
 
