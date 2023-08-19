@@ -1,7 +1,7 @@
 package cn.crane4j.extension.spring.annotation;
 
-import cn.crane4j.annotation.ContainerEnum;
-import cn.crane4j.extension.spring.scanner.ScannedContainerRegister;
+import cn.crane4j.extension.spring.scanner.ScannedContainerRegistrar;
+import cn.crane4j.extension.spring.util.ContainerResolveUtils;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.AliasFor;
 
@@ -12,25 +12,19 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Scan enum containers for the specified package path.
+ * Scan constant containers for the specified package path.
  *
  * @author huangchengxing
- * @see ContainerEnum
+ * @see ScannedContainerRegistrar
+ * @see ContainerResolveUtils#resolveComponentTypesFromMetadata
  * @since 2.1.0
  */
-@ConstantContainerScan
+@ComponentTypeScan
 @Documented
 @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Import(ScannedContainerRegister.class)
-public @interface EnumContainerScan {
-
-    /**
-     * Whether to only load the enum which is annotated by {@link ContainerEnum}.
-     *
-     * @return boolean
-     */
-    boolean isOnlyLoadAnnotatedEnum() default true;
+@Import(ScannedContainerRegistrar.class)
+public @interface ContainerConstantScan {
 
     /**
      * The package path which will be scanned.

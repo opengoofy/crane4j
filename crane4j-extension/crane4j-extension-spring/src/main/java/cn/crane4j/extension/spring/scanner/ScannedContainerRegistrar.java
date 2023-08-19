@@ -4,9 +4,9 @@ import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.util.CollectionUtils;
-import cn.crane4j.extension.spring.annotation.ConstantContainerScan;
-import cn.crane4j.extension.spring.annotation.EnumContainerScan;
-import cn.crane4j.extension.spring.util.ContainerScanUtils;
+import cn.crane4j.extension.spring.annotation.ContainerConstantScan;
+import cn.crane4j.extension.spring.annotation.ContainerEnumScan;
+import cn.crane4j.extension.spring.util.ContainerResolveUtils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -31,18 +31,21 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * <p>A registrar for container which scanned by {@link ConstantContainerScan} and {@link EnumContainerScan}.
+ * <p>A registrar for container which scanned by {@link ContainerConstantScan} and {@link ContainerEnumScan}.
  * 
  * <p>When application context is ready, it will register a bean definition
  * of {@link ScannedContainerConfiguration} to spring container for recording scanned container,
  * then, the scanned container which recorded by {@link ScannedContainerConfiguration} will be registered to {@link Crane4jGlobalConfiguration}
- * when spring invoke {@link InitializingBean#afterPropertiesSet()} method of the {@link ScannedContainerRegister} bean.
- *
+ * when spring invoke {@link InitializingBean#afterPropertiesSet()} method of the {@link ScannedContainerRegistrar} bean.
  *
  * @author huangchengxing
+ * @see ContainerConstantScan
+ * @see ContainerEnumScan
+ * @see ScannedContainerConfiguration
+ * @since 2.1.0
  */
 @Slf4j
-public class ScannedContainerRegister
+public class ScannedContainerRegistrar
     implements ImportBeanDefinitionRegistrar, InitializingBean, EmbeddedValueResolverAware {
 
     private static final String SCANNED_CONTAINER_CONFIGURATION_BEAN_NAME = "internalScannedContainerConfigurationBeanName";
@@ -75,12 +78,12 @@ public class ScannedContainerRegister
     public void registerBeanDefinitions(
         @NonNull AnnotationMetadata importingClassMetadata, @NonNull BeanDefinitionRegistry registry) {
         BeanDefinition definition = BeanDefinitionBuilder.genericBeanDefinition(ScannedContainerConfiguration.class)
-            .addPropertyValue("constantContainerScan", importingClassMetadata.getAnnotationAttributes(ConstantContainerScan.class.getName()))
-            .addPropertyValue("enumContainerScan", importingClassMetadata.getAnnotationAttributes(EnumContainerScan.class.getName()))
+            .addPropertyValue("constantContainerScan", importingClassMetadata.getAnnotationAttributes(ContainerConstantScan.class.getName()))
+            .addPropertyValue("enumContainerScan", importingClassMetadata.getAnnotationAttributes(ContainerEnumScan.class.getName()))
             .setAutowireMode(AutowireCapableBeanFactory.AUTOWIRE_NO)
             .getBeanDefinition();
         if (!registry.containsBeanDefinition(SCANNED_CONTAINER_CONFIGURATION_BEAN_NAME)) {
-            log.info("load annotation metadata from @ConstantContainerScan or @EnumContainerScan");
+            log.info("load annotation metadata from @ContainerConstantScan or @ContainerEnumScan");
             registry.registerBeanDefinition(SCANNED_CONTAINER_CONFIGURATION_BEAN_NAME, definition);
         }
     }
@@ -96,18 +99,18 @@ public class ScannedContainerRegister
         ScannedContainerConfiguration scannedContainerConfiguration = applicationContext.getBean(
             SCANNED_CONTAINER_CONFIGURATION_BEAN_NAME, ScannedContainerConfiguration.class
         );
-        log.info("register container which resolve from @ConstantContainerScan or @EnumContainerScan");
+        log.info("register container which resolve from @ContainerConstantScan or @ContainerEnumScan");
         Optional.ofNullable(scannedContainerConfiguration.getConstantContainerScan())
-            .map(attributes -> ContainerScanUtils.resolveComponentTypesFromMetadata(attributes, classScanner, embeddedValueResolver))
+            .map(attributes -> ContainerResolveUtils.resolveComponentTypesFromMetadata(attributes, classScanner, embeddedValueResolver))
             .filter(CollectionUtils::isNotEmpty)
-            .ifPresent(types -> ContainerScanUtils.loadConstantClass(types, configuration, annotationFinder));
+            .ifPresent(types -> ContainerResolveUtils.loadConstantClass(types, configuration, annotationFinder));
         AnnotationAttributes enumContainerScan = scannedContainerConfiguration.getEnumContainerScan();
         if (Objects.nonNull(enumContainerScan)) {
-            Set<Class<?>> types = ContainerScanUtils.resolveComponentTypesFromMetadata(
+            Set<Class<?>> types = ContainerResolveUtils.resolveComponentTypesFromMetadata(
                 enumContainerScan, classScanner, embeddedValueResolver
             );
             if (CollectionUtils.isNotEmpty(types)) {
-                ContainerScanUtils.loadContainerEnum(
+                ContainerResolveUtils.loadContainerEnum(
                     types, enumContainerScan.getBoolean("isOnlyLoadAnnotatedEnum"),
                     configuration, annotationFinder, propertyOperator
                 );

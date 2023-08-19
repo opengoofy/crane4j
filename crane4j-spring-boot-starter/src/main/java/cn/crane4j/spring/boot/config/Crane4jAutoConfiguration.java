@@ -62,8 +62,8 @@ import cn.crane4j.extension.spring.aop.MethodResultAutoOperateAdvisor;
 import cn.crane4j.extension.spring.expression.SpelExpressionContext;
 import cn.crane4j.extension.spring.expression.SpelExpressionEvaluator;
 import cn.crane4j.extension.spring.scanner.ClassScanner;
-import cn.crane4j.extension.spring.scanner.ScannedContainerRegister;
-import cn.crane4j.extension.spring.util.ContainerScanUtils;
+import cn.crane4j.extension.spring.scanner.ScannedContainerRegistrar;
+import cn.crane4j.extension.spring.util.ContainerResolveUtils;
 import cn.crane4j.spring.boot.annotation.EnableCrane4j;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -152,8 +152,8 @@ public class Crane4jAutoConfiguration {
 
     @ConditionalOnMissingBean
     @Bean
-    public ScannedContainerRegister scannedContainerRegister() {
-        return new ScannedContainerRegister();
+    public ScannedContainerRegistrar scannedContainerRegister() {
+        return new ScannedContainerRegistrar();
     }
 
     @Bean
@@ -597,13 +597,13 @@ public class Crane4jAutoConfiguration {
         }
 
         private void loadConstantClass() {
-            ContainerScanUtils.loadConstantClass(
+            ContainerResolveUtils.loadConstantClass(
                 loadTypes(properties.getContainerConstantPackages()), configuration, annotationFinder
             );
         }
 
         private void loadContainerEnum() {
-            ContainerScanUtils.loadContainerEnum(
+            ContainerResolveUtils.loadContainerEnum(
                 loadTypes(properties.getContainerEnumPackages()), properties.isOnlyLoadAnnotatedEnum(),
                 configuration, annotationFinder, propertyOperator
             );

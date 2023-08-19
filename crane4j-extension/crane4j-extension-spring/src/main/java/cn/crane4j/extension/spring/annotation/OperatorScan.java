@@ -1,6 +1,7 @@
 package cn.crane4j.extension.spring.annotation;
 
 import cn.crane4j.extension.spring.scanner.OperatorBeanDefinitionRegistrar;
+import cn.crane4j.extension.spring.util.ContainerResolveUtils;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.Documented;
@@ -13,6 +14,7 @@ import java.lang.annotation.Target;
  * Scan Operator interface for the specified package path.
  *
  * @author huangchengxing
+ * @see ContainerResolveUtils#resolveComponentTypesFromMetadata
  * @since 1.3.0
  */
 @Documented

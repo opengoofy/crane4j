@@ -1,6 +1,6 @@
 package cn.crane4j.extension.spring.annotation;
 
-import cn.crane4j.extension.spring.util.ContainerScanUtils;
+import cn.crane4j.extension.spring.util.ContainerResolveUtils;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -11,11 +11,11 @@ import java.lang.annotation.Target;
 /**
  * A markup annotation indicating that the annotation with {@link ComponentTypeScan}
  * as a meta-annotation can provide some scanning configuration,
- * from which {@link ContainerScanUtils#resolveComponentTypesFromMetadata} can obtain
+ * from which {@link ContainerResolveUtils#resolveComponentTypesFromMetadata} can obtain
  * the type of Crane4j component that needs to be parsed.
  *
  * @author huangchengxing
- * @see ContainerScanUtils#resolveComponentTypesFromMetadata 
+ * @see ContainerResolveUtils#resolveComponentTypesFromMetadata
  * @since 2.1.0
  */
 @Documented
