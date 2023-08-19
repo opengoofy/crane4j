@@ -56,7 +56,7 @@ public @interface AssembleEnum {
      *
      * @return boolean
      */
-    boolean useContainerEnum() default false;
+    boolean useContainerEnum() default true;
 
     // ================= common =================
 

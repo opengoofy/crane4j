@@ -28,7 +28,7 @@ import java.util.Set;
  *
  * @author huangchengxing
  */
-public class AssembleEnumAnnotationResolverTest {
+public class AssembleEnumAnnotationHandlerTest {
 
     private AssembleEnumAnnotationHandler annotationResolver;
     private Crane4jGlobalConfiguration configuration;
@@ -78,8 +78,8 @@ public class AssembleEnumAnnotationResolverTest {
     @RequiredArgsConstructor
     @Data
     private static class Foo {
-        @AssembleEnum(type = Gender.class, enumKey = "code", enumValue = "cnName", ref = "cnName", sort = 1)
-        @AssembleEnum(type = Gender.class, useContainerEnum = true, ref = "enName", sort = 2)
+        @AssembleEnum(type = Gender.class, useContainerEnum = false, enumKey = "code", enumValue = "cnName", ref = "cnName", sort = 1)
+        @AssembleEnum(type = Gender.class, ref = "enName", sort = 2)
         private final Integer id;
         private String cnName;
         private String enName;
