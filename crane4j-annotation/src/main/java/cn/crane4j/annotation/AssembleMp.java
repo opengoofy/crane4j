@@ -138,6 +138,7 @@ public @interface AssembleMp {
      * Get name of property mapping strategy.
      *
      * @return strategy name
+     * @see cn.crane4j.core.parser.handler.strategy.PropertyMappingStrategy
      * @since 2.1.0
      */
     String propertyMappingStrategy() default "";

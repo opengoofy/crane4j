@@ -32,72 +32,149 @@ Project documentation: [GitHub](https://opengoofy.github.io/crane4j/#/) / [Gitee
 
 **Add Dependencies**
 
-~~~xml
+```xml
 <dependency>
     <groupId>cn.crane4j</groupId>
-    <artifactId>crane4j-extension-spring</artifactId>
+    <artifactId>crane4j-spring-boot-starter</artifactId>
     <version>${last-version}</version>
 </dependency>
-~~~
+```
 
 **Enable the Framework**
 
-~~~java
-@EnableCrane4j // Enable crane4j
+To enable automatic configuration, simply add `@EnableCrane4j` to your startup class or configuration class. You can also configure the scan paths for enums and constants at this point:
+
+```java
+@EnableCrane4j(
+    constantPackages = "com.example.demo", // Scan constant classes
+    enumPackages = "com.example.demo"  // Scan enum classes
+)
 @SpringBootApplication
-public class Application {
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+public class Application {   
+    public static void main(String[] args) {  
+        SpringApplication.run(Application.class, args); 
     }
 }
-~~~
+```
 
-**Add Data Source**
+**Configure Data Sources**
 
-~~~java
-@Autowired
-public Crane4jGlobalConfiguration configuration; // Inject global configuration
+`crane4j` allows you to use methods, enums, constants, expressions, various ORM frameworks, and even objects themselves as data sources. Here, we'll use methods, enums, and constants as examples:
 
-@PostConstruct
-public void init() {
-    // Create a data source based on a Map cache
-    Map<Integer, String> sources = new HashMap<>();
-    sources.put(0, "Female");
-    sources.put(1, "Male");
-    Container<Integer> genderContainer = Containers.forMap("gender", sources);
-    configuration.registerContainer(genderContainer); // Register it to the global configuration
+```java
+@Component
+public void OperationDataSource {
+    
+    // 1. Use instance methods as a data source "method"
+    @ContainerMethod(namespace = "method", resultType = Foo.class)
+    public List<Foo> getFooList(Set<Integer>ids) {
+        return ids.stream()
+            .map(id -> new Foo(id).setName("foo" + id))
+            .collect(Collectors.toList());
+    }
+
+    // 2. Use scanned enum classes as a data source "enum"
+    @ContainerEnum(namespace = "enum", key = "code")
+    @Getter
+    @RequiredArgsConstructor
+    public enum Gender {
+        MALE(1, "Male"),
+        FEMALE(0, "Female");
+        private final Integer code;
+        private final String name;
+    }
+
+    // 3. Use scanned constant classes as a data source "constant"
+    @ContainerConstant(namespace = "constant", reverse = true)
+    public static final class Constant {
+        public static final String A = "1";
+        public static final String B = "2";
+        public static final String C = "3";
+    }
 }
-~~~
+```
 
-**Declare Population Operation**
+**Declare Fill Operations**
 
-~~~java
+You can declare fill operations based on the configured data sources by adding annotations to fields. It supports one-to-one, one-to-many, and even many-to-many property mappings:
+
+```java
+@Data
+@Accessors(chain = true)
 @RequiredArgsConstructor
-public class Foo {
-    @Assemble(
-        container = "gender", // Use the data source named "gender"
-        props = @Mapping(ref = "sexName") // Map the value based on 'code' to 'name'
-    )
-    private final Integer code; // Get the corresponding value based on 'code'
+public static class Foo {
+
+    // 1. Get objects from methods based on id and map their name to the current name
+    @Assemble(container = "method", props = @Mapping("name"))
+    private final Integer id;
     private String name;
+
+    // 2. Map your own name property to fooName
+    @Assemble(props = @Mapping(src = "name", ref = "fooName"))
+    private String fooName;
+
+    // 3. Get the corresponding enum object based on gender and map its name to genderName
+    @Assemble(
+        container = "enum", props = @Mapping(src = "name", ref = "genderName")
+    )
+    private Integer gender;
+    private String genderName;
+
+    // 4. Get corresponding values from constants based on a key collection and map them to the current value
+    @Assemble(
+        container = "constant", props = @Mapping(ref = "values"),
+        handlerType = ManyToManyAssembleOperationHandler.class
+    )
+    private Set<String> keys;
+    private List<String> values;
 }
-~~~
+```
 
-**Perform Population**
+**Perform Filling**
 
-~~~java
+You can quickly perform filling using `OperateTemplate`. You can also add `@AutoOperate` to the return value of a method. Here's an example of manual filling:
+
+```java
 @Autowired
-public OperateTemplate operateTemplate; // Inject the rapid population utility class
+public OperateTemplate operateTemplate; // Inject the rapid filling utility class
 
-// Populate objects using the utility class
-List<Foo> foos = Arrays.asList(new Foo(0), new Foo(1));
-operateTemplate.execute(foos);
-System.out.println(foos);
-// { "code": "0", "name": "Female" }
-// { "code": "1", "name": "Male" }
-~~~
+public void doOperate() {
+    List<Foo> targets = IntStream.rangeClosed(1, 2)
+        .mapToObj(id -> new Foo(id)
+			.setGender(id & 1)
+			.setKeys(CollectionUtils.newCollection(LinkedHashSet::new, "1", "2", "3"))
+        ).collect(Collectors.toList());
+    // Fill objects
+    operateTemplate.execute(targets);
+}
+```
 
-This is the simplest way to use `crane4j` in a Spring Boot environment. For more usage details, please refer to the official documentation.
+Result:
+
+```json
+[
+    {
+        "id": 1, // 1. Filled based on method data source
+        "name": "foo1",
+        "fooName": "foo1", // 2. Filled based on the target object itself as a data source
+        "gender": 1, // 3. Filled based on enum data source
+        "genderName": "Male",
+        "keys": ["1", "2", "3"], // 4. Filled based on constant data source
+        "values": ["A", "B", "C"]
+    },
+    {
+        "id": 2,
+        "name": "foo2",
+        "fooName": "foo2",
+        "gender": 0,
+        "genderName": "Female",
+        "keys": ["1", "2", "3"],
+        "values": ["A", "B", "C"]
+    }
+]
+```
+
+This is the simplest way to use `crane4j` in a Spring Boot environment. For more advanced usage, please refer to the official documentation.
 
 ## Friendly Links
 

@@ -50,6 +50,7 @@ import java.util.stream.Stream;
  * @author huangchengxing
  * @param <T> annotation type
  * @see StandardAnnotation
+ * @see PropertyMappingStrategy
  * @since 1.3.0
  */
 @Accessors(chain = true)
@@ -68,6 +69,7 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
      * Register property mapping strategy.
      *
      * @param strategy strategy
+     * @see PropertyMappingStrategy
      * @since 2.1.0
      */
     public void addPropertyMappingStrategy(@NonNull PropertyMappingStrategy strategy) {
