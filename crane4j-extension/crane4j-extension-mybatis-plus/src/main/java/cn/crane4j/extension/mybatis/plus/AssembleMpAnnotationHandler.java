@@ -96,7 +96,8 @@ public class AssembleMpAnnotationHandler extends AbstractAssembleAnnotationHandl
         return new StandardAnnotationAdapter(
             annotation, annotation.key(), annotation.sort(),
             annotation.handler(), annotation.handlerType(),
-            annotation.propTemplates(), annotation.props(), annotation.groups()
+            annotation.propTemplates(), annotation.props(), annotation.groups(),
+            annotation.propertyMappingStrategy()
         );
     }
 }

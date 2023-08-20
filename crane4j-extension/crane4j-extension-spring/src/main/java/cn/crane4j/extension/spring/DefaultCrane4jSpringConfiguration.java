@@ -17,6 +17,10 @@ import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
 import cn.crane4j.core.parser.handler.AssembleEnumAnnotationHandler;
 import cn.crane4j.core.parser.handler.DisassembleAnnotationHandler;
 import cn.crane4j.core.parser.handler.OperationAnnotationHandler;
+import cn.crane4j.core.parser.handler.strategy.OverwriteMappingStrategy;
+import cn.crane4j.core.parser.handler.strategy.OverwriteNotNullMappingStrategy;
+import cn.crane4j.core.parser.handler.strategy.PropertyMappingStrategy;
+import cn.crane4j.core.parser.handler.strategy.ReferenceMappingStrategy;
 import cn.crane4j.core.parser.operation.AssembleOperation;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
@@ -146,6 +150,21 @@ public class DefaultCrane4jSpringConfiguration implements SmartInitializingSingl
     // ============== execute components ==============
 
     @Bean
+    public OverwriteNotNullMappingStrategy overwriteNotNullMappingStrategy() {
+        return OverwriteNotNullMappingStrategy.INSTANCE;
+    }
+
+    @Bean
+    public OverwriteMappingStrategy overwriteMappingStrategy() {
+        return OverwriteMappingStrategy.INSTANCE;
+    }
+
+    @Bean
+    public ReferenceMappingStrategy referenceMappingStrategy(PropertyOperator propertyOperator) {
+        return new ReferenceMappingStrategy(propertyOperator);
+    }
+
+    @Bean
     public BeanFactoryResolver beanFactoryResolver(ApplicationContext applicationContext) {
         return new BeanFactoryResolver(applicationContext);
     }
@@ -153,10 +172,23 @@ public class DefaultCrane4jSpringConfiguration implements SmartInitializingSingl
     @Bean
     public SpringAssembleAnnotationHandler springAssembleAnnotationResolver(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration,
-        ExpressionEvaluator evaluator, BeanResolver beanResolver) {
-        return new SpringAssembleAnnotationHandler(
+        ExpressionEvaluator evaluator, BeanResolver beanResolver,
+        Collection<PropertyMappingStrategy> propertyMappingStrategies) {
+        SpringAssembleAnnotationHandler handler = new SpringAssembleAnnotationHandler(
             annotationFinder, configuration, evaluator, beanResolver
         );
+        propertyMappingStrategies.forEach(handler::addPropertyMappingStrategy);
+        return handler;
+    }
+
+    @Bean
+    public AssembleEnumAnnotationHandler assembleEnumAnnotationResolver(
+        AnnotationFinder annotationFinder, Crane4jGlobalConfiguration globalConfiguration,
+        PropertyOperator propertyOperator, ContainerManager containerManager,
+        Collection<PropertyMappingStrategy> propertyMappingStrategies) {
+        AssembleEnumAnnotationHandler handler = new AssembleEnumAnnotationHandler(annotationFinder, globalConfiguration, propertyOperator, containerManager);
+        propertyMappingStrategies.forEach(handler::addPropertyMappingStrategy);
+        return handler;
     }
 
     @Bean
@@ -166,16 +198,9 @@ public class DefaultCrane4jSpringConfiguration implements SmartInitializingSingl
     }
 
     @Bean
-    public AssembleEnumAnnotationHandler assembleEnumAnnotationResolver(
-        AnnotationFinder annotationFinder, Crane4jGlobalConfiguration globalConfiguration,
-        PropertyOperator propertyOperator, ContainerManager containerManager) {
-        return new AssembleEnumAnnotationHandler(annotationFinder, globalConfiguration, propertyOperator, containerManager);
-    }
-
-    @Bean
     public TypeHierarchyBeanOperationParser typeHierarchyBeanOperationParser(Collection<OperationAnnotationHandler> resolvers) {
         TypeHierarchyBeanOperationParser parser =  new TypeHierarchyBeanOperationParser();
-        resolvers.forEach(parser::addBeanOperationsResolver);
+        resolvers.forEach(parser::addOperationAnnotationHandler);
         return parser;
     }
 

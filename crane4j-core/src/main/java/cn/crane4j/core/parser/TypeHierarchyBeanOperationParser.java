@@ -88,7 +88,7 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
      *
      * @param handler handler
      */
-    public void addBeanOperationsResolver(OperationAnnotationHandler handler) {
+    public void addOperationAnnotationHandler(OperationAnnotationHandler handler) {
         Objects.requireNonNull(handler, "handler must not null");
         operationAnnotationHandlers.remove(handler);
         operationAnnotationHandlers.add(handler);

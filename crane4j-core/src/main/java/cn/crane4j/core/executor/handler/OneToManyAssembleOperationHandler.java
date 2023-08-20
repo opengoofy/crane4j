@@ -1,6 +1,7 @@
 package cn.crane4j.core.executor.handler;
 
 import cn.crane4j.core.parser.PropertyMapping;
+import cn.crane4j.core.parser.handler.strategy.PropertyMappingStrategy;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.util.CollectionUtils;
 
@@ -39,6 +40,7 @@ public class OneToManyAssembleOperationHandler extends OneToOneAssembleOperation
      */
     @Override
     protected void completeMapping(Object source, Target target) {
+        PropertyMappingStrategy propertyMappingStrategy = target.getExecution().getOperation().getPropertyMappingStrategy();
         Collection<?> sources = CollectionUtils.adaptObjectToCollection(source);
         Set<PropertyMapping> mappings = target.getExecution().getOperation().getPropertyMappings();
         for (PropertyMapping mapping : mappings) {
@@ -48,7 +50,10 @@ public class OneToManyAssembleOperationHandler extends OneToOneAssembleOperation
                 sources.stream().map(s -> propertyOperator.readProperty(s.getClass(), s, mapping.getSource()))
                     .collect(Collectors.toList()) : sources;
             Object origin = target.getOrigin();
-            propertyOperator.writeProperty(origin.getClass(), origin, mapping.getReference(), sourceValues);
+            propertyMappingStrategy.doMapping(
+                origin, source, sourceValues, mapping,
+                sv -> propertyOperator.writeProperty(origin.getClass(), origin, mapping.getReference(), sourceValues)
+            );
         }
     }
 }

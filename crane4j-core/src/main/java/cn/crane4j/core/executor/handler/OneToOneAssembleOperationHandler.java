@@ -3,6 +3,7 @@ package cn.crane4j.core.executor.handler;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.executor.AssembleExecution;
 import cn.crane4j.core.parser.PropertyMapping;
+import cn.crane4j.core.parser.handler.strategy.PropertyMappingStrategy;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.util.StringUtils;
 import lombok.RequiredArgsConstructor;
@@ -111,11 +112,13 @@ public class OneToOneAssembleOperationHandler
     }
 
     private void mappingProperty(Target entity, Object source,PropertyMapping mapping) {
+        PropertyMappingStrategy propertyMappingStrategy = entity.getExecution().getOperation().getPropertyMappingStrategy();
         Object sourceValue = mapping.hasSource() ?
             propertyOperator.readProperty(source.getClass(), source, mapping.getSource()) : source;
-        if (Objects.nonNull(sourceValue)) {
-            Object target = entity.getOrigin();
-            propertyOperator.writeProperty(target.getClass(), target, mapping.getReference(), sourceValue);
-        }
+        Object target = entity.getOrigin();
+        propertyMappingStrategy.doMapping(
+            target, source, sourceValue, mapping,
+            sv -> propertyOperator.writeProperty(target.getClass(), target, mapping.getReference(), sourceValue)
+        );
     }
 }
