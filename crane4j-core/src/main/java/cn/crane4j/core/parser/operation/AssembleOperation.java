@@ -3,6 +3,8 @@ package cn.crane4j.core.parser.operation;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.parser.PropertyMapping;
+import cn.crane4j.core.parser.handler.strategy.PropertyMappingStrategy;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.Set;
 
@@ -54,4 +56,19 @@ public interface AssembleOperation extends KeyTriggerOperation {
      * @return handler
      */
     AssembleOperationHandler getAssembleOperationHandler();
+
+    /**
+     * Get property mapping strategy.
+     *
+     * @return strategy
+     * @since 2.1.0
+     */
+    PropertyMappingStrategy getPropertyMappingStrategy();
+
+    /**
+     * Set property mapping strategy.
+     * @param strategy strategy name
+     * @since 2.1.0
+     */
+    void setPropertyMappingStrategy(@NonNull PropertyMappingStrategy strategy);
 }

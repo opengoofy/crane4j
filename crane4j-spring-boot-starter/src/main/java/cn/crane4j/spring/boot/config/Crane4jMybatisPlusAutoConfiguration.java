@@ -1,6 +1,7 @@
 package cn.crane4j.spring.boot.config;
 
 import cn.crane4j.core.container.MethodInvokerContainer;
+import cn.crane4j.core.parser.handler.strategy.PropertyMappingStrategy;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.container.MethodInvokerContainerCreator;
@@ -24,6 +25,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -56,10 +58,13 @@ public class Crane4jMybatisPlusAutoConfiguration {
     @ConditionalOnMissingBean
     public AssembleMpAnnotationHandler assembleMpAnnotationResolver(
         AnnotationFinder annotationFinder, MybatisPlusQueryContainerProvider mybatisPlusQueryContainerProvider,
-        Crane4jGlobalConfiguration globalConfiguration, Crane4jAutoConfiguration.Properties properties) {
-        return new AssembleMpAnnotationHandler(
+        Crane4jGlobalConfiguration globalConfiguration,
+        Collection<PropertyMappingStrategy> propertyMappingStrategies) {
+        AssembleMpAnnotationHandler handler = new AssembleMpAnnotationHandler(
             annotationFinder, mybatisPlusQueryContainerProvider, globalConfiguration
         );
+        propertyMappingStrategies.forEach(handler::addPropertyMappingStrategy);
+        return handler;
     }
 
     @ConditionalOnProperty(

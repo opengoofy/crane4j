@@ -173,6 +173,14 @@ public @interface Assemble {
      * @return groups
      */
     String[] groups() default {};
+    
+    /**
+     * Get name of property mapping strategy.
+     *
+     * @return strategy name
+     * @since 2.1.0
+     */
+    String propertyMappingStrategy() default "";
 
     /**
      * Batch operation.

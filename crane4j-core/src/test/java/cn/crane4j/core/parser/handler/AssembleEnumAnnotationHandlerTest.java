@@ -6,6 +6,7 @@ import cn.crane4j.core.container.Container;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.PropertyMapping;
 import cn.crane4j.core.parser.SimpleBeanOperations;
+import cn.crane4j.core.parser.handler.strategy.OverwriteMappingStrategy;
 import cn.crane4j.core.parser.operation.AssembleOperation;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.SimpleAnnotationFinder;
@@ -30,22 +31,22 @@ import java.util.Set;
  */
 public class AssembleEnumAnnotationHandlerTest {
 
-    private AssembleEnumAnnotationHandler annotationResolver;
+    private AssembleEnumAnnotationHandler annotationHandler;
     private Crane4jGlobalConfiguration configuration;
 
     @Before
     public void init() {
         configuration = SimpleCrane4jGlobalConfiguration.create();
-        this.annotationResolver = new AssembleEnumAnnotationHandler(
+        this.annotationHandler = new AssembleEnumAnnotationHandler(
             new SimpleAnnotationFinder(), configuration, configuration.getPropertyOperator(), configuration
         );
+        this.annotationHandler.addPropertyMappingStrategy(OverwriteMappingStrategy.INSTANCE);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void resolve() {
         BeanOperations beanOperations = new SimpleBeanOperations(Foo.class);
-        annotationResolver.resolve(null, beanOperations);
+        annotationHandler.resolve(null, beanOperations);
 
         Collection<AssembleOperation> operations = beanOperations.getAssembleOperations();
         Assert.assertEquals(2, operations.size());

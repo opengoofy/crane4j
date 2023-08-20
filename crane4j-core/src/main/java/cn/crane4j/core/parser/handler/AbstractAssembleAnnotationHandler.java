@@ -8,6 +8,8 @@ import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.PropertyMapping;
+import cn.crane4j.core.parser.handler.strategy.OverwriteNotNullMappingStrategy;
+import cn.crane4j.core.parser.handler.strategy.PropertyMappingStrategy;
 import cn.crane4j.core.parser.operation.AssembleOperation;
 import cn.crane4j.core.parser.operation.KeyTriggerOperation;
 import cn.crane4j.core.parser.operation.SimpleAssembleOperation;
@@ -18,6 +20,7 @@ import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.ConfigurationUtil;
 import cn.crane4j.core.util.MultiMap;
 import cn.crane4j.core.util.ReflectUtils;
+import cn.crane4j.core.util.StringUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -30,7 +33,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -57,6 +62,18 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
     @Setter
     protected Comparator<KeyTriggerOperation> operationComparator;
     protected final Crane4jGlobalConfiguration globalConfiguration;
+    private final Map<String, PropertyMappingStrategy> propertyMappingStrategies = new HashMap<>();
+
+    /**
+     * Register property mapping strategy.
+     *
+     * @param strategy strategy
+     * @since 2.1.0
+     */
+    public void addPropertyMappingStrategy(@NonNull PropertyMappingStrategy strategy) {
+        Objects.requireNonNull(strategy, "strategy must not null");
+        propertyMappingStrategies.put(strategy.getName(), strategy);
+    }
 
     /**
      * Create an {@link AbstractAssembleAnnotationHandler} instance.
@@ -171,10 +188,12 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
         Set<PropertyMapping> propertyMappings = parsePropertyMappings(element, standardAnnotation, key);
         int sort = parseSort(element, standardAnnotation);
         Set<String> groups = parseGroups(element, standardAnnotation);
+        PropertyMappingStrategy propertyMappingStrategy = parserPropertyMappingStrategy(standardAnnotation, annotation);
 
         // create operation
         AssembleOperation operation = createAssembleOperation(annotation, sort, key, assembleOperationHandler, propertyMappings);
         operation.getGroups().addAll(groups);
+        operation.setPropertyMappingStrategy(propertyMappingStrategy);
         return operation;
     }
 
@@ -292,6 +311,28 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
     }
 
     /**
+     * Parse {@link PropertyMappingStrategy} instance from given annotation.
+     *
+     * @param standardAnnotation standard annotation
+     * @param annotation annotation
+     * @return {@link PropertyMappingStrategy} instance
+     * @since 2.1.0
+     */
+    @NonNull
+    protected PropertyMappingStrategy parserPropertyMappingStrategy(
+        StandardAnnotation standardAnnotation, T annotation) {
+        String propertyMappingStrategyName = standardAnnotation.getPropertyMappingStrategy();
+        PropertyMappingStrategy propertyMappingStrategy = propertyMappingStrategies.get(propertyMappingStrategyName);
+        if (Objects.isNull(propertyMappingStrategy)) {
+            propertyMappingStrategy = OverwriteNotNullMappingStrategy.INSTANCE;
+            if (StringUtils.isEmpty(propertyMappingStrategyName)) {
+                log.warn("Unable to find property mapping strategy [{}], use default strategy [{}]", standardAnnotation.getPropertyMappingStrategy(), propertyMappingStrategy.getName());
+            }
+        }
+        return propertyMappingStrategy;
+    }
+
+    /**
      * Standard annotation
      *
      * @author huangchengxing
@@ -351,6 +392,13 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
          * @return group names
          */
         String[] getGroups();
+
+        /**
+         * The name of property mapping strategy.
+         *
+         * @return strategy name
+         */
+        String getPropertyMappingStrategy();
     }
 
     /**
@@ -369,5 +417,6 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
         private final Class<?>[] mappingTemplates;
         private final Mapping[] props;
         private final String[] groups;
+        private final String propertyMappingStrategy;
     }
 }

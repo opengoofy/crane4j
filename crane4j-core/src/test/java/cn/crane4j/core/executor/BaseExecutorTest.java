@@ -28,8 +28,8 @@ public class BaseExecutorTest {
     public void initParser() {
         configuration = SimpleCrane4jGlobalConfiguration.create();
         TypeHierarchyBeanOperationParser typeHierarchyBeanOperationParser = new TypeHierarchyBeanOperationParser();
-        typeHierarchyBeanOperationParser.addBeanOperationsResolver(new AssembleAnnotationHandler(new SimpleAnnotationFinder(), configuration));
-        typeHierarchyBeanOperationParser.addBeanOperationsResolver(new DisassembleAnnotationHandler(new SimpleAnnotationFinder(), configuration));
+        typeHierarchyBeanOperationParser.addOperationAnnotationHandler(new AssembleAnnotationHandler(new SimpleAnnotationFinder(), configuration));
+        typeHierarchyBeanOperationParser.addOperationAnnotationHandler(new DisassembleAnnotationHandler(new SimpleAnnotationFinder(), configuration));
         parser = typeHierarchyBeanOperationParser;
     }
 
