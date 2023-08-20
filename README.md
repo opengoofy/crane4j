@@ -154,12 +154,12 @@ public void doOperate() {
 ~~~json
 [
     {
-        "id": 1, // 1、基于方法数据源填充
+        "id": 1,
         "name": "foo1",
-        "fooName": "foo1", // 2、基于目标对象自身作为数据源填充
-        "gender": 1, // 3、基于枚举数据源填充
+        "fooName": "foo1",
+        "gender": 1,
         "genderName": "男性",
-        "keys": ["1", "2", "3"], // 4、基于常量数据源
+        "keys": ["1", "2", "3"],
         "values": ["A", "B", "C"]
     },
     {

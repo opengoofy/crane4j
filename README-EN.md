@@ -154,12 +154,12 @@ Result:
 ```json
 [
     {
-        "id": 1, // 1. Filled based on method data source
+        "id": 1,
         "name": "foo1",
-        "fooName": "foo1", // 2. Filled based on the target object itself as a data source
-        "gender": 1, // 3. Filled based on enum data source
+        "fooName": "foo1",
+        "gender": 1,
         "genderName": "Male",
-        "keys": ["1", "2", "3"], // 4. Filled based on constant data source
+        "keys": ["1", "2", "3"],
         "values": ["A", "B", "C"]
     },
     {
