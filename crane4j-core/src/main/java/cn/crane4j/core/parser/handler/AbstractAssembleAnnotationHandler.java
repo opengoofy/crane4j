@@ -324,11 +324,17 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
     protected PropertyMappingStrategy parserPropertyMappingStrategy(
         StandardAnnotation standardAnnotation, T annotation) {
         String propertyMappingStrategyName = standardAnnotation.getPropertyMappingStrategy();
+        // fix https://gitee.com/opengoofy/crane4j/issues/I7X36D
+        if (StringUtils.isEmpty(propertyMappingStrategyName)) {
+            // if no policy is specified, the default policy is actually required
+            return OverwriteNotNullMappingStrategy.INSTANCE;
+        }
+
         PropertyMappingStrategy propertyMappingStrategy = propertyMappingStrategies.get(propertyMappingStrategyName);
         if (Objects.isNull(propertyMappingStrategy)) {
             propertyMappingStrategy = OverwriteNotNullMappingStrategy.INSTANCE;
             if (StringUtils.isEmpty(propertyMappingStrategyName)) {
-                log.warn("Unable to find property mapping strategy [{}], use default strategy [{}]", standardAnnotation.getPropertyMappingStrategy(), propertyMappingStrategy.getName());
+                log.warn("unable to find property mapping strategy [{}], use default strategy [{}]", standardAnnotation.getPropertyMappingStrategy(), propertyMappingStrategy.getName());
             }
         }
         return propertyMappingStrategy;
