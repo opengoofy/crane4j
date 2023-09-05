@@ -11,6 +11,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * make operator supports reading and writing properties of {@link JsonNode}.
  *
  * @author huangchengxing
+ * @since 2.2.0
  */
 public class JsonNodePropertyOperator extends JsonNodeHandler implements PropertyOperator {
 

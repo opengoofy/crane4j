@@ -30,6 +30,7 @@ import java.util.Set;
  * @see AutoOperateAnnotatedElementResolver
  * @see AutoOperateSerializer
  * @see AutoOperate
+ * @since 2.2.0
  */
 @RequiredArgsConstructor
 public class JsonNodeAutoOperateSerializerModifier extends BeanSerializerModifier {

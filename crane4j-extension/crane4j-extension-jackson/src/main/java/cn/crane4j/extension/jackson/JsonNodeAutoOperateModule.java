@@ -5,13 +5,16 @@ import cn.crane4j.core.support.aop.AutoOperateAnnotatedElementResolver;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Json node auto operate module.
  *
  * @author huangchengxing
  * @see JsonNodeAutoOperateSerializerModifier
+ * @since 2.2.0
  */
+@RequiredArgsConstructor
 public class JsonNodeAutoOperateModule extends Module {
 
     public static final String MODULE_NAME = JsonNodeAutoOperateModule.class.getSimpleName();
@@ -19,20 +22,6 @@ public class JsonNodeAutoOperateModule extends Module {
     private final AutoOperateAnnotatedElementResolver elementResolver;
     private final ObjectMapper objectMapper;
     private final AnnotationFinder annotationFinder;
-
-    /**
-     * Constructor
-     *
-     * @param elementResolver element resolver
-     * @param objectMapper object mapper
-     * @param annotationFinder annotation finder
-     */
-    public JsonNodeAutoOperateModule(
-        AutoOperateAnnotatedElementResolver elementResolver, ObjectMapper objectMapper, AnnotationFinder annotationFinder) {
-        this.elementResolver = elementResolver;
-        this.objectMapper = objectMapper;
-        this.annotationFinder = annotationFinder;
-    }
 
     @Override
     public String getModuleName() {
