@@ -5,9 +5,14 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.reflect.AnnotatedElement;
 
 /**
- * <p>Declare the return value or parameter of the method(if the method is annotated by {@link ArgAutoOperate}) need process.
+ * <p>Mark a {@link AnnotatedElement} to indicate that after a specific step,
+ * the instance corresponding to the element will automatically complete the filling operation.
+ *
+ * <p>For example, mark it on a method to indicate that its return value needs to be automatic filling after a method call,
+ * or mark it on a class to indicate that automatic filling is required during its serialization.
  *
  * @author huangchengxing
  * @see ArgAutoOperate

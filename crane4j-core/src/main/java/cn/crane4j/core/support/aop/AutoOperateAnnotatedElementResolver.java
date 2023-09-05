@@ -101,7 +101,7 @@ public class AutoOperateAnnotatedElementResolver {
         } else if (element instanceof Class) {
             return (Class<?>)element;
         } else {
-            throw new Crane4jException("cannot resolve for annotated element [{}]", element);
+            throw new Crane4jException("cannot resolve type for annotated element [{}]", element);
         }
     }
 

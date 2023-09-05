@@ -11,6 +11,7 @@ import java.util.Objects;
  *
  * @author huangchengxing
  * @see ObjectNode
+ * @since 2.2.0
  */
 @RequiredArgsConstructor
 public class JsonNodeHandler {

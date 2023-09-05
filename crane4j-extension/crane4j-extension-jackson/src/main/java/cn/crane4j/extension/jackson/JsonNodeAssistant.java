@@ -4,6 +4,7 @@ package cn.crane4j.extension.jackson;
  * Assistant for json node.
  *
  * @author huangchengxing
+ * @since 2.2.0
  */
 public interface JsonNodeAssistant<T> {
 

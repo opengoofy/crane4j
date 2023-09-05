@@ -13,6 +13,7 @@ import java.util.Objects;
  * Jackson json node assistant.
  *
  * @author huangchengxing
+ * @since 2.2.0
  */
 public class JacksonJsonNodeAssistant implements JsonNodeAssistant<JsonNode> {
 
