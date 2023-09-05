@@ -53,26 +53,32 @@ public class AutoOperateAnnotatedElementResolver {
         BeanOperationExecutor executor = configuration.getBeanOperationExecutor(annotation.executor(), annotation.executorType());
         Predicate<? super KeyTriggerOperation> filter = resolveFilter(annotation);
 
-        AutoOperateAnnotatedElement result = null;
-        // not specify type, delay parsing until execution time
-        Class<?> type = annotation.type();
-        if (Objects.equals(Object.class, type) || Objects.equals(Void.TYPE, type)) {
-            Function<Object, BeanOperations> dynamicParser = t -> Optional.ofNullable(t)
-                .map(typeResolver::resolve)
-                .map(parser::parse)
-                .orElse(BeanOperations.empty());
-            result = AutoOperateAnnotatedElement.forDynamicTypeOperation(
-                annotation, element, extractor, filter, executor, dynamicParser
-            );
-        }
-        // specify type, parse immediately
-        else {
+        // type is specified in annotation
+        Class<?> annotationSpecifiedType = annotation.type();
+        if (!Objects.equals(Object.class, annotationSpecifiedType) && !Objects.equals(Void.TYPE, annotationSpecifiedType)) {
             BeanOperations beanOperations = parser.parse(annotation.type());
-            result = AutoOperateAnnotatedElement.forStaticTypeOperation(
+            return AutoOperateAnnotatedElement.forStaticTypeOperation(
                 annotation, element, extractor, filter, beanOperations, executor
             );
         }
-        return result;
+
+        // type not specified in annotation, but element is class
+        // so use itself as type as operation source
+        if (element instanceof Class) {
+            BeanOperations beanOperations = parser.parse(element);
+            return AutoOperateAnnotatedElement.forStaticTypeOperation(
+                annotation, element, extractor, filter, beanOperations, executor
+            );
+        }
+
+        // not specify type, delay parsing until execution time
+        Function<Object, BeanOperations> dynamicParser = t -> Optional.ofNullable(t)
+            .map(typeResolver::resolve)
+            .map(parser::parse)
+            .orElse(BeanOperations.empty());
+        return AutoOperateAnnotatedElement.forDynamicTypeOperation(
+            annotation, element, extractor, filter, executor, dynamicParser
+        );
     }
 
     private MethodInvoker resolveExtractor(AnnotatedElement element, AutoOperate annotation) {
@@ -92,8 +98,10 @@ public class AutoOperateAnnotatedElementResolver {
             return ((Method)element).getReturnType();
         } else if (element instanceof Parameter) {
             return ((Parameter)element).getType();
+        } else if (element instanceof Class) {
+            return (Class<?>)element;
         } else {
-            throw new Crane4jException("element must be a method or parameter");
+            throw new Crane4jException("cannot resolve for annotated element [{}]", element);
         }
     }
 

@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
  * @see cn.crane4j.core.support.aop.MethodArgumentAutoOperateSupport
  * @see cn.crane4j.core.support.aop.AutoOperateAnnotatedElementResolver
  */
-@Target({ElementType.METHOD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE})
+@Target({ElementType.METHOD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface AutoOperate {

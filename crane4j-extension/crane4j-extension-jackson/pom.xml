@@ -1,29 +1,28 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>crane4j</artifactId>
+        <artifactId>crane4j-extension</artifactId>
         <groupId>cn.crane4j</groupId>
         <version>${revision}</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>crane4j-extension</artifactId>
+    <artifactId>crane4j-extension-jackson</artifactId>
     <version>${revision}</version>
-    <packaging>pom</packaging>
-    <name>crane4j-extension</name>
-
-    <modules>
-        <module>crane4j-extension-spring</module>
-        <module>crane4j-extension-mybatis-plus</module>
-        <module>crane4j-extension-jackson</module>
-    </modules>
+    <packaging>jar</packaging>
+    <name>crane4j-extension-jackson</name>
 
     <dependencies>
         <dependency>
-            <groupId>cn.crane4j</groupId>
-            <artifactId>crane4j-core</artifactId>
-            <version>${project.version}</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>
