@@ -22,21 +22,22 @@ const navConfig = [
 // 侧边栏
 const sidebarConfig = [
     {
-        title: '1.基础',
+        title: '基础',
         collapsable: false, // 不折叠
         children: [
-            { title: "1.1.用户指南", path: "/basic/1.1.用户指南.md" },
-            {
-                title: "1.2.快速开始",
-                path: "/basic/quickstart/1.2.0.快速开始.html",
-                children: [
-                    { title: "1.2.1.在非spring项目中使用", path: "/basic/quickstart/1.2.1.在非spring项目中使用.md" },
-                    { title: "1.2.2.在spring项目中使用", path: "/basic/quickstart/1.2.2.在spring项目中使用.md" },
-                    { title: "1.2.3.在springboot项目中使用", path: "/basic/quickstart/1.2.3.在springboot项目中使用.md" }
-                ]
-            },
-            { title: "1.3.配置文件", path: "/basic/1.3.配置文件.md" },
-            { title: "1.4.常见问题", path: "/basic/1.4.常见问题.md" }
+            { title: "用户指南", path: "/basic/0.1.用户指南.md" },
+            { title: "配置文件", path: "/basic/0.2.配置文件.md" },
+            { title: "常见问题", path: "/basic/0.3.常见问题.md" }
+        ]
+    },
+    {
+        title: '1.开始',
+        collapsable: false, // 不折叠
+        children: [
+            { title: "1.1.安装", path: "/start/1.1.安装.md" },
+            { title: "1.2.配置数据源", path: "/start/1.2.配置数据源.md" },
+            { title: "1.3.填充对象", path: "/start/1.3.填充对象.md" },
+            { title: "1.4.填充嵌套对象", path: "/start/1.4.填充嵌套对象.md" }
         ]
     },
     {
