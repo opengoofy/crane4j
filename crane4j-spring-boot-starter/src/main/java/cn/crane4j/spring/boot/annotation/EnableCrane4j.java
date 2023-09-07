@@ -26,6 +26,7 @@ import java.lang.annotation.Target;
 @ContainerEnumScan
 @EnableCrane4jFramework
 @EnableCrane4jMybatisPlusExtension
+@EnableCrane4jJacksonExtension
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented

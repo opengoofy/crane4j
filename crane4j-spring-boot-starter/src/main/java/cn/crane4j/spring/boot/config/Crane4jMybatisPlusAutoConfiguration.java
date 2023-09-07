@@ -38,7 +38,7 @@ import java.util.function.BiPredicate;
  */
 @Configuration
 @EnableConfigurationProperties(Crane4jMybatisPlusAutoConfiguration.Properties.class)
-@ConditionalOnClass(MybatisPlusAutoConfiguration.class)
+@ConditionalOnClass({MybatisPlusAutoConfiguration.class, AssembleMpAnnotationHandler.class})
 @AutoConfigureAfter({MybatisPlusAutoConfiguration.class, Crane4jAutoConfiguration.class})
 public class Crane4jMybatisPlusAutoConfiguration {
 

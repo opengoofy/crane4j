@@ -23,20 +23,37 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
         </dependency>
-
-        <!--extension-->
         <dependency>
             <groupId>cn.crane4j</groupId>
             <artifactId>crane4j-extension-spring</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <!-- jackson extension -->
+        <dependency>
+            <groupId>cn.crane4j</groupId>
+            <artifactId>crane4j-extension-jackson</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- mybatis-plus extension -->
         <dependency>
             <groupId>cn.crane4j</groupId>
             <artifactId>crane4j-extension-mybatis-plus</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
-
-        <!--provider-->
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-boot-starter</artifactId>
