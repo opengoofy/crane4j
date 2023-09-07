@@ -11,9 +11,11 @@ import cn.crane4j.core.support.Grouped;
 import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.support.TypeResolver;
 import cn.crane4j.core.support.reflect.PropertyOperator;
+import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.StringUtils;
 import lombok.RequiredArgsConstructor;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
@@ -46,7 +48,10 @@ public class AutoOperateAnnotatedElementResolver {
      * @param annotation annotation
      * @return {@link AutoOperateAnnotatedElement}
      */
-    public AutoOperateAnnotatedElement resolve(AnnotatedElement element, AutoOperate annotation) {
+    public AutoOperateAnnotatedElement resolve(@NonNull AnnotatedElement element, @NonNull AutoOperate annotation) {
+        Asserts.isNotNull(element, "element must not be null");
+        Asserts.isNotNull(annotation, "annotation must not be null");
+
         MethodInvoker extractor = resolveExtractor(element, annotation);
         // prepare components for use
         BeanOperationParser parser = configuration.getBeanOperationsParser(annotation.parser(), annotation.parserType());
@@ -88,7 +93,7 @@ public class AutoOperateAnnotatedElementResolver {
         if (StringUtils.isNotEmpty(on)) {
             PropertyOperator propertyOperator = configuration.getPropertyOperator();
             extractor = propertyOperator.findGetter(type, on);
-            Objects.requireNonNull(extractor, () -> StringUtils.format("cannot find getter for [{}] on [{}]", on, annotation.type()));
+            Asserts.isNotNull(extractor, "cannot find getter for [{}] on [{}]", on, annotation.type());
         }
         return extractor;
     }
