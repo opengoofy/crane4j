@@ -34,7 +34,7 @@ public class MethodInvokerContainerCreator {
     /**
      * Create a {@link MethodInvokerContainer} from the given method.
      *
-     * @param target      method's calling object
+     * @param target      method's calling object, if the method is static, it can be null
      * @param method      method
      * @param mappingType mapping type
      * @param namespace   namespace, if null, use method name as namespace
@@ -43,7 +43,7 @@ public class MethodInvokerContainerCreator {
      * @return {@link MethodInvokerContainer}
      */
     public MethodInvokerContainer createContainer(
-        Object target, Method method, MappingType mappingType,
+        @Nullable Object target, Method method, MappingType mappingType,
         @Nullable String namespace, Class<?> resultType, String resultKey) {
         log.debug("create method container from [{}]", method);
         // get key extractor of result object if necessary
@@ -57,7 +57,7 @@ public class MethodInvokerContainerCreator {
     /**
      * Create a {@link MethodInvokerContainer} from the given method invoker.
      *
-     * @param target      method's calling object
+     * @param target      method's calling object, if the method is static, it can be null
      * @param methodInvoker method invoker
      * @param mappingType mapping type
      * @param namespace   namespace, if null, use method name as namespace
@@ -66,7 +66,7 @@ public class MethodInvokerContainerCreator {
      * @return {@link MethodInvokerContainer}
      */
     public MethodInvokerContainer createContainer(
-        Object target, MethodInvoker methodInvoker, MappingType mappingType,
+        @Nullable Object target, MethodInvoker methodInvoker, MappingType mappingType,
         String namespace, Class<?> resultType, String resultKey) {
         log.debug("create method container from [{}]", methodInvoker);
         // get key extractor of result object if necessary
@@ -78,7 +78,7 @@ public class MethodInvokerContainerCreator {
     /**
      * Create a {@link MethodInvokerContainer} from the given method.
      *
-     * @param target target
+     * @param target target, if the method is static, it can be null
      * @param mappingType mapping type
      * @param namespace namespace
      * @param keyExtractor key extractor, if mapping type is {@link MappingType#MAPPED}, this parameter is ignored
@@ -87,7 +87,7 @@ public class MethodInvokerContainerCreator {
      */
     @NonNull
     protected MethodInvokerContainer createMethodInvokerContainer(
-        Object target, MappingType mappingType, String namespace,
+        @Nullable Object target, MappingType mappingType, String namespace,
         MethodInvokerContainer.KeyExtractor keyExtractor, MethodInvoker methodInvoker) {
         return new MethodInvokerContainer(namespace, methodInvoker, target, keyExtractor, mappingType);
     }
@@ -95,7 +95,7 @@ public class MethodInvokerContainerCreator {
     /**
      * Get namespace of method container.
      *
-     * @param target target
+     * @param target target, if the method is static, it can be null
      * @param method method
      * @return namespace
      * @implNote if target is <b>proxy object</b>, invoke method on proxy object,

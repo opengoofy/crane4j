@@ -8,6 +8,7 @@ import cn.crane4j.core.container.Container;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -57,7 +58,7 @@ public class CacheableMethodContainerFactory extends DefaultMethodContainerFacto
      * @return true if supported, false otherwise
      */
     @Override
-    public boolean support(Object source, Method method, Collection<ContainerMethod> annotations) {
+    public boolean support(@Nullable Object source, Method method, Collection<ContainerMethod> annotations) {
         ContainerCache annotation = annotationFinder.findAnnotation(method, ContainerCache.class);
         return Objects.nonNull(annotation) && super.support(source, method, annotations);
     }
@@ -71,7 +72,7 @@ public class CacheableMethodContainerFactory extends DefaultMethodContainerFacto
      * @return data source containers
      */
     @Override
-    public List<Container<Object>> get(Object source, Method method, Collection<ContainerMethod> annotations) {
+    public List<Container<Object>> get(@Nullable Object source, Method method, Collection<ContainerMethod> annotations) {
         log.debug("create cacheable method container from [{}]", method);
         ContainerCache annotation = annotationFinder.findAnnotation(method, ContainerCache.class);
         // if cache name is not specified, the namespace of the container is taken by default

@@ -5,6 +5,7 @@ import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.MethodInvokerContainer;
 import cn.crane4j.core.support.AnnotationFinder;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -60,7 +61,7 @@ public class DefaultMethodContainerFactory implements MethodContainerFactory {
      * @return true if supported, false otherwise
      */
     @Override
-    public boolean support(Object source, Method method, Collection<ContainerMethod> annotations) {
+    public boolean support(@Nullable Object source, Method method, Collection<ContainerMethod> annotations) {
         return !Objects.equals(method.getReturnType(), Void.TYPE);
     }
 
@@ -73,7 +74,7 @@ public class DefaultMethodContainerFactory implements MethodContainerFactory {
      * @return data source containers
      */
     @Override
-    public List<Container<Object>> get(Object source, Method method, Collection<ContainerMethod> annotations) {
+    public List<Container<Object>> get(@Nullable Object source, Method method, Collection<ContainerMethod> annotations) {
         return annotations.stream()
             .map(annotation -> methodInvokerContainerCreator.createContainer(
                 source, method, annotation.type(), annotation.namespace(),

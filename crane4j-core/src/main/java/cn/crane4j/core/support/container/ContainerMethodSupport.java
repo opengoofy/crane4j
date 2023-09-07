@@ -52,7 +52,7 @@ public abstract class ContainerMethodSupport {
      * @return container instances
      */
     protected Collection<Container<Object>> createMethodContainer(
-        Object bean, Method method, Collection<ContainerMethod> annotations) {
+        @Nullable Object bean, Method method, Collection<ContainerMethod> annotations) {
         return methodContainerFactories.stream()
             .filter(factory -> factory.support(bean, method, annotations))
             .findFirst()

@@ -7,6 +7,7 @@ import cn.crane4j.core.support.container.MethodInvokerContainerCreator;
 import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.CollectionUtils;
 import lombok.Getter;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -48,13 +49,13 @@ public class MethodInvokerContainer implements Container<Object> {
      *
      * @param namespace namespace
      * @param methodInvoker method to call
-     * @param methodSource object to be called
+     * @param methodSource object to be called, if the method is static, it can be null
      * @param keyExtractor key value extraction method of the data source object
      * @param mappingType mapping relationship between the object returned by the method and the target object
      */
     public MethodInvokerContainer(
         String namespace,
-        MethodInvoker methodInvoker, Object methodSource,
+        MethodInvoker methodInvoker, @Nullable Object methodSource,
         KeyExtractor keyExtractor, MappingType mappingType) {
         this.namespace = Objects.requireNonNull(namespace, "container namespace must not null");
         this.methodInvoker = Objects.requireNonNull(methodInvoker, "method invoker must not null");

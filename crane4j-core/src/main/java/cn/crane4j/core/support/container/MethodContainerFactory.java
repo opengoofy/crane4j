@@ -3,6 +3,7 @@ package cn.crane4j.core.support.container;
 import cn.crane4j.annotation.ContainerMethod;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.support.Sorted;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -26,7 +27,7 @@ public interface MethodContainerFactory extends Sorted {
      * @param annotations annotations
      * @return true if supported, false otherwise
      */
-    boolean support(Object source, Method method, Collection<ContainerMethod> annotations);
+    boolean support(@Nullable Object source, Method method, Collection<ContainerMethod> annotations);
 
     /**
      * Adapt methods to data source containers.
@@ -36,7 +37,7 @@ public interface MethodContainerFactory extends Sorted {
      * @param annotations annotations
      * @return data source containers
      */
-    List<Container<Object>> get(Object source, Method method, Collection<ContainerMethod> annotations);
+    List<Container<Object>> get(@Nullable Object source, Method method, Collection<ContainerMethod> annotations);
 
 
 }
