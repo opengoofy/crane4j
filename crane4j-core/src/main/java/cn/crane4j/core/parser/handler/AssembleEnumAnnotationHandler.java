@@ -14,6 +14,7 @@ import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.Crane4jGlobalSorter;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.util.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.AnnotatedElement;
 import java.util.Comparator;
@@ -25,6 +26,7 @@ import java.util.Set;
  * @author huangchengxing
  * @since 1.3.0
  */
+@Slf4j
 public class AssembleEnumAnnotationHandler extends AbstractAssembleAnnotationHandler<AssembleEnum> {
 
     private static final String INTERNAL_ENUM_CONTAINER_PROVIDER = "InternalEnumContainerProvider";
@@ -103,8 +105,12 @@ public class AssembleEnumAnnotationHandler extends AbstractAssembleAnnotationHan
             }
             enumContainerBuilder.namespace(namespace);
         }
+
+        // register container if necessary
         Container<Object> container = enumContainerBuilder.build();
-        internalContainerProvider.registerContainer(container);
+        if (!internalContainerProvider.containsContainer(container.getNamespace())) {
+            internalContainerProvider.registerContainer(container);
+        }
         return ContainerManager.canonicalNamespace(container.getNamespace(), INTERNAL_ENUM_CONTAINER_PROVIDER);
     }
 
