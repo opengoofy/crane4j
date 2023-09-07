@@ -3,8 +3,8 @@ package cn.crane4j.core.parser.handler;
 import cn.crane4j.annotation.AssembleEnum;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerManager;
-import cn.crane4j.core.container.ContainerProvider;
 import cn.crane4j.core.container.EnumContainerBuilder;
+import cn.crane4j.core.container.PartitionContainerProvider;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.PropertyMapping;
 import cn.crane4j.core.parser.SimplePropertyMapping;
@@ -13,15 +13,11 @@ import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.Crane4jGlobalSorter;
 import cn.crane4j.core.support.reflect.PropertyOperator;
-import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.StringUtils;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.lang.reflect.AnnotatedElement;
 import java.util.Comparator;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * An {@link AbstractAssembleAnnotationHandler} implementation for {@link AssembleEnum} annotation.
@@ -32,7 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class AssembleEnumAnnotationHandler extends AbstractAssembleAnnotationHandler<AssembleEnum> {
 
     private static final String INTERNAL_ENUM_CONTAINER_PROVIDER = "InternalEnumContainerProvider";
-    private final InternalEnumContainerProvider internalEnumContainerProvider = new InternalEnumContainerProvider();
+    private final PartitionContainerProvider internalContainerProvider = new PartitionContainerProvider();
     private final PropertyOperator propertyOperator;
 
     /**
@@ -62,7 +58,7 @@ public class AssembleEnumAnnotationHandler extends AbstractAssembleAnnotationHan
         ContainerManager containerManager) {
         super(AssembleEnum.class, annotationFinder, operationComparator, globalConfiguration);
         this.propertyOperator = propertyOperator;
-        containerManager.registerContainerProvider(INTERNAL_ENUM_CONTAINER_PROVIDER, internalEnumContainerProvider);
+        containerManager.registerContainerProvider(INTERNAL_ENUM_CONTAINER_PROVIDER, internalContainerProvider);
     }
 
     /**
@@ -85,12 +81,19 @@ public class AssembleEnumAnnotationHandler extends AbstractAssembleAnnotationHan
      */
     @Override
     protected String getContainerNamespace(AssembleEnum annotation) {
+        // if container exists, return namespace
+        String namespace = getNamespace(annotation);
+        if (internalContainerProvider.containsContainer(namespace)) {
+            return namespace;
+        }
+
+        // container should be created
         Class<? extends Enum<?>> enumType = annotation.type();
         EnumContainerBuilder<Object, ? extends Enum<?>> enumContainerBuilder = EnumContainerBuilder.of(enumType)
             .annotationFinder(annotationFinder)
             .propertyOperator(propertyOperator);
 
-        // not using @ContainerEnum config
+        // not using @ContainerEnum config?
         if (!annotation.useContainerEnum()) {
             if (StringUtils.isNotEmpty(annotation.enumKey())) {
                 enumContainerBuilder.key(annotation.enumKey());
@@ -98,17 +101,11 @@ public class AssembleEnumAnnotationHandler extends AbstractAssembleAnnotationHan
             if (StringUtils.isNotEmpty(annotation.enumValue())) {
                 enumContainerBuilder.value(annotation.enumValue());
             }
-            enumContainerBuilder.namespace(getNamespace(annotation));
+            enumContainerBuilder.namespace(namespace);
         }
         Container<Object> container = enumContainerBuilder.build();
-
-        // register to container manager
-        String namespace = container.getNamespace();
-        CollectionUtils.computeIfAbsent(
-            internalEnumContainerProvider.enumCaches,
-            namespace, ns -> container
-        );
-        return ContainerManager.canonicalNamespace(namespace, INTERNAL_ENUM_CONTAINER_PROVIDER);
+        internalContainerProvider.registerContainer(container);
+        return ContainerManager.canonicalNamespace(container.getNamespace(), INTERNAL_ENUM_CONTAINER_PROVIDER);
     }
 
     /**
@@ -146,34 +143,5 @@ public class AssembleEnumAnnotationHandler extends AbstractAssembleAnnotationHan
             propertyMappings.add(new SimplePropertyMapping("", annotation.ref()));
         }
         return propertyMappings;
-    }
-
-    private static class InternalEnumContainerProvider implements ContainerProvider {
-
-        private final Map<String, Container<Object>> enumCaches = new ConcurrentHashMap<>();
-
-        /**
-         * Get container instance by given namespace
-         *
-         * @param namespace namespace of container
-         * @return container instance
-         */
-        @SuppressWarnings("unchecked")
-        @Nullable
-        @Override
-        public <K> Container<K> getContainer(String namespace) {
-            return (Container<K>) enumCaches.get(namespace);
-        }
-
-        /**
-         * Whether this provider has container of given {@code namespace}.
-         *
-         * @param namespace namespace
-         * @return boolean
-         */
-        @Override
-        public boolean containsContainer(String namespace) {
-            return enumCaches.containsKey(namespace);
-        }
     }
 }

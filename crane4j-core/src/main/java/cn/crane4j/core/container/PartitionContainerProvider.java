@@ -29,7 +29,7 @@ public class PartitionContainerProvider implements ContainerProvider {
      */
     @NonNull
     @Setter
-    private Function<String, Container<Object>> defaultContainerFactory = namespace -> Containers.empty();
+    private Function<String, Container<Object>> defaultContainerFactory = namespace -> null;
 
     /**
      * Get container comparator by given namespace
