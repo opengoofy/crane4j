@@ -25,14 +25,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * test for {@link SpringAssembleAnnotationHandler}
+ * test for {@link ValueResolveAssembleAnnotationHandler}
  *
  * @author huangchengxing
  */
 @TestPropertySource(properties = "crane4j.container-name = testContainer")
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {DefaultCrane4jSpringConfiguration.class, SpringAssembleAnnotationHandlerTest.TestConfig.class})
-public class SpringAssembleAnnotationHandlerTest {
+@ContextConfiguration(classes = {DefaultCrane4jSpringConfiguration.class, ValueResolveAssembleAnnotationHandlerTest.TestConfig.class})
+public class ValueResolveAssembleAnnotationHandlerTest {
 
     @Autowired
     private ContainerManager containerManager;

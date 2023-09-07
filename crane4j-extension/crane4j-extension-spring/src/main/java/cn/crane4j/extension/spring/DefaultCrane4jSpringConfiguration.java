@@ -171,11 +171,11 @@ public class DefaultCrane4jSpringConfiguration implements SmartInitializingSingl
     }
 
     @Bean
-    public SpringAssembleAnnotationHandler springAssembleAnnotationResolver(
+    public ValueResolveAssembleAnnotationHandler valueResolveAssembleAnnotationHandler(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration,
         ExpressionEvaluator evaluator, BeanResolver beanResolver,
         Collection<PropertyMappingStrategy> propertyMappingStrategies) {
-        SpringAssembleAnnotationHandler handler = new SpringAssembleAnnotationHandler(
+        ValueResolveAssembleAnnotationHandler handler = new ValueResolveAssembleAnnotationHandler(
             annotationFinder, configuration, evaluator, beanResolver
         );
         propertyMappingStrategies.forEach(handler::addPropertyMappingStrategy);

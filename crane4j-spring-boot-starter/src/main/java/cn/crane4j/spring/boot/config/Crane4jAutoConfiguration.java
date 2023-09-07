@@ -59,9 +59,9 @@ import cn.crane4j.extension.spring.BeanMethodContainerRegistrar;
 import cn.crane4j.extension.spring.Crane4jApplicationContext;
 import cn.crane4j.extension.spring.MergedAnnotationFinder;
 import cn.crane4j.extension.spring.ResolvableExpressionEvaluator;
-import cn.crane4j.extension.spring.SpringAssembleAnnotationHandler;
 import cn.crane4j.extension.spring.SpringConverterManager;
 import cn.crane4j.extension.spring.SpringParameterNameFinder;
+import cn.crane4j.extension.spring.ValueResolveAssembleAnnotationHandler;
 import cn.crane4j.extension.spring.aop.MethodArgumentAutoOperateAdvisor;
 import cn.crane4j.extension.spring.aop.MethodResultAutoOperateAdvisor;
 import cn.crane4j.extension.spring.expression.SpelExpressionContext;
@@ -253,11 +253,11 @@ public class Crane4jAutoConfiguration {
 
     @ConditionalOnMissingBean(AssembleAnnotationHandler.class)
     @Bean
-    public SpringAssembleAnnotationHandler springAssembleAnnotationResolver(
+    public ValueResolveAssembleAnnotationHandler valueResolveAssembleAnnotationHandler(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration,
         ExpressionEvaluator evaluator, BeanResolver beanResolver,
         Collection<PropertyMappingStrategy> propertyMappingStrategies) {
-        SpringAssembleAnnotationHandler handler = new SpringAssembleAnnotationHandler(
+        ValueResolveAssembleAnnotationHandler handler = new ValueResolveAssembleAnnotationHandler(
             annotationFinder, configuration, evaluator, beanResolver
         );
         propertyMappingStrategies.forEach(handler::addPropertyMappingStrategy);

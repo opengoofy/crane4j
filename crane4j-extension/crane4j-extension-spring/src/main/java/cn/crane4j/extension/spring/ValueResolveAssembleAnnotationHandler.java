@@ -7,7 +7,6 @@ import cn.crane4j.core.parser.handler.AssembleAnnotationHandler;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.Crane4jGlobalSorter;
-import cn.crane4j.core.support.Sorted;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
 import cn.crane4j.core.util.StringUtils;
 import cn.crane4j.extension.spring.expression.SpelExpressionContext;
@@ -15,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.context.EmbeddedValueResolverAware;
-import org.springframework.core.annotation.Order;
 import org.springframework.expression.BeanResolver;
 import org.springframework.util.StringValueResolver;
 
@@ -24,16 +22,12 @@ import java.util.Objects;
 /**
  * <p>Extension implementation of {@link AssembleAnnotationHandler},
  * On the basis of the former, some spring annotations are additionally supported.
- * <ul>
- *     <li>support to sort operations according to the rules of Spring {@link Order} annotation priority;</li>
- *     <li>supports obtaining containers through SpEL expressions;</li>
- * </ul>
  *
  * @author huangchengxing
  * @since 1.2.0
  */
 @Slf4j
-public class SpringAssembleAnnotationHandler
+public class ValueResolveAssembleAnnotationHandler
     extends AssembleAnnotationHandler implements EmbeddedValueResolverAware {
 
     private final ExpressionEvaluator evaluator;
@@ -41,13 +35,12 @@ public class SpringAssembleAnnotationHandler
     private StringValueResolver stringValueResolver;
 
     /**
-     * <p>Create an operation parser that supports annotation configuration.<br />
-     * The order of operation configurations is {@link Order#value()} or {@link Sorted#getSort} from small to large.
+     * <p>Create an operation parser that supports annotation configuration.
      *
      * @param annotationFinder    annotation finder
      * @param globalConfiguration global configuration
      */
-    public SpringAssembleAnnotationHandler(
+    public ValueResolveAssembleAnnotationHandler(
         AnnotationFinder annotationFinder,
         Crane4jGlobalConfiguration globalConfiguration,
         ExpressionEvaluator evaluator, BeanResolver beanResolver) {
