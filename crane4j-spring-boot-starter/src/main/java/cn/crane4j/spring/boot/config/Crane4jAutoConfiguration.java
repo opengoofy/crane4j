@@ -26,7 +26,9 @@ import cn.crane4j.core.parser.handler.OperationAnnotationHandler;
 import cn.crane4j.core.parser.handler.strategy.OverwriteMappingStrategy;
 import cn.crane4j.core.parser.handler.strategy.OverwriteNotNullMappingStrategy;
 import cn.crane4j.core.parser.handler.strategy.PropertyMappingStrategy;
+import cn.crane4j.core.parser.handler.strategy.PropertyMappingStrategyManager;
 import cn.crane4j.core.parser.handler.strategy.ReferenceMappingStrategy;
+import cn.crane4j.core.parser.handler.strategy.SimplePropertyMappingStrategyManager;
 import cn.crane4j.core.parser.operation.AssembleOperation;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
@@ -126,7 +128,7 @@ public class Crane4jAutoConfiguration {
 
     public static final String CRANE_PREFIX = "crane4j";
 
-    // ============== basic components ==============
+    // region ======= basic =======
 
     @ConditionalOnMissingBean(ClassScanner.class)
     @Bean
@@ -227,12 +229,48 @@ public class Crane4jAutoConfiguration {
         return processor;
     }
 
-    // ============== execute components ==============
-
-    @ConditionalOnMissingBean(BeanResolver.class)
+    @ConditionalOnMissingBean
     @Bean
-    public BeanFactoryResolver beanFactoryResolver(ApplicationContext applicationContext) {
-        return new BeanFactoryResolver(applicationContext);
+    public OperateTemplate operateTemplate(
+        BeanOperationParser parser, BeanOperationExecutor executor, TypeResolver typeResolver) {
+        return new OperateTemplate(parser, executor, typeResolver);
+    }
+
+    @ConditionalOnMissingBean(ParameterNameFinder.class)
+    @Bean
+    public SpringParameterNameFinder springParameterNameFinder() {
+        return new SpringParameterNameFinder(new DefaultParameterNameDiscoverer());
+    }
+
+    @ConditionalOnMissingBean
+    @Bean
+    public AutoOperateAnnotatedElementResolver autoOperateMethodAnnotatedElementResolver(
+        Crane4jGlobalConfiguration crane4jGlobalConfiguration, TypeResolver typeResolver) {
+        return new AutoOperateAnnotatedElementResolver(crane4jGlobalConfiguration, typeResolver);
+    }
+
+    @ConditionalOnMissingBean
+    @ConditionalOnProperty(
+        prefix = CRANE_PREFIX,
+        name = "enable-method-container",
+        havingValue = "true", matchIfMissing = true
+    )
+    @Bean
+    public BeanMethodContainerRegistrar beanMethodContainerPostProcessor(
+        AnnotationFinder annotationFinder, Collection<MethodContainerFactory> factories, Crane4jGlobalConfiguration configuration) {
+        return new BeanMethodContainerRegistrar(factories, annotationFinder, configuration);
+    }
+
+    @ConditionalOnMissingBean
+    @Bean
+    public Crane4jInitializer crane4jInitializer(
+        ClassScanner classScanner, PropertyOperator propertyOperator,
+        ApplicationContext applicationContext, AnnotationFinder annotationFinder,
+        Crane4jGlobalConfiguration configuration, Properties properties) {
+        return new Crane4jInitializer(
+            propertyOperator, applicationContext, properties, annotationFinder,
+            configuration, classScanner
+        );
     }
 
 
@@ -249,6 +287,12 @@ public class Crane4jAutoConfiguration {
     @Bean
     public ReferenceMappingStrategy referenceMappingStrategy(PropertyOperator propertyOperator) {
         return new ReferenceMappingStrategy(propertyOperator);
+    }
+
+    @ConditionalOnMissingBean(BeanResolver.class)
+    @Bean
+    public BeanFactoryResolver beanFactoryResolver(ApplicationContext applicationContext) {
+        return new BeanFactoryResolver(applicationContext);
     }
 
     @ConditionalOnMissingBean(AssembleAnnotationHandler.class)
@@ -277,7 +321,7 @@ public class Crane4jAutoConfiguration {
 
     @ConditionalOnMissingBean
     @Bean
-    public DisassembleAnnotationHandler disassembleAnnotationOperationsResolver(
+    public DisassembleAnnotationHandler disassembleAnnotationHandler(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration) {
         return new DisassembleAnnotationHandler(annotationFinder, configuration);
     }
@@ -289,6 +333,10 @@ public class Crane4jAutoConfiguration {
         resolvers.forEach(parser::addOperationAnnotationHandler);
         return parser;
     }
+
+    // endregion
+
+    // region ======= operation parse =======
 
     @Primary
     @ConditionalOnMissingBean
@@ -347,7 +395,9 @@ public class Crane4jAutoConfiguration {
         return new ReflectiveDisassembleOperationHandler(propertyOperator);
     }
 
-    // ============== operator interface components ==============
+    // endregion
+
+    // region ======= operator interface =======
 
     @ConditionalOnMissingBean(OperatorProxyMethodFactory.class)
     @Bean
@@ -375,27 +425,9 @@ public class Crane4jAutoConfiguration {
         return new DynamicContainerOperatorProxyMethodFactory(converterManager, parameterNameFinder, annotationFinder);
     }
 
-    // ============== extension components ==============
+    // endregion
 
-    @ConditionalOnMissingBean
-    @Bean
-    public OperateTemplate operateTemplate(
-        BeanOperationParser parser, BeanOperationExecutor executor, TypeResolver typeResolver) {
-        return new OperateTemplate(parser, executor, typeResolver);
-    }
-
-    @ConditionalOnMissingBean(ParameterNameFinder.class)
-    @Bean
-    public SpringParameterNameFinder springParameterNameFinder() {
-        return new SpringParameterNameFinder(new DefaultParameterNameDiscoverer());
-    }
-
-    @ConditionalOnMissingBean
-    @Bean
-    public AutoOperateAnnotatedElementResolver autoOperateMethodAnnotatedElementResolver(
-        Crane4jGlobalConfiguration crane4jGlobalConfiguration, TypeResolver typeResolver) {
-        return new AutoOperateAnnotatedElementResolver(crane4jGlobalConfiguration, typeResolver);
-    }
+    // region ======= auto operate =======
 
     @ConditionalOnMissingBean
     @Bean
@@ -440,34 +472,7 @@ public class Crane4jAutoConfiguration {
         );
     }
 
-    @ConditionalOnMissingBean
-    @ConditionalOnProperty(
-        prefix = CRANE_PREFIX,
-        name = "enable-method-container",
-        havingValue = "true", matchIfMissing = true
-    )
-    @Bean
-    public BeanMethodContainerRegistrar beanMethodContainerPostProcessor(
-        AnnotationFinder annotationFinder, Collection<MethodContainerFactory> factories, Crane4jGlobalConfiguration configuration) {
-        return new BeanMethodContainerRegistrar(factories, annotationFinder, configuration);
-    }
-
-    @ConditionalOnMissingBean
-    @Bean
-    public Crane4jInitializer crane4jInitializer(
-        ClassScanner classScanner, PropertyOperator propertyOperator,
-        ApplicationContext applicationContext, AnnotationFinder annotationFinder,
-        Crane4jGlobalConfiguration configuration, Properties properties) {
-        return new Crane4jInitializer(
-            propertyOperator, applicationContext, properties, annotationFinder,
-            configuration, classScanner
-        );
-    }
-
-    @Bean
-    public InitializationLogger initializationLogger() {
-        return new InitializationLogger();
-    }
+    // endregion
 
     /**
      * Configurable properties.
@@ -614,13 +619,14 @@ public class Crane4jAutoConfiguration {
         @SneakyThrows
         @Override
         public void run(ApplicationArguments args) {
-            log.info("start initializing crane4j components......");
+            log.info("crane4j components initializing......");
             // load enumeration and register it as a container
             loadContainerEnum();
             // load a constant class and register it as a container
             loadConstantClass();
             // pre resolution class operation configuration
             loadOperateEntity();
+            log.info("crane4j components initialization completed!");
         }
 
         private void loadConstantClass() {
@@ -651,19 +657,6 @@ public class Crane4jAutoConfiguration {
                 .map(classScanner::scan)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
-        }
-    }
-
-    /**
-     * Initialization logger.
-     *
-     * @author huangchengxing
-     */
-    @Slf4j
-    public static class InitializationLogger implements ApplicationRunner {
-        @Override
-        public void run(ApplicationArguments args) {
-            log.info("Initialized crane4j components......");
         }
     }
 }
