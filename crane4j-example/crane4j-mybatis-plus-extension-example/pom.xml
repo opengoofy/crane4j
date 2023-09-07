@@ -28,6 +28,11 @@
             <artifactId>crane4j-spring-boot-starter</artifactId>
         </dependency>
         <dependency>
+            <groupId>cn.crane4j</groupId>
+            <artifactId>crane4j-extension-mybatis-plus</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jdbc</artifactId>
             <scope>test</scope>
