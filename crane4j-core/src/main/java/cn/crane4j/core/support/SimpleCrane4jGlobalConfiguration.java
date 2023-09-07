@@ -24,6 +24,7 @@ import cn.crane4j.core.parser.handler.strategy.ReferenceMappingStrategy;
 import cn.crane4j.core.parser.handler.strategy.SimplePropertyMappingStrategyManager;
 import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.support.converter.HutoolConverterManager;
+import cn.crane4j.core.support.reflect.CacheablePropertyOperator;
 import cn.crane4j.core.support.reflect.ChainAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.PropertyOperator;
@@ -86,6 +87,7 @@ public class SimpleCrane4jGlobalConfiguration
         SimpleCrane4jGlobalConfiguration configuration = new SimpleCrane4jGlobalConfiguration();
         // basic components
         configuration.setConverterManager(converter);
+        operator = new CacheablePropertyOperator(operator);
         operator = new MapAccessiblePropertyOperator(operator);
         operator = new ChainAccessiblePropertyOperator(operator);
         operator = new PropertyOperatorHolder(operator);
