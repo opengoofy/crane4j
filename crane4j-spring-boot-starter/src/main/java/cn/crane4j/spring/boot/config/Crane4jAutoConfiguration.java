@@ -273,6 +273,20 @@ public class Crane4jAutoConfiguration {
         );
     }
 
+    // endregion
+
+
+
+    // region ======= operation execute =======
+
+    @ConditionalOnMissingBean
+    @Bean
+    public SimplePropertyMappingStrategyManager simplePropertyMappingStrategyManager(
+        Collection<PropertyMappingStrategy> propertyMappingStrategies) {
+        SimplePropertyMappingStrategyManager manager = new SimplePropertyMappingStrategyManager();
+        propertyMappingStrategies.forEach(manager::addPropertyMappingStrategy);
+        return manager;
+    }
 
     @Bean
     public OverwriteNotNullMappingStrategy overwriteNotNullMappingStrategy() {
@@ -300,23 +314,19 @@ public class Crane4jAutoConfiguration {
     public ValueResolveAssembleAnnotationHandler valueResolveAssembleAnnotationHandler(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration,
         ExpressionEvaluator evaluator, BeanResolver beanResolver,
-        Collection<PropertyMappingStrategy> propertyMappingStrategies) {
-        ValueResolveAssembleAnnotationHandler handler = new ValueResolveAssembleAnnotationHandler(
-            annotationFinder, configuration, evaluator, beanResolver
+        PropertyMappingStrategyManager propertyMappingStrategyManager) {
+        return new ValueResolveAssembleAnnotationHandler(
+            annotationFinder, configuration, evaluator, beanResolver, propertyMappingStrategyManager
         );
-        propertyMappingStrategies.forEach(handler::addPropertyMappingStrategy);
-        return handler;
     }
 
     @ConditionalOnMissingBean
     @Bean
-    public AssembleEnumAnnotationHandler assembleEnumAnnotationResolver(
+    public AssembleEnumAnnotationHandler assembleEnumAnnotationHandler(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration globalConfiguration,
         PropertyOperator propertyOperator, ContainerManager containerManager,
-        Collection<PropertyMappingStrategy> propertyMappingStrategies) {
-        AssembleEnumAnnotationHandler handler = new AssembleEnumAnnotationHandler(annotationFinder, globalConfiguration, propertyOperator, containerManager);
-        propertyMappingStrategies.forEach(handler::addPropertyMappingStrategy);
-        return handler;
+        PropertyMappingStrategyManager propertyMappingStrategyManager) {
+        return new AssembleEnumAnnotationHandler(annotationFinder, globalConfiguration, propertyOperator, containerManager, propertyMappingStrategyManager);
     }
 
     @ConditionalOnMissingBean

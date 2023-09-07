@@ -7,6 +7,8 @@ import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.PropertyMapping;
 import cn.crane4j.core.parser.SimpleBeanOperations;
 import cn.crane4j.core.parser.handler.strategy.OverwriteMappingStrategy;
+import cn.crane4j.core.parser.handler.strategy.PropertyMappingStrategyManager;
+import cn.crane4j.core.parser.handler.strategy.SimplePropertyMappingStrategyManager;
 import cn.crane4j.core.parser.operation.AssembleOperation;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.SimpleAnnotationFinder;
@@ -37,10 +39,11 @@ public class AssembleEnumAnnotationHandlerTest {
     @Before
     public void init() {
         configuration = SimpleCrane4jGlobalConfiguration.create();
+        PropertyMappingStrategyManager manager = new SimplePropertyMappingStrategyManager();
+        manager.addPropertyMappingStrategy(OverwriteMappingStrategy.INSTANCE);
         this.annotationHandler = new AssembleEnumAnnotationHandler(
-            new SimpleAnnotationFinder(), configuration, configuration.getPropertyOperator(), configuration
+            new SimpleAnnotationFinder(), configuration, configuration.getPropertyOperator(), configuration, manager
         );
-        this.annotationHandler.addPropertyMappingStrategy(OverwriteMappingStrategy.INSTANCE);
     }
 
     @Test

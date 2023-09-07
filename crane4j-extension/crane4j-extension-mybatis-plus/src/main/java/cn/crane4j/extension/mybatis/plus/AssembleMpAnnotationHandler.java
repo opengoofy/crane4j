@@ -7,6 +7,7 @@ import cn.crane4j.core.container.ContainerManager;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.handler.AbstractAssembleAnnotationHandler;
 import cn.crane4j.core.parser.handler.OperationAnnotationHandler;
+import cn.crane4j.core.parser.handler.strategy.PropertyMappingStrategyManager;
 import cn.crane4j.core.parser.operation.AssembleOperation;
 import cn.crane4j.core.parser.operation.KeyTriggerOperation;
 import cn.crane4j.core.support.AnnotationFinder;
@@ -40,12 +41,14 @@ public class AssembleMpAnnotationHandler extends AbstractAssembleAnnotationHandl
      * @param annotationFinder annotation finder
      * @param containerRegister mybatis plus query container register
      * @param globalConfiguration global configuration
+     * @param propertyMappingStrategyManager property mapping strategy manager
      */
     public AssembleMpAnnotationHandler(
         AnnotationFinder annotationFinder,
         MybatisPlusQueryContainerProvider containerRegister,
-        Crane4jGlobalConfiguration globalConfiguration) {
-        this(annotationFinder, Crane4jGlobalSorter.comparator(), containerRegister, globalConfiguration);
+        Crane4jGlobalConfiguration globalConfiguration,
+        PropertyMappingStrategyManager propertyMappingStrategyManager) {
+        this(annotationFinder, Crane4jGlobalSorter.comparator(), containerRegister, globalConfiguration, propertyMappingStrategyManager);
     }
 
     /**
@@ -55,12 +58,14 @@ public class AssembleMpAnnotationHandler extends AbstractAssembleAnnotationHandl
      * @param operationComparator operation comparator
      * @param containerRegister mybatis plus query container register
      * @param globalConfiguration global configuration
+     * @param propertyMappingStrategyManager property mapping strategy manager
      */
     public AssembleMpAnnotationHandler(
         AnnotationFinder annotationFinder, Comparator<KeyTriggerOperation> operationComparator,
         MybatisPlusQueryContainerProvider containerRegister,
-        Crane4jGlobalConfiguration globalConfiguration) {
-        super(AssembleMp.class, annotationFinder, operationComparator, globalConfiguration);
+        Crane4jGlobalConfiguration globalConfiguration,
+        PropertyMappingStrategyManager propertyMappingStrategyManager) {
+        super(AssembleMp.class, annotationFinder, operationComparator, globalConfiguration, propertyMappingStrategyManager);
         this.containerRegister = containerRegister;
         globalConfiguration.registerContainerProvider(QUERY_CONTAINER_PROVIDER_NAME, containerRegister);
     }

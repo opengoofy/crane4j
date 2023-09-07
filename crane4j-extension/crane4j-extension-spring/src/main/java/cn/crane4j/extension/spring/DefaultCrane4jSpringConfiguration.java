@@ -20,7 +20,9 @@ import cn.crane4j.core.parser.handler.OperationAnnotationHandler;
 import cn.crane4j.core.parser.handler.strategy.OverwriteMappingStrategy;
 import cn.crane4j.core.parser.handler.strategy.OverwriteNotNullMappingStrategy;
 import cn.crane4j.core.parser.handler.strategy.PropertyMappingStrategy;
+import cn.crane4j.core.parser.handler.strategy.PropertyMappingStrategyManager;
 import cn.crane4j.core.parser.handler.strategy.ReferenceMappingStrategy;
+import cn.crane4j.core.parser.handler.strategy.SimplePropertyMappingStrategyManager;
 import cn.crane4j.core.parser.operation.AssembleOperation;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
@@ -151,6 +153,13 @@ public class DefaultCrane4jSpringConfiguration implements SmartInitializingSingl
     // ============== execute components ==============
 
     @Bean
+    public SimplePropertyMappingStrategyManager simplePropertyMappingStrategyManager(Collection<PropertyMappingStrategy> propertyMappingStrategies) {
+        SimplePropertyMappingStrategyManager manager = new SimplePropertyMappingStrategyManager();
+        propertyMappingStrategies.forEach(manager::addPropertyMappingStrategy);
+        return manager;
+    }
+
+    @Bean
     public OverwriteNotNullMappingStrategy overwriteNotNullMappingStrategy() {
         return OverwriteNotNullMappingStrategy.INSTANCE;
     }
@@ -174,22 +183,18 @@ public class DefaultCrane4jSpringConfiguration implements SmartInitializingSingl
     public ValueResolveAssembleAnnotationHandler valueResolveAssembleAnnotationHandler(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration,
         ExpressionEvaluator evaluator, BeanResolver beanResolver,
-        Collection<PropertyMappingStrategy> propertyMappingStrategies) {
-        ValueResolveAssembleAnnotationHandler handler = new ValueResolveAssembleAnnotationHandler(
-            annotationFinder, configuration, evaluator, beanResolver
+        PropertyMappingStrategyManager propertyMappingStrategyManager) {
+        return new ValueResolveAssembleAnnotationHandler(
+            annotationFinder, configuration, evaluator, beanResolver, propertyMappingStrategyManager
         );
-        propertyMappingStrategies.forEach(handler::addPropertyMappingStrategy);
-        return handler;
     }
 
     @Bean
     public AssembleEnumAnnotationHandler assembleEnumAnnotationResolver(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration globalConfiguration,
         PropertyOperator propertyOperator, ContainerManager containerManager,
-        Collection<PropertyMappingStrategy> propertyMappingStrategies) {
-        AssembleEnumAnnotationHandler handler = new AssembleEnumAnnotationHandler(annotationFinder, globalConfiguration, propertyOperator, containerManager);
-        propertyMappingStrategies.forEach(handler::addPropertyMappingStrategy);
-        return handler;
+        PropertyMappingStrategyManager propertyMappingStrategyManager) {
+        return new AssembleEnumAnnotationHandler(annotationFinder, globalConfiguration, propertyOperator, containerManager, propertyMappingStrategyManager);
     }
 
     @Bean

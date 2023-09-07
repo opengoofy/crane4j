@@ -1,7 +1,6 @@
 package cn.crane4j.core.parser.handler.strategy;
 
 import cn.crane4j.core.parser.PropertyMapping;
-import cn.crane4j.core.parser.handler.AbstractAssembleAnnotationHandler;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.function.Consumer;
@@ -13,7 +12,7 @@ import java.util.function.Consumer;
  * @see OverwriteMappingStrategy
  * @see OverwriteNotNullMappingStrategy
  * @see ReferenceMappingStrategy
- * @see AbstractAssembleAnnotationHandler#addPropertyMappingStrategy
+ * @see PropertyMappingStrategy
  * @since 2.1.0
  */
 public interface PropertyMappingStrategy {

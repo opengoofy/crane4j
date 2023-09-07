@@ -7,6 +7,7 @@ import cn.crane4j.core.container.MethodInvokerContainer;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.SimpleBeanOperations;
+import cn.crane4j.core.parser.handler.strategy.SimplePropertyMappingStrategyManager;
 import cn.crane4j.core.parser.operation.AssembleOperation;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
@@ -44,7 +45,7 @@ public class AssembleMpAnnotationResolverTest extends MpBaseTest {
             new MethodInvokerContainerCreator(new ReflectivePropertyOperator(new HutoolConverterManager()), converterManager), configuration
         );
         register.registerRepository("fooMapper", fooMapper);
-        operationsResolver = new AssembleMpAnnotationHandler(annotationFinder, register, configuration);
+        operationsResolver = new AssembleMpAnnotationHandler(annotationFinder, register, configuration, new SimplePropertyMappingStrategyManager());
     }
 
     @Test

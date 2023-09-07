@@ -5,6 +5,7 @@ import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
 import cn.crane4j.core.parser.handler.AssembleAnnotationHandler;
 import cn.crane4j.core.parser.handler.DisassembleAnnotationHandler;
+import cn.crane4j.core.parser.handler.strategy.SimplePropertyMappingStrategyManager;
 import cn.crane4j.core.support.SimpleAnnotationFinder;
 import cn.crane4j.core.support.SimpleCrane4jGlobalConfiguration;
 import org.junit.Assert;
@@ -28,7 +29,7 @@ public class BaseExecutorTest {
     public void initParser() {
         configuration = SimpleCrane4jGlobalConfiguration.create();
         TypeHierarchyBeanOperationParser typeHierarchyBeanOperationParser = new TypeHierarchyBeanOperationParser();
-        typeHierarchyBeanOperationParser.addOperationAnnotationHandler(new AssembleAnnotationHandler(new SimpleAnnotationFinder(), configuration));
+        typeHierarchyBeanOperationParser.addOperationAnnotationHandler(new AssembleAnnotationHandler(new SimpleAnnotationFinder(), configuration, new SimplePropertyMappingStrategyManager()));
         typeHierarchyBeanOperationParser.addOperationAnnotationHandler(new DisassembleAnnotationHandler(new SimpleAnnotationFinder(), configuration));
         parser = typeHierarchyBeanOperationParser;
     }

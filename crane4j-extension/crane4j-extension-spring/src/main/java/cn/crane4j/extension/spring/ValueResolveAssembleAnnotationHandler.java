@@ -4,6 +4,7 @@ import cn.crane4j.annotation.Assemble;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerManager;
 import cn.crane4j.core.parser.handler.AssembleAnnotationHandler;
+import cn.crane4j.core.parser.handler.strategy.PropertyMappingStrategyManager;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.Crane4jGlobalSorter;
@@ -39,12 +40,16 @@ public class ValueResolveAssembleAnnotationHandler
      *
      * @param annotationFinder    annotation finder
      * @param globalConfiguration global configuration
+     * @param beanResolver       bean resolver
+     * @param evaluator          expression evaluator
+     * @param propertyMappingStrategyManager property mapping strategy manager
      */
     public ValueResolveAssembleAnnotationHandler(
         AnnotationFinder annotationFinder,
         Crane4jGlobalConfiguration globalConfiguration,
-        ExpressionEvaluator evaluator, BeanResolver beanResolver) {
-        super(annotationFinder, globalConfiguration, Crane4jGlobalSorter.comparator());
+        ExpressionEvaluator evaluator, BeanResolver beanResolver,
+        PropertyMappingStrategyManager propertyMappingStrategyManager) {
+        super(annotationFinder, globalConfiguration, Crane4jGlobalSorter.comparator(), propertyMappingStrategyManager);
         this.evaluator = evaluator;
         this.beanResolver = beanResolver;
     }

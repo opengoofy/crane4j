@@ -8,6 +8,7 @@ import cn.crane4j.core.container.PartitionContainerProvider;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.PropertyMapping;
 import cn.crane4j.core.parser.SimplePropertyMapping;
+import cn.crane4j.core.parser.handler.strategy.PropertyMappingStrategyManager;
 import cn.crane4j.core.parser.operation.KeyTriggerOperation;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
@@ -39,11 +40,13 @@ public class AssembleEnumAnnotationHandler extends AbstractAssembleAnnotationHan
      * @param annotationFinder    annotation finder
      * @param globalConfiguration globalConfiguration
      * @param propertyOperator    property operator
+     * @param propertyMappingStrategyManager property mapping strategy manager
      */
     public AssembleEnumAnnotationHandler(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration globalConfiguration,
-        PropertyOperator propertyOperator, ContainerManager containerManager) {
-        this(annotationFinder, Crane4jGlobalSorter.comparator(), globalConfiguration, propertyOperator, containerManager);
+        PropertyOperator propertyOperator, ContainerManager containerManager,
+        PropertyMappingStrategyManager propertyMappingStrategyManager) {
+        this(annotationFinder, Crane4jGlobalSorter.comparator(), globalConfiguration, propertyOperator, containerManager, propertyMappingStrategyManager);
     }
 
     /**
@@ -53,12 +56,14 @@ public class AssembleEnumAnnotationHandler extends AbstractAssembleAnnotationHan
      * @param operationComparator operation comparator
      * @param globalConfiguration globalConfiguration
      * @param propertyOperator    property operator
+     * @param propertyMappingStrategyManager property mapping strategy manager
      */
     public AssembleEnumAnnotationHandler(
         AnnotationFinder annotationFinder, Comparator<KeyTriggerOperation> operationComparator,
         Crane4jGlobalConfiguration globalConfiguration, PropertyOperator propertyOperator,
-        ContainerManager containerManager) {
-        super(AssembleEnum.class, annotationFinder, operationComparator, globalConfiguration);
+        ContainerManager containerManager,
+        PropertyMappingStrategyManager propertyMappingStrategyManager) {
+        super(AssembleEnum.class, annotationFinder, operationComparator, globalConfiguration, propertyMappingStrategyManager);
         this.propertyOperator = propertyOperator;
         containerManager.registerContainerProvider(INTERNAL_ENUM_CONTAINER_PROVIDER, internalContainerProvider);
     }

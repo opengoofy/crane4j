@@ -4,6 +4,7 @@ import cn.crane4j.annotation.Assemble;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerManager;
 import cn.crane4j.core.parser.BeanOperations;
+import cn.crane4j.core.parser.handler.strategy.PropertyMappingStrategyManager;
 import cn.crane4j.core.parser.operation.KeyTriggerOperation;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
@@ -35,12 +36,14 @@ public class AssembleAnnotationHandler extends AbstractAssembleAnnotationHandler
      * @param annotationFinder annotation finder
      * @param globalConfiguration global configuration
      * @param operationComparator operation comparator
+     * @param propertyMappingStrategyManager property mapping strategy manager
      */
     public AssembleAnnotationHandler(
         AnnotationFinder annotationFinder,
         Crane4jGlobalConfiguration globalConfiguration,
-        Comparator<KeyTriggerOperation> operationComparator) {
-        super(Assemble.class, annotationFinder, operationComparator, globalConfiguration);
+        Comparator<KeyTriggerOperation> operationComparator,
+        PropertyMappingStrategyManager propertyMappingStrategyManager) {
+        super(Assemble.class, annotationFinder, operationComparator, globalConfiguration, propertyMappingStrategyManager);
     }
 
     /**
@@ -49,10 +52,12 @@ public class AssembleAnnotationHandler extends AbstractAssembleAnnotationHandler
      *
      * @param annotationFinder annotation finder
      * @param globalConfiguration global configuration
+     * @param propertyMappingStrategyManager property mapping strategy manager
      */
     public AssembleAnnotationHandler(
-        AnnotationFinder annotationFinder, Crane4jGlobalConfiguration globalConfiguration) {
-        this(annotationFinder, globalConfiguration, Crane4jGlobalSorter.comparator());
+        AnnotationFinder annotationFinder, Crane4jGlobalConfiguration globalConfiguration,
+        PropertyMappingStrategyManager propertyMappingStrategyManager) {
+        this(annotationFinder, globalConfiguration, Crane4jGlobalSorter.comparator(), propertyMappingStrategyManager);
     }
 
     /**

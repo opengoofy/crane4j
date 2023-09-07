@@ -10,6 +10,7 @@ import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.PropertyMapping;
 import cn.crane4j.core.parser.handler.strategy.OverwriteNotNullMappingStrategy;
 import cn.crane4j.core.parser.handler.strategy.PropertyMappingStrategy;
+import cn.crane4j.core.parser.handler.strategy.PropertyMappingStrategyManager;
 import cn.crane4j.core.parser.operation.AssembleOperation;
 import cn.crane4j.core.parser.operation.KeyTriggerOperation;
 import cn.crane4j.core.parser.operation.SimpleAssembleOperation;
@@ -33,9 +34,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -63,19 +62,7 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
     @Setter
     protected Comparator<KeyTriggerOperation> operationComparator;
     protected final Crane4jGlobalConfiguration globalConfiguration;
-    private final Map<String, PropertyMappingStrategy> propertyMappingStrategies = new HashMap<>();
-
-    /**
-     * Register property mapping strategy.
-     *
-     * @param strategy strategy
-     * @see PropertyMappingStrategy
-     * @since 2.1.0
-     */
-    public void addPropertyMappingStrategy(@NonNull PropertyMappingStrategy strategy) {
-        Objects.requireNonNull(strategy, "strategy must not null");
-        propertyMappingStrategies.put(strategy.getName(), strategy);
-    }
+    private final PropertyMappingStrategyManager propertyMappingStrategyManager;
 
     /**
      * Create an {@link AbstractAssembleAnnotationHandler} instance.
@@ -87,11 +74,13 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
      */
     protected AbstractAssembleAnnotationHandler(
         Class<T> annotationType, AnnotationFinder annotationFinder,
-        @NonNull Comparator<KeyTriggerOperation> operationComparator, Crane4jGlobalConfiguration globalConfiguration) {
+        @NonNull Comparator<KeyTriggerOperation> operationComparator, Crane4jGlobalConfiguration globalConfiguration,
+        PropertyMappingStrategyManager propertyMappingStrategyManager) {
         this.annotationType = annotationType;
         this.annotationFinder = annotationFinder;
         this.operationComparator = operationComparator;
         this.globalConfiguration = globalConfiguration;
+        this.propertyMappingStrategyManager = propertyMappingStrategyManager;
     }
 
     /**
@@ -330,7 +319,7 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
             return OverwriteNotNullMappingStrategy.INSTANCE;
         }
 
-        PropertyMappingStrategy propertyMappingStrategy = propertyMappingStrategies.get(propertyMappingStrategyName);
+        PropertyMappingStrategy propertyMappingStrategy = propertyMappingStrategyManager.getPropertyMappingStrategy(propertyMappingStrategyName);
         if (Objects.isNull(propertyMappingStrategy)) {
             propertyMappingStrategy = OverwriteNotNullMappingStrategy.INSTANCE;
             if (StringUtils.isEmpty(propertyMappingStrategyName)) {

@@ -19,8 +19,9 @@ import cn.crane4j.core.parser.handler.AssembleEnumAnnotationHandler;
 import cn.crane4j.core.parser.handler.DisassembleAnnotationHandler;
 import cn.crane4j.core.parser.handler.strategy.OverwriteMappingStrategy;
 import cn.crane4j.core.parser.handler.strategy.OverwriteNotNullMappingStrategy;
-import cn.crane4j.core.parser.handler.strategy.PropertyMappingStrategy;
+import cn.crane4j.core.parser.handler.strategy.PropertyMappingStrategyManager;
 import cn.crane4j.core.parser.handler.strategy.ReferenceMappingStrategy;
+import cn.crane4j.core.parser.handler.strategy.SimplePropertyMappingStrategyManager;
 import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.support.converter.HutoolConverterManager;
 import cn.crane4j.core.support.reflect.ChainAccessiblePropertyOperator;
@@ -37,9 +38,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -98,16 +97,16 @@ public class SimpleCrane4jGlobalConfiguration
         configuration.registerContainerLifecycleProcessor(new ContainerRegisterLogger(logger::info));
 
         // operation parser
-        List<PropertyMappingStrategy> propertyMappingStrategies = Arrays.asList(
-            OverwriteMappingStrategy.INSTANCE, OverwriteNotNullMappingStrategy.INSTANCE, new ReferenceMappingStrategy(operator)
-        );
+        PropertyMappingStrategyManager propertyMappingStrategyManager = new SimplePropertyMappingStrategyManager();
+        propertyMappingStrategyManager.addPropertyMappingStrategy(OverwriteMappingStrategy.INSTANCE);
+        propertyMappingStrategyManager.addPropertyMappingStrategy(OverwriteNotNullMappingStrategy.INSTANCE);
+        propertyMappingStrategyManager.addPropertyMappingStrategy(new ReferenceMappingStrategy(operator));
+
         TypeHierarchyBeanOperationParser beanOperationParser = new TypeHierarchyBeanOperationParser();
-        AssembleAnnotationHandler assembleAnnotationHandler = new AssembleAnnotationHandler(annotationFinder, configuration);
+        AssembleAnnotationHandler assembleAnnotationHandler = new AssembleAnnotationHandler(annotationFinder, configuration, propertyMappingStrategyManager);
         beanOperationParser.addOperationAnnotationHandler(assembleAnnotationHandler);
-        propertyMappingStrategies.forEach(assembleAnnotationHandler::addPropertyMappingStrategy);
-        AssembleEnumAnnotationHandler assembleEnumAnnotationHandler = new AssembleEnumAnnotationHandler(annotationFinder, configuration, operator, configuration);
+        AssembleEnumAnnotationHandler assembleEnumAnnotationHandler = new AssembleEnumAnnotationHandler(annotationFinder, configuration, operator, configuration, propertyMappingStrategyManager);
         beanOperationParser.addOperationAnnotationHandler(assembleEnumAnnotationHandler);
-        propertyMappingStrategies.forEach(assembleEnumAnnotationHandler::addPropertyMappingStrategy);
         DisassembleAnnotationHandler disassembleAnnotationHandler = new DisassembleAnnotationHandler(annotationFinder, configuration);
         beanOperationParser.addOperationAnnotationHandler(disassembleAnnotationHandler);
 
