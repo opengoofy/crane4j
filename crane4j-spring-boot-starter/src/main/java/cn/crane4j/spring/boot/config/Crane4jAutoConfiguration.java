@@ -51,6 +51,7 @@ import cn.crane4j.core.support.reflect.CacheablePropertyOperator;
 import cn.crane4j.core.support.reflect.ChainAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.PropertyOperator;
+import cn.crane4j.core.support.reflect.PropertyOperatorHolder;
 import cn.crane4j.core.support.reflect.ReflectivePropertyOperator;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.StringUtils;
@@ -172,7 +173,7 @@ public class Crane4jAutoConfiguration {
         if (properties.isEnableChainOperate()) {
             operator = new ChainAccessiblePropertyOperator(operator);
         }
-        return operator;
+        return new PropertyOperatorHolder(operator);
     }
 
     @ConditionalOnMissingBean(AnnotationFinder.class)

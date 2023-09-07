@@ -26,6 +26,7 @@ import cn.crane4j.core.support.converter.HutoolConverterManager;
 import cn.crane4j.core.support.reflect.ChainAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.PropertyOperator;
+import cn.crane4j.core.support.reflect.PropertyOperatorHolder;
 import cn.crane4j.core.support.reflect.ReflectivePropertyOperator;
 import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.ConfigurationUtil;
@@ -88,6 +89,7 @@ public class SimpleCrane4jGlobalConfiguration
         configuration.setConverterManager(converter);
         operator = new MapAccessiblePropertyOperator(operator);
         operator = new ChainAccessiblePropertyOperator(operator);
+        operator = new PropertyOperatorHolder(operator);
         configuration.setPropertyOperator(operator);
         configuration.setTypeResolver(new SimpleTypeResolver());
 

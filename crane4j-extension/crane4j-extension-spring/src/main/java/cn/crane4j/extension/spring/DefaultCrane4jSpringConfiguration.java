@@ -44,6 +44,7 @@ import cn.crane4j.core.support.reflect.CacheablePropertyOperator;
 import cn.crane4j.core.support.reflect.ChainAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.PropertyOperator;
+import cn.crane4j.core.support.reflect.PropertyOperatorHolder;
 import cn.crane4j.core.support.reflect.ReflectivePropertyOperator;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.extension.spring.aop.MethodArgumentAutoOperateAdvisor;
@@ -111,7 +112,7 @@ public class DefaultCrane4jSpringConfiguration implements SmartInitializingSingl
         operator = new CacheablePropertyOperator(operator);
         operator = new MapAccessiblePropertyOperator(operator);
         operator = new ChainAccessiblePropertyOperator(operator);
-        return operator;
+        return new PropertyOperatorHolder(operator);
     }
 
     @Bean
