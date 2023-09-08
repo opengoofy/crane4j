@@ -16,12 +16,15 @@ import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
 import cn.crane4j.core.parser.handler.AssembleAnnotationHandler;
 import cn.crane4j.core.parser.handler.AssembleEnumAnnotationHandler;
+import cn.crane4j.core.parser.handler.AssembleMethodAnnotationHandler;
 import cn.crane4j.core.parser.handler.DisassembleAnnotationHandler;
 import cn.crane4j.core.parser.handler.strategy.OverwriteMappingStrategy;
 import cn.crane4j.core.parser.handler.strategy.OverwriteNotNullMappingStrategy;
 import cn.crane4j.core.parser.handler.strategy.PropertyMappingStrategyManager;
 import cn.crane4j.core.parser.handler.strategy.ReferenceMappingStrategy;
 import cn.crane4j.core.parser.handler.strategy.SimplePropertyMappingStrategyManager;
+import cn.crane4j.core.support.container.DefaultMethodContainerFactory;
+import cn.crane4j.core.support.container.MethodInvokerContainerCreator;
 import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.support.converter.HutoolConverterManager;
 import cn.crane4j.core.support.reflect.CacheablePropertyOperator;
@@ -39,6 +42,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -111,6 +115,16 @@ public class SimpleCrane4jGlobalConfiguration
         beanOperationParser.addOperationAnnotationHandler(assembleEnumAnnotationHandler);
         DisassembleAnnotationHandler disassembleAnnotationHandler = new DisassembleAnnotationHandler(annotationFinder, configuration);
         beanOperationParser.addOperationAnnotationHandler(disassembleAnnotationHandler);
+        MethodInvokerContainerCreator creator = new MethodInvokerContainerCreator(
+            configuration.getPropertyOperator(), configuration.getConverterManager()
+        );
+        AssembleMethodAnnotationHandler annotationHandler = new AssembleMethodAnnotationHandler(
+            annotationFinder, configuration,
+            Collections.singletonList(new DefaultMethodContainerFactory(creator, annotationFinder)),
+            new SimplePropertyMappingStrategyManager()
+        );
+        beanOperationParser.addOperationAnnotationHandler(annotationHandler);
+
 
         configuration.getBeanOperationParserMap().put(BeanOperationParser.class.getSimpleName(), beanOperationParser);
         configuration.getBeanOperationParserMap().put(beanOperationParser.getClass().getSimpleName(), beanOperationParser);

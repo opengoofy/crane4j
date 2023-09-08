@@ -1,6 +1,7 @@
 package cn.crane4j.core.util;
 
 import cn.crane4j.core.exception.Crane4jException;
+import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
@@ -26,11 +27,29 @@ public class ClassUtilsTest {
         Assert.assertEquals(ClassUtilsTest.class, ClassUtils.forName("cn.crane4j.core.util.ClassUtilsTest"));
         Assert.assertThrows(Crane4jException.class, () -> ClassUtils.forName("not.found.class"));
         Assert.assertThrows(NullPointerException.class, () -> ClassUtils.forName(null));
+
+        Assert.assertEquals(ClassUtilsTest.class, ClassUtils.forName("", ClassUtilsTest.class));
+        Assert.assertEquals(String.class, ClassUtils.forName("java.lang.String", ClassUtilsTest.class));
+        Assert.assertThrows(Crane4jException.class, () -> ClassUtils.forName("not.found.class", ClassUtilsTest.class));
+    }
+
+    @Test
+    public void newInstance() {
+        Object object = ClassUtils.newInstance(String.class);
+        Assert.assertNotNull(object);
+        // if class has no default constructor, it will throw exception
+        Assert.assertThrows(Crane4jException.class, () -> ClassUtils.newInstance(Foo.class));
     }
 
     @Test
     public void packageToPath() {
         Assert.assertEquals("cn/crane4j/core/util/ClassUtils", ClassUtils.packageToPath("cn.crane4j.core.util.ClassUtils"));
         Assert.assertThrows(NullPointerException.class, () -> ClassUtils.packageToPath(null));
+    }
+
+    @SuppressWarnings("unused")
+    @RequiredArgsConstructor
+    private static class Foo {
+        private final String name;
     }
 }
