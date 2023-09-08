@@ -3,7 +3,7 @@ package cn.crane4j.core.support.container;
 import cn.crane4j.annotation.ContainerMethod;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.support.Crane4jGlobalSorter;
-import cn.crane4j.core.util.CollectionUtils;
+import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -73,9 +73,11 @@ public abstract class ContainerMethodSupport {
         Map<String, List<Method>> methodGroup = methods.stream().collect(Collectors.groupingBy(Method::getName));
         String methodName = StringUtils.emptyToDefault(annotation.bindMethod(), annotation.namespace());
         List<Method> candidates = methodGroup.get(methodName);
-        if (CollectionUtils.isEmpty(candidates)) {
-            log.debug("bound method not found: [{}] ({})", annotation.bindMethod(), Arrays.asList(annotation.bindMethodParamTypes()));
-        }
+        Asserts.isNotEmpty(
+            candidates, "bound method not found: {}({})",
+            annotation.bindMethod(), Arrays.stream(annotation.bindMethodParamTypes())
+                .map(Class::toString).collect(Collectors.joining(", "))
+        );
         if (candidates.size() == 1) {
             return candidates.get(0);
         }
