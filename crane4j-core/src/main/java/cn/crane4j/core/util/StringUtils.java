@@ -2,6 +2,10 @@ package cn.crane4j.core.util;
 
 import lombok.NoArgsConstructor;
 
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 
 /**
@@ -174,5 +178,22 @@ public class StringUtils {
      */
     public static boolean isNotBlank(final CharSequence cs) {
         return !isBlank(cs);
+    }
+
+    /**
+     * Md5 digest as hex.
+     *
+     * @param str str
+     * @return md5 hex
+     */
+    public static String md5DigestAsHex(String str) {
+        try {
+            MessageDigest md5 = MessageDigest.getInstance("md5");
+            byte[] digest = md5.digest(str.getBytes(StandardCharsets.UTF_8));
+            return new BigInteger(1, digest).toString(16);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return str;
+        }
     }
 }

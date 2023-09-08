@@ -75,9 +75,7 @@ public class AssembleEnumAnnotationHandler extends AbstractAssembleAnnotationHan
      * @return namespace
      */
     protected String getNamespace(AssembleEnum annotation) {
-        return StringUtils.format(
-            "@{}:{}#{}#{}", getClass().getSimpleName(), annotation.type(), annotation.enumKey(), annotation.enumValue()
-        );
+        return StringUtils.md5DigestAsHex(annotation.toString());
     }
 
     /**
