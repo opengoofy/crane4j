@@ -21,6 +21,7 @@ import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
 import cn.crane4j.core.parser.handler.AssembleAnnotationHandler;
 import cn.crane4j.core.parser.handler.AssembleEnumAnnotationHandler;
+import cn.crane4j.core.parser.handler.AssembleMethodAnnotationHandler;
 import cn.crane4j.core.parser.handler.DisassembleAnnotationHandler;
 import cn.crane4j.core.parser.handler.OperationAnnotationHandler;
 import cn.crane4j.core.parser.handler.strategy.OverwriteMappingStrategy;
@@ -57,6 +58,7 @@ import cn.crane4j.core.support.reflect.PropertyOperatorHolder;
 import cn.crane4j.core.support.reflect.ReflectivePropertyOperator;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.StringUtils;
+import cn.crane4j.extension.spring.BeanAwareAssembleMethodAnnotationHandler;
 import cn.crane4j.extension.spring.BeanMethodContainerRegistrar;
 import cn.crane4j.extension.spring.Crane4jApplicationContext;
 import cn.crane4j.extension.spring.MergedAnnotationFinder;
@@ -277,7 +279,7 @@ public class Crane4jAutoConfiguration {
 
 
 
-    // region ======= operation execute =======
+    // region ======= operation parse =======
 
     @ConditionalOnMissingBean
     @Bean
@@ -320,6 +322,18 @@ public class Crane4jAutoConfiguration {
         );
     }
 
+    @ConditionalOnMissingBean(AssembleMethodAnnotationHandler.class)
+    @Bean
+    public BeanAwareAssembleMethodAnnotationHandler beanAwareAssembleMethodAnnotationHandler(
+        AnnotationFinder annotationFinder, Crane4jGlobalConfiguration globalConfiguration,
+        PropertyMappingStrategyManager propertyMappingStrategyManager,
+        Collection<MethodContainerFactory> methodContainerFactories,
+        ApplicationContext applicationContext) {
+        return new BeanAwareAssembleMethodAnnotationHandler(
+            annotationFinder, globalConfiguration, methodContainerFactories, applicationContext, propertyMappingStrategyManager
+        );
+    }
+
     @ConditionalOnMissingBean
     @Bean
     public AssembleEnumAnnotationHandler assembleEnumAnnotationHandler(
@@ -346,7 +360,7 @@ public class Crane4jAutoConfiguration {
 
     // endregion
 
-    // region ======= operation parse =======
+    // region ======= operation execute =======
 
     @Primary
     @ConditionalOnMissingBean
