@@ -14,11 +14,14 @@ import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.Crane4jGlobalSorter;
 import cn.crane4j.core.support.reflect.PropertyOperator;
+import cn.crane4j.core.util.Asserts;
+import cn.crane4j.core.util.ClassUtils;
 import cn.crane4j.core.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.AnnotatedElement;
 import java.util.Comparator;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -77,17 +80,28 @@ public class AssembleEnumAnnotationHandler extends AbstractAssembleAnnotationHan
     @Override
     protected String getContainerNamespace(AssembleEnum annotation) {
         // if container exists, return namespace
-        String namespace = determineNamespace(annotation);
+        Class<? extends Enum<?>> enumType = resolveEnumType(annotation);
+        String namespace = determineNamespace(annotation, enumType);
         if (internalContainerProvider.containsContainer(namespace)) {
             return namespace;
         }
-        Container<Object> container = doGetContainer(annotation, namespace);
+        Container<Object> container = doGetContainer(annotation, namespace, enumType);
         internalContainerProvider.registerContainer(container);
         return ContainerManager.canonicalNamespace(container.getNamespace(), INTERNAL_ENUM_CONTAINER_PROVIDER);
     }
 
-    private Container<Object> doGetContainer(AssembleEnum annotation, String namespace) {
-        Class<? extends Enum<?>> enumType = annotation.type();
+    @SuppressWarnings("unchecked")
+    private Class<? extends Enum<?>> resolveEnumType(AssembleEnum annotation) {
+        Class<?> type = annotation.type();
+        if (Objects.equals(type, Object.class) || Objects.equals(type, Void.TYPE)) {
+            type = ClassUtils.forName(annotation.typeName(), type);
+            Asserts.isTrue(type.isEnum(), "type [{}] which specified in @AssembleEnum is not a enum type", type.getName());
+        }
+        return (Class<? extends Enum<?>>)type;
+    }
+
+    private Container<Object> doGetContainer(
+        AssembleEnum annotation, String namespace, Class<? extends Enum<?>> enumType) {
         EnumContainerBuilder<Object, ? extends Enum<?>> enumContainerBuilder = EnumContainerBuilder.of(enumType)
             .namespace(namespace)
             .annotationFinder(annotationFinder)
@@ -110,9 +124,9 @@ public class AssembleEnumAnnotationHandler extends AbstractAssembleAnnotationHan
      * @param annotation annotation
      * @return namespace
      */
-    protected String determineNamespace(AssembleEnum annotation) {
+    protected String determineNamespace(AssembleEnum annotation, Class<? extends Enum<?>> enumType) {
         return StringUtils.md5DigestAsHex(StringUtils.join(
-            String::valueOf, "#", annotation.enumKey(), annotation.enumValue(), annotation.type()
+            String::valueOf, "#", annotation.enumKey(), annotation.enumValue(), enumType
         ));
     }
 
