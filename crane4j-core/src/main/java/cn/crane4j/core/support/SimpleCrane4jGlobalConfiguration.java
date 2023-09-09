@@ -37,6 +37,7 @@ import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.ConfigurationUtil;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Delegate;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
@@ -52,8 +53,8 @@ import java.util.Map;
  * @author huangchengxing
  */
 @Getter
-public class SimpleCrane4jGlobalConfiguration
-    extends DefaultContainerManager implements Crane4jGlobalConfiguration {
+public class SimpleCrane4jGlobalConfiguration extends DefaultContainerManager
+    implements Crane4jGlobalConfiguration, PropertyMappingStrategyManager {
 
     @Setter
     private TypeResolver typeResolver;
@@ -65,6 +66,8 @@ public class SimpleCrane4jGlobalConfiguration
     private final Map<String, AssembleOperationHandler> assembleOperationHandlerMap = new HashMap<>(4);
     private final Map<String, DisassembleOperationHandler> disassembleOperationHandlerMap = new HashMap<>(4);
     private final Map<String, BeanOperationExecutor> beanOperationExecutorMap = new HashMap<>(4);
+    @Delegate
+    private final PropertyMappingStrategyManager propertyMappingStrategyManager = new SimplePropertyMappingStrategyManager();
 
     /**
      * Create a {@link SimpleCrane4jGlobalConfiguration} using the default configuration.
@@ -103,15 +106,14 @@ public class SimpleCrane4jGlobalConfiguration
         configuration.registerContainerLifecycleProcessor(new ContainerRegisterLogger(logger::info));
 
         // operation parser
-        PropertyMappingStrategyManager propertyMappingStrategyManager = new SimplePropertyMappingStrategyManager();
-        propertyMappingStrategyManager.addPropertyMappingStrategy(OverwriteMappingStrategy.INSTANCE);
-        propertyMappingStrategyManager.addPropertyMappingStrategy(OverwriteNotNullMappingStrategy.INSTANCE);
-        propertyMappingStrategyManager.addPropertyMappingStrategy(new ReferenceMappingStrategy(operator));
+        configuration.addPropertyMappingStrategy(OverwriteMappingStrategy.INSTANCE);
+        configuration.addPropertyMappingStrategy(OverwriteNotNullMappingStrategy.INSTANCE);
+        configuration.addPropertyMappingStrategy(new ReferenceMappingStrategy(operator));
 
         TypeHierarchyBeanOperationParser beanOperationParser = new TypeHierarchyBeanOperationParser();
-        AssembleAnnotationHandler assembleAnnotationHandler = new AssembleAnnotationHandler(annotationFinder, configuration, propertyMappingStrategyManager);
+        AssembleAnnotationHandler assembleAnnotationHandler = new AssembleAnnotationHandler(annotationFinder, configuration, configuration);
         beanOperationParser.addOperationAnnotationHandler(assembleAnnotationHandler);
-        AssembleEnumAnnotationHandler assembleEnumAnnotationHandler = new AssembleEnumAnnotationHandler(annotationFinder, configuration, operator, configuration, propertyMappingStrategyManager);
+        AssembleEnumAnnotationHandler assembleEnumAnnotationHandler = new AssembleEnumAnnotationHandler(annotationFinder, configuration, operator, configuration, configuration);
         beanOperationParser.addOperationAnnotationHandler(assembleEnumAnnotationHandler);
         DisassembleAnnotationHandler disassembleAnnotationHandler = new DisassembleAnnotationHandler(annotationFinder, configuration);
         beanOperationParser.addOperationAnnotationHandler(disassembleAnnotationHandler);
