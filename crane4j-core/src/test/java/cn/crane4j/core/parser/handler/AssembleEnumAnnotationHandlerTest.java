@@ -83,7 +83,7 @@ public class AssembleEnumAnnotationHandlerTest {
     @Data
     private static class Foo {
         @AssembleEnum(type = Gender.class, useContainerEnum = false, enumKey = "code", enumValue = "cnName", ref = "cnName", sort = 1)
-        @AssembleEnum(type = Gender.class, ref = "enName", sort = 2)
+        @AssembleEnum(typeName = "cn.crane4j.core.parser.handler.AssembleEnumAnnotationHandlerTest$Gender", ref = "enName", sort = 2)
         private final Integer id;
         private String cnName;
         private String enName;

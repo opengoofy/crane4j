@@ -25,7 +25,16 @@ public @interface AssembleEnum {
      *
      * @return enum class
      */
-    Class<? extends Enum<?>> type();
+    Class<?> type() default Object.class;
+
+    /**
+     * Full class name of enum class,
+     * only valid when {@link #type()} is {@link Void} or {@link Object}.
+     *
+     * @return full class name
+     * @since 2.2.0
+     */
+    String typeName() default "";
 
     /**
      * Enum key field name.
