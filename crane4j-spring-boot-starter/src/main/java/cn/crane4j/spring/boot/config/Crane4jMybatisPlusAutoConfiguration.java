@@ -153,7 +153,7 @@ public class Crane4jMybatisPlusAutoConfiguration {
     public static class InitializationLogger implements ApplicationRunner {
         @Override
         public void run(ApplicationArguments args) {
-            log.info("Initialized crane4j mybatis-plus extension components......");
+            log.info("crane4j mybatis-plus extension initialization completed!");
         }
     }
 }

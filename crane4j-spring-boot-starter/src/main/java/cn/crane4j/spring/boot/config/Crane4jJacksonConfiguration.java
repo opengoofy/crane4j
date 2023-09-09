@@ -17,7 +17,6 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,7 +29,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Slf4j
 @Configuration
-@AutoConfigureAfter({Crane4jAutoConfiguration.class, JacksonAutoConfiguration.class})
+@AutoConfigureAfter({Crane4jAutoConfiguration.class})
 @ConditionalOnClass({ObjectMapper.class, JsonNodeAssistant.class})
 public class Crane4jJacksonConfiguration {
 
@@ -73,8 +72,10 @@ public class Crane4jJacksonConfiguration {
          */
         @Override
         public void run(ApplicationArguments args) {
+            log.info("crane4j jackson extension initializing......");
             registerModule();
             wrapPropertyOperatorIfNecessary();
+            log.info("crane4j jackson extension initialization completed!");
         }
 
         private void wrapPropertyOperatorIfNecessary() {
@@ -98,7 +99,7 @@ public class Crane4jJacksonConfiguration {
                 ObjectMapper objectMapper = applicationContext.getBean(ObjectMapper.class);
                 if (!objectMapper.getRegisteredModuleIds().contains(JsonNodeAutoOperateModule.MODULE_NAME)) {
                     objectMapper.registerModule(jsonNodeAutoOperateModule);
-                    log.info("register module [{}] from ObjectMapper", objectMapper);
+                    log.info("register module [{}] from ObjectMapper", JsonNodeAutoOperateModule.MODULE_NAME);
                 }
             } catch(Exception e) {
                 log.warn("unable to automatically register module [{}] because ObjectMapper could not be found,"
