@@ -6,7 +6,11 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * {@link CharSequence} or {@link String} utils.
@@ -15,6 +19,40 @@ import java.util.Objects;
  */
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class StringUtils {
+
+    /**
+     * Join the {@code array} with {@code separator}.
+     *
+     * @param mapper mapper
+     * @param separator separator
+     * @param array array
+     * @return joined string
+     */
+    @SafeVarargs
+    public static <T> String join(Function<T, CharSequence> mapper, String separator, T... array) {
+        if (ArrayUtils.isEmpty(array)) {
+            return "";
+        }
+        return join(Arrays.asList(array), mapper, separator);
+    }
+
+    /**
+     * Join the {@code coll} with {@code separator}.
+     *
+     * @param coll collection
+     * @param mapper mapper
+     * @param separator separator
+     * @return joined string
+     */
+    public static <T> String join(
+        Collection<T> coll, Function<T, CharSequence> mapper, String separator) {
+        if (CollectionUtils.isEmpty(coll)) {
+            return "";
+        }
+        return coll.stream()
+            .map(mapper)
+            .collect(Collectors.joining(separator));
+    }
 
     /**
      * <p>Whether the {@code searchStr} is in the {@code str}.<br />

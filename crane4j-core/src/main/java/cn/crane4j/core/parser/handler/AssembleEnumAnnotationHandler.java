@@ -69,16 +69,6 @@ public class AssembleEnumAnnotationHandler extends AbstractAssembleAnnotationHan
     }
 
     /**
-     * Get namespace from annotation.
-     *
-     * @param annotation annotation
-     * @return namespace
-     */
-    protected String getNamespace(AssembleEnum annotation) {
-        return StringUtils.md5DigestAsHex(annotation.toString());
-    }
-
-    /**
      * Get container from given {@code annotation}.
      *
      * @param annotation annotation
@@ -87,17 +77,21 @@ public class AssembleEnumAnnotationHandler extends AbstractAssembleAnnotationHan
     @Override
     protected String getContainerNamespace(AssembleEnum annotation) {
         // if container exists, return namespace
-        String namespace = getNamespace(annotation);
+        String namespace = determineNamespace(annotation);
         if (internalContainerProvider.containsContainer(namespace)) {
             return namespace;
         }
+        Container<Object> container = doGetContainer(annotation, namespace);
+        internalContainerProvider.registerContainer(container);
+        return ContainerManager.canonicalNamespace(container.getNamespace(), INTERNAL_ENUM_CONTAINER_PROVIDER);
+    }
 
-        // container should be created
+    private Container<Object> doGetContainer(AssembleEnum annotation, String namespace) {
         Class<? extends Enum<?>> enumType = annotation.type();
         EnumContainerBuilder<Object, ? extends Enum<?>> enumContainerBuilder = EnumContainerBuilder.of(enumType)
+            .namespace(namespace)
             .annotationFinder(annotationFinder)
             .propertyOperator(propertyOperator);
-
         // not using @ContainerEnum config?
         if (!annotation.useContainerEnum()) {
             if (StringUtils.isNotEmpty(annotation.enumKey())) {
@@ -106,15 +100,20 @@ public class AssembleEnumAnnotationHandler extends AbstractAssembleAnnotationHan
             if (StringUtils.isNotEmpty(annotation.enumValue())) {
                 enumContainerBuilder.value(annotation.enumValue());
             }
-            enumContainerBuilder.namespace(namespace);
         }
+        return enumContainerBuilder.build();
+    }
 
-        // register container if necessary
-        Container<Object> container = enumContainerBuilder.build();
-        if (!internalContainerProvider.containsContainer(container.getNamespace())) {
-            internalContainerProvider.registerContainer(container);
-        }
-        return ContainerManager.canonicalNamespace(container.getNamespace(), INTERNAL_ENUM_CONTAINER_PROVIDER);
+    /**
+     * Get namespace from annotation.
+     *
+     * @param annotation annotation
+     * @return namespace
+     */
+    protected String determineNamespace(AssembleEnum annotation) {
+        return StringUtils.md5DigestAsHex(StringUtils.join(
+            String::valueOf, "#", annotation.enumKey(), annotation.enumValue(), annotation.type()
+        ));
     }
 
     /**

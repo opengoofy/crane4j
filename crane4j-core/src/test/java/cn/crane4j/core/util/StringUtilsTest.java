@@ -3,12 +3,32 @@ package cn.crane4j.core.util;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 /**
  * test for {@link StringUtils}
  *
  * @author huangchengxing
  */
 public class StringUtilsTest {
+
+    @Test
+    public void joinForCollection() {
+        // is special separator
+        Assert.assertEquals("1, 2, 3", StringUtils.join(Arrays.asList(1, 2, 3), String::valueOf, ", "));
+        // if null or empty
+        Assert.assertEquals("", StringUtils.join(null, String::valueOf, ", "));
+        Assert.assertEquals("", StringUtils.join(Collections.emptyList(), String::valueOf, ", "));
+    }
+
+    @Test
+    public void joinForArray() {
+        // is special separator
+        Assert.assertEquals("1, 2, 3", StringUtils.join(String::valueOf, ", ", 1, 2, 3));
+        // if null or empty
+        Assert.assertEquals("", StringUtils.join(String::valueOf, ", "));
+    }
 
     @Test
     public void contains() {

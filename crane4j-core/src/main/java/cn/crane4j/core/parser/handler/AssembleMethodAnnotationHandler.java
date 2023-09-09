@@ -30,7 +30,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * <p>An {@link AbstractAssembleAnnotationHandler} implementation for {@link AssembleMethod} annotation.
@@ -93,11 +92,9 @@ public class AssembleMethodAnnotationHandler extends AbstractAssembleAnnotationH
     }
 
     private String determineNamespace(AssembleMethod annotation) {
-        return StringUtils.md5DigestAsHex(
-            Arrays.stream(new Object[]{annotation.method(), annotation.target(), annotation.targetType()})
-                .map(String::valueOf)
-                .collect(Collectors.joining("#"))
-        );
+        return StringUtils.md5DigestAsHex(StringUtils.join(
+            String::valueOf, "#", annotation.method(), annotation.target(), annotation.targetType()
+        ));
     }
 
     /**

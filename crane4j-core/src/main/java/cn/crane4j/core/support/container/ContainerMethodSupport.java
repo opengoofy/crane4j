@@ -75,8 +75,7 @@ public abstract class ContainerMethodSupport {
         List<Method> candidates = methodGroup.get(methodName);
         Asserts.isNotEmpty(
             candidates, "bound method not found: {}({})",
-            annotation.bindMethod(), Arrays.stream(annotation.bindMethodParamTypes())
-                .map(Class::toString).collect(Collectors.joining(", "))
+            annotation.bindMethod(), StringUtils.join(Class::getName, ", ", annotation.bindMethodParamTypes())
         );
         if (candidates.size() == 1) {
             return candidates.get(0);
