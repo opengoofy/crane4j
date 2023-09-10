@@ -10,6 +10,7 @@ import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.DataProvider;
+import cn.crane4j.core.support.DefaultContainerAdapterRegister;
 import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.support.SimpleAnnotationFinder;
 import cn.crane4j.core.support.SimpleCrane4jGlobalConfiguration;
@@ -49,7 +50,8 @@ public class DynamicContainerOperatorProxyMethodFactoryTest {
         beanOperations = operationParser.parse(Foo.class);
         operationExecutor = configuration.getBeanOperationExecutor(BeanOperationExecutor.class);
         proxyMethodFactory = new DynamicContainerOperatorProxyMethodFactory(
-            configuration.getConverterManager(), new SimpleParameterNameFinder(), new SimpleAnnotationFinder()
+            configuration.getConverterManager(), new SimpleParameterNameFinder(),
+            new SimpleAnnotationFinder(), DefaultContainerAdapterRegister.INSTANCE
         );
     }
 
