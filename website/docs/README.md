@@ -4,7 +4,7 @@ heroImage: ./image-20230220150040070.png
 heroText: null
 tagline: 强大又好用的数据填充框架~
 actionText: 快速上手 →
-actionLink: ./basic/0.1.用户指南.md
+actionLink: ./basic/0.1.关于项目.md
 features:
 - title: 开箱即用
   details: 结合 springboot 自动装配，一行注解即可启用框架功能，避免繁琐的基本配置
