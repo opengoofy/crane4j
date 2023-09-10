@@ -14,6 +14,7 @@ import java.lang.annotation.Target;
  * @see ContainerMethod
  * @see cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
  * @see cn.crane4j.core.parser.handler.AssembleMethodAnnotationHandler;
+ * @since 2.2.0
  */
 @Repeatable(value = AssembleMethod.List.class)
 @Documented
