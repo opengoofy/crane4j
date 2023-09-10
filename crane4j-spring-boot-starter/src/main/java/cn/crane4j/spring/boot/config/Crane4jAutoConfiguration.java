@@ -32,7 +32,9 @@ import cn.crane4j.core.parser.handler.strategy.ReferenceMappingStrategy;
 import cn.crane4j.core.parser.handler.strategy.SimplePropertyMappingStrategyManager;
 import cn.crane4j.core.parser.operation.AssembleOperation;
 import cn.crane4j.core.support.AnnotationFinder;
+import cn.crane4j.core.support.ContainerAdapterRegister;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
+import cn.crane4j.core.support.DefaultContainerAdapterRegister;
 import cn.crane4j.core.support.OperateTemplate;
 import cn.crane4j.core.support.ParameterNameFinder;
 import cn.crane4j.core.support.SimpleTypeResolver;
@@ -244,6 +246,11 @@ public class Crane4jAutoConfiguration {
         return new SpringParameterNameFinder(new DefaultParameterNameDiscoverer());
     }
 
+    @Bean
+    public DefaultContainerAdapterRegister defaultContainerAdapterRegister() {
+        return DefaultContainerAdapterRegister.INSTANCE;
+    }
+
     @ConditionalOnMissingBean
     @Bean
     public AutoOperateAnnotatedElementResolver autoOperateMethodAnnotatedElementResolver(
@@ -445,8 +452,11 @@ public class Crane4jAutoConfiguration {
     @Order
     @Bean
     public DynamicContainerOperatorProxyMethodFactory dynamicContainerOperatorProxyMethodFactory(
-        ConverterManager converterManager, ParameterNameFinder parameterNameFinder, AnnotationFinder annotationFinder) {
-        return new DynamicContainerOperatorProxyMethodFactory(converterManager, parameterNameFinder, annotationFinder);
+        ConverterManager converterManager, ParameterNameFinder parameterNameFinder,
+        AnnotationFinder annotationFinder, ContainerAdapterRegister containerAdapterRegister) {
+        return new DynamicContainerOperatorProxyMethodFactory(
+            converterManager, parameterNameFinder, annotationFinder, containerAdapterRegister
+        );
     }
 
     // endregion

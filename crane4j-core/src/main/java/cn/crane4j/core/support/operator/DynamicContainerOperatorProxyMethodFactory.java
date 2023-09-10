@@ -2,12 +2,10 @@ package cn.crane4j.core.support.operator;
 
 import cn.crane4j.annotation.ContainerParam;
 import cn.crane4j.core.container.Container;
-import cn.crane4j.core.container.ImmutableMapContainer;
-import cn.crane4j.core.container.LambdaContainer;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.support.AnnotationFinder;
-import cn.crane4j.core.support.DataProvider;
+import cn.crane4j.core.support.ContainerAdapterRegister;
 import cn.crane4j.core.support.Grouped;
 import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.support.ParameterNameFinder;
@@ -25,7 +23,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -50,22 +47,24 @@ public class DynamicContainerOperatorProxyMethodFactory implements OperatorProxy
     private final ConverterManager converterManager;
     private final ParameterNameFinder parameterNameFinder;
     private final AnnotationFinder annotationFinder;
-    private final Map<Class<?>, ContainerParameterAdaptorProvider> adaptorProviders;
+    private final ContainerAdapterRegister containerAdapterRegister;
 
     /**
      * Create a {@link DynamicContainerOperatorProxyMethodFactory} instance.
      *
+     *
      * @param converterManager    converter manager
      * @param parameterNameFinder parameter name finder
      * @param annotationFinder    annotation finder
+     * @param containerAdapterRegister container adapter register
      */
     public DynamicContainerOperatorProxyMethodFactory(
-        ConverterManager converterManager, ParameterNameFinder parameterNameFinder, AnnotationFinder annotationFinder) {
+        ConverterManager converterManager, ParameterNameFinder parameterNameFinder,
+        AnnotationFinder annotationFinder, ContainerAdapterRegister containerAdapterRegister) {
         this.converterManager = converterManager;
         this.parameterNameFinder = parameterNameFinder;
         this.annotationFinder = annotationFinder;
-        this.adaptorProviders = new LinkedHashMap<>();
-        initAdaptorProvider();
+        this.containerAdapterRegister = containerAdapterRegister;
     }
 
     /**
@@ -77,53 +76,6 @@ public class DynamicContainerOperatorProxyMethodFactory implements OperatorProxy
     @Override
     public int getSort() {
         return ORDER;
-    }
-
-    @SuppressWarnings("unchecked")
-    private void initAdaptorProvider() {
-        // adapt for map
-        adaptorProviders.put(Map.class, (n, p) ->
-            arg -> ImmutableMapContainer.forMap(n, (Map<Object, ?>) arg)
-        );
-        // adapt for container
-        adaptorProviders.put(Container.class, (n, p) ->
-            arg -> (Container<Object>) arg
-        );
-        // adapt for data provider
-        adaptorProviders.put(DataProvider.class, (n, p) ->
-            arg -> LambdaContainer.forLambda(n, (DataProvider<Object, Object>) arg)
-        );
-    }
-
-    @Nullable
-    private Function<Object, Container<Object>> findAdaptor(
-        String namespace, String parameterName, Parameter parameter, Method method) {
-        Class<?> parameterType = parameter.getType();
-        ContainerParameterAdaptorProvider provider = adaptorProviders.get(parameterType);
-        if (Objects.nonNull(provider)) {
-            return provider.getAdaptor(namespace, parameter);
-        }
-        Optional<ContainerParameterAdaptorProvider> optional = adaptorProviders.entrySet().stream()
-            .filter(e -> e.getKey().isAssignableFrom(parameterType))
-            .findFirst()
-            .map(Map.Entry::getValue);
-        if (!optional.isPresent()) {
-            log.warn("cannot find adaptor provider for type [{}] of param [{}] in method [{}]", parameterType, parameterName, method);
-            return null;
-        }
-        return optional.get().getAdaptor(namespace, parameter);
-    }
-
-    /**
-     * Add adaptor provider for specific type.
-     *
-     * @param type            type
-     * @param adaptorProvider adaptor provider
-     */
-    public void addAdaptorProvider(
-        Class<?> type, ContainerParameterAdaptorProvider adaptorProvider) {
-        Objects.requireNonNull(adaptorProvider, "adaptorProvider name must not null");
-        adaptorProviders.put(type, adaptorProvider);
     }
 
     /**
@@ -143,7 +95,7 @@ public class DynamicContainerOperatorProxyMethodFactory implements OperatorProxy
             return null;
         }
         // has other argument but no adapters were found
-        Function<Object, Container<Object>>[] adaptors = resolveContainerParameterAdaptors(method, parameterNameMap);
+        ContainerParameterAdapter[] adaptors = resolveContainerParameterAdaptors(method, parameterNameMap);
         if (Arrays.stream(adaptors).allMatch(Objects::isNull)) {
             return null;
         }
@@ -152,26 +104,37 @@ public class DynamicContainerOperatorProxyMethodFactory implements OperatorProxy
     }
 
     @NonNull
-    private Function<Object, Container<Object>>[] resolveContainerParameterAdaptors(
+    private ContainerParameterAdapter[] resolveContainerParameterAdaptors(
         Method method, Map<String, Parameter> parameterNameMap) {
         // resolve parameter adaptors
-        @SuppressWarnings("unchecked")
-        Function<Object, Container<Object>>[] adaptors = new Function[parameterNameMap.size()];
+        ContainerParameterAdapter[] adaptors = new ContainerParameterAdapter[parameterNameMap.size()];
         AtomicInteger index = new AtomicInteger(0);
-        parameterNameMap.forEach((name, param) -> {
+        parameterNameMap.forEach((n, p) -> {
             int curr = index.getAndIncrement();
             // first argument must is target which need operate
             if (curr == 0) {
                 return;
             }
             // adapt as container
-            String namespace = Optional.ofNullable(annotationFinder.getAnnotation(param, ContainerParam.class))
+            String namespace = Optional.ofNullable(annotationFinder.getAnnotation(p, ContainerParam.class))
                 .map(ContainerParam::value)
-                .orElse(name);
+                .orElse(n);
             // this parameter may not need to be adapted to a container when provider return null
-            adaptors[curr] = findAdaptor(namespace, name, param, method);
+            adaptors[curr] = findAdaptor(namespace, n, p, method);
         });
         return adaptors;
+    }
+
+    @Nullable
+    private ContainerParameterAdapter findAdaptor(
+        String namespace, String parameterName, Parameter parameter, Method method) {
+        Class<?> parameterType = parameter.getType();
+        ContainerAdapterRegister.Adapter adapter = containerAdapterRegister.getAdapter(parameterType);
+        if (Objects.isNull(adapter)) {
+            log.warn("cannot find adaptor provider for type [{}] of param [{}] in method [{}]", parameterType, parameterName, method);
+            return null;
+        }
+        return new ContainerParameterAdapter(namespace, adapter);
     }
 
     /**
@@ -184,7 +147,7 @@ public class DynamicContainerOperatorProxyMethodFactory implements OperatorProxy
 
         private final BeanOperations operations;
         private final BeanOperationExecutor beanOperationExecutor;
-        private final Function<Object, Container<Object>>[] adaptors;
+        private final ContainerParameterAdapter[] adaptors;
 
         /**
          * Invoke method.
@@ -208,7 +171,8 @@ public class DynamicContainerOperatorProxyMethodFactory implements OperatorProxy
             // has any temporary containers
             Map<String, Container<Object>> temporaryContainers = IntStream.rangeClosed(0, args.length - 1)
                 .filter(i -> Objects.nonNull(args[i]) && Objects.nonNull(adaptors[i]))
-                .mapToObj(i -> adaptors[i].apply(args[i]))
+                .mapToObj(i -> adaptors[i].wrap(args[i]))
+                .filter(Objects::nonNull)
                 .collect(Collectors.toMap(Container::getNamespace, Function.identity()));
             beanOperationExecutor.execute(
                 targets, operations, new BeanOperationExecutor.Options.DynamicContainerOption(Grouped.alwaysMatch(), temporaryContainers)
@@ -218,21 +182,17 @@ public class DynamicContainerOperatorProxyMethodFactory implements OperatorProxy
     }
 
     /**
-     * Provider of container parameter adaptor.
+     * Adapter for adapt invoke argument to container.
      *
      * @author huangchengxing
+     * @since 2.2.0
      */
-    @FunctionalInterface
-    public interface ContainerParameterAdaptorProvider {
-
-        /**
-         * Get container parameter adaptor by given namespace and parameter.
-         *
-         * @param namespace namespace of container
-         * @param parameter method parameter
-         * @return functional interface for adapting argument to container instance
-         */
-        @Nullable
-        Function<Object, Container<Object>> getAdaptor(String namespace, Parameter parameter);
+    @RequiredArgsConstructor
+    protected static class ContainerParameterAdapter {
+        private final String namespace;
+        private final ContainerAdapterRegister.Adapter adapter;
+        public Container<Object> wrap(Object target) {
+            return adapter.wrapIfPossible(namespace, target);
+        }
     }
 }
