@@ -33,7 +33,7 @@ Container<?> container = ConstantContainerBuilder.of(FooConstant.class)
 
 ## 2.可配置项
 
-与枚举容器相同，我们还可以在常量类上添加 `@ContainerConstant` 注解来进一步定义容器的具体信息：
+与常量容器相同，我们还可以在常量类上添加 `@ContainerConstant` 注解来进一步定义容器的具体信息：
 
 ```java
 @ContainerConstant(
@@ -55,7 +55,7 @@ public static class FooConstant2 {
 
 | API                          | 作用                                                         | 类型       | 默认值                      |
 | ---------------------------- | ------------------------------------------------------------ | ---------- | --------------------------- |
-| `namespace`                  | 定义枚举容器的命名空间                                       | 任意字符串 | 常量类的 `Class#SimpleName` |
+| `namespace`                  | 定义常量容器的命名空间                                       | 任意字符串 | 常量类的 `Class#SimpleName` |
 | `onlyExplicitlyIncluded`     | 是否只引用带有 `@Include` 注解的属性                         | 布尔值     | false                       |
 | `onlyPublic`                 | 是否只引用被 `public` 修饰的属性                             | 布尔值     | true                        |
 | `reverse`                    | 是否需要翻转键值（属性名和属性值）                           | 布尔值     | false                       |
@@ -109,3 +109,42 @@ public class Demo3Application implements ApplicationRunner {
 }
 ~~~
 
+## 4.选项式配置
+
+在 2.6 及以上版本，你可以使用 `@AssembleConstant` 注解进行选项式风格的配置。
+
+比如：
+
+```java
+@RequiredArgsConstructor
+@Data
+private static class Foo {
+    @AssembleConstant(
+        type = Gender.class,
+        constant = @ConstantContainer // 如果没有自定义配置可以不配置这个属性
+    )
+    private String code;
+    private String value;
+}
+
+@Getter
+@RequiredArgsConstructor
+private enum Gender {
+    public static final String FEMALE = "女";
+    public static final String MALE = "男";
+}
+```
+
+你可以通过 `constant` 设置一个 `@ContainerConstant`，其配置效果与在常量类似添加 `@ContainerConstant` 完全一样。
+
+此外，如果你的常量类已经有 `@ContainerConstant` 注解了，那么你可以通过 `followTypeConfig` 选项决定是否要优先遵循常量类上的注解配置。
+
+`@AssembleEnum` 注解共提供下述可选项：
+
+| API                | 作用                                         | 类型                                                         | 默认值                       |
+| ------------------ | -------------------------------------------- | ------------------------------------------------------------ | ---------------------------- |
+| `type`             | 指定常量类型                                 | 常量类                                                       | 无，与 `typeName` 二选一必填 |
+| `typeName`         | 指定常量类型                                 | 常量类的全限定名<br />一般在常量类与实体类不在同一包中时使用 | 无，与 `type` 二选一必填     |
+| `constant`         | 常量容器配置                                 | `@ContainerConstant` 注解                                    | 空                           |
+| `followTypeConfig` | 是否遵循常量类上的 `@ContainerConstant` 注解 | 为 true 时，若常量类上存在 `@ContainerConstant` 注解，则优先使该注解的配置 | true                         |
+| `ref`              | 指定填充字段                                 | 等效于 `props = @Mapping(ref = "xxx")`                       | 无                           |

@@ -22,6 +22,7 @@ import cn.crane4j.core.executor.handler.OneToOneAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.ReflectiveDisassembleOperationHandler;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.ConditionalTypeHierarchyBeanOperationParser;
+import cn.crane4j.core.parser.handler.AssembleConstantAnnotationHandler;
 import cn.crane4j.core.parser.handler.AssembleEnumAnnotationHandler;
 import cn.crane4j.core.parser.handler.DisassembleAnnotationHandler;
 import cn.crane4j.core.parser.handler.OperationAnnotationHandler;
@@ -234,6 +235,12 @@ public class DefaultCrane4jSpringConfiguration implements SmartInitializingSingl
         PropertyOperator propertyOperator,
         PropertyMappingStrategyManager propertyMappingStrategyManager) {
         return new AssembleEnumAnnotationHandler(annotationFinder, globalConfiguration, propertyOperator, propertyMappingStrategyManager);
+    }
+
+    @Bean
+    public AssembleConstantAnnotationHandler assembleConstantAnnotationHandler(
+        AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration, PropertyMappingStrategyManager propertyMappingStrategyManager) {
+        return new AssembleConstantAnnotationHandler(annotationFinder, configuration, propertyMappingStrategyManager);
     }
 
     @Bean

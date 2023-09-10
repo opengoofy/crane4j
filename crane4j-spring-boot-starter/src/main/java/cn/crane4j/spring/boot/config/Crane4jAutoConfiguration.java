@@ -28,6 +28,7 @@ import cn.crane4j.core.executor.handler.ReflectiveDisassembleOperationHandler;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.ConditionalTypeHierarchyBeanOperationParser;
 import cn.crane4j.core.parser.handler.AssembleAnnotationHandler;
+import cn.crane4j.core.parser.handler.AssembleConstantAnnotationHandler;
 import cn.crane4j.core.parser.handler.AssembleEnumAnnotationHandler;
 import cn.crane4j.core.parser.handler.AssembleMethodAnnotationHandler;
 import cn.crane4j.core.parser.handler.DisassembleAnnotationHandler;
@@ -379,6 +380,13 @@ public class Crane4jAutoConfiguration {
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration globalConfiguration,
         PropertyOperator propertyOperator, PropertyMappingStrategyManager propertyMappingStrategyManager) {
         return new AssembleEnumAnnotationHandler(annotationFinder, globalConfiguration, propertyOperator, propertyMappingStrategyManager);
+    }
+
+    @ConditionalOnMissingBean
+    @Bean
+    public AssembleConstantAnnotationHandler assembleConstantAnnotationHandler(
+        AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration, PropertyMappingStrategyManager propertyMappingStrategyManager) {
+        return new AssembleConstantAnnotationHandler(annotationFinder, configuration, propertyMappingStrategyManager);
     }
 
     @ConditionalOnMissingBean
