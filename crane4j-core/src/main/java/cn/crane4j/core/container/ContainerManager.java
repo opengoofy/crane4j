@@ -2,6 +2,7 @@ package cn.crane4j.core.container;
 
 import cn.crane4j.core.container.lifecycle.ContainerLifecycleProcessor;
 import cn.crane4j.core.util.StringUtils;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Collection;
@@ -15,7 +16,7 @@ import java.util.function.Supplier;
  * @see ContainerDefinition
  * @since 1.3.0
  */
-public interface ContainerManager extends ContainerProvider {
+public interface ContainerManager extends ConfigurableContainerProvider {
 
     /**
      * <p>Prefix of namespace which create by container provider.
@@ -117,8 +118,9 @@ public interface ContainerManager extends ContainerProvider {
      * @return old container instance or container definition
      * @see ContainerLifecycleProcessor#whenRegistered
      */
+    @Override
     @SuppressWarnings("unchecked")
-    default Object registerContainer(Container<?> container) {
+    default Object registerContainer(@NonNull Container<?> container) {
         return registerContainer(container.getNamespace(), () -> (Container<Object>) container);
     }
 
