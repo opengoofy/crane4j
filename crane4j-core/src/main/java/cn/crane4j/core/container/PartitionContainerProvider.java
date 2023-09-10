@@ -17,7 +17,7 @@ import java.util.function.Function;
  * @author huangchengxing
  * @since 2.0.0
  */
-public class PartitionContainerProvider implements ContainerProvider {
+public class PartitionContainerProvider implements ConfigurableContainerProvider {
 
     /**
      * Container map.
@@ -48,9 +48,11 @@ public class PartitionContainerProvider implements ContainerProvider {
      *
      * @param container container
      */
-    public void registerContainer(@NonNull Container<Object> container) {
+    @SuppressWarnings("unchecked")
+    @Override
+    public Object registerContainer(@NonNull Container<?> container) {
         Objects.requireNonNull(container, "Container must not null");
-        containerMap.put(container.getNamespace(), container);
+        return containerMap.put(container.getNamespace(), (Container<Object>)container);
     }
 
     /**
