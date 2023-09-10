@@ -212,7 +212,7 @@ private String customerType;
 
 |                  | 选项式                                                       | 组合式                         |
 | ---------------- | ------------------------------------------------------------ | ------------------------------ |
-| 支持的数据源类型 | 枚举 (`@AssembleEnum`)<br />方法（`@AssembleMethod`）<br />ORM 框架 (目前仅支持 `MybatisPlus`，对应注解为`@AssembleMp`) | 所有类型的数据源               |
+| 支持的数据源类型 | 枚举 (`@AssembleEnum`)<br />常量 (`@AssembleConstant`)<br />方法（`@AssembleMethod`）<br />ORM 框架 (目前仅支持 `MybatisPlus`，对应注解为`@AssembleMp`) | 所有类型的数据源               |
 | 优点             | 配置方便，且配置集中                                         | 灵活度高，便于复用相同的数据源 |
 | 缺点             | 即使数据源相同也需要重复配置                                 | 配置较为零散                   |
 
