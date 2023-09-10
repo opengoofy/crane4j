@@ -42,7 +42,7 @@ public class AssembleEnumAnnotationHandlerTest {
         PropertyMappingStrategyManager manager = new SimplePropertyMappingStrategyManager();
         manager.addPropertyMappingStrategy(OverwriteMappingStrategy.INSTANCE);
         this.annotationHandler = new AssembleEnumAnnotationHandler(
-            new SimpleAnnotationFinder(), configuration, configuration.getPropertyOperator(), configuration, manager
+            new SimpleAnnotationFinder(), configuration, configuration.getPropertyOperator(), manager
         );
     }
 

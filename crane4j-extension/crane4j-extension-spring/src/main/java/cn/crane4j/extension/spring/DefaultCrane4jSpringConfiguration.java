@@ -204,9 +204,9 @@ public class DefaultCrane4jSpringConfiguration implements SmartInitializingSingl
     @Bean
     public AssembleEnumAnnotationHandler assembleEnumAnnotationResolver(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration globalConfiguration,
-        PropertyOperator propertyOperator, ContainerManager containerManager,
+        PropertyOperator propertyOperator,
         PropertyMappingStrategyManager propertyMappingStrategyManager) {
-        return new AssembleEnumAnnotationHandler(annotationFinder, globalConfiguration, propertyOperator, containerManager, propertyMappingStrategyManager);
+        return new AssembleEnumAnnotationHandler(annotationFinder, globalConfiguration, propertyOperator, propertyMappingStrategyManager);
     }
 
     @Bean

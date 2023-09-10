@@ -71,6 +71,7 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
      * @param annotationFinder annotation finder
      * @param operationComparator operation comparator
      * @param globalConfiguration global configuration
+     * @param propertyMappingStrategyManager property mapping strategy manager
      */
     protected AbstractAssembleAnnotationHandler(
         Class<T> annotationType, AnnotationFinder annotationFinder,
