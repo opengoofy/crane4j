@@ -3,8 +3,6 @@ package cn.crane4j.core.parser.handler;
 import cn.crane4j.annotation.AssembleMethod;
 import cn.crane4j.annotation.ContainerMethod;
 import cn.crane4j.core.container.Container;
-import cn.crane4j.core.container.ContainerManager;
-import cn.crane4j.core.container.PartitionContainerProvider;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.handler.strategy.PropertyMappingStrategyManager;
 import cn.crane4j.core.support.AnnotationFinder;
@@ -42,13 +40,12 @@ import java.util.Map;
  * @author huangchengxing
  * @see AssembleMethod
  * @see ContainerMethodSupport
+ * @since 2.2.0
  */
 @Slf4j
-public class AssembleMethodAnnotationHandler extends AbstractAssembleAnnotationHandler<AssembleMethod> {
+public class AssembleMethodAnnotationHandler
+    extends InternalProviderAssembleAnnotationHandler<AssembleMethod> {
 
-    private static final String INTERNAL_METHOD_CONTAINER_PROVIDER = "InternalMethodContainerProvider";
-
-    protected final PartitionContainerProvider internalContainerProvider = new PartitionContainerProvider();
     protected final ContainerMethodResolver containerMethodResolver;
 
     /**
@@ -65,47 +62,33 @@ public class AssembleMethodAnnotationHandler extends AbstractAssembleAnnotationH
         PropertyMappingStrategyManager propertyMappingStrategyManager) {
         super(AssembleMethod.class, annotationFinder, Crane4jGlobalSorter.comparator(), globalConfiguration, propertyMappingStrategyManager);
         this.containerMethodResolver = new ContainerMethodResolver(methodContainerFactories);
-        // init provider
-        this.internalContainerProvider.setDefaultContainerFactory(namespace -> null);
-        globalConfiguration.registerContainerProvider(INTERNAL_METHOD_CONTAINER_PROVIDER, this.internalContainerProvider);
     }
 
     /**
-     * Get container from given {@code annotation}.
+     * Create container by given annotation and namespace.
      *
      * @param annotation annotation
-     * @return namespace of {@link Container}
-     * @implNote if the container needs to be obtained through a specific provider,
-     * the name of the provider and the namespace of the container need to be concatenated through {@link ContainerManager#canonicalNamespace}
-     * @see ContainerManager#canonicalNamespace
+     * @param namespace  namespace
+     * @return {@link Container} instant
      */
     @Override
-    protected String getContainerNamespace(AssembleMethod annotation) {
-        String namespace = determineNamespace(annotation);
-        if (!internalContainerProvider.containsContainer(namespace)) {
-            Container<Object> container = getMethodContainer(annotation);
-            Asserts.isNotNull(container, "cannot resolve container for annotation {}", annotation);
-            container = new AssembleMethodContainer<>(namespace, container);
-            internalContainerProvider.registerContainer(container);
-        }
-        return ContainerManager.canonicalNamespace(namespace, INTERNAL_METHOD_CONTAINER_PROVIDER);
+    protected @NonNull Container<Object> createContainer(AssembleMethod annotation, String namespace) {
+        Container<Object> container = containerMethodResolver.resolve(annotation);
+        Asserts.isNotNull(container, "cannot resolve container for annotation {}", annotation);
+        return new AssembleMethodContainer<>(namespace, container);
     }
 
-    private String determineNamespace(AssembleMethod annotation) {
+    /**
+     * Determine namespace by given annotation.
+     *
+     * @param annotation annotation
+     * @return namespace
+     */
+    @Override
+    protected String determineNamespace(AssembleMethod annotation) {
         return StringUtils.md5DigestAsHex(StringUtils.join(
             String::valueOf, "#", annotation.method(), annotation.target(), annotation.targetType()
         ));
-    }
-
-    /**
-     * Create {@link Container} from given {@code annotation} and {@code targetType}.
-     *
-     * @param annotation annotation
-     * @return {@link Container} instance
-     */
-    @Nullable
-    protected Container<Object> getMethodContainer(AssembleMethod annotation) {
-        return containerMethodResolver.resolve(annotation);
     }
 
     /**

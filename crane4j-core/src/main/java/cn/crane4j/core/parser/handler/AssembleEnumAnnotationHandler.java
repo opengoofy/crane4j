@@ -2,9 +2,7 @@ package cn.crane4j.core.parser.handler;
 
 import cn.crane4j.annotation.AssembleEnum;
 import cn.crane4j.core.container.Container;
-import cn.crane4j.core.container.ContainerManager;
 import cn.crane4j.core.container.EnumContainerBuilder;
-import cn.crane4j.core.container.PartitionContainerProvider;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.PropertyMapping;
 import cn.crane4j.core.parser.SimplePropertyMapping;
@@ -18,6 +16,7 @@ import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.ClassUtils;
 import cn.crane4j.core.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.lang.reflect.AnnotatedElement;
 import java.util.Comparator;
@@ -31,10 +30,9 @@ import java.util.Set;
  * @since 1.3.0
  */
 @Slf4j
-public class AssembleEnumAnnotationHandler extends AbstractAssembleAnnotationHandler<AssembleEnum> {
+public class AssembleEnumAnnotationHandler
+    extends InternalProviderAssembleAnnotationHandler<AssembleEnum> {
 
-    private static final String INTERNAL_ENUM_CONTAINER_PROVIDER = "InternalEnumContainerProvider";
-    private final PartitionContainerProvider internalContainerProvider = new PartitionContainerProvider();
     private final PropertyOperator propertyOperator;
 
     /**
@@ -47,9 +45,9 @@ public class AssembleEnumAnnotationHandler extends AbstractAssembleAnnotationHan
      */
     public AssembleEnumAnnotationHandler(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration globalConfiguration,
-        PropertyOperator propertyOperator, ContainerManager containerManager,
+        PropertyOperator propertyOperator,
         PropertyMappingStrategyManager propertyMappingStrategyManager) {
-        this(annotationFinder, Crane4jGlobalSorter.comparator(), globalConfiguration, propertyOperator, containerManager, propertyMappingStrategyManager);
+        this(annotationFinder, Crane4jGlobalSorter.comparator(), globalConfiguration, propertyOperator, propertyMappingStrategyManager);
     }
 
     /**
@@ -64,44 +62,21 @@ public class AssembleEnumAnnotationHandler extends AbstractAssembleAnnotationHan
     public AssembleEnumAnnotationHandler(
         AnnotationFinder annotationFinder, Comparator<KeyTriggerOperation> operationComparator,
         Crane4jGlobalConfiguration globalConfiguration, PropertyOperator propertyOperator,
-        ContainerManager containerManager,
         PropertyMappingStrategyManager propertyMappingStrategyManager) {
         super(AssembleEnum.class, annotationFinder, operationComparator, globalConfiguration, propertyMappingStrategyManager);
         this.propertyOperator = propertyOperator;
-        containerManager.registerContainerProvider(INTERNAL_ENUM_CONTAINER_PROVIDER, internalContainerProvider);
     }
 
     /**
-     * Get container from given {@code annotation}.
+     * Create container by given annotation and namespace.
      *
      * @param annotation annotation
-     * @return namespace of {@link Container}
+     * @param namespace  namespace
+     * @return {@link Container} instant
      */
     @Override
-    protected String getContainerNamespace(AssembleEnum annotation) {
-        // if container exists, return namespace
+    protected @NonNull Container<Object> createContainer(AssembleEnum annotation, String namespace) {
         Class<? extends Enum<?>> enumType = resolveEnumType(annotation);
-        String namespace = determineNamespace(annotation, enumType);
-        if (internalContainerProvider.containsContainer(namespace)) {
-            return namespace;
-        }
-        Container<Object> container = doGetContainer(annotation, namespace, enumType);
-        internalContainerProvider.registerContainer(container);
-        return ContainerManager.canonicalNamespace(container.getNamespace(), INTERNAL_ENUM_CONTAINER_PROVIDER);
-    }
-
-    @SuppressWarnings("unchecked")
-    private Class<? extends Enum<?>> resolveEnumType(AssembleEnum annotation) {
-        Class<?> type = annotation.type();
-        if (Objects.equals(type, Object.class) || Objects.equals(type, Void.TYPE)) {
-            type = ClassUtils.forName(annotation.typeName(), type);
-            Asserts.isTrue(type.isEnum(), "type [{}] which specified in @AssembleEnum is not a enum type", type.getName());
-        }
-        return (Class<? extends Enum<?>>)type;
-    }
-
-    private Container<Object> doGetContainer(
-        AssembleEnum annotation, String namespace, Class<? extends Enum<?>> enumType) {
         EnumContainerBuilder<Object, ? extends Enum<?>> enumContainerBuilder = EnumContainerBuilder.of(enumType)
             .namespace(namespace)
             .annotationFinder(annotationFinder)
@@ -124,10 +99,22 @@ public class AssembleEnumAnnotationHandler extends AbstractAssembleAnnotationHan
      * @param annotation annotation
      * @return namespace
      */
-    protected String determineNamespace(AssembleEnum annotation, Class<? extends Enum<?>> enumType) {
+    @Override
+    protected String determineNamespace(AssembleEnum annotation) {
+        Class<? extends Enum<?>> enumType = resolveEnumType(annotation);
         return StringUtils.md5DigestAsHex(StringUtils.join(
             String::valueOf, "#", annotation.enumKey(), annotation.enumValue(), enumType
         ));
+    }
+
+    @SuppressWarnings("unchecked")
+    private Class<? extends Enum<?>> resolveEnumType(AssembleEnum annotation) {
+        Class<?> type = annotation.type();
+        if (Objects.equals(type, Object.class) || Objects.equals(type, Void.TYPE)) {
+            type = ClassUtils.forName(annotation.typeName(), type);
+            Asserts.isTrue(type.isEnum(), "type [{}] which specified in @AssembleEnum is not a enum type", type.getName());
+        }
+        return (Class<? extends Enum<?>>)type;
     }
 
     /**

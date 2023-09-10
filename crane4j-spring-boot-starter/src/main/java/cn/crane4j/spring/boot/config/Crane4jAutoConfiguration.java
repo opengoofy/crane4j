@@ -338,9 +338,8 @@ public class Crane4jAutoConfiguration {
     @Bean
     public AssembleEnumAnnotationHandler assembleEnumAnnotationHandler(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration globalConfiguration,
-        PropertyOperator propertyOperator, ContainerManager containerManager,
-        PropertyMappingStrategyManager propertyMappingStrategyManager) {
-        return new AssembleEnumAnnotationHandler(annotationFinder, globalConfiguration, propertyOperator, containerManager, propertyMappingStrategyManager);
+        PropertyOperator propertyOperator, PropertyMappingStrategyManager propertyMappingStrategyManager) {
+        return new AssembleEnumAnnotationHandler(annotationFinder, globalConfiguration, propertyOperator, propertyMappingStrategyManager);
     }
 
     @ConditionalOnMissingBean

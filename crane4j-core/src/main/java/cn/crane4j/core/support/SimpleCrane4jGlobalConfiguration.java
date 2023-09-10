@@ -113,7 +113,7 @@ public class SimpleCrane4jGlobalConfiguration extends DefaultContainerManager
         TypeHierarchyBeanOperationParser beanOperationParser = new TypeHierarchyBeanOperationParser();
         AssembleAnnotationHandler assembleAnnotationHandler = new AssembleAnnotationHandler(annotationFinder, configuration, configuration);
         beanOperationParser.addOperationAnnotationHandler(assembleAnnotationHandler);
-        AssembleEnumAnnotationHandler assembleEnumAnnotationHandler = new AssembleEnumAnnotationHandler(annotationFinder, configuration, operator, configuration, configuration);
+        AssembleEnumAnnotationHandler assembleEnumAnnotationHandler = new AssembleEnumAnnotationHandler(annotationFinder, configuration, operator, configuration);
         beanOperationParser.addOperationAnnotationHandler(assembleEnumAnnotationHandler);
         DisassembleAnnotationHandler disassembleAnnotationHandler = new DisassembleAnnotationHandler(annotationFinder, configuration);
         beanOperationParser.addOperationAnnotationHandler(disassembleAnnotationHandler);
