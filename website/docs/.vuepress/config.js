@@ -22,22 +22,25 @@ const navConfig = [
 // 侧边栏
 const sidebarConfig = [
     {
-        title: '基础',
+        title: '指南',
         collapsable: false, // 不折叠
         children: [
-            { title: "用户指南", path: "/basic/0.1.用户指南.md" },
+            { title: "关于项目", path: "/basic/0.1.关于项目.md" },
             { title: "配置文件", path: "/basic/0.2.配置文件.md" },
             { title: "常见问题", path: "/basic/0.3.常见问题.md" }
         ]
     },
     {
-        title: '1.开始',
+        title: '1.基础',
         collapsable: false, // 不折叠
         children: [
             { title: "1.1.安装", path: "/start/1.1.安装.md" },
             { title: "1.2.配置数据源", path: "/start/1.2.配置数据源.md" },
             { title: "1.3.填充对象", path: "/start/1.3.填充对象.md" },
-            { title: "1.4.填充嵌套对象", path: "/start/1.4.填充嵌套对象.md" }
+            { title: "1.4.填充嵌套对象", path: "/start/1.4.填充嵌套对象.md" },
+            { title: "1.5.基于枚举填充", path: "/start/1.5.基于枚举填充.md" },
+            { title: "1.6.基于方法填充", path: "/start/1.6.基于方法填充.md" },
+            { title: "1.7.基于代理接口填充", path: "/start/1.7.基于代理接口填充.md" }
         ]
     },
     {
