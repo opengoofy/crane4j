@@ -34,6 +34,17 @@ public class Containers {
     }
 
     /**
+     * Create an empty map by given namespace
+     *
+     * @param namespace namespace
+     * @return empty container
+     * @since 2.2.0
+     */
+    public static <K> Container<K> empty(String namespace) {
+        return forMap(namespace, Collections.emptyMap());
+    }
+
+    /**
      * <p>Create a key-value pair container based on the specified type enumeration.<br />
      * The key value is the enumeration attribute value obtained by {@code keyGetter}.
      *

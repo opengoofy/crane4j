@@ -25,6 +25,13 @@ import java.util.stream.Collectors;
  */
 public class ContainersTest {
     @Test
+    public void emptyWithNamespace() {
+        Container<Object> container = Containers.empty("test");
+        Assert.assertTrue(container.get(null).isEmpty());
+        Assert.assertEquals("test", container.getNamespace());
+    }
+
+    @Test
     public void empty() {
         Container<Object> container = Containers.empty();
         Assert.assertSame(container, Container.empty());
