@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  * The enumeration representing the annotation can be converted to an enumeration container of the specified type.
  *
  * @author huangchengxing
- * @see cn.crane4j.core.container.ConstantContainer#forEnum
+ * @see cn.crane4j.core.container.Containers#forEnum
  */
 @Documented
 @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})

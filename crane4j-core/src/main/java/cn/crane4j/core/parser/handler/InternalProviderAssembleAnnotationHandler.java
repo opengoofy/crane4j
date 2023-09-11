@@ -16,17 +16,27 @@ import java.lang.annotation.Annotation;
 import java.util.Comparator;
 
 /**
- * <p>An implementation of {@link AbstractAssembleAnnotationHandler}.
- * 
- * <p>When get container namespace on processing assemble operation,
- * this handler will create a {@link Container} instant and register to
- * internal container provider and return namespace with internal provider name.
+ * <p>An implementation of {@link AbstractAssembleAnnotationHandler} that
+ * creates corresponding containers while processing operation annotations.
+ *
+ * <p>The annotation handler maintains a {@link ContainerProvider} instance internally,
+ * and when the container's namespace is resolved from the operation annotation,
+ * it will try to create a container instance for it
+ * according to the rules and store it in the internal provider.
+ *
+ * <p>The internal provider registers with
+ * the global container manager when the handler instance is created.
+ * the provider is usually accessible by the name {@code {simple class name of handler}.InternalProvider},
+ * but it is <strong>not recommended to operate on it outside the handler</strong>.
  *
  * @author huangchengxing
+ * @see ConfigurableContainerProvider
  * @since 2.2.0
  */
 public abstract class InternalProviderAssembleAnnotationHandler<T extends Annotation>
     extends AbstractAssembleAnnotationHandler<T> {
+
+    public static final String INTERNAL_PROVIDER_SUFFIX = ".InternalProvider";
 
     /**
      * Internal container provider.
@@ -115,6 +125,6 @@ public abstract class InternalProviderAssembleAnnotationHandler<T extends Annota
      * @return provider name
      */
     public String getInternalContainerProviderName() {
-        return getClass().getSimpleName() + ".InternalProvider";
+        return getClass().getSimpleName() + INTERNAL_PROVIDER_SUFFIX;
     }
 }

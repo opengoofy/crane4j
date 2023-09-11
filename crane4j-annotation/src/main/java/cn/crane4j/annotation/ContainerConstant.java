@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  * Indicates that member variables in a class can be used as containers.
  *
  * @author huangchengxing
- * @see cn.crane4j.core.container.ConstantContainer#forConstantClass
+ * @see cn.crane4j.core.container.Containers#forConstantClass
  */
 @Documented
 @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
