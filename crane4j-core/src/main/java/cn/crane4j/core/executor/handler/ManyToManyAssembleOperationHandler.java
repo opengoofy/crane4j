@@ -2,6 +2,7 @@ package cn.crane4j.core.executor.handler;
 
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.executor.AssembleExecution;
+import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -44,10 +45,13 @@ public class ManyToManyAssembleOperationHandler extends OneToManyAssembleOperati
      * Create an {@link ManyToManyAssembleOperationHandler} instance.
      *
      * @param propertyOperator propertyOperator
+     * @param converterManager converter manager
      * @param keySplitter splitter used to split the value of key attribute into multiple key values.
      */
-    public ManyToManyAssembleOperationHandler(PropertyOperator propertyOperator, Function<Object, Collection<Object>> keySplitter) {
-        super(propertyOperator);
+    public ManyToManyAssembleOperationHandler(
+        PropertyOperator propertyOperator, ConverterManager converterManager,
+        @NonNull Function<Object, Collection<Object>> keySplitter) {
+        super(propertyOperator, converterManager);
         this.keySplitter = keySplitter;
     }
 
@@ -56,9 +60,10 @@ public class ManyToManyAssembleOperationHandler extends OneToManyAssembleOperati
      * and use the default {@link DefaultSplitter} split key value
      *
      * @param propertyOperator property operator
+     * @param converterManager converter manager
      */
-    public ManyToManyAssembleOperationHandler(PropertyOperator propertyOperator) {
-        this(propertyOperator, new DefaultSplitter(","));
+    public ManyToManyAssembleOperationHandler(PropertyOperator propertyOperator, ConverterManager converterManager) {
+        this(propertyOperator, converterManager, new DefaultSplitter(","));
     }
 
     /**

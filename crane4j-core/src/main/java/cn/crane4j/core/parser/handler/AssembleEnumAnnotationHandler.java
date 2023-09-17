@@ -20,7 +20,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.lang.reflect.AnnotatedElement;
 import java.util.Comparator;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -110,7 +109,7 @@ public class AssembleEnumAnnotationHandler
     @SuppressWarnings("unchecked")
     private Class<? extends Enum<?>> resolveEnumType(AssembleEnum annotation) {
         Class<?> type = annotation.type();
-        if (Objects.equals(type, Object.class) || Objects.equals(type, Void.TYPE)) {
+        if (ClassUtils.isObjectOrVoid(type)) {
             type = ClassUtils.forName(annotation.typeName(), type);
             Asserts.isTrue(type.isEnum(), "type [{}] which specified in @AssembleEnum is not a enum type", type.getName());
         }
@@ -129,7 +128,7 @@ public class AssembleEnumAnnotationHandler
     protected StandardAnnotation getStandardAnnotation(
         BeanOperations beanOperations, AnnotatedElement element, AssembleEnum annotation) {
         return new StandardAnnotationAdapter(
-            annotation, annotation.key(), annotation.sort(),
+            annotation, annotation.key(), annotation.keyType(), annotation.sort(),
             annotation.handler(), annotation.handlerType(),
             annotation.propTemplates(), annotation.props(), annotation.groups(),
             annotation.propertyMappingStrategy()

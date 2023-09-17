@@ -96,6 +96,22 @@ public @interface AssembleEnum {
     String key() default "";
 
     /**
+     * <p>The type to which the key value of target should be converted
+     * when fetching the data source from the data source.
+     *
+     * <p>For example, the data source obtained from the data source
+     * is grouped according to the key of the {@link Long} type,
+     * and the key value corresponding to the current operation is {@link Integer},
+     * then the {@code keyType} needs to be {@link Long} at this time.<br />
+     * When the actual operation is performed,
+     * the key value is automatically converted from Integer to {@link Long} type.
+     *
+     * @return key type
+     * @since 2.2.0
+     */
+    Class<?> keyType() default Object.class;
+
+    /**
      * Sort values.
      * The lower the value, the higher the priority.
      *

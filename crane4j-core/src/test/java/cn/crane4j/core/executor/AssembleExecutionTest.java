@@ -7,6 +7,7 @@ import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.SimplePropertyMapping;
 import cn.crane4j.core.parser.operation.AssembleOperation;
 import cn.crane4j.core.parser.operation.SimpleAssembleOperation;
+import cn.crane4j.core.support.converter.SimpleConverterManager;
 import cn.crane4j.core.support.reflect.ReflectivePropertyOperator;
 import org.junit.Assert;
 import org.junit.Test;
@@ -25,7 +26,7 @@ public class AssembleExecutionTest {
     @Test
     public void test() {
         List<Object> targets = Arrays.asList(new Object(), new Object());
-        AssembleOperationHandler handler = new OneToOneAssembleOperationHandler(new ReflectivePropertyOperator());
+        AssembleOperationHandler handler = new OneToOneAssembleOperationHandler(new ReflectivePropertyOperator(), SimpleConverterManager.INSTANCE);
         AssembleOperation assembleOperation = new SimpleAssembleOperation(
             "key", Collections.singleton(new SimplePropertyMapping("src", "ref")),
             "container", handler

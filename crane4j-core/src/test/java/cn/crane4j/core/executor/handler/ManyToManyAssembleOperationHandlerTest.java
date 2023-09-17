@@ -8,6 +8,7 @@ import cn.crane4j.core.executor.BaseExecutorTest;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
 import cn.crane4j.core.parser.BeanOperations;
+import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.support.converter.HutoolConverterManager;
 import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.PropertyOperator;
@@ -19,7 +20,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -27,14 +32,15 @@ import java.util.stream.Collectors;
  *
  * @author huangchengxing
  */
-public class ManyToManyReflexAssembleOperationHandlerTest extends BaseExecutorTest {
+public class ManyToManyAssembleOperationHandlerTest extends BaseExecutorTest {
 
     private BeanOperationExecutor executor;
 
     @Before
     public void init() {
-        PropertyOperator operator = new MapAccessiblePropertyOperator(new ReflectivePropertyOperator(new HutoolConverterManager()));
-        ManyToManyAssembleOperationHandler handler = new ManyToManyAssembleOperationHandler(operator);
+        ConverterManager converterManager = new HutoolConverterManager();
+        PropertyOperator operator = new MapAccessiblePropertyOperator(new ReflectivePropertyOperator(converterManager));
+        ManyToManyAssembleOperationHandler handler = new ManyToManyAssembleOperationHandler(operator, converterManager);
         configuration.getAssembleOperationHandlerMap().put(handler.getClass().getName(), handler);
 
         executor = new DisorderedBeanOperationExecutor(configuration);
@@ -50,6 +56,7 @@ public class ManyToManyReflexAssembleOperationHandlerTest extends BaseExecutorTe
         configuration.registerContainer(container);
     }
 
+    @SuppressWarnings("all")
     @Test
     public void process() {
         BeanOperations operations = parseOperations(Bean.class);

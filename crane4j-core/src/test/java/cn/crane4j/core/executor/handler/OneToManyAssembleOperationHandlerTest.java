@@ -8,6 +8,7 @@ import cn.crane4j.core.executor.BaseExecutorTest;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
 import cn.crane4j.core.parser.BeanOperations;
+import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.support.converter.HutoolConverterManager;
 import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.PropertyOperator;
@@ -18,21 +19,26 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * test for {@link OneToManyAssembleOperationHandler}.
  *
  * @author huangchengxing
  */
-public class OneToManyReflexAssembleOperationHandlerTest extends BaseExecutorTest {
+public class OneToManyAssembleOperationHandlerTest extends BaseExecutorTest {
 
     private BeanOperationExecutor executor;
 
     @Before
     public void init() {
-        PropertyOperator operator = new MapAccessiblePropertyOperator(new ReflectivePropertyOperator(new HutoolConverterManager()));
-        OneToManyAssembleOperationHandler handler = new OneToManyAssembleOperationHandler(operator);
+        ConverterManager converterManager = new HutoolConverterManager();
+        PropertyOperator operator = new MapAccessiblePropertyOperator(new ReflectivePropertyOperator(converterManager));
+        OneToManyAssembleOperationHandler handler = new OneToManyAssembleOperationHandler(operator, converterManager);
         configuration.getAssembleOperationHandlerMap().put(handler.getClass().getName(), handler);
 
         executor = new DisorderedBeanOperationExecutor(configuration);

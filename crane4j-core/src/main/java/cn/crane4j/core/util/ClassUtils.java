@@ -16,6 +16,17 @@ import java.util.Objects;
 public class ClassUtils {
 
     /**
+     * Whether the given class is {@code Object} or {@code Void}.
+     *
+     * @param clazz clazz
+     * @return boolean
+     */
+    public static boolean isObjectOrVoid(Class<?> clazz) {
+        return Objects.equals(Object.class, clazz)
+            || Objects.equals(Void.TYPE, clazz);
+    }
+
+    /**
      * <p>Whether the given class is from packages
      * which package name is started with "java." or "javax.".
      *

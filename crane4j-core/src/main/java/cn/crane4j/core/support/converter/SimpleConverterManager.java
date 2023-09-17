@@ -13,6 +13,8 @@ import java.util.function.BiFunction;
  */
 public class SimpleConverterManager implements ConverterManager {
 
+    public static final SimpleConverterManager INSTANCE = new SimpleConverterManager();
+
     /**
      * Get converter from target type to result type.
      *

@@ -14,6 +14,14 @@ import org.junit.Test;
 public class ClassUtilsTest {
 
     @Test
+    public void testIsObjectOrVoid() {
+        Assert.assertFalse(ClassUtils.isObjectOrVoid(String.class));
+        Assert.assertTrue(ClassUtils.isObjectOrVoid(Object.class));
+        Assert.assertTrue(ClassUtils.isObjectOrVoid(Void.TYPE));
+        Assert.assertTrue(ClassUtils.isObjectOrVoid(void.class));
+    }
+
+    @Test
     public void isJdkClass() {
         Assert.assertTrue(ClassUtils.isJdkClass(String.class));
         Assert.assertFalse(ClassUtils.isJdkClass(Nullable.class));

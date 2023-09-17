@@ -6,6 +6,7 @@ import cn.crane4j.core.parser.handler.strategy.OverwriteNotNullMappingStrategy;
 import cn.crane4j.core.parser.handler.strategy.PropertyMappingStrategy;
 import lombok.Getter;
 import lombok.Setter;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Set;
 
@@ -22,6 +23,9 @@ public class SimpleAssembleOperation extends SimpleKeyTriggerOperation implement
     private final AssembleOperationHandler assembleOperationHandler;
     @Setter
     private PropertyMappingStrategy propertyMappingStrategy = OverwriteNotNullMappingStrategy.INSTANCE;
+    @Setter
+    @Nullable
+    private Class<?> keyType;
 
     public SimpleAssembleOperation(
         String key, int sort,
