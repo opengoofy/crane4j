@@ -2,6 +2,7 @@ package cn.crane4j.core.executor.handler;
 
 import cn.crane4j.core.parser.PropertyMapping;
 import cn.crane4j.core.parser.handler.strategy.PropertyMappingStrategy;
+import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.util.CollectionUtils;
 
@@ -27,9 +28,10 @@ public class OneToManyAssembleOperationHandler extends OneToOneAssembleOperation
      * Create an {@link OneToManyAssembleOperationHandler} instance.
      *
      * @param propertyOperator property operator
+     * @param converterManager converter manager
      */
-    public OneToManyAssembleOperationHandler(PropertyOperator propertyOperator) {
-        super(propertyOperator);
+    public OneToManyAssembleOperationHandler(PropertyOperator propertyOperator, ConverterManager converterManager) {
+        super(propertyOperator, converterManager);
     }
 
     /**

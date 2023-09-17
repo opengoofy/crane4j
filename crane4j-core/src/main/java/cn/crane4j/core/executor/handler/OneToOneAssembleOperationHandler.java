@@ -4,8 +4,10 @@ import cn.crane4j.core.container.Container;
 import cn.crane4j.core.executor.AssembleExecution;
 import cn.crane4j.core.parser.PropertyMapping;
 import cn.crane4j.core.parser.handler.strategy.PropertyMappingStrategy;
+import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.util.StringUtils;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
@@ -34,6 +36,11 @@ public class OneToOneAssembleOperationHandler
     protected final PropertyOperator propertyOperator;
 
     /**
+     * converter manager.
+     */
+    private final ConverterManager converterManager;
+
+    /**
      * Split the {@link AssembleExecution} into pending objects and wrap it as {@link Target}.
      *
      * @param executions executions
@@ -43,16 +50,30 @@ public class OneToOneAssembleOperationHandler
     protected Collection<Target> collectToEntities(Collection<AssembleExecution> executions) {
         List<Target> targets = new ArrayList<>();
         for (AssembleExecution execution : executions) {
-            String key = execution.getOperation().getKey();
-            // TODO perhaps we need to use the key extractor as a standalone component in the AssembleOperation?
-            // if no key is specified, key value is the targets themselves.
-            UnaryOperator<Object> keyExtractor = StringUtils.isEmpty(key) ?
-                UnaryOperator.identity() : t -> propertyOperator.readProperty(t.getClass(), t, key);
+            UnaryOperator<Object> keyExtractor = getKeyExtractor(execution);
             execution.getTargets().stream()
                 .map(t -> createTarget(execution, t, keyExtractor.apply(t)))
                 .forEach(targets::add);
         }
         return targets;
+    }
+
+    @NonNull
+    private UnaryOperator<Object> getKeyExtractor(AssembleExecution execution) {
+        String key = execution.getOperation().getKey();
+        // TODO perhaps we need to use the key extractor as a standalone component in the AssembleOperation?
+        // if no key is specified, key value is the targets themselves.
+        UnaryOperator<Object> keyExtractor = StringUtils.isEmpty(key) ?
+            UnaryOperator.identity() : t -> propertyOperator.readProperty(t.getClass(), t, key);
+        // fix https://github.com/opengoofy/crane4j/issues/153
+        Class<?> keyType = execution.getOperation().getKeyType();
+        if (Objects.nonNull(keyType)) {
+            return t -> {
+                Object k = keyExtractor.apply(t);
+                return converterManager.convert(k, keyType);
+            };
+        }
+        return keyExtractor;
     }
 
     /**

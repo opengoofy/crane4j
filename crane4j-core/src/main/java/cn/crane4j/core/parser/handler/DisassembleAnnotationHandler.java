@@ -12,6 +12,7 @@ import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.Crane4jGlobalSorter;
 import cn.crane4j.core.support.Sorted;
+import cn.crane4j.core.util.ClassUtils;
 import cn.crane4j.core.util.ReflectUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +27,6 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -132,7 +132,7 @@ public class DisassembleAnnotationHandler implements OperationAnnotationHandler 
 
         // wait until runtime to dynamically determine the actual type if no type is specified
         DisassembleOperation operation;
-        if (Objects.equals(Object.class, annotation.type()) || Objects.equals(Void.TYPE, annotation.type())) {
+        if (ClassUtils.isObjectOrVoid(annotation.type())) {
             operation = new TypeDynamitedDisassembleOperation(
                 key, sort, type, disassembleOperationHandler, parser, globalConfiguration.getTypeResolver()
             );

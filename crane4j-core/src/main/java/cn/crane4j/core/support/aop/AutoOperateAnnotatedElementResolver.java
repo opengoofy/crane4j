@@ -12,6 +12,7 @@ import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.support.TypeResolver;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.util.Asserts;
+import cn.crane4j.core.util.ClassUtils;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.StringUtils;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,6 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -60,7 +60,7 @@ public class AutoOperateAnnotatedElementResolver {
 
         // type is specified in annotation
         Class<?> annotationSpecifiedType = annotation.type();
-        if (!Objects.equals(Object.class, annotationSpecifiedType) && !Objects.equals(Void.TYPE, annotationSpecifiedType)) {
+        if (!ClassUtils.isObjectOrVoid(annotationSpecifiedType)) {
             BeanOperations beanOperations = parser.parse(annotation.type());
             return AutoOperateAnnotatedElement.forStaticTypeOperation(
                 annotation, element, extractor, filter, beanOperations, executor

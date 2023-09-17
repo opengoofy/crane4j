@@ -9,6 +9,7 @@ import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.DisorderedBeanOperationExecutor;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.support.converter.HutoolConverterManager;
+import cn.crane4j.core.support.converter.SimpleConverterManager;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.support.reflect.ReflectivePropertyOperator;
 import lombok.AllArgsConstructor;
@@ -29,19 +30,19 @@ import java.util.stream.Collectors;
  *
  * @author huangchengxing
  */
-public class OneToOneReflexAssembleOperationHandlerTest extends BaseExecutorTest {
+public class OneToOneAssembleOperationHandlerTest extends BaseExecutorTest {
 
     private BeanOperationExecutor executor;
 
     @Before
     public void init() {
         PropertyOperator operator = new ReflectivePropertyOperator(new HutoolConverterManager());
-        OneToOneAssembleOperationHandler handler = new OneToOneAssembleOperationHandler(operator);
+        OneToOneAssembleOperationHandler handler = new OneToOneAssembleOperationHandler(operator, SimpleConverterManager.INSTANCE);
         configuration.getAssembleOperationHandlerMap().put(handler.getClass().getName(), handler);
         executor = new DisorderedBeanOperationExecutor(configuration);
         Container<Integer> container = LambdaContainer.forLambda(
             "test", ids -> ids.stream().filter(id -> id != 0).collect(Collectors.toMap(
-                Function.identity(), id -> new Bean(id, "name" + id, null)
+                Function.identity(), id -> new SourceBean(id, "name" + id, null)
             ))
         );
         configuration.registerContainer(container);
@@ -57,13 +58,13 @@ public class OneToOneReflexAssembleOperationHandlerTest extends BaseExecutorTest
     @Test
     public void process() {
         BeanOperations operations = parseOperations(Bean.class);
-        List<Bean> beanList = Arrays.asList(new Bean(1), new Bean(2), new Bean(3));
+        List<Bean> beanList = Arrays.asList(new Bean(1L), new Bean(2L), new Bean(3L));
         executor.execute(beanList, operations);
         for (int i = 0; i < beanList.size(); i++) {
             Assert.assertEquals("name" + (i + 1), beanList.get(i).getName());
             Assert.assertEquals((Integer)(i + 1), beanList.get(i).getOtherId());
         }
-        executor.execute(Collections.singletonList(new Bean(0)), operations);
+        executor.execute(Collections.singletonList(new Bean(0L)), operations);
     }
 
     @Assemble(container = "identity", props = @Mapping(src = "id", ref = "otherId"))
@@ -72,10 +73,19 @@ public class OneToOneReflexAssembleOperationHandlerTest extends BaseExecutorTest
     @Data
     private static class Bean {
         @Assemble(
+            keyType = Integer.class,
             container = "test", props = @Mapping(src = "name", ref = "name"),
             handler = "OneToOneAssembleOperationHandler"
         )
-        private final Integer id;
+        private final Long id;
+        private String name;
+        private Integer otherId;
+    }
+
+    @SuppressWarnings("unused")
+    @AllArgsConstructor
+    private static class SourceBean {
+        private Integer id;
         private String name;
         private Integer otherId;
     }

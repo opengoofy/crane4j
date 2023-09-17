@@ -5,6 +5,7 @@ import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.parser.PropertyMapping;
 import cn.crane4j.core.parser.handler.strategy.PropertyMappingStrategy;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Set;
 
@@ -42,6 +43,21 @@ public interface AssembleOperation extends KeyTriggerOperation {
      * @return mapping
      */
     Set<PropertyMapping> getPropertyMappings();
+
+    /**
+     * Get key property type.
+     *
+     * @return key type
+     */
+    @Nullable
+    Class<?> getKeyType();
+
+    /**
+     * Set key property type.
+     *
+     * @param keyType key type
+     */
+    void setKeyType(Class<?> keyType);
 
     /**
      * Get namespace of data source container.

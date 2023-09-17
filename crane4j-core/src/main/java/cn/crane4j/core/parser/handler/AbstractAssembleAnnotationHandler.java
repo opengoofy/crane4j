@@ -17,6 +17,7 @@ import cn.crane4j.core.parser.operation.SimpleAssembleOperation;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.Crane4jGlobalSorter;
+import cn.crane4j.core.util.ClassUtils;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.ConfigurationUtil;
 import cn.crane4j.core.util.MultiMap;
@@ -176,6 +177,7 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
 
         // get configuration of standard assemble operation
         String key = parseKey(element, standardAnnotation);
+        Class<?> keyType = parseKeyType(standardAnnotation, annotation);
         AssembleOperationHandler assembleOperationHandler = parseAssembleOperationHandler(element, standardAnnotation);
         Set<PropertyMapping> propertyMappings = parsePropertyMappings(element, standardAnnotation, key);
         int sort = parseSort(element, standardAnnotation);
@@ -186,6 +188,7 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
         AssembleOperation operation = createAssembleOperation(annotation, sort, key, assembleOperationHandler, propertyMappings);
         operation.getGroups().addAll(groups);
         operation.setPropertyMappingStrategy(propertyMappingStrategy);
+        operation.setKeyType(keyType);
         return operation;
     }
 
@@ -250,6 +253,7 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
      * @param standardAnnotation standard annotation
      * @return assemble operation groups
      */
+    @SuppressWarnings("unused")
     protected AssembleOperationHandler parseAssembleOperationHandler(
         AnnotatedElement element, StandardAnnotation standardAnnotation) {
         return globalConfiguration.getAssembleOperationHandler(
@@ -297,6 +301,7 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
      * @param standardAnnotation standard assemble operation
      * @return groups
      */
+    @SuppressWarnings("unused")
     protected Set<String> parseGroups(AnnotatedElement element, StandardAnnotation standardAnnotation) {
         return Stream.of(standardAnnotation.getGroups())
             .collect(Collectors.toSet());
@@ -310,6 +315,7 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
      * @return {@link PropertyMappingStrategy} instance
      * @since 2.1.0
      */
+    @SuppressWarnings("unused")
     @NonNull
     protected PropertyMappingStrategy parserPropertyMappingStrategy(
         StandardAnnotation standardAnnotation, T annotation) {
@@ -331,6 +337,22 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
     }
 
     /**
+     * Parse key property type.
+     *
+     * @param standardAnnotation standard annotation
+     * @param annotation annotation
+     * @return key type
+     * @since 2.2.0
+     */
+    @SuppressWarnings("unused")
+    @Nullable
+    protected Class<?> parseKeyType(
+        StandardAnnotation standardAnnotation, T annotation) {
+        Class<?> keyType = standardAnnotation.getKeyType();
+        return ClassUtils.isObjectOrVoid(keyType) ? null : keyType;
+    }
+
+    /**
      * Standard annotation
      *
      * @author huangchengxing
@@ -344,6 +366,13 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
          * @return key field name
          */
         String getKey();
+
+        /**
+         * Get key property type.
+         *
+         * @return key type
+         */
+        Class<?> getKeyType();
 
         /**
          * <p>Sort values.
@@ -409,6 +438,7 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
     public static class StandardAnnotationAdapter implements StandardAnnotation {
         private final Annotation annotation;
         private final String key;
+        private final Class<?> keyType;
         private final int sort;
         private final String handler;
         private final Class<?> handlerType;

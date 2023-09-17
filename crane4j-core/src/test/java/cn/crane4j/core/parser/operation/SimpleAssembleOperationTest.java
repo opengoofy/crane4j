@@ -25,6 +25,13 @@ public class SimpleAssembleOperationTest {
     }
 
     @Test
+    public void testKeyType() {
+        Assert.assertNull(operation.getKeyType());
+        operation.setKeyType(Object.class);
+        Assert.assertEquals(Object.class, operation.getKeyType());
+    }
+
+    @Test
     public void getPropertyMappings() {
         Assert.assertEquals(Collections.emptySet(), operation.getPropertyMappings());
     }

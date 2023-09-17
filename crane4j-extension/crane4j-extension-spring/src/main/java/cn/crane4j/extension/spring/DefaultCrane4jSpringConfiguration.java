@@ -271,18 +271,21 @@ public class DefaultCrane4jSpringConfiguration implements SmartInitializingSingl
 
     @Primary
     @Bean
-    public OneToOneAssembleOperationHandler oneToOneAssembleOperationHandler(PropertyOperator propertyOperator) {
-        return new OneToOneAssembleOperationHandler(propertyOperator);
+    public OneToOneAssembleOperationHandler oneToOneAssembleOperationHandler(
+        PropertyOperator propertyOperator, ConverterManager converterManager) {
+        return new OneToOneAssembleOperationHandler(propertyOperator, converterManager);
     }
 
     @Bean
-    public ManyToManyAssembleOperationHandler manyToManyAssembleOperationHandler(PropertyOperator propertyOperator) {
-        return new ManyToManyAssembleOperationHandler(propertyOperator);
+    public ManyToManyAssembleOperationHandler manyToManyAssembleOperationHandler(
+        PropertyOperator propertyOperator, ConverterManager converterManager) {
+        return new ManyToManyAssembleOperationHandler(propertyOperator, converterManager);
     }
 
     @Bean
-    public OneToManyAssembleOperationHandler oneToManyAssembleOperationHandler(PropertyOperator propertyOperator) {
-        return new OneToManyAssembleOperationHandler(propertyOperator);
+    public OneToManyAssembleOperationHandler oneToManyAssembleOperationHandler(
+        PropertyOperator propertyOperator, ConverterManager converterManager) {
+        return new OneToManyAssembleOperationHandler(propertyOperator, converterManager);
     }
 
     @Primary
