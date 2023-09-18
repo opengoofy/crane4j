@@ -54,7 +54,7 @@ public class MethodResultAutoOperateAdvisor
         AutoOperate annotation = AnnotatedElementUtils.findMergedAnnotation(method, AutoOperate.class);
         Object result = methodInvocation.proceed();
         try {
-            super.afterMethodInvoke(annotation, method, result, methodInvocation.getArguments());
+            afterMethodInvoke(annotation, method, result, methodInvocation.getArguments());
         } catch (Exception ex) {
             log.error("cannot auto operate result for method [{}]", method);
             ex.printStackTrace();
