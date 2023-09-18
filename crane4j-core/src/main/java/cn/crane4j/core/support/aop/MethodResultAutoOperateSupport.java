@@ -29,7 +29,7 @@ import java.util.Objects;
 @Slf4j
 public class MethodResultAutoOperateSupport {
 
-    protected final Map<String, AutoOperateAnnotatedElement> methodCaches = CollectionUtils.newWeakConcurrentMap();
+    protected final Map<Method, AutoOperateAnnotatedElement> methodCaches = CollectionUtils.newWeakConcurrentMap();
     protected final AutoOperateAnnotatedElementResolver elementResolver;
     protected final MethodBaseExpressionExecuteDelegate expressionExecuteDelegate;
 
@@ -61,7 +61,10 @@ public class MethodResultAutoOperateSupport {
         }
         // get and build method cache
         log.debug("process result for [{}]", method);
-        AutoOperateAnnotatedElement element = CollectionUtils.computeIfAbsent(methodCaches, method.getName(), m -> elementResolver.resolve(method, annotation));
+        // fix https://gitee.com/opengoofy/crane4j/issues/I82EAC
+        AutoOperateAnnotatedElement element = CollectionUtils.computeIfAbsent(
+            methodCaches, method, m -> elementResolver.resolve(method, annotation)
+        );
         // whether to apply the operation?
         String condition = element.getAnnotation().condition();
         if (support(method, result, args, condition)) {
