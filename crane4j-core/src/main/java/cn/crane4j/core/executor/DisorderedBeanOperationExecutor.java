@@ -3,10 +3,14 @@ package cn.crane4j.core.executor;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerManager;
 import cn.crane4j.core.exception.OperationExecuteException;
+import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 /**
  * <p>Synchronization implementation of {@link BeanOperationExecutor}.<br />
@@ -48,18 +52,29 @@ public class DisorderedBeanOperationExecutor extends AbstractBeanOperationExecut
      */
     @Override
     protected void executeOperations(List<AssembleExecution> executions, Options options) throws OperationExecuteException {
+        Map<Container<?>, Map<AssembleOperationHandler, List<AssembleExecution>>> operations = new LinkedHashMap<>();
+        executions.forEach(e -> {
+            Container<?> container = e.getContainer();
+            Map<AssembleOperationHandler, List<AssembleExecution>> he = operations.computeIfAbsent(container, c -> new HashMap<>());
+            List<AssembleExecution> es = he.computeIfAbsent(e.getHandler(), h -> new ArrayList<>());
+            es.add(e);
+        });
         try {
-            executions.stream()
-                .collect(Collectors.groupingBy(AssembleExecution::getContainer))
-                .forEach(this::doExecuteOperations);
+            doExecuteOperations(operations);
         } catch (Exception e) {
             throw new OperationExecuteException(e);
         }
     }
 
-    private void doExecuteOperations(Container<?> container, List<AssembleExecution> executions) {
-        executions.stream()
-            .collect(Collectors.groupingBy(AssembleExecution::getHandler))
-            .forEach((handler, es) -> tryExecute(() -> handler.process(container, es)));
+    /**
+     * <p>Execute the assembly operation.
+     *
+     * @param executionGroups grouped assembly operations
+     */
+    protected void doExecuteOperations(Map<Container<?>, Map<AssembleOperationHandler, List<AssembleExecution>>> executionGroups) {
+        executionGroups.forEach((c, he) ->
+            he.forEach((h, es) ->
+                tryExecute(() -> h.process(c, es))
+        ));
     }
 }
