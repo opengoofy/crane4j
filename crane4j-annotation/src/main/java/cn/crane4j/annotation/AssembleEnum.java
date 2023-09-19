@@ -175,7 +175,7 @@ public @interface AssembleEnum {
      * @author huangchengxing
      */
     @Documented
-    @Target({ElementType.FIELD, ElementType.ANNOTATION_TYPE})
+    @Target({ElementType.ANNOTATION_TYPE, ElementType.FIELD, ElementType.TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
     @interface List {
         AssembleEnum[] value() default {};

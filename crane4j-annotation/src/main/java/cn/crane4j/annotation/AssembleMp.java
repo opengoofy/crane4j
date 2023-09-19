@@ -165,7 +165,7 @@ public @interface AssembleMp {
      * @author huangchengxing
      */
     @Documented
-    @Target({ElementType.FIELD, ElementType.ANNOTATION_TYPE})
+    @Target({ElementType.ANNOTATION_TYPE, ElementType.FIELD, ElementType.TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
     @interface List {
         AssembleMp[] value() default {};
