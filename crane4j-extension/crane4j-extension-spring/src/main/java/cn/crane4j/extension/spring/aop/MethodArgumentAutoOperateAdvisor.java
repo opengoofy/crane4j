@@ -64,7 +64,7 @@ public class MethodArgumentAutoOperateAdvisor
     public Object invoke(MethodInvocation methodInvocation) throws Throwable {
         Method method = methodInvocation.getMethod();
         try {
-            super.beforeMethodInvoke(method, methodInvocation.getArguments());
+            beforeMethodInvoke(method, methodInvocation.getArguments());
         } catch (Exception ex) {
             log.error("cannot auto operate input arguments for method [{}]", method);
             ex.printStackTrace();
