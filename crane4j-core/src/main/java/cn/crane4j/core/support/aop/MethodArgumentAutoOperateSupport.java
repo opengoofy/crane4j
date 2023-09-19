@@ -48,7 +48,7 @@ public class MethodArgumentAutoOperateSupport {
 
     protected static final AutoOperateAnnotatedElement[] EMPTY_ELEMENTS = new AutoOperateAnnotatedElement[0];
     protected final AutoOperateAnnotatedElementResolver elementResolver;
-    protected final Map<String, AutoOperateAnnotatedElement[]> methodParameterCaches = CollectionUtils.newWeakConcurrentMap();
+    protected final Map<Method, AutoOperateAnnotatedElement[]> methodParameterCaches = CollectionUtils.newWeakConcurrentMap();
     protected final ParameterNameFinder parameterNameFinder;
     protected final AnnotationFinder annotationFinder;
     protected final MethodBaseExpressionExecuteDelegate expressionExecuteDelegate;
@@ -85,8 +85,9 @@ public class MethodArgumentAutoOperateSupport {
         }
         // cache resolved parameters
         ArgAutoOperate methodLevelAnnotation = annotationFinder.findAnnotation(method, ArgAutoOperate.class);
+        // fix https://gitee.com/opengoofy/crane4j/issues/I82EAC
         AutoOperateAnnotatedElement[] elements = CollectionUtils.computeIfAbsent(
-            methodParameterCaches, method.getName(), name -> resolveParameters(methodLevelAnnotation, method)
+            methodParameterCaches, method, name -> resolveParameters(methodLevelAnnotation, method)
         );
         if (elements == EMPTY_ELEMENTS) {
             return;
