@@ -11,6 +11,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -81,12 +82,14 @@ public class ReflectUtils {
      * @param <T> return type
      * @return return value of method invocation
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("all")
     public static <T> T invokeRaw(Object object, Method method, Object... args) {
         setAccessible(method);
         try {
             return (T) method.invoke(object, args);
-        } catch (Exception e) {
+        } catch (Throwable e) {
+            e = (e instanceof InvocationTargetException) ?
+                ((InvocationTargetException)e).getTargetException() : e;
             throw new Crane4jException(e);
         }
     }
@@ -532,6 +535,7 @@ public class ReflectUtils {
         }
     }
 
+    @SuppressWarnings("all")
     public static <T extends AccessibleObject> void setAccessible(T accessibleObject) {
         if (!accessibleObject.isAccessible()) {
             accessibleObject.setAccessible(true);

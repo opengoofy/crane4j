@@ -155,7 +155,8 @@ public class OperatorProxyFactory {
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             MethodInvoker invoker = proxiedMethods.get(method.getName());
-            return Objects.isNull(invoker) ? method.invoke(proxy, args) : invoker.invoke(proxy, args);
+            return Objects.isNull(invoker) ?
+                ReflectUtils.invokeRaw(proxy, method, args) : invoker.invoke(proxy, args);
         }
     }
 
