@@ -70,6 +70,14 @@ public @interface ContainerMethod {
     MappingType type() default MappingType.ONE_TO_ONE;
 
     /**
+     * The strategy for handling duplicate keys.
+     *
+     * @return strategy
+     * @since 2.2.0
+     */
+    DuplicateStrategy duplicateStrategy() default DuplicateStrategy.ALERT;
+
+    /**
      * The key field of the data source object returned by the method.<br />
      * If {@link #type()} is {@link MappingType#MAPPED}, this parameter is ignored.
      *

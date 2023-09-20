@@ -1,6 +1,7 @@
 package cn.crane4j.core.container;
 
 import cn.crane4j.annotation.ContainerEnum;
+import cn.crane4j.annotation.DuplicateStrategy;
 import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.support.SimpleAnnotationFinder;
 import cn.crane4j.core.support.converter.HutoolConverterManager;
@@ -34,7 +35,8 @@ public class EnumContainerBuilderTest {
     @SuppressWarnings("unchecked")
     @Test
     public void nonAnnotatedEnum() {
-        EnumContainerBuilder<?, FooEnum> builder = EnumContainerBuilder.of(FooEnum.class);
+        EnumContainerBuilder<?, FooEnum> builder = EnumContainerBuilder.of(FooEnum.class)
+            .duplicateStrategy(DuplicateStrategy.ALERT);
         Assert.assertThrows(Crane4jException.class, () -> builder.key(""));
         Assert.assertThrows(Crane4jException.class, () -> builder.value(""));
 
@@ -98,10 +100,25 @@ public class EnumContainerBuilderTest {
         Assert.assertEquals(AnnotatedEnum.TWO.getKey(), data.get(AnnotatedEnum.TWO.getValue()));
     }
 
+    @Test
+    public void duplicateKeyEnum() {
+        // annotated
+        Container<Object> container = EnumContainerBuilder.of(DuplicateKeyEnum.class)
+            .namespace("test")
+            .annotationFinder(new SimpleAnnotationFinder())
+            .propertyOperator(new ReflectivePropertyOperator(new HutoolConverterManager()))
+            .key("value")
+            .value("key")
+            .build();
+
+        Assert.assertEquals("test", container.getNamespace());
+        Map<?, ?> data = container.get(null);
+        Assert.assertEquals(DuplicateKeyEnum.TWO.getKey(), data.get(DuplicateKeyEnum.ONE.getValue()));
+    }
 
     @Getter
     private enum FooEnum {
-        ONE, TWO;
+        ONE, TWO
     }
 
     @ContainerEnum(namespace = "AnnotatedEnum", key = "key", value = "value")
@@ -110,6 +127,16 @@ public class EnumContainerBuilderTest {
     private enum AnnotatedEnum {
         ONE(1, "one"),
         TWO(2, "two");
+        private final int key;
+        private final String value;
+    }
+
+    @ContainerEnum(namespace = "DuplicateKeyEnum", key = "key", value = "value", duplicateStrategy = DuplicateStrategy.DISCARD_OLD)
+    @Getter
+    @RequiredArgsConstructor
+    private enum DuplicateKeyEnum {
+        ONE(1, "one"),
+        TWO(1, "one2");
         private final int key;
         private final String value;
     }
