@@ -1,6 +1,7 @@
 package cn.crane4j.core.container;
 
 import cn.crane4j.annotation.ContainerEnum;
+import cn.crane4j.annotation.DuplicateStrategy;
 import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.MethodInvoker;
@@ -12,11 +13,10 @@ import cn.crane4j.core.util.StringUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * A builder class for creating {@link Container}s from enumerations.
@@ -72,6 +72,14 @@ public class EnumContainerBuilder<K, T extends Enum<?>> {
      */
     @NonNull
     private PropertyOperator propertyOperator = DEFAULT_PROPERTY_OPERATOR;
+
+    /**
+     * Processing strategy when the key is duplicated.
+     *
+     * @since 2.2.0
+     */
+    @NonNull
+    private DuplicateStrategy duplicateStrategy = DuplicateStrategy.ALERT;
 
     /**
      * Creates a new instance of the builder with the specified enum type.
@@ -171,6 +179,18 @@ public class EnumContainerBuilder<K, T extends Enum<?>> {
         return this;
     }
 
+    /**
+     * Set processing strategy of when the key is duplicated.
+     *
+     * @param duplicateStrategy coverage strategy
+     * @return this builder instance
+     * @since 2.2.0
+     */
+    public EnumContainerBuilder<K, T> duplicateStrategy(DuplicateStrategy duplicateStrategy) {
+        this.duplicateStrategy = duplicateStrategy;
+        return this;
+    }
+
     // ============== component ==============
 
     /**
@@ -209,9 +229,15 @@ public class EnumContainerBuilder<K, T extends Enum<?>> {
                 resolveConfigFromAnnotation(annotation);
             }
         }
+
         // build container
-        Map<K, T> enumMap = (Map<K, T>) (Map<?, ?>) Stream.of(enumType.getEnumConstants())
-            .collect(Collectors.toMap(keyGetter, valueGetter));
+        Map<K, Object> enumMap = new HashMap<>(enumType.getEnumConstants().length);
+        for (T e : enumType.getEnumConstants()) {
+            K key = (K)keyGetter.apply(e);
+            Object newVal = valueGetter.apply(e);
+            enumMap.compute(key, (k, oldVal) ->
+                Objects.isNull(oldVal) ? newVal : duplicateStrategy.choose(k, oldVal, newVal));
+        }
         namespace = StringUtils.emptyToDefault(this.namespace, enumType.getSimpleName());
         return ImmutableMapContainer.forMap(namespace, enumMap);
     }
@@ -220,6 +246,7 @@ public class EnumContainerBuilder<K, T extends Enum<?>> {
         if (namespace == null) {
             namespace = StringUtils.emptyToDefault(annotation.namespace(), enumType.getSimpleName());
         }
+        duplicateStrategy = annotation.duplicateStrategy();
         boolean hasKey = StringUtils.isNotEmpty(annotation.key());
         boolean hasValue = StringUtils.isNotEmpty(annotation.value());
         if (hasKey && keyGetter == DEFAULT_KEY_GETTER) {

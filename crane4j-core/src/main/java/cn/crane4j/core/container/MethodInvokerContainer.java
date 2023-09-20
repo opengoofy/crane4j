@@ -1,5 +1,6 @@
 package cn.crane4j.core.container;
 
+import cn.crane4j.annotation.DuplicateStrategy;
 import cn.crane4j.annotation.MappingType;
 import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.support.container.MethodContainerFactory;
@@ -7,13 +8,15 @@ import cn.crane4j.core.support.container.MethodInvokerContainerCreator;
 import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.CollectionUtils;
 import lombok.Getter;
+import lombok.Setter;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -43,6 +46,9 @@ public class MethodInvokerContainer implements Container<Object> {
     private final Object methodSource;
     private final KeyExtractor keyExtractor;
     private final MappingType mappingType;
+    @Setter
+    @NonNull
+    private DuplicateStrategy duplicateStrategy = DuplicateStrategy.ALERT;
 
     /**
      * Build a method data source container.
@@ -89,7 +95,13 @@ public class MethodInvokerContainer implements Container<Object> {
         Collection<?> invokeResults = CollectionUtils.adaptObjectToCollection(invokeResult);
         // one to one
         if (mappingType == MappingType.ONE_TO_ONE) {
-            return invokeResults.stream().collect(Collectors.toMap(keyExtractor::getKey, Function.identity()));
+            Map<Object, Object> results = new HashMap<>(invokeResults.size());
+            invokeResults.forEach(newVal -> {
+                Object k = keyExtractor.getKey(newVal);
+                results.compute(k, (key, oldVal) ->
+                    Objects.isNull(oldVal) ? newVal : duplicateStrategy.choose(key, oldVal, newVal));
+            });
+            return results;
         }
         // one to many
         return invokeResults.stream().collect(Collectors.groupingBy(keyExtractor::getKey));

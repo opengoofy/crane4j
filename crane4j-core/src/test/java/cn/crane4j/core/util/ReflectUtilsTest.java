@@ -32,6 +32,7 @@ import java.util.stream.Stream;
  *
  * @author huangchengxing
  */
+@SuppressWarnings("unused")
 public class ReflectUtilsTest {
 
     @Test
@@ -111,6 +112,7 @@ public class ReflectUtilsTest {
         Assert.assertEquals("arg0arg1", result);
     }
 
+    @SneakyThrows
     @Test
     public void invokeRaw() {
         Method method = ReflectUtil.getMethod(ReflectUtilsTest.class, "method2", String.class, String.class);
@@ -122,6 +124,19 @@ public class ReflectUtilsTest {
 
         Assert.assertThrows(Crane4jException.class, () -> ReflectUtils.invokeRaw(this, method, "arg0"));
         Assert.assertThrows(Crane4jException.class, () -> ReflectUtils.invokeRaw(this, method, 12));
+
+        // if throw InvocationTargetException, actual exception will be throw out
+        Method m3 = ReflectUtilsTest.class.getDeclaredMethod("method3");
+        Assert.assertNotNull(m3);
+        Exception ex = null;
+        try {
+            ReflectUtils.invokeRaw(m3, m3, "arg0");
+        } catch (Exception e) {
+            ex = e;
+        }
+        Assert.assertNotNull(ex);
+        Assert.assertTrue(ex instanceof Crane4jException);
+        Assert.assertTrue(ex.getCause() instanceof IllegalArgumentException);
     }
 
     @Test
@@ -347,5 +362,5 @@ public class ReflectUtilsTest {
     private static String method2(String param1, String param2) {
         return param1 + param2;
     }
-
+    private void method3() {}
 }

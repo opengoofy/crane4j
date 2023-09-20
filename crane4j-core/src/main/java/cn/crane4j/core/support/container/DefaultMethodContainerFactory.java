@@ -74,12 +74,19 @@ public class DefaultMethodContainerFactory implements MethodContainerFactory {
      * @return data source containers
      */
     @Override
-    public List<Container<Object>> get(@Nullable Object source, Method method, Collection<ContainerMethod> annotations) {
+    public List<Container<Object>> get(
+        @Nullable Object source, Method method, Collection<ContainerMethod> annotations) {
         return annotations.stream()
-            .map(annotation -> methodInvokerContainerCreator.createContainer(
-                source, method, annotation.type(), annotation.namespace(),
-                annotation.resultType(), annotation.resultKey()
-            ))
+            .map(annotation -> createContainer(source, method, annotation))
             .collect(Collectors.toList());
+    }
+
+    private Container<Object> createContainer(Object source, Method method, ContainerMethod annotation) {
+        MethodInvokerContainer container = methodInvokerContainerCreator.createContainer(
+            source, method, annotation.type(), annotation.namespace(),
+            annotation.resultType(), annotation.resultKey()
+        );
+        container.setDuplicateStrategy(annotation.duplicateStrategy());
+        return container;
     }
 }

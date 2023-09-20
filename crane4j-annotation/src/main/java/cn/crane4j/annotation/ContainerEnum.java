@@ -38,4 +38,12 @@ public @interface ContainerEnum {
      * @return value field name
      */
     String value() default "";
+
+    /**
+     * The strategy for handling duplicate keys.
+     *
+     * @return strategy
+     * @since 2.2.0
+     */
+    DuplicateStrategy duplicateStrategy() default DuplicateStrategy.ALERT;
 }
