@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -30,7 +31,7 @@ public class DefaultContainerManager implements ContainerManager {
     /**
      * Container singleton caches.
      */
-    protected final Map<Object, Object> containerMap = new ConcurrentHashMap<>(64);
+    protected final ConcurrentMap<Object, Object> containerMap = new ConcurrentHashMap<>(64);
 
     /**
      * Registered container lifecycle callbacks.
@@ -139,24 +140,27 @@ public class DefaultContainerManager implements ContainerManager {
         if (Objects.equals(namespace, Container.EMPTY_CONTAINER_NAMESPACE)) {
             return Container.empty();
         }
-        // container comparator already created?
+        // check if the container is created
         Object key = getCacheKey(namespace);
         Object container = containerMap.get(key);
         if (Objects.nonNull(container) && container instanceof Container) {
             return (Container<K>) container;
         }
-        // create container comparator
+
+        // create container
         return (Container<K>) containerMap.compute(key, (k, t) -> {
-            boolean isRegistered = Objects.nonNull(t);
-            if (isRegistered && container instanceof Container) {
+            // check again
+            boolean isDirectRegistered = Objects.nonNull(t);
+            // fix https://github.com/opengoofy/crane4j/issues/162
+            if (isDirectRegistered && t instanceof Container) {
                 return t;
             }
-            // get definition
-            ContainerDefinition definition = isRegistered ? (ContainerDefinition) t : createDefinition(k);
+            // can't find it. maybe in the provider?
+            ContainerDefinition definition = isDirectRegistered ?
+                (ContainerDefinition) t : createDefinition(k);
             if (Objects.isNull(definition)) {
                 return null;
             }
-            // create comparator by definition
             return createContainer(k.toString(), definition);
         });
     }
