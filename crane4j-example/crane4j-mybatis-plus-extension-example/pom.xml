@@ -31,7 +31,7 @@
         <dependency>
             <groupId>cn.crane4j</groupId>
             <artifactId>crane4j-extension-mybatis-plus</artifactId>
-            <version>2.1.0</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
