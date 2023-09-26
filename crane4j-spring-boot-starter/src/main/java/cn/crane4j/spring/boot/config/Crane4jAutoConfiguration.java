@@ -40,6 +40,7 @@ import cn.crane4j.core.support.ParameterNameFinder;
 import cn.crane4j.core.support.SimpleTypeResolver;
 import cn.crane4j.core.support.TypeResolver;
 import cn.crane4j.core.support.aop.AutoOperateAnnotatedElementResolver;
+import cn.crane4j.core.support.aop.MethodBasedAutoOperateAnnotatedElementResolver;
 import cn.crane4j.core.support.container.CacheableMethodContainerFactory;
 import cn.crane4j.core.support.container.DefaultMethodContainerFactory;
 import cn.crane4j.core.support.container.MethodContainerFactory;
@@ -253,9 +254,9 @@ public class Crane4jAutoConfiguration {
 
     @ConditionalOnMissingBean
     @Bean
-    public AutoOperateAnnotatedElementResolver autoOperateMethodAnnotatedElementResolver(
+    public MethodBasedAutoOperateAnnotatedElementResolver methodBasedAutoOperateAnnotatedElementResolver(
         Crane4jGlobalConfiguration crane4jGlobalConfiguration, TypeResolver typeResolver) {
-        return new AutoOperateAnnotatedElementResolver(crane4jGlobalConfiguration, typeResolver);
+        return new MethodBasedAutoOperateAnnotatedElementResolver(crane4jGlobalConfiguration, typeResolver);
     }
 
     @ConditionalOnMissingBean
