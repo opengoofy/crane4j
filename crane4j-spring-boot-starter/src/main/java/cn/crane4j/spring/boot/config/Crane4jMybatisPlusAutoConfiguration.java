@@ -67,7 +67,7 @@ public class Crane4jMybatisPlusAutoConfiguration {
     @ConditionalOnProperty(
         prefix = Properties.CRANE4J_MP_EXTENSION_PREFIX,
         name = "auto-register-mapper",
-        havingValue = "true", matchIfMissing = true
+        havingValue = "true"
     )
     @Bean
     @ConditionalOnMissingBean
@@ -131,6 +131,10 @@ public class Crane4jMybatisPlusAutoConfiguration {
         @SuppressWarnings("rawtypes")
         @Override
         public void run(ApplicationArguments args) {
+            if (!properties.isAutoRegisterMapper()) {
+                return;
+            }
+            log.info("starting to register the mapper interface......");
             Set<String> includes = properties.getIncludes();
             Set<String> excludes = properties.getExcludes();
             includes.removeAll(excludes);
@@ -141,6 +145,7 @@ public class Crane4jMybatisPlusAutoConfiguration {
             mappers.entrySet().stream()
                 .filter(e -> mapperFilter.test(e.getKey(), e.getValue()))
                 .forEach(e -> register.registerRepository(e.getKey(), e.getValue()));
+            log.info("register the mapper interface completed! total: {}", mappers.size());
         }
     }
 

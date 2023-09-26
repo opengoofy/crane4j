@@ -11,6 +11,11 @@ spring:
   password: crane4j-test
   schema: classpath:schema.sql
   data: classpath:data.sql
+
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+crane4j:
+  mybatis-plus:
+    auto-register-mapper: true
