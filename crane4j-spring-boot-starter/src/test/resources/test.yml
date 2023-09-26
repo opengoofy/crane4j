@@ -32,3 +32,5 @@ crane4j:
   mybatis-plus:
     # 不扫描指定Mapper
     excludes: excludedFooMapper
+    # 自动全量注册Mapper接口
+    auto-register-mapper: true
