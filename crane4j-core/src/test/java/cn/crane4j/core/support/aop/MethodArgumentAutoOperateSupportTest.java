@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
  *
  * @author huangchengxing
  */
+@SuppressWarnings("unused")
 public class MethodArgumentAutoOperateSupportTest {
 
     private MethodArgumentAutoOperateSupport support;
@@ -43,7 +44,7 @@ public class MethodArgumentAutoOperateSupportTest {
         MethodBaseExpressionExecuteDelegate expressionExecuteDelegate = new MethodBaseExpressionExecuteDelegate(
             parameterNameFinder, new OgnlExpressionEvaluator(), method -> new OgnlExpressionContext()
         );
-        AutoOperateAnnotatedElementResolver resolver = new AutoOperateAnnotatedElementResolver(configuration, configuration.getTypeResolver());
+        AutoOperateAnnotatedElementResolver resolver = new MethodBasedAutoOperateAnnotatedElementResolver(configuration, configuration.getTypeResolver());
         support = new MethodArgumentAutoOperateSupport(resolver, expressionExecuteDelegate, parameterNameFinder, new SimpleAnnotationFinder());
 
         configuration.registerContainer(LambdaContainer.<Integer>forLambda(

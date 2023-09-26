@@ -8,6 +8,7 @@ import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.SimpleAnnotationFinder;
 import cn.crane4j.core.support.SimpleCrane4jGlobalConfiguration;
 import cn.crane4j.core.support.aop.AutoOperateAnnotatedElementResolver;
+import cn.crane4j.core.support.aop.MethodBasedAutoOperateAnnotatedElementResolver;
 import cn.crane4j.core.support.converter.SimpleConverterManager;
 import cn.crane4j.core.support.reflect.ReflectivePropertyOperator;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -43,7 +44,7 @@ public class JsonNodeAutoOperateSerializerModifierTest {
         SimpleCrane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create(
             SimpleAnnotationFinder.INSTANCE, new SimpleConverterManager(), propertyOperator
         );
-        AutoOperateAnnotatedElementResolver elementResolver = new AutoOperateAnnotatedElementResolver(configuration, configuration.getTypeResolver());
+        AutoOperateAnnotatedElementResolver elementResolver = new MethodBasedAutoOperateAnnotatedElementResolver(configuration, configuration.getTypeResolver());
 
         // register module of modifier
         JsonNodeAutoOperateModule autoOperateModule = new JsonNodeAutoOperateModule(elementResolver, objectMapper, annotationFinder);

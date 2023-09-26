@@ -15,7 +15,7 @@ import java.util.Objects;
  * <p>Support class for completing the operation for result of method which annotated by {@link AutoOperate}.
  *
  * <p>Before the method is called, the method return type will be resolved
- * to {@link AutoOperateAnnotatedElement} by {@link AutoOperateAnnotatedElementResolver} and cached.<br />
+ * to {@link AutoOperateAnnotatedElement} by {@link AutoOperateAnnotatedElement} and cached.<br />
  * After the method is called, the {@link AutoOperateAnnotatedElement}
  * will be used to complete the operation of data from the method result.
  *

@@ -5,15 +5,15 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * test for {@link AutoOperateAnnotatedElement }
+ * test for {@link AutoOperateAnnotatedMethod }
  *
  * @author huangchengxing
  */
-public class AutoOperateAnnotatedElementTest {
+public class AutoOperateAnnotatedMethodTest {
 
     @Test
     public void test() {
-        AutoOperateAnnotatedElement element = new AutoOperateAnnotatedElement(
+        AutoOperateAnnotatedMethod element = new AutoOperateAnnotatedMethod(
             null, null, (t, args) -> t, null, null, (targets, operations, filter) -> {}, t -> BeanOperations.empty()
         );
         Assert.assertNull(element.getAnnotation());

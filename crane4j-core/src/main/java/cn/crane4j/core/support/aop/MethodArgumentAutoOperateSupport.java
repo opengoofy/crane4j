@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
  * before the method is called.
  *
  * <p>Before the method is called, the method parameters will be resolved
- * to {@link AutoOperateAnnotatedElement} array by {@link AutoOperateAnnotatedElementResolver},
+ * to {@link AutoOperateAnnotatedElement} array by {@link AutoOperateAnnotatedElement},
  * and then the {@link AutoOperateAnnotatedElement} array will be cached.<br />
  * When the method is called, the {@link AutoOperateAnnotatedElement} array
  * will be used to complete the operation of data from the method parameters.
@@ -108,7 +108,7 @@ public class MethodArgumentAutoOperateSupport {
             Object arg = args[i];
             // maybe not annotated element
             AutoOperateAnnotatedElement element = autoOperateAnnotatedElements[i];
-            if (Objects.nonNull(element) && support(method, args, element.getAnnotation().condition())) {
+            if (Objects.nonNull(element) && canApply(method, args, element.getAnnotation().condition())) {
                 element.execute(arg);
             }
         }
@@ -144,7 +144,8 @@ public class MethodArgumentAutoOperateSupport {
         return results;
     }
 
-    private boolean support(Method method, Object[] args, String condition) {
-        return StringUtils.isEmpty(condition) || Boolean.TRUE.equals(expressionExecuteDelegate.execute(condition, Boolean.class, method, args, null));
+    private boolean canApply(Method method, Object[] args, String condition) {
+        return StringUtils.isEmpty(condition)
+            || Boolean.TRUE.equals(expressionExecuteDelegate.execute(condition, Boolean.class, method, args, null));
     }
 }

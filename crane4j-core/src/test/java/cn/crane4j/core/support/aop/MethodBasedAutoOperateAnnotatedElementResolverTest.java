@@ -29,15 +29,15 @@ import java.util.stream.Collectors;
  *
  * @author huangchengxing
  */
-public class AutoOperateAnnotatedElementResolverTest {
+@SuppressWarnings("unused")
+public class MethodBasedAutoOperateAnnotatedElementResolverTest {
 
-    private Crane4jGlobalConfiguration configuration;
     private AutoOperateAnnotatedElementResolver resolver;
 
     @Before
     public void init() {
-        configuration = SimpleCrane4jGlobalConfiguration.create();
-        resolver = new AutoOperateAnnotatedElementResolver(configuration, new SimpleTypeResolver());
+        Crane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create();
+        resolver = new MethodBasedAutoOperateAnnotatedElementResolver(configuration, new SimpleTypeResolver());
         configuration.registerContainer(LambdaContainer.<Integer>forLambda(
             "test", ids -> ids.stream().map(id -> new Foo(id, "name" + id))
                 .collect(Collectors.toMap(Foo::getId, Function.identity()))
@@ -82,6 +82,7 @@ public class AutoOperateAnnotatedElementResolverTest {
         Assert.assertThrows(Crane4jException.class, () -> resolver.resolve(Object.class, null));
     }
 
+    @SuppressWarnings("all")
     private void checkElement(AnnotatedElement ele, AutoOperate annotation, AutoOperateAnnotatedElement element) {
         Assert.assertSame(annotation, element.getAnnotation());
         Assert.assertSame(ele, element.getElement());
