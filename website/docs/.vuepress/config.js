@@ -99,6 +99,7 @@ const sidebarConfig = [
         collapsable: false, // 不折叠
         children: [
             { title: "6.1.MybatisPlus扩展.md", path: "/extension/6.1.MybatisPlus扩展.md" },
+            { title: "6.1.Jackson扩展", path: "/extension/6.2.Jackson扩展.md" },
         ],
     },
     {

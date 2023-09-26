@@ -4,10 +4,10 @@
   "description": "crane4j文档项目",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "vuepress dev docs",
-    "build": "vuepress build docs",
-    "postinstall": "patch-package"
+      "test": "echo \"Error: no test specified\" && exit 1",
+      "dev": "set NODE_OPTIONS=--openssl-legacy-provider & vuepress dev docs",
+      "build": "set NODE_OPTIONS=--openssl-legacy-provider & vuepress build docs",
+      "postinstall": "patch-package"
   },
   "author": "",
   "license": "ISC",
