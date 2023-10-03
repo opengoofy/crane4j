@@ -1,4 +1,4 @@
-package cn.crane4j.core.support.aop;
+package cn.crane4j.core.support.auto;
 
 import cn.crane4j.annotation.Assemble;
 import cn.crane4j.annotation.AutoOperate;

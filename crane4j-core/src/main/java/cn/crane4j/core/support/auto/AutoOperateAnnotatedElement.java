@@ -1,4 +1,4 @@
-package cn.crane4j.core.support.aop;
+package cn.crane4j.core.support.auto;
 
 import cn.crane4j.annotation.AutoOperate;
 import cn.crane4j.core.executor.BeanOperationExecutor;
@@ -17,6 +17,26 @@ import java.lang.reflect.AnnotatedElement;
  * @see AutoOperate
  */
 public interface AutoOperateAnnotatedElement {
+
+    AutoOperateAnnotatedElement EMPTY = new AutoOperateAnnotatedElement() {
+        @Override
+        public AutoOperate getAnnotation() {
+            return null;
+        }
+        @Override
+        public AnnotatedElement getElement() {
+            return null;
+        }
+        @Override
+        public @Nullable BeanOperations getBeanOperations() {
+            return BeanOperations.empty();
+        }
+
+        @Override
+        public void execute(Object data) {
+            // do nothing
+        }
+    };
 
     /**
      * get the {@link AutoOperate} annotation.

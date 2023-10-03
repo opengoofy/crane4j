@@ -1,7 +1,7 @@
 package cn.crane4j.spring.boot.config;
 
 import cn.crane4j.core.support.AnnotationFinder;
-import cn.crane4j.core.support.aop.AutoOperateAnnotatedElementResolver;
+import cn.crane4j.core.support.auto.AutoOperateAnnotatedElementResolver;
 import cn.crane4j.core.support.reflect.DecoratedPropertyOperator;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.extension.jackson.JacksonJsonNodeAssistant;

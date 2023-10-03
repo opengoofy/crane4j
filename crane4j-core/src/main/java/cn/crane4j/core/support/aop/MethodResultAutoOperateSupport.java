@@ -2,6 +2,8 @@ package cn.crane4j.core.support.aop;
 
 import cn.crane4j.annotation.ArgAutoOperate;
 import cn.crane4j.annotation.AutoOperate;
+import cn.crane4j.core.support.auto.AutoOperateAnnotatedElement;
+import cn.crane4j.core.support.auto.AutoOperateAnnotatedElementResolver;
 import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.StringUtils;

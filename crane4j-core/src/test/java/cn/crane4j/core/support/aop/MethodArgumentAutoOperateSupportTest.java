@@ -10,6 +10,8 @@ import cn.crane4j.core.support.ParameterNameFinder;
 import cn.crane4j.core.support.SimpleAnnotationFinder;
 import cn.crane4j.core.support.SimpleCrane4jGlobalConfiguration;
 import cn.crane4j.core.support.SimpleParameterNameFinder;
+import cn.crane4j.core.support.auto.AutoOperateAnnotatedElementResolver;
+import cn.crane4j.core.support.auto.MethodBasedAutoOperateAnnotatedElementResolver;
 import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
 import cn.crane4j.core.support.expression.OgnlExpressionContext;
 import cn.crane4j.core.support.expression.OgnlExpressionEvaluator;

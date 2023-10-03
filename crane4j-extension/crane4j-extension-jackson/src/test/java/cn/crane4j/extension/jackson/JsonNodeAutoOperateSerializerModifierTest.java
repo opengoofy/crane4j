@@ -7,9 +7,11 @@ import cn.crane4j.core.container.Containers;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.SimpleAnnotationFinder;
 import cn.crane4j.core.support.SimpleCrane4jGlobalConfiguration;
-import cn.crane4j.core.support.aop.AutoOperateAnnotatedElementResolver;
-import cn.crane4j.core.support.aop.MethodBasedAutoOperateAnnotatedElementResolver;
+import cn.crane4j.core.support.auto.AutoOperateAnnotatedElementResolver;
+import cn.crane4j.core.support.auto.ClassBasedAutoOperateAnnotatedElementResolver;
 import cn.crane4j.core.support.converter.SimpleConverterManager;
+import cn.crane4j.core.support.expression.OgnlExpressionContext;
+import cn.crane4j.core.support.expression.OgnlExpressionEvaluator;
 import cn.crane4j.core.support.reflect.ReflectivePropertyOperator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,7 +46,7 @@ public class JsonNodeAutoOperateSerializerModifierTest {
         SimpleCrane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create(
             SimpleAnnotationFinder.INSTANCE, new SimpleConverterManager(), propertyOperator
         );
-        AutoOperateAnnotatedElementResolver elementResolver = new MethodBasedAutoOperateAnnotatedElementResolver(configuration, configuration.getTypeResolver());
+        AutoOperateAnnotatedElementResolver elementResolver = new ClassBasedAutoOperateAnnotatedElementResolver(configuration, new OgnlExpressionEvaluator(), OgnlExpressionContext::new);
 
         // register module of modifier
         JsonNodeAutoOperateModule autoOperateModule = new JsonNodeAutoOperateModule(elementResolver, objectMapper, annotationFinder);

@@ -1,4 +1,4 @@
-package cn.crane4j.core.support.aop;
+package cn.crane4j.core.support.auto;
 
 import cn.crane4j.annotation.AutoOperate;
 import cn.crane4j.core.executor.BeanOperationExecutor;
@@ -29,14 +29,16 @@ import java.util.function.Predicate;
  * @author huangchengxing
  * @see AutoOperateAnnotatedElementResolver
  * @see AutoOperate
+ * @since 2.3.0
  */
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public class AutoOperateAnnotatedMethod implements AutoOperateAnnotatedElement {
+public class DefaultAutoOperateAnnotatedElement implements AutoOperateAnnotatedElement {
 
     @Getter
     private final AutoOperate annotation;
     @Getter
     private final AnnotatedElement element;
+    @Getter
     private final MethodInvoker extractor;
     private final Predicate<? super KeyTriggerOperation> filter;
     @Nullable
@@ -45,16 +47,16 @@ public class AutoOperateAnnotatedMethod implements AutoOperateAnnotatedElement {
     private final BeanOperationExecutor executor;
     private final Function<Object, BeanOperations> parser;
 
-    public static AutoOperateAnnotatedMethod forStaticTypeOperation(
+    public static DefaultAutoOperateAnnotatedElement forStaticTypeOperation(
         AutoOperate annotation, AnnotatedElement element, MethodInvoker extractor,
         Predicate<? super KeyTriggerOperation> filter, BeanOperations operations, BeanOperationExecutor executor) {
-        return new AutoOperateAnnotatedMethod(annotation, element, extractor, filter, operations, executor, null);
+        return new DefaultAutoOperateAnnotatedElement(annotation, element, extractor, filter, operations, executor, null);
     }
 
-    public static AutoOperateAnnotatedMethod forDynamicTypeOperation(
+    public static DefaultAutoOperateAnnotatedElement forDynamicTypeOperation(
         AutoOperate annotation, AnnotatedElement element, MethodInvoker extractor,
         Predicate<? super KeyTriggerOperation> filter, BeanOperationExecutor executor, Function<Object, BeanOperations> parser) {
-        return new AutoOperateAnnotatedMethod(annotation, element, extractor, filter, null, executor, parser);
+        return new DefaultAutoOperateAnnotatedElement(annotation, element, extractor, filter, null, executor, parser);
     }
 
     /**
