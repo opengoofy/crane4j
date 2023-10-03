@@ -32,8 +32,10 @@ import cn.crane4j.core.support.OperateTemplate;
 import cn.crane4j.core.support.ParameterNameFinder;
 import cn.crane4j.core.support.SimpleTypeResolver;
 import cn.crane4j.core.support.TypeResolver;
-import cn.crane4j.core.support.aop.AutoOperateAnnotatedElementResolver;
-import cn.crane4j.core.support.aop.MethodBasedAutoOperateAnnotatedElementResolver;
+import cn.crane4j.core.support.auto.AutoOperateAnnotatedElementResolver;
+import cn.crane4j.core.support.auto.ClassBasedAutoOperateAnnotatedElementResolver;
+import cn.crane4j.core.support.auto.ComposableAutoOperateAnnotatedElement;
+import cn.crane4j.core.support.auto.MethodBasedAutoOperateAnnotatedElementResolver;
 import cn.crane4j.core.support.container.CacheableMethodContainerFactory;
 import cn.crane4j.core.support.container.DefaultMethodContainerFactory;
 import cn.crane4j.core.support.container.MethodContainerFactory;
@@ -76,6 +78,7 @@ import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.expression.BeanResolver;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 
@@ -328,6 +331,21 @@ public class DefaultCrane4jSpringConfiguration implements SmartInitializingSingl
     public MethodBasedAutoOperateAnnotatedElementResolver methodBasedAutoOperateAnnotatedElementResolver(
         Crane4jGlobalConfiguration crane4jGlobalConfiguration, TypeResolver typeResolver) {
         return new MethodBasedAutoOperateAnnotatedElementResolver(crane4jGlobalConfiguration, typeResolver);
+    }
+
+    @Bean
+    public ClassBasedAutoOperateAnnotatedElementResolver classBasedAutoOperateAnnotatedElementResolver(
+        Crane4jGlobalConfiguration crane4jGlobalConfiguration, ExpressionEvaluator expressionEvaluator) {
+        return new ClassBasedAutoOperateAnnotatedElementResolver(
+            crane4jGlobalConfiguration, expressionEvaluator, SpelExpressionContext::new
+        );
+    }
+
+    @Primary
+    @Bean
+    public ComposableAutoOperateAnnotatedElement composableAutoOperateAnnotatedElement(
+        Collection<AutoOperateAnnotatedElementResolver> autoOperateAnnotatedElementResolvers) {
+        return new ComposableAutoOperateAnnotatedElement(new ArrayList<>(autoOperateAnnotatedElementResolvers));
     }
 
     @Bean

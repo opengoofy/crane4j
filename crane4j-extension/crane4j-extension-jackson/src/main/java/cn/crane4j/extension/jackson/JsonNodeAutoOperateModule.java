@@ -1,7 +1,7 @@
 package cn.crane4j.extension.jackson;
 
 import cn.crane4j.core.support.AnnotationFinder;
-import cn.crane4j.core.support.aop.AutoOperateAnnotatedElementResolver;
+import cn.crane4j.core.support.auto.AutoOperateAnnotatedElementResolver;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -3,8 +3,8 @@ package cn.crane4j.extension.jackson;
 import cn.crane4j.annotation.AutoOperate;
 import cn.crane4j.core.exception.OperationExecuteException;
 import cn.crane4j.core.support.AnnotationFinder;
-import cn.crane4j.core.support.aop.AutoOperateAnnotatedElement;
-import cn.crane4j.core.support.aop.AutoOperateAnnotatedElementResolver;
+import cn.crane4j.core.support.auto.AutoOperateAnnotatedElement;
+import cn.crane4j.core.support.auto.AutoOperateAnnotatedElementResolver;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -36,7 +37,7 @@ import java.util.Set;
 public class JsonNodeAutoOperateSerializerModifier extends BeanSerializerModifier {
 
     private final AutoOperateSerializeContext context = new AutoOperateSerializeContext();
-    private final AutoOperateAnnotatedElementResolver elementResolver;
+    private final AutoOperateAnnotatedElementResolver annotatedElementResolver;
     private final ObjectMapper objectMapper;
     private final AnnotationFinder annotationFinder;
 
@@ -44,15 +45,11 @@ public class JsonNodeAutoOperateSerializerModifier extends BeanSerializerModifie
     @Override
     public JsonSerializer<?> modifySerializer(SerializationConfig config, BeanDescription beanDesc, JsonSerializer<?> serializer) {
         Class<?> targetType = beanDesc.getType().getRawClass();
-        AutoOperate autoOperate = annotationFinder.findAnnotation(targetType, AutoOperate.class);
-        if (Objects.isNull(autoOperate)) {
-            return serializer;
-        }
-        AutoOperateAnnotatedElement element = elementResolver.resolve(targetType, autoOperate);
-        if (Objects.isNull(element.getBeanOperations()) || element.getBeanOperations().isEmpty()) {
-            return serializer;
-        }
-        return new AutoOperateSerializer((Class<Object>)targetType, element, (JsonSerializer<Object>)serializer);
+        return Optional.ofNullable(annotationFinder.findAnnotation(targetType, AutoOperate.class))
+            .map(autoOperate -> annotatedElementResolver.resolve(targetType, autoOperate))
+            .filter(element -> Objects.nonNull(element.getBeanOperations()) && !element.getBeanOperations().isEmpty())
+            .<JsonSerializer<?>>map(element -> new AutoOperateSerializer((Class<Object>)targetType, element, (JsonSerializer<Object>)serializer))
+            .orElse(serializer);
     }
 
     /**

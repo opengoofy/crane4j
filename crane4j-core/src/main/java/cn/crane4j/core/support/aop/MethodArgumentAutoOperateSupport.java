@@ -4,6 +4,8 @@ import cn.crane4j.annotation.ArgAutoOperate;
 import cn.crane4j.annotation.AutoOperate;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.ParameterNameFinder;
+import cn.crane4j.core.support.auto.AutoOperateAnnotatedElement;
+import cn.crane4j.core.support.auto.AutoOperateAnnotatedElementResolver;
 import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
 import cn.crane4j.core.util.ArrayUtils;
 import cn.crane4j.core.util.CollectionUtils;
