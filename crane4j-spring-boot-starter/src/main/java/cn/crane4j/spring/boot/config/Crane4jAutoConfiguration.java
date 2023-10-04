@@ -41,7 +41,7 @@ import cn.crane4j.core.support.SimpleTypeResolver;
 import cn.crane4j.core.support.TypeResolver;
 import cn.crane4j.core.support.auto.AutoOperateAnnotatedElementResolver;
 import cn.crane4j.core.support.auto.ClassBasedAutoOperateAnnotatedElementResolver;
-import cn.crane4j.core.support.auto.ComposableAutoOperateAnnotatedElement;
+import cn.crane4j.core.support.auto.ComposableAutoOperateAnnotatedElementResolver;
 import cn.crane4j.core.support.auto.MethodBasedAutoOperateAnnotatedElementResolver;
 import cn.crane4j.core.support.container.CacheableMethodContainerFactory;
 import cn.crane4j.core.support.container.DefaultMethodContainerFactory;
@@ -273,9 +273,9 @@ public class Crane4jAutoConfiguration {
 
     @Primary
     @Bean
-    public ComposableAutoOperateAnnotatedElement composableAutoOperateAnnotatedElement(
+    public ComposableAutoOperateAnnotatedElementResolver composableAutoOperateAnnotatedElementResolver(
         Collection<AutoOperateAnnotatedElementResolver> autoOperateAnnotatedElementResolvers) {
-        return new ComposableAutoOperateAnnotatedElement(new ArrayList<>(autoOperateAnnotatedElementResolvers));
+        return new ComposableAutoOperateAnnotatedElementResolver(new ArrayList<>(autoOperateAnnotatedElementResolvers));
     }
 
     @ConditionalOnMissingBean

@@ -47,6 +47,7 @@ public class MethodBasedAutoOperateAnnotatedElementResolverTest {
     @Test
     public void resolveMethod() {
         Method method = ReflectUtils.getMethod(this.getClass(), "method", Collection.class);
+        Assert.assertTrue(resolver.support(method, null));
         Assert.assertNotNull(method);
         AutoOperate annotation = method.getAnnotation(AutoOperate.class);
         Assert.assertNotNull(annotation);
@@ -66,6 +67,7 @@ public class MethodBasedAutoOperateAnnotatedElementResolverTest {
         Method method = ReflectUtils.getMethod(this.getClass(), "method2", Result.class);
         Assert.assertNotNull(method);
         Parameter parameter = method.getParameters()[0];
+        Assert.assertTrue(resolver.support(parameter, null));
         AutoOperate annotation = parameter.getAnnotation(AutoOperate.class);
         Assert.assertNotNull(annotation);
         AutoOperateAnnotatedElement element = resolver.resolve(parameter, annotation);
