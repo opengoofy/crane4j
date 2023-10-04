@@ -22,7 +22,7 @@ public class ChainAccessiblePropertyOperator implements PropertyOperator {
     /**
      * original operator
      */
-    protected final PropertyOperator propertyOperator;
+    protected final PropertyOperator delegate;
 
     /**
      * splitter
@@ -33,11 +33,11 @@ public class ChainAccessiblePropertyOperator implements PropertyOperator {
      * Create an {@link ChainAccessiblePropertyOperator} instance,
      * and use the default splitter to separate input chain operators based on the {@code "."} character.
      *
-     * @param propertyOperator property operator
+     * @param delegate property operator
      * @see DefaultSplitter
      */
-    public ChainAccessiblePropertyOperator(PropertyOperator propertyOperator) {
-        this(propertyOperator, new DefaultSplitter("."));
+    public ChainAccessiblePropertyOperator(PropertyOperator delegate) {
+        this(delegate, new DefaultSplitter("."));
     }
 
     /**
@@ -67,7 +67,7 @@ public class ChainAccessiblePropertyOperator implements PropertyOperator {
     public MethodInvoker findGetter(Class<?> targetType, String propertyName) {
         String[] properties = splitter.apply(propertyName);
         if (properties.length <= 1) {
-            return propertyOperator.findGetter(targetType, propertyName);
+            return delegate.findGetter(targetType, propertyName);
         }
         return chainGetter(properties);
     }
@@ -100,7 +100,7 @@ public class ChainAccessiblePropertyOperator implements PropertyOperator {
     public MethodInvoker findSetter(Class<?> targetType, String propertyName) {
         String[] properties = splitter.apply(propertyName);
         if (properties.length <= 1) {
-            return propertyOperator.findSetter(targetType, propertyName);
+            return delegate.findSetter(targetType, propertyName);
         }
         return chainSetter(properties);
     }
@@ -111,7 +111,7 @@ public class ChainAccessiblePropertyOperator implements PropertyOperator {
                 if (Objects.isNull(target)) {
                     return null;
                 }
-                target = propertyOperator.readProperty(target.getClass(), target, prop);
+                target = delegate.readProperty(target.getClass(), target, prop);
             }
             return target;
         };
@@ -129,12 +129,12 @@ public class ChainAccessiblePropertyOperator implements PropertyOperator {
                 }
                 targetProp = splitPropertyChain[deep];
                 // go to next level
-                target = propertyOperator.readProperty(target.getClass(), target, targetProp);
+                target = delegate.readProperty(target.getClass(), target, targetProp);
                 deep++;
             }
             // reached the deepest point?
             if (deep == targetDeep && Objects.nonNull(target)) {
-                propertyOperator.writeProperty(target.getClass(), target, splitPropertyChain[targetDeep], args[0]);
+                delegate.writeProperty(target.getClass(), target, splitPropertyChain[targetDeep], args[0]);
             }
             return null;
         };

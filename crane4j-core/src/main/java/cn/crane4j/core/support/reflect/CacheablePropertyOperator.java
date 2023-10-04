@@ -38,7 +38,7 @@ public class CacheablePropertyOperator implements PropertyOperator {
     /**
      * Property operator
      */
-    private final PropertyOperator propertyOperator;
+    private final PropertyOperator delegate;
 
     /**
      * Get getter method.
@@ -51,7 +51,7 @@ public class CacheablePropertyOperator implements PropertyOperator {
     @Override
     public MethodInvoker findGetter(Class<?> targetType, String propertyName) {
         MethodInvoker invoker = findInvokerFromCache(
-                getterCaches, targetType, propertyName, propertyOperator::findGetter
+                getterCaches, targetType, propertyName, delegate::findGetter
         );
         return resolve(invoker);
     }
@@ -67,7 +67,7 @@ public class CacheablePropertyOperator implements PropertyOperator {
     @Override
     public MethodInvoker findSetter(Class<?> targetType, String propertyName) {
         MethodInvoker invoker = findInvokerFromCache(
-                setterCaches, targetType, propertyName, propertyOperator::findSetter
+                setterCaches, targetType, propertyName, delegate::findSetter
         );
         return resolve(invoker);
     }

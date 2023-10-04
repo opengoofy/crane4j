@@ -18,7 +18,7 @@ public class MapAccessiblePropertyOperator implements PropertyOperator {
     /**
      * original operator
      */
-    private final PropertyOperator propertyOperator;
+    private final PropertyOperator delegate;
 
     /**
      * Get the specified property value.
@@ -34,7 +34,7 @@ public class MapAccessiblePropertyOperator implements PropertyOperator {
         if (isMap(targetType)) {
             return castMap(target).get(propertyName);
         }
-        return propertyOperator.readProperty(targetType, target, propertyName);
+        return delegate.readProperty(targetType, target, propertyName);
     }
 
     /**
@@ -50,7 +50,7 @@ public class MapAccessiblePropertyOperator implements PropertyOperator {
         if (isMap(targetType)) {
             return (t, args) -> castMap(t).get(propertyName);
         }
-        return propertyOperator.findGetter(targetType, propertyName);
+        return delegate.findGetter(targetType, propertyName);
     }
 
     /**
@@ -67,7 +67,7 @@ public class MapAccessiblePropertyOperator implements PropertyOperator {
             castMap(target).put(propertyName, value);
             return;
         }
-        propertyOperator.writeProperty(targetType, target, propertyName, value);
+        delegate.writeProperty(targetType, target, propertyName, value);
     }
 
     /**
@@ -83,7 +83,7 @@ public class MapAccessiblePropertyOperator implements PropertyOperator {
         if (isMap(targetType)) {
             return (t, args) -> castMap(t).put(propertyName, args[0]);
         }
-        return propertyOperator.findSetter(targetType, propertyName);
+        return delegate.findSetter(targetType, propertyName);
     }
 
     @SuppressWarnings("unchecked")
