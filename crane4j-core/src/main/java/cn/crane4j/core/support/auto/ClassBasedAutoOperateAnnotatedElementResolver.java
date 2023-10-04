@@ -21,8 +21,18 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
+ * <p>A handler that resolve the {@link AutoOperate} annotation
+ * on the {@link Class} to {@link AutoOperateAnnotatedElement}.
+ * 
+ * <p>Compared to {@link MethodBasedAutoOperateAnnotatedElementResolver},
+ * this resolver can only resolve the static type operation,
+ * and support the condition expression.
+ * 
  * @author huangchengxing
  * @since 2.3.0
+ * @see AutoOperate
+ * @see ExpressionEvaluator
+ * @see ExpressionContext
  */
 public class ClassBasedAutoOperateAnnotatedElementResolver extends AbstractAutoOperateAnnotatedElementResolver {
 

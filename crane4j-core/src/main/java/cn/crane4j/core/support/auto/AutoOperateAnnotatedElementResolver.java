@@ -13,6 +13,8 @@ import java.lang.reflect.AnnotatedElement;
  * @see AutoOperate
  * @see AutoOperateAnnotatedElement
  * @see MethodBasedAutoOperateAnnotatedElementResolver
+ * @see ClassBasedAutoOperateAnnotatedElementResolver
+ * @see ComposableAutoOperateAnnotatedElementResolver
  */
 public interface AutoOperateAnnotatedElementResolver {
 

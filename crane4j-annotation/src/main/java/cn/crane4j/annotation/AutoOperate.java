@@ -8,17 +8,19 @@ import java.lang.annotation.Target;
 import java.lang.reflect.AnnotatedElement;
 
 /**
- * <p>Mark a {@link AnnotatedElement} to indicate that after a specific step,
- * the instance corresponding to the element will automatically complete the filling operation.
+ * <p>Mark a {@link AnnotatedElement} to indicate that
+ * after a specific step, the instance corresponding to the element
+ * will automatically complete the filling operation.
  *
- * <p>For example, mark it on a method to indicate that its return value needs to be automatic filling after a method call,
- * or mark it on a class to indicate that automatic filling is required during its serialization.
+ * <p>For example, mark it on a method to indicate that
+ * its return value needs to be automatic filling after a method call,
+ * or mark it on a class to indicate that
+ * automatic filling is required during its serialization.
  *
  * @author huangchengxing
  * @see ArgAutoOperate
- * @see cn.crane4j.core.support.aop.MethodResultAutoOperateSupport
- * @see cn.crane4j.core.support.aop.MethodArgumentAutoOperateSupport
- * @see cn.crane4j.core.support.aop.AutoOperateAnnotatedElementResolver
+ * @see cn.crane4j.core.support.auto.AutoOperateAnnotatedElement
+ * @see cn.crane4j.core.support.auto.AutoOperateAnnotatedElementResolver
  */
 @Target({ElementType.METHOD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
