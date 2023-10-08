@@ -91,6 +91,7 @@ public interface ContainerManager extends ConfigurableContainerProvider {
      * @return old container instance or container definition
      * @see ContainerLifecycleProcessor#whenRegistered
      */
+    // TODO return definition
     @Nullable
     Object registerContainer(ContainerDefinition definition);
 
@@ -103,6 +104,7 @@ public interface ContainerManager extends ConfigurableContainerProvider {
      * @return old container instance or container definition
      * @see ContainerLifecycleProcessor#whenRegistered
      */
+    // TODO return definition
     @Nullable
     default Object registerContainer(
         String namespace, Supplier<Container<Object>> factory) {
@@ -118,6 +120,7 @@ public interface ContainerManager extends ConfigurableContainerProvider {
      * @return old container instance or container definition
      * @see ContainerLifecycleProcessor#whenRegistered
      */
+    // TODO return definition
     @Override
     @SuppressWarnings("unchecked")
     default Object registerContainer(@NonNull Container<?> container) {
@@ -137,6 +140,13 @@ public interface ContainerManager extends ConfigurableContainerProvider {
     @Nullable
     @Override
     <K> Container<K> getContainer(String namespace);
+
+    /**
+     * Get all limited containers.
+     *
+     * @return limited containers
+     */
+    Collection<LimitedContainer<Object>> getAllLimitedContainers();
 
     /**
      * Obtaining and caching container instances from the specified container provider..

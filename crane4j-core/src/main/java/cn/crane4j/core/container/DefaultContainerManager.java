@@ -19,6 +19,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 /**
  * A base implementation of {@link ContainerManager}.
@@ -133,7 +134,6 @@ public class DefaultContainerManager implements ContainerManager {
      * @return container comparator
      * @see ContainerLifecycleProcessor#whenCreated
      */
-    @SuppressWarnings("all")
     @Nullable
     @Override
     public <K> Container<K> getContainer(String namespace) {
@@ -142,13 +142,19 @@ public class DefaultContainerManager implements ContainerManager {
         }
         // check if the container is created
         Object key = getCacheKey(namespace);
+        return doGetContainer(key);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Nullable
+    private <K> Container<K> doGetContainer(Object key) {
         Object container = containerMap.get(key);
         if (Objects.nonNull(container) && container instanceof Container) {
-            return (Container<K>) container;
+            return (Container<K>)container;
         }
 
         // create container
-        return (Container<K>) containerMap.compute(key, (k, t) -> {
+        return (Container<K>)containerMap.compute(key, (k, t) -> {
             // check again
             boolean isDirectRegistered = Objects.nonNull(t);
             // fix https://github.com/opengoofy/crane4j/issues/162
@@ -156,13 +162,29 @@ public class DefaultContainerManager implements ContainerManager {
                 return t;
             }
             // can't find it. maybe in the provider?
-            ContainerDefinition definition = isDirectRegistered ?
-                (ContainerDefinition) t : createDefinition(k);
+            ContainerDefinition definition = isDirectRegistered ? (ContainerDefinition)t : createDefinition(k);
             if (Objects.isNull(definition)) {
                 return null;
             }
             return createContainer(k.toString(), definition);
         });
+    }
+
+    /**
+     * Get all limited containers.
+     *
+     * @return limited containers
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public Collection<LimitedContainer<Object>> getAllLimitedContainers() {
+        return containerMap.entrySet().stream()
+            .filter(e -> (e.getValue() instanceof ContainerDefinition) ?
+                ((ContainerDefinition) e.getValue()).isLimited() : e.getValue() instanceof LimitedContainer
+            )
+            .map(e -> doGetContainer(e.getKey()))
+            .map(LimitedContainer.class::cast)
+            .collect(Collectors.toList());
     }
 
     /**
