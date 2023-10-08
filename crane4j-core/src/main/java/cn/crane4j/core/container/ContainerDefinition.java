@@ -57,6 +57,19 @@ public interface ContainerDefinition {
      */
     void setContainerFactory(Supplier<Container<Object>> factory);
 
+    /**
+     * Whether the container is {@link LimitedContainer}.
+     *
+     * @return true if the container is {@link LimitedContainer}, otherwise false
+     */
+    boolean isLimited();
+
+    /**
+     * Set whether the container is {@link LimitedContainer}.
+     *
+     * @param limited true if the container is {@link LimitedContainer}, otherwise false
+     */
+    void setLimited(boolean limited);
 
     /**
      * Create {@link Container} by given {@code factory}.
@@ -94,6 +107,12 @@ public interface ContainerDefinition {
         @Setter
         @Nullable
         private Supplier<Container<Object>> containerFactory;
+
+        /**
+         * Whether the container is {@link LimitedContainer}.
+         */
+        @Setter
+        private boolean limited = false;
 
         /**
          * Create an instance.
