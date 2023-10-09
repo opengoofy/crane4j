@@ -23,94 +23,88 @@ const navConfig = [
 const sidebarConfig = [
     {
         title: '指南',
-        collapsable: false, // 不折叠
+        collapsable: false,
         children: [
-            { title: "关于项目", path: "/basic/0.1.关于项目.md" },
-            { title: "配置文件", path: "/basic/0.2.配置文件.md" },
-            { title: "常见问题", path: "/basic/0.3.常见问题.md" }
+            { title: "简介", path: "/user_guide/what_is_crane4j.md" },
+            { title: "基本概念", path: "/user_guide/basic_concept.md" },
+            { title: "原理", path: "/user_guide/operational_principle.md" },
+            {
+                title: '快速开始',
+                path: "/user_guide/getting_started/getting_started_abstract.html",
+                children: [
+                    { title: "在springboot中使用", path: "/user_guide/getting_started/getting_started_with_springboot.md" },
+                    { title: "在spring中使用 ", path: "/user_guide/getting_started/getting_started_with_spring.md" },
+                    { title: "在非spring环境使用", path: "/user_guide/getting_started/getting_started_without_spring.md" }
+                ]
+            },
+            {
+                title: '场景示例',
+                children: [
+                    { title: "字典值自动转换", path: "/use_case/example_auto_fill_controller.md" },
+                    { title: "填充一个复杂对象", path: "/use_case/example_multi_datasource.md" },
+                ]
+            },
+            { title: "常见问题", path: "/user_guide/faq.md" },
         ]
     },
     {
-        title: '1.基础',
-        collapsable: false, // 不折叠
+        title: '基础',
+        collapsable: false,
         children: [
-            { title: "1.1.安装", path: "/start/1.1.安装.md" },
-            { title: "1.2.配置数据源", path: "/start/1.2.配置数据源.md" },
-            { title: "1.3.填充对象", path: "/start/1.3.填充对象.md" },
-            { title: "1.4.填充嵌套对象", path: "/start/1.4.填充嵌套对象.md" },
-            { title: "1.5.基于枚举填充", path: "/start/1.5.基于枚举填充.md" },
-            { title: "1.6.基于方法填充", path: "/start/1.6.基于方法填充.md" },
-            { title: "1.7.基于代理接口填充", path: "/start/1.7.基于代理接口填充.md" }
+            { title: "声明装配操作", path: "/basic/declare_assemble_operation.md" },
+            { title: "配置属性映射", path: "/basic/multi_assemble_operation.md" },
+            {
+                title: '数据源容器',
+                path: "/basic/container/container_abstract.html",
+                children: [
+                    { title: "Map集合", path: "/basic/container/map_container.md" },
+                    { title: "枚举类", path: "/basic/container/enum_container.md" },
+                    { title: "常量类", path: "/basic/container/constant_container.md" },
+                    { title: "lambda表达式", path: "/basic/container/lambda_container.md" },
+                    { title: "方法", path: "/basic/container/method_container.md" },
+                    { title: "对象", path: "/basic/container/object_container.md" },
+                    { title: "内省", path: "/basic/container/introspection_container.md" },
+                    { title: "自定义", path: "/basic/container/custom_container.md" },
+                    { title: "提供者", path: "/basic/container/container_provider.md" },
+                ]
+            },
+            { title: "触发填充操作", path: "/basic/trigger_operation.md" },
+            { title: "填充嵌套对象", path: "/basic/declare_disassemble_operation.md" },
+            { title: "一对一&多对多", path: "/basic/multi_assemble_operation.md" },
+            { title: "分组填充", path: "/basic/operation_group.md" },
+            { title: "顺序填充", path: "/basic/operation_sort.md" }
         ]
     },
     {
-        title: '2.数据源容器',
-        path: "/container/2.0.数据源容器.html",
-        collapsable: false, // 不折叠
+        title: '进阶',
+        collapsable: false,
         children: [
-            { title: "2.1.本地缓存", path: "/container/2.1.本地缓存容器.md" },
-            { title: "2.2.枚举", path: "/container/2.2.枚举容器.md" },
-            { title: "2.3.常量", path: "/container/2.3.常量容器.md" },
-            { title: "2.4.lambda表达式", path: "/container/2.4.lambda容器.md" },
-            { title: "2.5.可调用方法", path: "/container/2.5.方法容器.md" },
-            { title: "2.6.对象内省", path: "/container/2.6.对象内省.md" },
-            { title: "2.7.接口/自定义", path: "/container/2.7.自定义容器.md" },
-            { title: "2.8.容器提供者", path: "/container/2.8.容器提供者.md" },
-            { title: "2.9.对象容器", path: "/container/2.9.对象容器.md" }
+            { title: '缓存', path: "/advanced/cache.md"},
+            { title: '组合注解', path: "/advanced/combination_annotation.md"},
+            { title: '容器的生命周期', path: "/advanced/container_lifecycle.md"},
+            { title: '注解处理器', path: "/advanced/operation_annotation_handler.md"},
+            { title: '使用抽象方法填充', path: "/advanced/operator_interface.md"},
+            { title: '反射工厂', path: "/advanced/reflection_factory.md"},
+            { title: '类型转换', path: "/advanced/type_converter.md"}
         ]
     },
     {
-        title: '3.操作配置',
-        collapsable: false, // 不折叠
-        path: "/operation/3.0.操作配置.html",
+        title: '扩展插件',
+        collapsable: false,
         children: [
-            { title: "3.1.声明装配操作", path: "/operation/3.1.声明装配操作.md" },
-            { title: "3.2.配置属性映射", path: "/operation/3.2.配置属性映射.md" },
-            { title: "3.3.指定装配处理器", path: "/operation/3.3.指定装配处理器.md" },
-            { title: "3.4.拆卸嵌套对象", path: "/operation/3.4.拆卸嵌套对象.md" },
-            { title: "3.5.操作分组", path: "/operation/3.5.操作分组.md" },
-            { title: "3.6.操作排序", path: "/operation/3.6.操作排序.md" },
-            { title: "3.7.操作者接口", path: "/operation/3.7.操作者接口.md" }
+            { title: 'MybatisPlus', path: "/extension/mybatis_plus_extension.md"},
+            { title: 'Jackson', path: "/extension/jackson_extension.md"},
         ]
     },
     {
-        title: '4.执行操作',
-        collapsable: false, // 不折叠
+        title: '其他',
+        collapsable: false,
         children: [
-            { title: "4.1.手动填充", path: "/execute/4.1.手动填充.md" },
-            { title: "4.2.自动填充", path: "/execute/4.2.自动填充.md" },
-            { title: "4.3.操作执行器", path: "/execute/4.3.操作执行器.md" }
+            { title: '配置文件', path: "/other/configuration_properties.md"},
+            { title: '更新日志', path: "/other/changelog.md"},
+            { title: '联系作者', path: "/other/community.md"},
+            { title: '提问的智慧', path: "/other/How-To-Ask-Questions-The-Smart-Way.md"},
         ]
-    },
-    {
-        title: "5.高级特性",
-        collapsable: false, // 不折叠
-        children: [
-            { title: "5.1.缓存", path: "/advance/5.1.缓存.md" },
-            { title: "5.2.组合注解", path: "/advance/5.2.组合注解.md" },
-            { title: "5.3.容器的生命周期回调", path: "/advance/5.3.容器的生命周期回调.md" },
-            { title: "5.4.反射工厂", path: "/advance/5.4.反射工厂.md" },
-            { title: "5.5.操作注解解析器", path: "/advance/5.5.操作注解解析器.md" },
-            { title: "5.5.类型转换", path: "/advance/5.6.类型转换.md" }
-        ],
-    },
-    {
-        title: "6.扩展组件",
-        collapsable: false, // 不折叠
-        children: [
-            { title: "6.1.MybatisPlus扩展.md", path: "/extension/6.1.MybatisPlus扩展.md" },
-            { title: "6.1.Jackson扩展", path: "/extension/6.2.Jackson扩展.md" },
-        ],
-    },
-    {
-        title: "其他",
-        collapsable: false, // 不折叠
-        children: [
-            { title: "联系作者", path: "/other/联系作者.md" },
-            { title: "提问的智慧", path: "/other/提问的智慧.md" },
-            { title: "源码设计", path: "/other/源码设计.md" },
-            { title: "更新日志", path: "/other/更新日志.md" }
-        ],
     }
 ]
 
