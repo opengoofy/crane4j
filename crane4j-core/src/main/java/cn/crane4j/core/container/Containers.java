@@ -3,7 +3,9 @@ package cn.crane4j.core.container;
 import cn.crane4j.annotation.ContainerEnum;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.DataProvider;
+import cn.crane4j.core.support.SimpleAnnotationFinder;
 import cn.crane4j.core.support.reflect.PropertyOperator;
+import cn.crane4j.core.support.reflect.ReflectivePropertyOperator;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -99,6 +101,18 @@ public class Containers {
     }
 
     /**
+     * Creates an immutable container from public static constants in the specified class.
+     *
+     * @param constantClass    the class whose constants should be converted to a container
+     * @return a container representing the class's constants
+     * @see ConstantContainerBuilder
+     * @since 2.3.0
+     */
+    public static Container<Object> forConstantClass(Class<?> constantClass) {
+        return forConstantClass(constantClass, SimpleAnnotationFinder.INSTANCE);
+    }
+
+    /**
      * Creates an immutable container from a specified enumeration type and key getter function.
      *
      * @param namespace namespace
@@ -135,5 +149,18 @@ public class Containers {
             .annotationFinder(annotationFinder)
             .propertyOperator(propertyOperator)
             .build();
+    }
+
+    /**
+     * Creates an immutable container from a specified enumeration type and a {@link ContainerEnum} annotation.
+     *
+     * @param enumType         enum type
+     * @param <K>              key type
+     * @return container
+     * @see EnumContainerBuilder
+     * @since 2.3.0
+     */
+    public static <K> Container<K> forEnum(Class<? extends Enum<?>> enumType) {
+        return forEnum(enumType, SimpleAnnotationFinder.INSTANCE, ReflectivePropertyOperator.INSTANCE);
     }
 }

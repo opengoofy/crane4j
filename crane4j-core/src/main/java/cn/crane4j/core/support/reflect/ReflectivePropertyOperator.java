@@ -48,6 +48,8 @@ import java.util.Objects;
  */
 public class ReflectivePropertyOperator implements PropertyOperator {
 
+    public static final ReflectivePropertyOperator INSTANCE = new ReflectivePropertyOperator();
+
     /**
      * converter register
      */

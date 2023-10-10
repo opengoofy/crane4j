@@ -61,6 +61,7 @@ public interface ContainerDefinition {
      * Whether the container is {@link LimitedContainer}.
      *
      * @return true if the container is {@link LimitedContainer}, otherwise false
+     * @since 2.3.0
      */
     boolean isLimited();
 
@@ -68,6 +69,7 @@ public interface ContainerDefinition {
      * Set whether the container is {@link LimitedContainer}.
      *
      * @param limited true if the container is {@link LimitedContainer}, otherwise false
+     * @since 2.3.0
      */
     void setLimited(boolean limited);
 

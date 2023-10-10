@@ -6,6 +6,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Collection;
 import java.util.Collections;
 
 /**
@@ -61,22 +62,39 @@ public class DefaultContainerManagerTest {
         ContainerDefinition definition = ContainerDefinition.create("test", "test", () -> container);
 
         // register container by definition
-        Object old = containerManager.registerContainer(definition);
-        Assert.assertNull(old);
+        Assert.assertSame(definition, containerManager.registerContainer(definition));
         Assert.assertTrue(containerManager.containsContainer(definition.getNamespace()));
         Assert.assertSame(container, containerManager.getContainer(definition.getNamespace()));
 
         // register container by factory method
-        old = containerManager.registerContainer("test", () -> container);
-        Assert.assertSame(old, container);
+        definition = containerManager.registerContainer("test", () -> container);
+        Assert.assertNotNull(definition);
+        Assert.assertSame(container, definition.createContainer());
         Assert.assertTrue(containerManager.containsContainer(definition.getNamespace()));
         Assert.assertSame(container, containerManager.getContainer(definition.getNamespace()));
 
         // register container by comparator
-        old = containerManager.registerContainer(container);
-        Assert.assertSame(old, container);
+        Assert.assertSame(definition, containerManager.registerContainer(definition));
         Assert.assertTrue(containerManager.containsContainer(definition.getNamespace()));
         Assert.assertSame(container, containerManager.getContainer(definition.getNamespace()));
+    }
+
+    @Test
+    public void getAllLimitedContainers() {
+        Container<Object> container1 = Containers.forLambda("test1", ids -> Collections.emptyMap());
+        containerManager.registerContainer(container1);
+        Container<Object> container2 = Containers.forMap("test2", Collections.emptyMap());
+        containerManager.registerContainer(container2);
+        Container<Object> container3 = Containers.forConstantClass(DefaultContainerManagerTest.class);
+        containerManager.registerContainer(container3);
+        Container<Object> container4 = Containers.forEnum(Enum.class);
+        containerManager.registerContainer(container4);
+
+        Collection<Container<Object>> containers = containerManager.getAllLimitedContainers();
+        Assert.assertEquals(3, containers.size());
+        Assert.assertTrue(containers.contains(container2));
+        Assert.assertTrue(containers.contains(container3));
+        Assert.assertTrue(containers.contains(container4));
     }
 
     @Test
@@ -101,4 +119,6 @@ public class DefaultContainerManagerTest {
         Assert.assertNull(containerManager.getContainerProvider("test"));
         Assert.assertFalse(containerManager.containsContainer(container.getNamespace()));
     }
+
+    private enum Enum {}
 }
