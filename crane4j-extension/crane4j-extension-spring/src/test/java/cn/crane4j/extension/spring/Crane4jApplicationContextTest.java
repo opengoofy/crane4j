@@ -1,6 +1,7 @@
 package cn.crane4j.extension.spring;
 
 import cn.crane4j.core.container.Container;
+import cn.crane4j.core.container.ContainerDefinition;
 import cn.crane4j.core.container.ContainerProvider;
 import cn.crane4j.core.container.Containers;
 import cn.crane4j.core.container.LambdaContainer;
@@ -81,14 +82,16 @@ public class Crane4jApplicationContextTest {
 
     @Test
     public void replaceContainer() {
-        Object old1 = context.registerContainer(LambdaContainer.forLambda("replaceContainer", ids -> Collections.emptyMap()));
-        Assert.assertNull(old1);
-        Container<Object> container1 = context.getContainer("replaceContainer");
-        Assert.assertSame(container1, context.getContainer("replaceContainer"));
+        Container<?> container1 = LambdaContainer.forLambda("replaceContainer", ids -> Collections.emptyMap());
+        ContainerDefinition cd1 = context.registerContainer(container1);
+        Assert.assertSame(cd1.createContainer(), container1);
+        Container<Object> container = context.getContainer("replaceContainer");
+        Assert.assertSame(container, context.getContainer("replaceContainer"));
 
-        Object old2 = context.registerContainer(LambdaContainer.forLambda("replaceContainer", ids -> Collections.emptyMap()));
-        Assert.assertSame(container1, old2);
-        Assert.assertNotSame(container1, context.getContainer("replaceContainer"));
+        Container<?> container2 = LambdaContainer.forLambda("replaceContainer", ids -> Collections.emptyMap());
+        ContainerDefinition cd2 = context.registerContainer(container2);
+        Assert.assertSame(container2, cd2.createContainer());
+        Assert.assertNotSame(container, context.getContainer("replaceContainer"));
     }
 
     protected static class TestConfig {

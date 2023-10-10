@@ -18,7 +18,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -103,10 +102,9 @@ public class DefaultContainerManager implements ContainerManager {
      */
     @Nullable
     @Override
-    public Object registerContainer(ContainerDefinition definition) {
+    public ContainerDefinition registerContainer(ContainerDefinition definition) {
         Asserts.isNotNull(definition, "definition must not null");
         Object key = getCacheKey(definition.getNamespace());
-        AtomicReference<Object> resultHolder = new AtomicReference<>();
         containerMap.compute(key, (k, t) -> {
             // process new definition
             ContainerDefinition newDefinition = ConfigurationUtil.triggerWhenRegistered(
@@ -119,12 +117,11 @@ public class DefaultContainerManager implements ContainerManager {
             // remove old instance or definition
             if (Objects.nonNull(t)) {
                 ConfigurationUtil.triggerWhenDestroyed(t, containerLifecycleProcessorList);
-                resultHolder.set(t);
             }
             // register new definition
             return definition;
         });
-        return resultHolder.get();
+        return definition;
     }
 
     /**
@@ -143,6 +140,21 @@ public class DefaultContainerManager implements ContainerManager {
         // check if the container is created
         Object key = getCacheKey(namespace);
         return doGetContainer(key);
+    }
+
+    /**
+     * Get all limited containers.
+     *
+     * @return limited containers
+     */
+    @Override
+    public Collection<Container<Object>> getAllLimitedContainers() {
+        return containerMap.entrySet().stream()
+            .filter(e -> (e.getValue() instanceof ContainerDefinition) ?
+                ((ContainerDefinition) e.getValue()).isLimited() : e.getValue() instanceof LimitedContainer
+            )
+            .map(e -> doGetContainer(e.getKey()))
+            .collect(Collectors.toList());
     }
 
     @SuppressWarnings("unchecked")
@@ -168,23 +180,6 @@ public class DefaultContainerManager implements ContainerManager {
             }
             return createContainer(k.toString(), definition);
         });
-    }
-
-    /**
-     * Get all limited containers.
-     *
-     * @return limited containers
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public Collection<LimitedContainer<Object>> getAllLimitedContainers() {
-        return containerMap.entrySet().stream()
-            .filter(e -> (e.getValue() instanceof ContainerDefinition) ?
-                ((ContainerDefinition) e.getValue()).isLimited() : e.getValue() instanceof LimitedContainer
-            )
-            .map(e -> doGetContainer(e.getKey()))
-            .map(LimitedContainer.class::cast)
-            .collect(Collectors.toList());
     }
 
     /**

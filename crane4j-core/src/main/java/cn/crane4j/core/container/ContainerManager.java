@@ -88,12 +88,10 @@ public interface ContainerManager extends ConfigurableContainerProvider {
      * This operation will overwrite the existing container definition.
      *
      * @param definition definition of container
-     * @return old container instance or container definition
+     * @return container definition currently registered with the manager
      * @see ContainerLifecycleProcessor#whenRegistered
      */
-    // TODO return definition
-    @Nullable
-    Object registerContainer(ContainerDefinition definition);
+    ContainerDefinition registerContainer(ContainerDefinition definition);
 
     /**
      * Register container definition by given arguments.<br />
@@ -101,12 +99,10 @@ public interface ContainerManager extends ConfigurableContainerProvider {
      *
      * @param namespace namespace of container
      * @param factory factory method of container instance
-     * @return old container instance or container definition
+     * @return container definition currently registered with the manager
      * @see ContainerLifecycleProcessor#whenRegistered
      */
-    // TODO return definition
-    @Nullable
-    default Object registerContainer(
+    default ContainerDefinition registerContainer(
         String namespace, Supplier<Container<Object>> factory) {
         ContainerDefinition definition = new ContainerDefinition.SimpleContainerDefinition(namespace, null, factory);
         return registerContainer(definition);
@@ -117,14 +113,15 @@ public interface ContainerManager extends ConfigurableContainerProvider {
      * This operation will overwrite the existing container definition.
      *
      * @param container container
-     * @return old container instance or container definition
+     * @return container definition currently registered with the manager
      * @see ContainerLifecycleProcessor#whenRegistered
      */
-    // TODO return definition
     @Override
     @SuppressWarnings("unchecked")
-    default Object registerContainer(@NonNull Container<?> container) {
-        return registerContainer(container.getNamespace(), () -> (Container<Object>) container);
+    default ContainerDefinition registerContainer(@NonNull Container<?> container) {
+        ContainerDefinition definition = registerContainer(container.getNamespace(), () -> (Container<Object>) container);
+        definition.setLimited(container instanceof LimitedContainer);
+        return definition;
     }
 
     // =============== container ===============
@@ -145,8 +142,9 @@ public interface ContainerManager extends ConfigurableContainerProvider {
      * Get all limited containers.
      *
      * @return limited containers
+     * @since 2.3.0
      */
-    Collection<LimitedContainer<Object>> getAllLimitedContainers();
+    Collection<Container<Object>> getAllLimitedContainers();
 
     /**
      * Obtaining and caching container instances from the specified container provider..

@@ -62,7 +62,7 @@ public class ContainersTest {
     @Test
     public void forAnnotatedEnum() {
         // annotated
-        Container<String> container = Containers.forEnum(AnnotatedEnum.class, new SimpleAnnotationFinder(), new ReflectivePropertyOperator(new HutoolConverterManager()));
+        Container<String> container = Containers.forEnum(AnnotatedEnum.class);
         Assert.assertEquals(AnnotatedEnum.class.getSimpleName(), container.getNamespace());
         Map<?, ?> data = container.get(null);
         Assert.assertEquals(AnnotatedEnum.ONE.getValue(), data.get(AnnotatedEnum.ONE.getKey()));
@@ -101,9 +101,7 @@ public class ContainersTest {
 
     @Test
     public void forConstantClass() {
-        Container<?> container1 = Containers.forConstantClass(
-            FooConstant1.class, new SimpleAnnotationFinder()
-        );
+        Container<?> container1 = Containers.forConstantClass(FooConstant1.class);
         Assert.assertEquals("foo", container1.getNamespace());
         Map<?, ?> sources1 = container1.get(null);
         Assert.assertTrue(sources1.containsKey("ONE"));
@@ -112,9 +110,7 @@ public class ContainersTest {
         Assert.assertEquals("three", sources1.get("THREE"));
         Assert.assertFalse(sources1.containsKey("two"));
 
-        Container<?> container2 = Containers.forConstantClass(
-            FooConstant2.class, new SimpleAnnotationFinder()
-        );
+        Container<?> container2 = Containers.forConstantClass(FooConstant2.class);
         Assert.assertEquals(FooConstant2.class.getSimpleName(), container2.getNamespace());
         Map<?, ?> sources2 = container2.get(null);
         Assert.assertTrue(sources2.containsKey("ONE"));
@@ -123,9 +119,7 @@ public class ContainersTest {
         Assert.assertEquals("three", sources2.get("THREE"));
         Assert.assertFalse(sources2.containsKey("two"));
 
-        Container<?> container3 = Containers.forConstantClass(
-            FooConstant3.class, new SimpleAnnotationFinder()
-        );
+        Container<?> container3 = Containers.forConstantClass(FooConstant3.class);
         Assert.assertEquals(FooConstant3.class.getSimpleName(), container3.getNamespace());
         Map<?, ?> sources3 = container3.get(null);
         Assert.assertTrue(sources3.containsKey("one"));

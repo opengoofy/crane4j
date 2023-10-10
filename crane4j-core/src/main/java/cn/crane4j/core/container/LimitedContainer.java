@@ -7,6 +7,7 @@ import java.util.Map;
  *
  * @author huangchengxing
  * @see ImmutableMapContainer
+ * @since 2.2.0
  */
 public interface LimitedContainer<K> extends Container<K> {
 
