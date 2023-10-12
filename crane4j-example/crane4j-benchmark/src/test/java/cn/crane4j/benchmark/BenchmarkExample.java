@@ -1,6 +1,7 @@
 package cn.crane4j.benchmark;
 
 import cn.crane4j.annotation.Assemble;
+import cn.crane4j.annotation.Disassemble;
 import cn.crane4j.annotation.Mapping;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.Containers;
@@ -30,7 +31,6 @@ import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
-import org.springframework.beans.BeanUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -49,15 +49,15 @@ import java.util.stream.IntStream;
 @State(Scope.Benchmark)
 @Measurement(iterations = 1, time = 5)
 @Warmup(iterations = 1, time = 5)
-@Fork(1)
+@Fork(2)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 public class BenchmarkExample {
 
-    @Param({"100", "1000", "10000", "100000", "1000000"})
+    @Param({"100", "1000", "10000", "100000"})
     private int dataSize;
-    private List<Foo> datas;
-    private Map<Integer, Foo> datasource;
+    private List<Foo> target1;
+    private List<Nested> target2;
     private OperateTemplate operateTemplate;
 
     public static void main(String[] args) throws RunnerException {
@@ -78,41 +78,33 @@ public class BenchmarkExample {
         );
 
         // 初始化待填充数据
-        this.datas = IntStream.rangeClosed(1, dataSize)
+        this.target1 = IntStream.rangeClosed(1, dataSize)
             .mapToObj(Foo::new)
             .collect(Collectors.toList());
 
+        // 初始化待填充数据
+        this.target2 = IntStream.rangeClosed(1, dataSize)
+            .mapToObj(idx -> new Nested(idx, new Foo(idx)))
+            .collect(Collectors.toList());
+
         // 初始化数据源
-        this.datasource = IntStream.rangeClosed(1, dataSize)
+        Map<Integer, Foo> datasource = IntStream.rangeClosed(1, dataSize)
             .mapToObj(id -> new Foo(id, "name" + id, id % 100))
             .collect(Collectors.toMap(Foo::getId, Function.identity()));
-        Container<Integer> container = Containers.forMap("test", this.datasource);
+        Container<Integer> container = Containers.forMap("test", datasource);
         configuration.registerContainer(container);
     }
 
     @Benchmark
-    public void fillByCrane4j(Blackhole blackhole) {
-        operateTemplate.execute(datas);
-        blackhole.consume(datas);
+    public void fill(Blackhole blackhole) {
+        operateTemplate.execute(target1);
+        blackhole.consume(target1);
     }
 
     @Benchmark
-    public void fillBySpring(Blackhole blackhole) {
-        datas.forEach(data -> {
-            Foo foo = datasource.get(data.getId());
-            BeanUtils.copyProperties(foo, data);
-            blackhole.consume(data);
-        });
-    }
-
-    @Benchmark
-    public void fillByDefault(Blackhole blackhole) {
-        datas.forEach(data -> {
-            Foo foo = datasource.get(data.getId());
-            data.setName(foo.getName());
-            data.setAge(foo.getAge());
-            blackhole.consume(data);
-        });
+    public void fillNested(Blackhole blackhole) {
+        operateTemplate.execute(target2);
+        blackhole.consume(target2);
     }
 
     @Data
@@ -125,5 +117,21 @@ public class BenchmarkExample {
         private final Integer id;
         private String name;
         private Integer age;
+    }
+
+    @Data
+    @AllArgsConstructor
+    @RequiredArgsConstructor
+    public static class Nested {
+
+        @Assemble(container = "test", props = {
+            @Mapping("name"), @Mapping("age")
+        })
+        private final Integer id;
+        private String name;
+        private Integer age;
+
+        @Disassemble(type = Foo.class)
+        private final Foo foo;
     }
 }
