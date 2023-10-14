@@ -108,7 +108,7 @@ public static class Foo {
 
 与非 Spring 环境不同，在 Spring 环境中，你可以选择手动填充或自动填充：
 
-### 手动填充
+### 5.1.手动填充
 
 ~~~java
 // 注入填充工具类
@@ -122,7 +122,7 @@ System.out.println(foos);
 // [Foo(id=1, name="a"), Foo(id=2, name="b"), Foo(id=3, name="c")]
 ~~~
 
-### 自动填充
+### 5.2.自动填充
 
 ~~~java
 // 在方法上添加注解，表明需要自动填充其方法返回值

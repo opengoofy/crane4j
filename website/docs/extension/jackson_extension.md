@@ -43,9 +43,11 @@ public class MbossChargeApplication {
 
 ## 2.启用插件
 
-### 在 Spring 环境
+此扩展插件基于 `ObjectMapper` 的 `Module` 机制实现，因此不管在哪个环境使用，最终都需要将其注册到待使用的 `ObjectMapper` 实例中。
 
-此扩展插件基于 `ObjectMapper` 的 `Module` 机制实现，因此在使用前，请确保 Spring 容器有且仅有一个可用的 `ObjectMapper`，在项目启动后，会自动将对应的模块注册到该实例中，后续直接使用即可。
+### 2.1.在 Spring 环境
+
+当 Spring 容器有且仅有一个可用的 `ObjectMapper` 时，在项目启动后，会自动将对应的模块注册到该实例中，后续直接使用即可。
 
 若 Spring 容器中**存在多个 `ObjectMapper`**，则需要按下述方式进行手动配置：
 
@@ -63,7 +65,7 @@ private void init() {
 
 当使用注册有 `JsonNodeAutoOperateModule` 的 `ObjectMapper` 序列化对象时，自动填充将会生效。
 
-### 在非 Spring 环境
+### 2.2.在非 Spring 环境
 
 若你在非 Spring 环境中，则需要按如下方式配置 `ObjectMapper`：
 

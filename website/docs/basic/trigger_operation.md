@@ -8,7 +8,7 @@ crane4j 支持手动和自动填充，前者通常通过执行器 `BeanOperation
 
 手动填充分为两种方式，一种方式是直接使用 `OperateTemplate` 工具类，另一种则是直接使用最底层的 `BeanOperationExecutor` 的 API 完成，一般我们推荐使用第一种。
 
-### 使用 OperateTemplate
+### 1.1.使用 OperateTemplate
 
 `OperateTemplate` 是 `crane4j` 提供的工具类，命名参考了 Spring 提供的各种 `XXXTemplate`：
 
@@ -20,7 +20,7 @@ OperateTemplate.execute(foos);
 
 `OperateTemplate` 可以按照默认配置完成整个填充流程，但它也提供了多种重载方法，允许你在参数中指定要使用的组件或过滤器。
 
-### 使用执行器
+### 1.2.使用执行器
 
 另一种是先使用配置解析器 `BeanOperationParser` 获得配置对象，然后再使用执行器 `BeanOperationExecutor` 完成操作：
 
@@ -39,6 +39,8 @@ executor.execute(foos, operation);
 ## 2.自动填充
 
 在`crane4j`中，可以基于 Spring AOP 的切面来实现自动填充方法的参数和返回值，这种方式称为**自动填充**。
+
+### 2.1.配置
 
 **填充方法返回值**
 
@@ -76,7 +78,7 @@ public void getFooList(Foo foo) {
 
 两种方式效果一致，你可以根据情况自行选择。
 
-### 自动类型推断
+### 2.2.自动类型推断
 
 在某些情况下，无法在编译期确定要填充的对象类型。此时，可以不指定 `type` 属性，而是在执行拆卸操作时动态推断类型：
 
@@ -91,7 +93,7 @@ public List<T> getFooList() {
 
 这个功能是通过类型解析器 `TypeResolver` 实现的。用户可以实现 `TypeResolver` 接口来替换默认的类型解析器，以适应特定的需求。
 
-### 包装类提取
+### 2.3.包装类提取
 
 有时候，在`Controller`中的方法返回值会使用通用响应体进行包装，例如：
 
@@ -134,7 +136,7 @@ public Result<PageInfo<Foo>> getFooList() {
 
 :::
 
-### 条件表达式
+### 2.4.条件表达式
 
 通过注解的 `condition` 属性，可以设置应用条件的表达式。在执行填充之前，动态根据表达式的计算结果决定是否执行。
 
@@ -159,7 +161,7 @@ public List<Foo> getFoo(Integer type) {
 
 :::
 
-### 指定分组
+### 2.5.指定分组
 
 通过注解的 `includes` 或 `excludes` 属性可以设置本次执行的操作组。例如：
 
@@ -172,7 +174,7 @@ public List<Foo> getFoo(Integer type) {
 
 在上述示例中，执行填充操作时，只会完成带有 `base` 或 `foo` 组别的装配/拆卸操作。
 
-### 指定执行器
+### 2.6.指定执行器
 
 通过注解的 `executor` 属性可以指定本次填充操作的执行器，不同的执行器会对填充操作产生不同的影响。
 
@@ -190,7 +192,7 @@ public List<Foo> getFoo(Integer type) {
 
 :::tip
 
-关于执行器，请参照 "基本概念" 一节
+关于执行器，请参照 "[基本概念](./../user_guide/basic_concept.md)" 一节中执行器部分内容。
 
 :::
 

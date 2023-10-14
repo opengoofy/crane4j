@@ -83,6 +83,6 @@ public List<Student> listStudent(List<Integer> ids) {
 :::tip
 
 - 拆卸操作也可以排序，不过它总是先于装配操作完成，所以一般情况下对拆卸操作排序没什么意义；
-- 关于执行器，请参阅 “基本概念” 一节；
+- 关于执行器，请参照 "[基本概念](./../user_guide/basic_concept.md)" 一节中执行器部分内容；
 
 :::

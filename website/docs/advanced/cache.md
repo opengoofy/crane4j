@@ -70,7 +70,7 @@ CacheableContainer<String> container = new CacheableContainer<>(original, cacheM
 
 在 `crane4j` 中，你可以通过三种方式将一个普通容器配置为缓存容器。
 
-### 手动替换
+### 3.1.手动替换
 
 可以获取全局配置类 `Crane4jGlobalConfiguration`，然后使用 `replaceContainer` 方法将原始的容器替换为包装后的缓存容器。
 
@@ -88,7 +88,7 @@ configuration.compute("namespace", container -> {
 
 在上述示例中，使用 `Crane4jGlobalConfiguration` 获取全局配置类实例，然后通过 `replaceContainer` 方法将指定命名空间的原始容器替换为缓存容器。需要传入原始容器、缓存管理器和缓存对象的名称。
 
-### 添加注解
+### 3.2.添加注解
 
 如果使用 `@ContainerMethod` 声明的方法容器，可以在方法上添加 `@ContainerCache` 注解或 `@CacheContainerMethod` 组合注解，将方法容器声明为可缓存容器。
 
@@ -113,7 +113,7 @@ public List<Foo> oneToManyMethod(List<String> args) {
 
 方法容器创建后，会自动包装为缓存容器。
 
-### 配置文件
+### 3.3.配置文件
 
 可以在配置文件中声明要将哪些容器包装为缓存容器。
 

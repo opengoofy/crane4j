@@ -38,7 +38,7 @@ public class StudentVO {
 + 将`Student.studentName`映射到`StudentVO.name`；
 + 将`Student.studentClassName`映射到`StudentVO.className`。
 
-### 同名属性
+### 1.1.同名属性
 
 另外，如果 `src` 和 `ref` 指定的字段名称相同，可以直接在`value`中同时指定。比如：
 
@@ -53,9 +53,9 @@ public class StudentVO {
 }
 ```
 
-### 自动类型转换
+### 1.2.自动类型转换
 
-当两边的属性类型不同时，将会自动进行类型转换，该功能依赖 `ConverterManager` 实现，具体参见后文 “类型转换” 一节。
+当两边的属性类型不同时，将会自动进行类型转换，该功能依赖 `ConverterManager` 实现，具体参见后文 “[类型转换](./../advanced/type_converter.md)” 一节。
 
 ## 2.对象到属性
 
@@ -76,17 +76,17 @@ public class StudentVO {
 
 这种配置通常适用于对象的组装，或者当数据源对象本身就是某个字典值或枚举值的情况。
 
-## 3.值到键
+## 3.属性到键
 
-当在 `@Mapping` 注解中不指定引用字段 `ref` 时，表示直接将映射值映射到 `key` 字段上。比如：
+当在 `@Mapping` 注解中不指定引用字段 `ref` 时，表示直接将 `src` 指向的属性值映射到 `key` 字段上。比如：
 
 ```java
 public class StudentVO {
     @Assemble(
         container = "gender", 
-        props = @Mapping(src = "name")  // gender.name -> studentVO.sex
+        props = @Mapping(src = "name")  // gender.name -> studentVO.gender
     )
-    private String sex;
+    private String gender;
 }
 ```
 
@@ -94,7 +94,20 @@ public class StudentVO {
 
 这种配置适用于将字典值或枚举值映射回目标对象的字段上。
 
-## 4.批量映射
+## 4.对象到键
+
+当在 `@Mapping` 注解中不指定引用字段 `ref` ，且不指定 `src` 时，表示整个数据源对象映射到目标对象的 `key` 字段上。比如：
+
+```java
+public class StudentVO {
+    @Assemble(container = "gender") // 假设通过 gender 获得的数据为 Map<String, String> 格式，比如 {key = "male", value = "男"}
+    private String sexgender
+}
+```
+
+这种情况比较罕见。
+
+## 5.批量映射
 
 在一些情况下，从数据源容器获得的一个键值将对应一批数据源对象（比如一对多或者多对多装配），在这种情况下，字段映射将变为**批量映射**模式。
 
@@ -133,7 +146,7 @@ public class StudentVO {
 
 在批量映射的情况下，返回的对象可以是数据源对象或数据源对象的属性集合。
 
-该功能需要配合 `AssembleOperationHandler` 使用，具体参见后文 “[一对一&多对多](./multi_assemble_operation.md)” 一节。
+该功能需要配合装配处理器 `AssembleOperationHandler` 使用，具体参见后文 “[一对一&多对多](./assemble_operation_handler.md)” 一节。
 
 :::warning
 
@@ -142,7 +155,7 @@ public class StudentVO {
 
 :::
 
-## 5.属性映射模板
+## 6.属性映射模板
 
 为了保持代码的整洁性，我们可以将字段映射配置抽取为独立的模板。比如，现有如下配置：
 
@@ -195,7 +208,7 @@ public class StudentVO {
 
 字段映射规则按照**就近原则**执行。即离 `StudentVO` 越近，且排序靠前的字段优先完成映射，后面的映射字段会覆盖已有的值。
 
-## 6.链式操作符
+## 7.链式操作符
 
 `crane4j` 支持在 `@Mapping` 注解中，通过类似 js 的链式操作符的方式来访问或设置嵌套对象的属性。
 
@@ -223,5 +236,7 @@ public class Foo {
 :::warning
 
 该功能是通过 `ChainAccessiblePropertyOperator` 类实现的。如果用户替换了默认的 `PropertyOperator`，则需要手动使用 `ChainAccessiblePropertyOperator` 对用户的实现进行包装。
+
+具体参见后文 “[反射工厂](./../advanced/reflection_factory.md)” 部分内容。
 
 :::

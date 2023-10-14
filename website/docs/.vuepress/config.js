@@ -70,7 +70,7 @@ const sidebarConfig = [
             },
             { title: "触发填充操作", path: "/basic/trigger_operation.md" },
             { title: "填充嵌套对象", path: "/basic/declare_disassemble_operation.md" },
-            { title: "一对一&多对多", path: "/basic/multi_assemble_operation.md" },
+            { title: "一对多&多对多", path: "/basic/assemble_operation_handler.md" },
             { title: "分组填充", path: "/basic/operation_group.md" },
             { title: "顺序填充", path: "/basic/operation_sort.md" }
         ]

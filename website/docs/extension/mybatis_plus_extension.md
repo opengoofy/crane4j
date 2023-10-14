@@ -38,11 +38,11 @@ public class MbossChargeApplication {
 
 在使用前，你需要通过自动注册、手动注册或懒加载的方式向 crane4j 注册 `BaseMapper` 接口。
 
-### 懒加载
+### 2.1.懒加载
 
 在 Spring 环境中，用户默认不需要进行额外的操作，`MybatisPlusQueryContainerProvider` 会在用户使用时根据 `beanName` 自动从 Spring 上下文中获得对应的 `Mapper`，并完成自动注册，即懒加载。
 
-### 自动注册
+### 2.2.自动注册
 
 在 Spring 环境中，用户也可以指定 `auto-register-mapper` 为 `true` 开启自动注册，相关配置如下：
 
@@ -56,7 +56,7 @@ crane4j:
 
 在开启自动注册的情况下，spring 上下文中任何符合 `includes` 与 `excludes` 规则的 `Mapper` 都会被注册。
 
-### 手动注册
+### 2.3.手动注册
 
 用户也可以获取 `MybatisPlusQueryContainerProvider` 进行手动注册：
 
@@ -92,7 +92,7 @@ public class Foo {
 
 并且在 Spring 上下文中已经有了一个继承 `BaseMapper` 接口的 `FooMapper` bean，其 bean 名称默认为 `fooMapper`。
 
-### 根据主键查询全部字段
+### 3.1.根据主键查询全部字段
 
 ```java
 public class Foo {
@@ -107,7 +107,7 @@ public class Foo {
 
 当执行装配时，数据源等同于基于 `id` 批量查询出来的 `Foo` 对象，SQL 为 `select * from foo where id in ?`。
 
-### 根据主键查询指定字段
+### 3.2.根据主键查询指定字段
 
 ```java
 @AssembleMp(
@@ -127,7 +127,7 @@ private Integer id;
 
 :::
 
-### 根据指定外键查询全部字段
+### 3.3.根据指定外键查询全部字段
 
 ```java
 @AssembleMp(
@@ -139,7 +139,7 @@ private String name;
 
 上述配置相当于使用 `QueryWrapper` 构建并执行了 `select * from foo where user_name in ?` 这条 SQL，查询出的数据将按照用户指定的 `userName` 属性进行分组。
 
-### 根据指定外键查询指定字段
+### 3.4.根据指定外键查询指定字段
 
 ```java
 @AssembleMp(

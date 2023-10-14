@@ -46,7 +46,7 @@ private interface OperatorInterface {
 
 :::
 
-### 在 Spring 环境
+### 1.1.在 Spring 环境
 
 在 Spring 环境中，你需要在启动类或配置类添加 `@OperatorScan` 注解指定扫描路径，就像 Mybatis 的 `MapperScan` 一样：
 
@@ -73,7 +73,7 @@ public class FooService {
 }
 ```
 
-### 在非 Spring 环境
+### 1.2.在非 Spring 环境
 
 在非 Spring 环境，你需要手动的创建代理工厂，然后才能基于代理工厂为接口创建代理对象：
 
@@ -124,11 +124,11 @@ Map<Integer, User> users = userService.listInternalUserByIds(
 operator.operate(targets, users);
 ~~~
 
-### 自定义扩展
+### 3.1.自定义扩展
 
 该功能基于 `OperatorProxyFactory` 实现，你也可以扩展自己的方法工厂，并注册到操作者接口代理工厂 `OperatorProxyMethodFactory` 中，从而实现一些自定义的逻辑。
 
-### 参数适配
+### 3.2.参数适配
 
 处了可以将 Map 集合适配为容器外，也支持直接传入 `Container`，或 `DataProvider` 类型的参数：
 
