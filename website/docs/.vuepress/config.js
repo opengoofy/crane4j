@@ -52,7 +52,7 @@ const sidebarConfig = [
         collapsable: false,
         children: [
             { title: "声明装配操作", path: "/basic/declare_assemble_operation.md" },
-            { title: "配置属性映射", path: "/basic/multi_assemble_operation.md" },
+            { title: "配置属性映射", path: "/basic/property_mapping.md" },
             {
                 title: '数据源容器',
                 path: "/basic/container/container_abstract.html",
