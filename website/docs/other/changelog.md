@@ -113,7 +113,7 @@
 
 **Doc**
 
-- [补充文档，如何在非 spring 环境和 spring 环境使用 crane4j](https://github.com/opengoofy/crane4j/issues/34)；
+- [补充文档，如何在非 Spring 环境和 Spring 环境使用 crane4j](https://github.com/opengoofy/crane4j/issues/34)；
 
 ## 2.0.0-ALPHA (2023-07-08)
 
@@ -142,7 +142,7 @@
 
 **Doc**
 
-- [补充文档，如何在非 spring 环境和 spring 环境使用 crane4j](https://github.com/opengoofy/crane4j/issues/34)；
+- [补充文档，如何在非 Spring 环境和 Spring 环境使用 crane4j](https://github.com/opengoofy/crane4j/issues/34)；
 
 ## 2.0.0-BATE (2023-07-30)
 
@@ -203,7 +203,7 @@
 
 **Doc**
 
-- [补充文档，如何在非 spring 环境和 spring 环境使用 crane4j](https://github.com/opengoofy/crane4j/issues/34)；
+- [补充文档，如何在非 Spring 环境和 Spring 环境使用 crane4j](https://github.com/opengoofy/crane4j/issues/34)；
 
 ## 2.1.0 (2023-08-21)
 

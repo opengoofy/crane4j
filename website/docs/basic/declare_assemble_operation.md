@@ -100,7 +100,7 @@ public class Foo {
 
 :::tip
 
-从 2.2 版本开始，`cranej4` 提供了用于在序列化过程中进行填充的 `jackson` 插件，`jackson` 插件默认从 JsonNode 中拿到的所有 key 值都为 `String` 类型，因此当使用此插件时，若你的数据源容器接受的参数类型不是 `String`，则必须手动显式的在注解配置中指定 key 的类型。
+从 2.2 版本开始，`crane4j` 提供了用于在序列化过程中进行填充的 `jackson` 插件，`jackson` 插件默认从 JsonNode 中拿到的所有 key 值都为 `String` 类型，因此当使用此插件时，若你的数据源容器接受的参数类型不是 `String`，则必须手动显式的在注解配置中指定 key 的类型。
 
 :::
 
@@ -137,9 +137,9 @@ public class Foo {
 
 你可以通过实现 `PropertyMappingStrategy` 接口创建自定义策略。
 
-在 spring 环境中，你只需要将自定义策略交由 spring 容器管理即可，项目启动后 cranej4 会自动注册。
+在 Spring 环境中，你只需要将自定义策略交由 Spring 容器管理即可，项目启动后 crane4j 会自动注册。
 
-而在非 spring 环境中，你可以直接将其注册到 `SimpleCrane4jGlobalConfiguration` 中：
+而在非 Spring 环境中，你可以直接将其注册到 `SimpleCrane4jGlobalConfiguration` 中：
 
 ~~~java
 SimpleCrane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create();
@@ -149,7 +149,7 @@ configuration.addPropertyMappingStrategy(customStrategy);
 
 ## 4.表达式支持
 
-在 spring 环境中，你可以在 `@Assemble` 注解的 `container` 属性里引用一些配置文件属性：
+在 Spring 环境中，你可以在 `@Assemble` 注解的 `container` 属性里引用一些配置文件属性：
 
 ```java
 public class Foo {
@@ -169,4 +169,4 @@ public class Foo {
 }
 ```
 
-用法与 spring 提供的 `@Value` 一致。
+用法与 Spring 提供的 `@Value` 一致。

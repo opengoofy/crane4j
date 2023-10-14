@@ -40,11 +40,11 @@ public class MbossChargeApplication {
 
 ### 懒加载
 
-在 spring 环境中，用户默认不需要进行额外的操作，`MybatisPlusQueryContainerProvider` 会在用户使用时根据 `beanName` 自动从 spring 上下文中获得对应的 `Mapper`，并完成自动注册，即懒加载。
+在 Spring 环境中，用户默认不需要进行额外的操作，`MybatisPlusQueryContainerProvider` 会在用户使用时根据 `beanName` 自动从 Spring 上下文中获得对应的 `Mapper`，并完成自动注册，即懒加载。
 
 ### 自动注册
 
-在 spring 环境中，用户也可以指定 `auto-register-mapper` 为 `true` 开启自动注册，相关配置如下：
+在 Spring 环境中，用户也可以指定 `auto-register-mapper` 为 `true` 开启自动注册，相关配置如下：
 
 ~~~yml
 crane4j:

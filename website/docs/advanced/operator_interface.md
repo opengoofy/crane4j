@@ -46,9 +46,9 @@ private interface OperatorInterface {
 
 :::
 
-### 在 spring 环境
+### 在 Spring 环境
 
-在 spring 环境中，你需要在启动类或配置类添加 `@OperatorScan` 注解指定扫描路径，就像 Mybatis 的 `MapperScan` 一样：
+在 Spring 环境中，你需要在启动类或配置类添加 `@OperatorScan` 注解指定扫描路径，就像 Mybatis 的 `MapperScan` 一样：
 
 ~~~java
 @OperatorScan(
@@ -73,9 +73,9 @@ public class FooService {
 }
 ```
 
-### 在非 spring 环境
+### 在非 Spring 环境
 
-在非 spring 环境，你需要手动的创建代理工厂，然后才能基于代理工厂为接口创建代理对象：
+在非 Spring 环境，你需要手动的创建代理工厂，然后才能基于代理工厂为接口创建代理对象：
 
 ~~~java
 // 创建操作者接口的代理工厂

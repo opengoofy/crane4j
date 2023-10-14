@@ -1,6 +1,6 @@
 # 配置文件
 
-在 spring 环境中，你可以基于配置文件对 crane4j 的一些可选项进行配置。
+在 Spring 环境中，你可以基于配置文件对 crane4j 的一些可选项进行配置。
 
 ## 反射
 
@@ -72,7 +72,7 @@ crane4j:
 
 ### 扫描方法容器
 
-`crane4j` 支持将被 spring 管理的 `bean` 中带有 `@ContainerMethod` 方法也适配为容器：
+`crane4j` 支持将被 Spring 管理的 `bean` 中带有 `@ContainerMethod` 方法也适配为容器：
 
 ~~~yaml
 crane4j:

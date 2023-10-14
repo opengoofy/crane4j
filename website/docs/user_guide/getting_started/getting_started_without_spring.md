@@ -4,7 +4,7 @@
 
 ## 1.安装
 
-在非 spring 环境中，引入 `crane4j-core` 模块即可：
+在非 Spring 环境中，引入 `crane4j-core` 模块即可：
 
 ~~~xml
 <!-- crane4j 依赖 -->
@@ -35,7 +35,7 @@ Crane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.crea
 
 在开始填充对象之前，你需要提前准备好一些数据源，并将其注册到全局配置对象中。
 
-在 cranej4 中，一个数据源对应一个数据源容器（`Container`），它们通过独一无二的命名空间 （`namespace`）进行区分。
+在 crane4j 中，一个数据源对应一个数据源容器（`Container`），它们通过独一无二的命名空间 （`namespace`）进行区分。
 
 我们可以基于一个 `Map` 集合创建数据源容器，并将其注册到全局配置中：
 

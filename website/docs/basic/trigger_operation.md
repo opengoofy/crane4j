@@ -2,7 +2,7 @@
 
 当你在类中配置好了要执行的填充操作后，你需要触发操作的执行，然后才能真正的完成填充。
 
-crane4j 支持手动和自动填充，前者通常通过执行器 `BeanOperationExecutor` 或工具类 `OperateTemplate` 在代码中完成，后者一般在与 spring 集成后，通过 SpringAOP 在方法调用前后自动完成。
+crane4j 支持手动和自动填充，前者通常通过执行器 `BeanOperationExecutor` 或工具类 `OperateTemplate` 在代码中完成，后者一般在与 Spring 集成后，通过 SpringAOP 在方法调用前后自动完成。
 
 ## 1.手动填充
 
@@ -149,7 +149,7 @@ public List<Foo> getFoo(Integer type) {
 
 上述示例表示只有当`type`不等于 `1` 且配置文件中的 `config.enable-fill-foo` 为 `true` 时，才会执行填充操作。
 
-在 spring 环境中，默认的表达式引擎是 SpEL 表达式，因此可以在表达式中使用 `#result` 引用返回值，使用 `#参数名` 引用方法的入参。
+在 Spring 环境中，默认的表达式引擎是 SpEL 表达式，因此可以在表达式中使用 `#result` 引用返回值，使用 `#参数名` 引用方法的入参。
 
 表达式最终的返回值可以是布尔值，也可以是字符串`'true'`或`'false'`。
 

@@ -4,7 +4,7 @@
 
 ## 1.全局配置
 
-cranej4 的运行依赖于 cranej4 **全局配置**类 `Crane4jGlobalConfiguration`，里面用于存放框架运行时**所需要的所有组件和各种配置信息**。
+crane4j 的运行依赖于 crane4j **全局配置**类 `Crane4jGlobalConfiguration`，里面用于存放框架运行时**所需要的所有组件和各种配置信息**。
 
 你可以通过下述代码**基于默认配置手动创建一个全局配置对象**：
 
@@ -13,11 +13,11 @@ cranej4 的运行依赖于 cranej4 **全局配置**类 `Crane4jGlobalConfigurati
 Crane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create();
 ~~~
 
-而在 spring 环境中，cranej4 已经通过自动装配**默认向 spring 容器里面注册了一个配置对象**，你可以通过依赖注入获得它：
+而在 Spring 环境中，crane4j 已经通过自动装配**默认向 Spring 容器里面注册了一个配置对象**，你可以通过依赖注入获得它：
 
 ~~~java
 @Autowired 
-private Crane4jGlobalConfiguration configuration; // 从 spring 获的默认配置类
+private Crane4jGlobalConfiguration configuration; // 从 Spring 获的默认配置类
 ~~~
 
 全局配置对象通常是唯一的，你需要通过它完成包括数据源注册在内的各种必要操作。
@@ -26,7 +26,7 @@ private Crane4jGlobalConfiguration configuration; // 从 spring 获的默认配�
 
 <img src="https://img.xiajibagao.top/image-20230210133633050.png" alt="container" style="zoom: 33%;" />
 
-每个填充操作都需要对应一个**数据源**，我们通常会通过外键从数据源中得到对应的数据——可能是单个对象，也可能是对象集合——用于后续填充。在 cranej4 中，一个数据源对应一个**数据源容器** (`Container`)，而每个容器都具备全局唯一的**命名空间** (`namespace`)。
+每个填充操作都需要对应一个**数据源**，我们通常会通过外键从数据源中得到对应的数据——可能是单个对象，也可能是对象集合——用于后续填充。在 crane4j 中，一个数据源对应一个**数据源容器** (`Container`)，而每个容器都具备全局唯一的**命名空间** (`namespace`)。
 
 你可以通过**指定的 key 值集合，从容器中得到按相应 key 值分组的数据对象 Map 集合**，比如：
 
@@ -50,7 +50,7 @@ Container<Integer> enumContainer = Containers.forLambda(
 )
 ~~~
 
-无论如何，在创建完容器后，你需要将其**注册到 cranej4 全局配置类**后才可以使用：
+无论如何，在创建完容器后，你需要将其**注册到 crane4j 全局配置类**后才可以使用：
 
 ~~~java
 // 创建一个默认配置类
@@ -67,7 +67,7 @@ crane4j 支持的容器远远不止这些，它还可以基于枚举、字典、
 
 <img src="https://img.xiajibagao.top/image-20230220180719411.png" alt="operation" style="zoom:33%;" />
 
-在 cranej4 中，“操作” (`Operation`) 泛指一切通过需要 crane4j 完成的行为，它们通常分为两类：
+在 crane4j 中，“操作” (`Operation`) 泛指一切通过需要 crane4j 完成的行为，它们通常分为两类：
 
 + 自动填充
 
@@ -204,4 +204,4 @@ private String customerType;
 
 选项式配置的注解基于注解解析器 `OperationAnnotationHandler` 实现，你也可以添加自己的注解处理器以便支持自定义注解。具体请参见后文 “**注解处理器**” 一节。
 
-此外，基于 Spring 的 `MergedAnnotation` 和 Hutool 的 `SynthesizedAnnotation` ，cranej4 也支持组合式注解，具体参见后文的 “**组合注解**” 一节。
+此外，基于 Spring 的 `MergedAnnotation` 和 Hutool 的 `SynthesizedAnnotation` ，crane4j 也支持组合式注解，具体参见后文的 “**组合注解**” 一节。

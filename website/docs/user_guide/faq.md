@@ -33,19 +33,19 @@
 
 ## 4、如何处理一对多的情况？
 
-通过 `@AssembleXXX` 注解中的 `handler` 或 `handlerType` 属性指定装配处理器为一对多装配处理器 `OneToManyAssembleOperationHandler` 类型或名称（在 spring 中即为 bean 名称）即可。
+通过 `@AssembleXXX` 注解中的 `handler` 或 `handlerType` 属性指定装配处理器为一对多装配处理器 `OneToManyAssembleOperationHandler` 类型或名称（在 Spring 中即为 bean 名称）即可。
 
 具体参见 [指定装配处理器](./../operation/3.3.指定装配处理器.md) 中一对多装配一节。
 
 ## 5、键字段可以是按分隔符拼接的字符串吗？
 
-通过 `@AssembleXXX` 注解中的 `handler` 或 `handlerType` 属性指定装配处理器为一对多装配处理器 `ManyToManyAssembleOperationHandler` 的类型或名称（在 spring 中即为 bean 名称）即可。
+通过 `@AssembleXXX` 注解中的 `handler` 或 `handlerType` 属性指定装配处理器为一对多装配处理器 `ManyToManyAssembleOperationHandler` 的类型或名称（在 Spring 中即为 bean 名称）即可。
 
 具体参见 [指定装配处理器](./../operation/3.3.指定装配处理器.md) 中多对多装配一节。
 
 ## 6、键字段可以是集合或者数组吗？
 
-同上，通过 `@AssembleXXX` 注解中的 `handler` 或 `handlerType` 属性指定装配处理器为一对多装配处理器 `ManyToManyAssembleOperationHandler` 的类型或名称（在 spring 中即为 bean 名称）即可。
+同上，通过 `@AssembleXXX` 注解中的 `handler` 或 `handlerType` 属性指定装配处理器为一对多装配处理器 `ManyToManyAssembleOperationHandler` 的类型或名称（在 Spring 中即为 bean 名称）即可。
 
 具体参见 [指定装配处理器](./../operation/3.3.指定装配处理器.md) 中多对多装配一节。
 
@@ -69,9 +69,9 @@
 
 ## 10、为什么 `@ContainerMethod` 注解不生效？
 
-如果是非 spring 环境，则需要手动的通过 `ContainerMethodAnnotationProcessor` 扫描指定类并向全局配置注册扫描获取的方法容器。
+如果是非 Spring 环境，则需要手动的通过 `ContainerMethodAnnotationProcessor` 扫描指定类并向全局配置注册扫描获取的方法容器。
 
-如果是 spring 环境，请确保：
+如果是 Spring 环境，请确保：
 
 - 容器中存在 `BeanMethodContainerRegistrar` 后处理器；
 - 被注解的方法所在类被 Spring 扫描，且容器中存在对应的 bean；
@@ -79,9 +79,9 @@
 
 ## 11、为什么 `@AutoOperate` 注解不生效？
 
-如果是非 spring 环境，则需要手动的通过 `MethodArgumentAutoOperateSupport` 和 `MethodResultAutoOperateSupport` 拦截方法调用。
+如果是非 Spring 环境，则需要手动的通过 `MethodArgumentAutoOperateSupport` 和 `MethodResultAutoOperateSupport` 拦截方法调用。
 
-如果是 spring 环境，请确保：
+如果是 Spring 环境，请确保：
 
 - 开启了 `SpringAOP` 功能；
 - 容器中存在 `MethodResultAutoOperateAdvisor` 或 `MethodArgumentAutoOperateAdvisor` 通知器；
@@ -98,7 +98,7 @@
 
 ## 13、支持 jdk9+ / springboot3 吗？
 
-在 `jdk11` 与 `jdk17` 和相应版本 springboot 中测试后可以正常运行。
+在 `jdk11` 与 `jdk17` 和相应版本 SpringBoot 中测试后可以正常运行。
 
 ## 14、容器可以做一些自定义的初始化/销毁操作吗？
 

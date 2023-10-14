@@ -13,7 +13,7 @@
 | 转换器                   | 说明                                                         | 使用情况               |
 | ------------------------ | ------------------------------------------------------------ | ---------------------- |
 | `SimpleConverterManager` | 直接通过 `(R)t` 这种方式强转，作用有限                       | 基本只在测试用例中使用 |
-| `HutoolConverterManager` | 基于 Hutool 的 `Convert` 实现，参见 Hutool 参考文档中的 [自定义类型转换-ConverterRegistry](https://hutool.cn/docs/#/core/类型转换/自定义类型转换-ConverterRegistry?id=自定义类型转换-converterregistry) 一节 | 在非 spring 环境中使用 |
-| `SpringConverterManager` | 基于 spring 的 `ConversionService` 实现，功能强大            | 在 spring 环境下使用   |
+| `HutoolConverterManager` | 基于 Hutool 的 `Convert` 实现，参见 Hutool 参考文档中的 [自定义类型转换-ConverterRegistry](https://hutool.cn/docs/#/core/类型转换/自定义类型转换-ConverterRegistry?id=自定义类型转换-converterregistry) 一节 | 在非 Spring 环境中使用 |
+| `SpringConverterManager` | 基于 Spring 的 `ConversionService` 实现，功能强大            | 在 Spring 环境下使用   |
 
 你也可以实现 `ConverterManager` 接口，

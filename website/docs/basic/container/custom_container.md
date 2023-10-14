@@ -23,4 +23,4 @@ public class UserContainer implements Container<Integer> {
 
 在上述示例中，我们实现了 `Container` 接口，并创建了一个根据用户ID返回`UserDO`集合的数据源容器。
 
-在 spring 环境中，你只需要将 `UserContainer` 交给 spring 管理（比如在类上添加 `@Component` 注解）即可在项目启动后自动注册，在非 spring 环境需要手动注册到 `Crane4jGlobalConfiguration` 中。
+在 Spring 环境中，你只需要将 `UserContainer` 交给 Spring 管理（比如在类上添加 `@Component` 注解）即可在项目启动后自动注册，在非 Spring 环境需要手动注册到 `Crane4jGlobalConfiguration` 中。

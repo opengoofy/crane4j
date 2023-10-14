@@ -28,4 +28,4 @@ TypeHierarchyBeanOperationParser parser = configuration.getBeanOperationParser(T
 parser.addOperationAnnotationHandler(new CustomeOperationAnnotationHandler());
 ~~~
 
-如果在 spring 环境，那么你直接将其交给 spring 容器管理即可，项目启动后 crane4j 会自动注册。
+如果在 Spring 环境，那么你直接将其交给 Spring 容器管理即可，项目启动后 crane4j 会自动注册。

@@ -1,6 +1,6 @@
 # 容器的生命周期
 
-为了便于对在容器进行初始化和销毁阶段进行一些特殊的处理，crane4j 为容器设计了一套类似 spring 的生命周期回调机制。
+为了便于对在容器进行初始化和销毁阶段进行一些特殊的处理，crane4j 为容器设计了一套类似 Spring 的生命周期回调机制。
 
 它包含容器生命周期处理器 `ContainerLifecycleProcessor` 与生命周期接口 `Container.Lifecycle` 两种，前者用于针对全局的容器进行处理器，而后者则用于处理特定类型的容器。
 
@@ -20,7 +20,7 @@
 
 当你创建了一个处理器时，你可以通过全局配置 `Crane4jGlobalConfiguration` 的 `registerContainerLifecycleProcessor` 方法注册它。
 
-而如果在 spring 环境，你只需将其交给 spring 管理即可，在启动后 crane4j 会自动注册。
+而如果在 Spring 环境，你只需将其交给 Spring 管理即可，在启动后 crane4j 会自动注册。
 
 ## 2.Lifecycle回调接口
 

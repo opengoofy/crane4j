@@ -128,7 +128,7 @@ public Foo getFoo(@Pathvariable Integer id) {
 // {"user_id":1, "user_name": "name1"}
 ~~~
 
-当在在 `Controller` 上添加 `@RestConroller` 后注解，或者在方法上添加  `@ResponseBody` 注解后，cranej4 将会在 Spring 把你的返回值序列化为 JSON 对象时自动填充相关数据。
+当在在 `Controller` 上添加 `@RestConroller` 后注解，或者在方法上添加  `@ResponseBody` 注解后，crane4j 将会在 Spring 把你的返回值序列化为 JSON 对象时自动填充相关数据。
 
 :::warning
 

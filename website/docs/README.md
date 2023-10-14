@@ -7,11 +7,11 @@ actionText: 快速上手 →
 actionLink: ./user_guide/what_is_crane4j.md
 features:
 - title: 开箱即用
-  details: 结合 springboot 自动装配，一行注解即可启用框架功能，避免繁琐的基本配置
+  details: 结合 SpringBoot 自动装配，一行注解即可启用框架功能，避免繁琐的基本配置
 - title: 上手简单
   details: 简单好懂的 API 和全面的注解配置支持，助你轻松上手
 - title: 轻松扩展
-  details: 结合 spring 依赖注入，轻松替换默认组件，丝滑接入自定义逻辑
+  details: 结合 Spring 依赖注入，轻松替换默认组件，丝滑接入自定义逻辑
 - title: 适用于多种场景
   details: 支持分组或嵌套填充，也支持一对多或多对多批量填充，操作粒度最细可到每一个字段
 - title: 丰富的数据源支持

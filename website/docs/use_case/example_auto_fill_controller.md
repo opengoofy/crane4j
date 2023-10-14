@@ -46,7 +46,7 @@ public class UserService {
 
 ## 2.使用自动填充
 
-我们可以使用 cranej4 进行优化。
+我们可以使用 crane4j 进行优化。
 
 首先，依然是在 `UserVO` 中使用注解对填充字段进行配置：
 

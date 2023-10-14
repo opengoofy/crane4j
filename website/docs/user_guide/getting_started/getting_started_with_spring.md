@@ -4,7 +4,7 @@
 
 ## 1.安装
 
-引入 spring 相关依赖，并引入 `crane4j-extension-spring` 即可。
+引入 Spring 相关依赖，并引入 `crane4j-extension-spring` 即可。
 
 ~~~xml
 <!-- crane4j 依赖 -->
@@ -14,7 +14,7 @@
     <version>${last-version}</version>
 </dependency>
 
-<!-- spring 依赖 -->
+<!-- Spring 依赖 -->
 <dependency>
     <groupId>org.springframework</groupId>
     <artifactId>spring-context</artifactId>
@@ -43,7 +43,7 @@
 
 ## 2.启用配置
 
-`crane4j` 已经准备好了默认的 spring 配置类 `DefaultCrane4jSpringConfiguration`，用户仅需在自己的项目通过下述任意方式将其纳入 Spring 容器管理即可。
+`crane4j` 已经准备好了默认的 Spring 配置类 `DefaultCrane4jSpringConfiguration`，用户仅需在自己的项目通过下述任意方式将其纳入 Spring 容器管理即可。
 
 比如，你可以将 `DefaultCrane4jSpringConfiguration` 作为一个普通的 Bean 交给 Spring 管理：
 
@@ -51,7 +51,7 @@
 @Configuration
 public class ProjectConfiguration {
     
-    // 在 spring 容器中声明一个默认配置类
+    // 在 Spring 容器中声明一个默认配置类
     @Bean
     public DefaultCrane4jSpringConfiguration defaultCrane4jSpringConfiguration() {
         return new DefaultCrane4jSpringConfiguration();
@@ -68,7 +68,7 @@ public class ProjectConfiguration {
 }
 ~~~
 
-两种方式效果一样，项目启动后，`crane4j` 相关组件将会注册到 spring 上下文中。
+两种方式效果一样，项目启动后，`crane4j` 相关组件将会注册到 Spring 上下文中。
 
 :::tip
 
@@ -80,12 +80,12 @@ public class ProjectConfiguration {
 
 在开始填充对象之前，你需要提前准备好一些数据源，并将其注册到全局配置对象中。
 
-在 cranej4 中，一个数据源对应一个数据源容器（`Container`），它们通过独一无二的命名空间 （`namespace`）进行区分。
+在 crane4j 中，一个数据源对应一个数据源容器（`Container`），它们通过独一无二的命名空间 （`namespace`）进行区分。
 
 我们可以基于一个 `Map` 集合创建数据源容器，并将其注册到全局配置中：
 
 ~~~java
-// 从 spring 容器中获取全局配置
+// 从 Spring 容器中获取全局配置
 @Autowired
 private Crane4jGlobalConfiguration configuration;
 
@@ -121,7 +121,7 @@ public static class Foo {
 
 ## 5.触发填充
 
-与非 spring 环境不同，在 spring 环境中，你可以选择手动填充或自动填充：
+与非 Spring 环境不同，在 Spring 环境中，你可以选择手动填充或自动填充：
 
 **手动填充**
 

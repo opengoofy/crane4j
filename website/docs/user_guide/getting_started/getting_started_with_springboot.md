@@ -14,7 +14,7 @@
     <version>${last-version}</version>
 </dependency>
 
-<!-- springboot 依赖 -->
+<!-- SpringBoot 依赖 -->
 <dependency>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-autoconfigure</artifactId>
@@ -59,18 +59,18 @@ public class Crane4jConfiguration {
 }
 ~~~
 
-项目启动后，`crane4j` 相关组件将会注册到 spring 上下文中。
+项目启动后，`crane4j` 相关组件将会注册到 Spring 上下文中。
 
 ## 3.配置数据源
 
 在开始填充对象之前，你需要提前准备好一些数据源，并将其注册到全局配置对象中。
 
-在 cranej4 中，一个数据源对应一个数据源容器（`Container`），它们通过独一无二的命名空间 （`namespace`）进行区分。
+在 crane4j 中，一个数据源对应一个数据源容器（`Container`），它们通过独一无二的命名空间 （`namespace`）进行区分。
 
 我们可以基于一个 `Map` 集合创建数据源容器，并将其注册到全局配置中：
 
 ~~~java
-// 从 spring 容器中获取全局配置
+// 从 Spring 容器中获取全局配置
 @Autowired
 private Crane4jGlobalConfiguration configuration;
 
@@ -106,7 +106,7 @@ public static class Foo {
 
 ## 5.触发填充
 
-与非 spring 环境不同，在 spring 环境中，你可以选择手动填充或自动填充：
+与非 Spring 环境不同，在 Spring 环境中，你可以选择手动填充或自动填充：
 
 ### 手动填充
 

@@ -2,13 +2,13 @@
 
 方法容器指以实例方法或静态方法作为数据源的容器。它是我们在日常中最经常使用的容器之一。
 
-和其他的容器不同，方法容器通常不直接创建使用，而是通过在目标方法上添加注解的方式，将该方法 “声明” 为一个方法容器，它通常由 DI 容器自动扫描并注册——换而言之，**这个功能比较推荐在 spring 环境中使用**。
+和其他的容器不同，方法容器通常不直接创建使用，而是通过在目标方法上添加注解的方式，将该方法 “声明” 为一个方法容器，它通常由 DI 容器自动扫描并注册——换而言之，**这个功能比较推荐在 Spring 环境中使用**。
 
-crane4j 在设计上参考了 spring 处理监听器注解 `@EventListener` 的责任链机制，它基于注解处理器 `MethodContainerAnnotationProcessor` 和方法容器工厂链 `MethodContainerFactory` 实现了扫描和适配的功能，你可以通过添加自己的 `MethodContainerFactory` 实现从而扩展这部分功能。
+crane4j 在设计上参考了 Spring 处理监听器注解 `@EventListener` 的责任链机制，它基于注解处理器 `MethodContainerAnnotationProcessor` 和方法容器工厂链 `MethodContainerFactory` 实现了扫描和适配的功能，你可以通过添加自己的 `MethodContainerFactory` 实现从而扩展这部分功能。
 
 ## 1.声明容器
 
-你可以直接在类或方法上添加 `@ContainerMethod` 注解，在 spring 环境中，当项目启动后，会在后处理阶段扫描该方法，并将其注册为一个方法容器。
+你可以直接在类或方法上添加 `@ContainerMethod` 注解，在 Spring 环境中，当项目启动后，会在后处理阶段扫描该方法，并将其注册为一个方法容器。
 
 **声明在方法上**
 
@@ -100,12 +100,12 @@ public Set<Foo> onoToOneMethod(List<String> args) {
 
 ## 5.手动注册
 
-手动注册一般只在你的目标类未被 spring 管理，或者干脆项目没有使用 spring 的时候会使用。
+手动注册一般只在你的目标类未被 Spring 管理，或者干脆项目没有使用 Spring 的时候会使用。
 
-在 spring 环境中，针对方法容器的扫描和注册是自动完成的。不过你也可以手动完成这个过程：
+在 Spring 环境中，针对方法容器的扫描和注册是自动完成的。不过你也可以手动完成这个过程：
 
 ~~~java
-// 从 spring 容器中获取处理器和全局配置
+// 从 Spring 容器中获取处理器和全局配置
 @Autowried
 private MethodContainerAnnotationProcessor processor;
 @Autowried
@@ -117,7 +117,7 @@ Collection<Container<Object>> containers = processor.process(foo, Foo.getClass()
 containers.forEach(configuration::registerContainer);
 ~~~
 
-如果你是在非 spring 环境中，那么你需要先通过以下代码手动构建 `MethodContainerAnnotationProcessor` 实例：
+如果你是在非 Spring 环境中，那么你需要先通过以下代码手动构建 `MethodContainerAnnotationProcessor` 实例：
 
 ~~~java
 // 创建一个全局配置

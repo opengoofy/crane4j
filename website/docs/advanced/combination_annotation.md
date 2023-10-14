@@ -42,7 +42,7 @@ public class Student {
 
 `crane4j` 几乎所有的注解都支持组合注解机制。
 
-实际上，在非 spring 环境，你也可以通过定制 `AnnotationFinder` 实现类似的功能，扩展自己的逻辑。
+实际上，在非 Spring 环境，你也可以通过定制 `AnnotationFinder` 实现类似的功能，扩展自己的逻辑。
 
 :::warning
 

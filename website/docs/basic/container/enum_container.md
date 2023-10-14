@@ -66,13 +66,13 @@ Container<String> container = Containers.forEnum(Num.class, new SimpleAnnotation
 
 :::tip
 
-在 springboot 中，我们也可以在配置文件中直接扫描路径下的所有枚举类，然后将其注册为容器。
+在 SpringBoot 中，我们也可以在配置文件中直接扫描路径下的所有枚举类，然后将其注册为容器。
 
 :::
 
 ## 3.批量扫描
 
-在 spring 环境中，你可以通过**配置文件**或者 **`@EnableCrane4j` 注解**配置扫描路径，批量的扫描并注册枚举。
+在 Spring 环境中，你可以通过**配置文件**或者 **`@EnableCrane4j` 注解**配置扫描路径，批量的扫描并注册枚举。
 
 **通过配置文件**
 
@@ -88,7 +88,7 @@ crane4j:
 
 **通过注解配置**
 
-在 2.1.0 及以上版本，你可以在 spring 的启动类或配置类上，通过注解配置要扫描的枚举包路径：
+在 2.1.0 及以上版本，你可以在 Spring 的启动类或配置类上，通过注解配置要扫描的枚举包路径：
 
 ~~~java
 @EnableCrane4j(
