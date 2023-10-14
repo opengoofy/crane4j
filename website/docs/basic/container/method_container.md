@@ -96,7 +96,7 @@ public Set<Foo> onoToOneMethod(List<String> args) {
 
 缓存的失效时间取决于你在 `CacheManager` 中设置的时间，目前它是全局的，无法在每个方法上单独设置。
 
-具体内容，可参见后文 “缓存” 一节。
+具体内容，可参见后文 “[缓存](./../advanced/cache.md)” 一节。
 
 ## 5.手动注册
 

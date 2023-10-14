@@ -61,7 +61,7 @@ Container<Integer> mapContainer = Containers.forMap("map_container", new HashMap
 configuration.registerContainer(mapContainer);
 ~~~
 
-crane4j 支持的容器远远不止这些，它还可以基于枚举、字典、方法和常量等数据源创建容器，你可以在后文 “**数据源容器**” 一节查看具体内容。
+crane4j 支持的容器远远不止这些，它还可以基于枚举、字典、方法和常量等数据源创建容器，你可以在后文 “[数据源容器](./../basic/container/container_abstract.md)” 一节查看具体内容。
 
 ## 3.操作配置&解析器
 
@@ -100,7 +100,7 @@ BeanOperationParser parser = configuration.getBeanOperationsParser(BeanOperation
 BeanOperations operations = parser.parse(Foo.class);
 ~~~
 
-你还可以在注解中调整字段的映射规则、指定操作的执行顺序，或通过指定分组来选择性的跳过一些操作，具体参见后文 “**操作配置**” 一节。
+你还可以在注解中调整字段的映射规则、指定操作的执行顺序，或通过指定分组来选择性的跳过一些操作，具体参见后文 “[装配操作](./../basic/declare_assemble_operation.md)” 与 “[属性映射](./../basic/property_mapping.md)” 相关内容。
 
 ## 4.操作执行器
 
@@ -145,7 +145,7 @@ crane4j 提供了两类填充方式，它们主要的区别在于填充的触发
 | 使用 `OperateTemplate` | 调用 `OperateTemplate.execute` 方法                          | 手动，不过支持细粒度配置                                     |
 | 使用执行器             | 先使用解析器解析，再使用执行处理<br />（参见上文操作执行器一节） | 手动，是粒度最细的 API，但是用起来相对麻烦，调用前还需要先解析操作配置 |
 
-关于它们的使用方式，具体参见后文 “**触发操作**” 一节。
+关于它们的使用方式，具体参见后文 “[触发操作](./../basic/trigger_operation.md)” 一节。
 
 ## 6.配置风格
 
@@ -202,6 +202,6 @@ private String customerType;
 | 优点             | 配置方便，且配置集中                                         | 灵活度高，便于复用相同的数据源 |
 | 缺点             | 即使数据源相同也需要重复配置                                 | 配置较为零散                   |
 
-选项式配置的注解基于注解解析器 `OperationAnnotationHandler` 实现，你也可以添加自己的注解处理器以便支持自定义注解。具体请参见后文 “**注解处理器**” 一节。
+选项式配置的注解基于注解解析器 `OperationAnnotationHandler` 实现，你也可以添加自己的注解处理器以便支持自定义注解。具体请参见后文 “[注解处理器](./..advanced/operation_annotation_handler.md)” 一节。
 
-此外，基于 Spring 的 `MergedAnnotation` 和 Hutool 的 `SynthesizedAnnotation` ，crane4j 也支持组合式注解，具体参见后文的 “**组合注解**” 一节。
+此外，基于 Spring 的 `MergedAnnotation` 和 Hutool 的 `SynthesizedAnnotation` ，crane4j 也支持组合式注解，具体参见后文的 “[组合注解](./../advanced/combination_annotation.md)” 一节。
