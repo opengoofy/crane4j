@@ -120,11 +120,7 @@ containers.forEach(configuration::registerContainer);
 如果你是在非 Spring 环境中，那么你需要先通过以下代码手动构建 `MethodContainerAnnotationProcessor` 实例：
 
 ~~~java
-// 创建一个全局配置
-Crane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create();
 // 构建方法容器处理器
-Collection<MethodContainerFactory> factories = Arrays.asList(new DefaultMethodContainerFactory(
-    configuration.getPropertyOperator(), SimpleAnnotationFinder.INSTANCE
-));
-MethodContainerAnnotationProcessor processor = new MethodContainerAnnotationProcessor(new SimpleAnnotationFinder(), factories);
+Crane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create();
+MethodContainerAnnotationProcessor processor = ConfigurationUtil.createContainerMethodAnnotationProcessor(configuration);
 ~~~

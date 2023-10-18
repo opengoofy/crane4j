@@ -13,6 +13,8 @@ import java.util.stream.Stream;
  */
 public class SimpleParameterNameFinder implements ParameterNameFinder {
 
+    public static final SimpleParameterNameFinder INSTANCE = new SimpleParameterNameFinder();
+
     /**
      * empty array
      */

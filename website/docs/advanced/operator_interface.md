@@ -80,11 +80,9 @@ public class FooService {
 ~~~java
 // 创建操作者接口的代理工厂
 Crane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create();
-OperatorProxyFactory operatorProxyFactory = new OperatorProxyFactory(configuration, SimpleAnnotationFinder.INSTANCE);
-operatorProxyFactory.addProxyMethodFactory(new DefaultOperatorProxyMethodFactory(configuration.getConverterManager()));
-
+OperatorProxyFactory proxyFactory = ConfigurationUtil.createOperatorProxyFactory(configuration);
 // 通过代理工厂创建代理对象
-OperatorInterface operator = operatorProxyFactory.get(OperatorInterface.class);
+OperatorInterface operator = proxyFactory.get(OperatorInterface.class);
 ~~~
 
 ## 2.使用接口填充
@@ -100,7 +98,13 @@ operator.fill(fooList); // 填充 foo 对象
 
 ## 3.动态数据源容器
 
-有些时候，我们会希望动态的替换一次填充操作中的特定数据源容器，比如：
+有些时候，我们会希望动态的替换一次填充操作中的特定数据源容器，我们仅需在方法参数上添加 `@ContainerParam` ，即可在一次填充中使用入参作为临时的数据源替换默认的全局数据源。
+
+### 3.1.将参数声明为临时数据源
+
+当抽象方法具备复数参数时，我们可以为第二个或后面的几个参数作为临时数据源。
+
+比如：
 
 ~~~java
 @Operator
@@ -124,13 +128,11 @@ Map<Integer, User> users = userService.listInternalUserByIds(
 operator.operate(targets, users);
 ~~~
 
-### 3.1.自定义扩展
+该功能基于 `DynamicContainerOperatorProxyMethodFactory` 实现。
 
-该功能基于 `OperatorProxyFactory` 实现，你也可以扩展自己的方法工厂，并注册到操作者接口代理工厂 `OperatorProxyMethodFactory` 中，从而实现一些自定义的逻辑。
+### 3.2.参数类型适配
 
-### 3.2.参数适配
-
-处了可以将 Map 集合适配为容器外，也支持直接传入 `Container`，或 `DataProvider` 类型的参数：
+除了可以将 Map 集合适配为容器外，也支持直接传入 `Container`，或 `DataProvider` 类型的参数：
 
 ~~~java
 @Operator
@@ -146,17 +148,16 @@ private interface OperatorInterface {
 }
 ~~~
 
-你也可以通过 `DynamicContainerOperatorProxyMethodFactory` 的 `addAdaptorProvider` 方法添加其他类型的参数适配器：
+你也可以通过 `ContainerAdapterRegister` 的 `registerAdapter` 方法添加其他类型的参数适配器：
 
 ```java
 @Autowried
-private DynamicContainerOperatorProxyMethodFactory methodFactory;
+private ContainerAdapterRegister adapterRegister;
 
 // 将 LinkedHashMap 类型的参数适配为容器
-DynamicContainerOperatorProxyMethodFactory factory = SpringUtil.getBean(DynamicContainerOperatorProxyMethodFactory.class);
-factory.addAdaptorProvider(LinkedHashMap.class, (name, parameter) ->
-	arg -> Containers.forMap(name, (Map<Object, ?>) arg)
-));
+register.registerAdapter(
+    LinkedHashMap.class, (namespace, parameter) -> Containers.forMap(namespace, (Map<Object, ?>) parameter)
+);
 ```
 
 ## 4.指定执行器和解析器

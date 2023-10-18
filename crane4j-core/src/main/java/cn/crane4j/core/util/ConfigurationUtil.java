@@ -5,14 +5,29 @@ import cn.crane4j.annotation.MappingTemplate;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerDefinition;
 import cn.crane4j.core.container.lifecycle.ContainerLifecycleProcessor;
+import cn.crane4j.core.executor.BeanOperationExecutor;
+import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.PropertyMapping;
 import cn.crane4j.core.parser.SimplePropertyMapping;
 import cn.crane4j.core.support.AnnotationFinder;
+import cn.crane4j.core.support.Crane4jGlobalConfiguration;
+import cn.crane4j.core.support.DefaultContainerAdapterRegister;
+import cn.crane4j.core.support.OperateTemplate;
+import cn.crane4j.core.support.SimpleAnnotationFinder;
+import cn.crane4j.core.support.SimpleParameterNameFinder;
+import cn.crane4j.core.support.container.ContainerMethodAnnotationProcessor;
+import cn.crane4j.core.support.container.DefaultMethodContainerFactory;
+import cn.crane4j.core.support.container.MethodContainerFactory;
+import cn.crane4j.core.support.container.MethodInvokerContainerCreator;
+import cn.crane4j.core.support.operator.DefaultOperatorProxyMethodFactory;
+import cn.crane4j.core.support.operator.DynamicContainerOperatorProxyMethodFactory;
+import cn.crane4j.core.support.operator.OperatorProxyFactory;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -28,6 +43,65 @@ import java.util.stream.Stream;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ConfigurationUtil {
+
+    /**
+     * Create {@link OperatorProxyFactory} instance.
+     *
+     * @param configuration configuration
+     * @return {@link OperatorProxyFactory}
+     * @since 2.3.0
+     */
+    public static OperatorProxyFactory createOperatorProxyFactory(Crane4jGlobalConfiguration configuration) {
+        AnnotationFinder annotationFinder = SimpleAnnotationFinder.INSTANCE;
+        OperatorProxyFactory operatorProxyFactory = new OperatorProxyFactory(configuration, annotationFinder);
+        operatorProxyFactory.addProxyMethodFactory(new DefaultOperatorProxyMethodFactory(configuration.getConverterManager()));
+        operatorProxyFactory.addProxyMethodFactory(new DynamicContainerOperatorProxyMethodFactory(
+            configuration.getConverterManager(), SimpleParameterNameFinder.INSTANCE,
+            annotationFinder, DefaultContainerAdapterRegister.INSTANCE
+        ));
+        return operatorProxyFactory;
+    }
+
+    /**
+     * Create {@link MethodInvokerContainerCreator} instance.
+     *
+     * @param configuration configuration
+     * @return {@link MethodInvokerContainerCreator}
+     * @since 2.3.0
+     */
+    public static MethodInvokerContainerCreator createMethodInvokerContainerCreator(Crane4jGlobalConfiguration configuration) {
+        return new MethodInvokerContainerCreator(configuration.getPropertyOperator(), configuration.getConverterManager());
+    }
+    
+    /**
+     * Create {@link ContainerMethodAnnotationProcessor} instance.
+     *
+     * @param configuration configuration
+     * @return {@link ContainerMethodAnnotationProcessor}
+     * @since 2.3.0
+     */
+    public static ContainerMethodAnnotationProcessor createContainerMethodAnnotationProcessor(Crane4jGlobalConfiguration configuration) {
+        MethodInvokerContainerCreator methodInvokerContainerCreator = createMethodInvokerContainerCreator(configuration);
+        AnnotationFinder annotationFinder = SimpleAnnotationFinder.INSTANCE;
+        DefaultMethodContainerFactory factory = new DefaultMethodContainerFactory(methodInvokerContainerCreator, annotationFinder);
+        List<MethodContainerFactory> methodContainerFactories = CollectionUtils.newCollection(ArrayList::new, factory);
+        return new ContainerMethodAnnotationProcessor(methodContainerFactories, annotationFinder);
+    }
+
+    /**
+     * Create {@link OperateTemplate} instance by given configuration.
+     *
+     * @param configuration configuration
+     * @return {@link OperateTemplate}
+     * @since 2.3.0
+     */
+    public static OperateTemplate createOperateTemplate(Crane4jGlobalConfiguration configuration) {
+        return new OperateTemplate(
+            configuration.getBeanOperationsParser(BeanOperationParser.class),
+            configuration.getBeanOperationExecutor(BeanOperationExecutor.class),
+            configuration.getTypeResolver()
+        );
+    }
 
     /**
      * Get component from configuration,
