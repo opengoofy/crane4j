@@ -73,11 +73,7 @@ public static class Foo {
 
 ~~~java
 // 创建快速填充工具类
-OperateTemplate operateTemplate = new OperateTemplate(
-    configuration.getBeanOperationsParser(BeanOperationParser.class),
-    configuration.getBeanOperationExecutor(BeanOperationExecutor.class),
-    configuration.getTypeResolver()
-);
+OperateTemplate operateTemplate = ConfigurationUtil.createOperateTemplate(configuration);
 
 // 执行填充
 List<Foo> foos = Arrays.asList(new Foo(1), new Foo(2), new Foo(3));

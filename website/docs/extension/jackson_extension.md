@@ -70,13 +70,19 @@ private void init() {
 若你在非 Spring 环境中，则需要按如下方式配置 `ObjectMapper`：
 
 ~~~java
-// 声明 ObjectMapper
+// 准备一个 ObjectMapper
 ObjectMapper objectMapper = new ObjectMapper();
-// 配置 json 插件
-sonNodeAssistant<JsonNode> jsonNodeAssistant = new JacksonJsonNodeAssistant(objectMapper);
-JsonNodePropertyOperator propertyOperator = new JsonNodePropertyOperator(jsonNodeAssistant, new ReflectivePropertyOperator());
-JsonNodeAutoOperateModule autoOperateModule = new JsonNodeAutoOperateModule(elementResolver, objectMapper, annotationFinder);
-// 向 ObjectMapper 注册 json 插件
+
+// 创建全局配置类，需要使用 JsonNodePropertyOperator 保证默认的属性操作者
+SimpleCrane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create(
+    SimpleAnnotationFinder.INSTANCE, SimpleConverterManager.INSTANCE,
+    new JsonNodePropertyOperator(new JacksonJsonNodeAssistant(objectMapper), new ReflectivePropertyOperator())
+);
+// 基于上述配置创建一个JsonNodeAutoOperateModule
+JsonNodeAutoOperateModule autoOperateModule = new JsonNodeAutoOperateModule(
+    new ClassBasedAutoOperateAnnotatedElementResolver(configuration, new OgnlExpressionEvaluator(), OgnlExpressionContext::new), objectMapper, SimpleAnnotationFinder.INSTANCE);
+
+// 将 JsonNodeAutoOperateModule 注册到 ObjectMapper
 objectMapper.registerModule(autoOperateModule);
 ~~~
 
