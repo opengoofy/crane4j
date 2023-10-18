@@ -257,3 +257,27 @@
 
 + [添加容器适配器管理器，并重构 `DynamicContainerOperatorProxyMethodFactory` 中适配器部分代码](https://github.com/opengoofy/crane4j/issues/149)；
 + [优化 `PropertyMappingStrategy` 的管理方式](https://github.com/opengoofy/crane4j/issues/144)；
+
+## 2.3.0 (2023-10-18)
+
+这是一个正常迭代版本，主要修复了一些问题，并添加了少量新功能。
+
+具体内容参见：[Milestone](https://github.com/opengoofy/crane4j/milestone/7)。
+
+**Feature**
+
++ [支持直接通过 `Crane4jGlobalConfiguration` 获取 `OperateTemplate`](https://github.com/opengoofy/crane4j/issues/172)；
++ [支持全量获取数量固定的数据源容器](https://github.com/opengoofy/crane4j/issues/119)；
++ [当目标对象的key值与数据源对象的key值类型不一致时，可以指定将目标对象的key值转为对应类型](https://github.com/opengoofy/crane4j/issues/153)；
+
+**Fix**
+
+- [配置了 `crane4j.mybatis-plus.auto-register-mapper = false` 后，在项目启动后依然会自动注册 Mapper 接口](https://github.com/opengoofy/crane4j/issues/168)；
+
+**Refactor**
+
++ [重构 `AutoOperateAnnotatedElementResolver`，使基于 `@AutoOperate` 的自动装配功能更加灵活](https://github.com/opengoofy/crane4j/issues/166)；
+
+**Doc**
+
++ [文档优化计划](https://github.com/opengoofy/crane4j/issues/143)；
