@@ -13,7 +13,7 @@ echo 'github文档提交完毕(dev)......'
 
 echo '开始构建gitee文档......'
 cd website
-git checkout devs
+git checkout dev
 # 删除本地和gitee远程的dev-doc分支
 git branch -D dev-doc
 git push gitee-doc --delete dev-doc
