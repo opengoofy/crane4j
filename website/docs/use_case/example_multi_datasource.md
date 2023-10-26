@@ -133,7 +133,7 @@ public class Order {
 
     // 2、填充关联客户信息
     @AssembleMethod(
-        targetType = CustomerService.class, // 填充数据源为 CustomerService#selectListByIds 方法
+        targetType = CustomerService.class, // 填充数据源为 CustomerService#listByIds 方法
         method = @ContainerMethod(bindMethod = "listByIds", resultType = Customer.class),  
         props = {
             @Mapping(src = "name", ref = "customerName"), // Customer.name -> Order.customerName
@@ -153,7 +153,7 @@ public class Item {
     
     // 3、填充关联商品信息
     @AssembleMethod(
-        targetType = ItemService.class, // 填充数据源为 CustomerService#selectListByIds 方法
+        targetType = ItemService.class, // 填充数据源为 CustomerService#listByIds 方法
         method = @ContainerMethod(bindMethod = "listByIds", resultType = Item.class),
         props = {
             @Mapping("name"), // Item.name -> Item.name

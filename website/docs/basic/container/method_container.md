@@ -124,3 +124,37 @@ containers.forEach(configuration::registerContainer);
 Crane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create();
 MethodContainerAnnotationProcessor processor = ConfigurationUtil.createContainerMethodAnnotationProcessor(configuration);
 ~~~
+
+## 6、选项式配置
+
+在 2.2 及以上版本，你可以使用 `@AssembleMethod` 注解进行选项式风格的配置。通过在类或属性上添加 `@AssembleMethod` 注解，并指定要绑定的目标类中的指定方法，你可以快速的使用 spring 容器 bean 中的方法、或任意类中的静态方法作为数据源容器。
+
+比如：
+
+```java
+@RequiredArgsConstructor
+@Data
+private static class Foo {
+    @AssembleMethod(
+        targetType = FooService.class, // 填充数据源为 FooService#listByIds 方法
+        method = @ContainerMethod(bindMethod = "listByIds", resultType = Foo.class, resultKey = "id"),
+        props = {
+            @Mapping("name"), // Item.name -> Item.name
+            @Mapping("type") // Item.type -> Item.type
+        }
+    )
+    private id;
+    private String name;
+    private String type;
+}
+```
+
+出于降低理解成本的目的，这种配置方式直接复用了 `@ContainerMethod` 注解。
+
+`@AssembleMethod` 注解提供了一些参数：
+
+| API          | 作用                                              | 类型                                                         | 默认值                         |
+| ------------ | ------------------------------------------------- | ------------------------------------------------------------ | ------------------------------ |
+| `targetType` | 指定调用类的类型                                  | 目标类                                                       | 无，与 `target` 二选一必填     |
+| `target`     | 指定调用类的类型全限定名，或者容器中的 `beanName` | 调用类的全限定名字符串，如果在 Spring 容器中，则可以是 `beanName` | 无，与 `targetType` 二选一必填 |
+| `method`     | 指定绑定方法                                      | `@ContainerMethod`                                           | 无，必填                       |

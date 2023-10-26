@@ -182,7 +182,7 @@ private String customerType;
 ~~~java
 // 根据 customerId 从 customerService 查询客户，并填充 customerName 和 customerType 字段
 @AssembleMethod(
-    targetType = CustomerService.class, // 填充数据源为 CustomerService#selectListByIds 方法
+    targetType = CustomerService.class, // 填充数据源为 CustomerService#listByIds 方法
     method = @ContainerMethod(bindMethod = "listByIds", resultType = Customer.class),  
     props = {
         @Mapping(src = "name", ref = "customerName"), // Customer.name -> Order.customerName
