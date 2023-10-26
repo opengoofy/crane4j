@@ -13,7 +13,7 @@ echo 'github文档提交完毕(dev)......'
 
 echo '开始构建gitee文档......'
 cd website
-git checkout dev
+git checkout devs
 # 删除本地和gitee远程的dev-doc分支
 git branch -D dev-doc
 git push gitee-doc --delete dev-doc
@@ -28,5 +28,5 @@ npm run build
 echo '文档构建完毕......'
 cd ..
 git add .
-git commit -m "$commit_message"
+git commit --amend
 echo 'gitee文档提交完毕(dev-doc)......'
