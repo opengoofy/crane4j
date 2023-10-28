@@ -37,18 +37,11 @@ public @interface AssembleEnum {
     String typeName() default "";
 
     /**
-     * Enum key field name.
+     * Configuration of container.
      *
-     * @return field name
+     * @return {@link ContainerEnum} annotation.
      */
-    String enumKey() default "";
-
-    /**
-     * Enum value field name.
-     *
-     * @return field name
-     */
-    String enumValue() default "";
+    ContainerEnum enums() default @ContainerEnum;
 
     /**
      * <p>a quick set for reference field name, equivalent to {@code @Mapping(ref = "")}.<br />
@@ -65,7 +58,7 @@ public @interface AssembleEnum {
      *
      * @return boolean
      */
-    boolean useContainerEnum() default true;
+    boolean followTypeConfig() default true;
 
     // ================= common =================
 
