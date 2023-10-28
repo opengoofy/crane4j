@@ -1,6 +1,7 @@
 package cn.crane4j.core.parser.handler;
 
 import cn.crane4j.annotation.AssembleEnum;
+import cn.crane4j.annotation.ContainerEnum;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.EnumContainerBuilder;
 import cn.crane4j.core.parser.BeanOperations;
@@ -76,20 +77,19 @@ public class AssembleEnumAnnotationHandler
     @Override
     protected @NonNull Container<Object> createContainer(AssembleEnum annotation, String namespace) {
         Class<? extends Enum<?>> enumType = resolveEnumType(annotation);
-        EnumContainerBuilder<Object, ? extends Enum<?>> enumContainerBuilder = EnumContainerBuilder.of(enumType)
+        EnumContainerBuilder<Object, ? extends Enum<?>> builder = EnumContainerBuilder.of(enumType)
             .namespace(namespace)
             .annotationFinder(annotationFinder)
             .propertyOperator(propertyOperator);
-        // not using @ContainerEnum config?
-        if (!annotation.useContainerEnum()) {
-            if (StringUtils.isNotEmpty(annotation.enumKey())) {
-                enumContainerBuilder.key(annotation.enumKey());
-            }
-            if (StringUtils.isNotEmpty(annotation.enumValue())) {
-                enumContainerBuilder.value(annotation.enumValue());
-            }
+        // follow the configuration of the annotation which specified in the @AssembleEnum annotation
+        if (annotation.followTypeConfig()) {
+            return builder.build();
         }
-        return enumContainerBuilder.build();
+        ContainerEnum containerEnum = annotation.enums();
+        builder.key(containerEnum.key())
+            .value(containerEnum.value())
+            .duplicateStrategy(containerEnum.duplicateStrategy());
+        return builder.build();
     }
 
     /**
@@ -101,8 +101,9 @@ public class AssembleEnumAnnotationHandler
     @Override
     protected String determineNamespace(AssembleEnum annotation) {
         Class<? extends Enum<?>> enumType = resolveEnumType(annotation);
+        String config = annotation.followTypeConfig() ? "FollowTypeConfig" : annotation.enums().toString();
         return StringUtils.md5DigestAsHex(StringUtils.join(
-            String::valueOf, "#", annotation.enumKey(), annotation.enumValue(), enumType
+            String::valueOf, "#", enumType, config
         ));
     }
 
