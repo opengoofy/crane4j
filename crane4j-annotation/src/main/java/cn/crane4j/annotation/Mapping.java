@@ -11,7 +11,6 @@ import java.lang.annotation.Target;
  * which describes which data object attributes are mapped to which target object attributes.
  *
  * @author huangchengxing
- * @see Assemble#props()
  * @see MappingTemplate
  * @see cn.crane4j.core.parser.PropertyMapping
  */

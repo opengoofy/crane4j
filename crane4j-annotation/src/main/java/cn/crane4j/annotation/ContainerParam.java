@@ -17,6 +17,7 @@ import java.lang.annotation.Target;
  *
  * @author huangchengxing
  * @see cn.crane4j.core.support.operator.DynamicContainerOperatorProxyMethodFactory
+ * @see cn.crane4j.core.support.ContainerAdapterRegister
  * @since 1.3.0
  */
 @Documented

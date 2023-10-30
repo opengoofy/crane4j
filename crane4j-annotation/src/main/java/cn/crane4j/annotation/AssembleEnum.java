@@ -13,6 +13,7 @@ import java.lang.annotation.Target;
  * @author huangchengxing
  * @see cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
  * @see cn.crane4j.core.parser.handler.AssembleEnumAnnotationHandler;
+ * @see 1.3.0
  */
 @Repeatable(value = AssembleEnum.List.class)
 @Documented
@@ -40,6 +41,7 @@ public @interface AssembleEnum {
      * Configuration of container.
      *
      * @return {@link ContainerEnum} annotation.
+     * @since 2.4.0
      */
     ContainerEnum enums() default @ContainerEnum;
 
@@ -57,6 +59,7 @@ public @interface AssembleEnum {
      * the configuration defined by that annotation will be used first.
      *
      * @return boolean
+     * @since 2.4.0
      */
     boolean followTypeConfig() default true;
 

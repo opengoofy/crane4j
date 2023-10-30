@@ -19,6 +19,7 @@ import java.lang.annotation.Target;
  * </pre>
  * or:
  * <pre class="code">
+ * &#64;ArgAutoOperate
  * public void doSomething(
  *     &#64;AutoOperate(value = "list", type = A.class) List<A> list,
  *     &#64;AutoOperate(value = "b", type = B.class) B b) {

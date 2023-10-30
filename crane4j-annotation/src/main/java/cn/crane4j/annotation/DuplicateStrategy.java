@@ -37,7 +37,7 @@ public enum DuplicateStrategy {
     }),
 
     /**
-     * When the keys are the same, discard the new key value.
+     * When the key already exists, discard the new key value.
      */
     DISCARD_OLD(new Selector() {
         @Override
@@ -47,7 +47,7 @@ public enum DuplicateStrategy {
     }),
 
     /**
-     * When the keys are the same, discard the new value and old value, return null.
+     * When the key already exists, discard the new value and old value, return null.
      */
     DISCARD(new Selector() {
         @Override

@@ -27,6 +27,7 @@ import java.util.Set;
  * An {@link AbstractAssembleAnnotationHandler} implementation for {@link AssembleEnum} annotation.
  *
  * @author huangchengxing
+ * @see AssembleEnum
  * @since 1.3.0
  */
 @Slf4j

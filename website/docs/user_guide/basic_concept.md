@@ -102,7 +102,15 @@ BeanOperations operations = parser.parse(Foo.class);
 
 你还可以在注解中调整字段的映射规则、指定操作的执行顺序，或通过指定分组来选择性的跳过一些操作，具体参见后文 “[装配操作](./../basic/declare_assemble_operation.md)” 与 “[属性映射](./../basic/property_mapping.md)” 相关内容。
 
-## 4.操作执行器
+## 4.注解处理器
+
+![](http://img.xiajibagao.top/%E6%97%A0%E6%A0%87%E9%A2%98-2023-06-04-1303.png)
+
+crane4j 支持通过各种注解快速的配置填充和拆卸操作，它们实际上是通过注册在操作配置解析器 `BeanOperationParser` 中的注解处理器 `OperationAnnotationHandler` 进行处理的。
+
+当我们使用解析器对类及类的属性进行解析式，都会依次调用一遍注解处理器，每种注解处理器都专注于将某一类注解解析为相应的转配操作 `AssembleOperation` 或拆卸操作 `DisassembleOperation`。
+
+## 5.操作执行器
 
 ![BeanOperationExecutor](https://img.xiajibagao.top/image-20230221133602215.png)
 
@@ -129,7 +137,7 @@ executor.execute(foos, operations);
 
 直接使用操作执行器的场景相对罕见，仅在需要使用少部分特殊功能时才会出现。
 
-## 5.填充方式
+## 6.填充方式
 
 crane4j 提供了两类填充方式，它们主要的区别在于填充的触发时机：
 
@@ -147,7 +155,7 @@ crane4j 提供了两类填充方式，它们主要的区别在于填充的触发
 
 关于它们的使用方式，具体参见后文 “[触发操作](./../basic/trigger_operation.md)” 一节。
 
-## 6.配置风格
+## 7.配置风格
 
 ![ConfigurationStyle](http://img.xiajibagao.top/image-20231013011413703.png)
 
