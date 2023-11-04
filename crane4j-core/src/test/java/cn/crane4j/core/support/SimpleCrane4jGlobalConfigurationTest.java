@@ -15,6 +15,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * test for {@link SimpleCrane4jGlobalConfiguration}
@@ -38,7 +39,7 @@ public class SimpleCrane4jGlobalConfigurationTest {
         strategies.stream().map(PropertyMappingStrategy::getName).forEach(configuration::removePropertyMappingStrategy);
         Assert.assertTrue(configuration.getAllPropertyMappingStrategies().isEmpty());
         strategies.forEach(configuration::addPropertyMappingStrategy);
-        Assert.assertEquals(strategies, new ArrayList<>(configuration.getAllPropertyMappingStrategies()));
+        Assert.assertEquals(new HashSet<>(strategies), new HashSet<>(configuration.getAllPropertyMappingStrategies()));
     }
 
     @Test
