@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -51,8 +52,9 @@ public class ObjectUtilsTest {
         Assert.assertNull(ObjectUtils.get(Arrays.asList(null, null, 3), -1));
         // if target is map
         Assert.assertEquals((Integer)3, ObjectUtils.get(
-            Stream.of(1, 2, 3).collect(Collectors.toMap(Function.identity(), Function.identity())), 2
-        ));
+            Stream.of(1, 2, 3)
+            .collect(Collectors.toMap(Function.identity(), Function.identity(), (existing, replacement) -> existing, LinkedHashMap::new)), 2
+    ));
     }
 
     @Test
