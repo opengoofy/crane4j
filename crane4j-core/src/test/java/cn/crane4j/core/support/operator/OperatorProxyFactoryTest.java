@@ -15,6 +15,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.lang.reflect.Proxy;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -64,6 +65,20 @@ public class OperatorProxyFactoryTest {
         operator.fill(null);
         operator.fill(targets);
         targets.forEach(target -> assertEquals("name" + target.get("id"), target.get("name")));
+    }
+
+    @Test
+    public void invokeObjectMethod() {
+        OperatorInterface operator1 = operatorProxyFactory.get(OperatorInterface.class);
+        Assert.assertNotNull(operator1);
+        OperatorInterface operator2 = operatorProxyFactory.get(OperatorInterface.class);
+        Assert.assertNotNull(operator2);
+        Assert.assertEquals(operator1, operator2);
+        Assert.assertEquals(operator1, Proxy.getInvocationHandler(operator2));
+        Assert.assertEquals(operator1, Proxy.getInvocationHandler(operator1));
+        Assert.assertNotEquals(operator1, null);
+        Assert.assertEquals(operator1.hashCode(), operator2.hashCode());
+        Assert.assertEquals(operator1.toString(), operator2.toString());
     }
 
     @Operator
