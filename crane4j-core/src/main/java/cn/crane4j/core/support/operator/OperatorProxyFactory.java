@@ -12,7 +12,9 @@ import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.ReflectUtils;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -100,12 +102,14 @@ public class OperatorProxyFactory {
         // create proxy by executor and parser
         log.debug("create operator proxy for interface [{}].", operatorType);
         OperatorProxy proxy = createOperatorProxy(operatorType, parser, executor);
-        return Proxy.newProxyInstance(operatorType.getClassLoader(), new Class[] {operatorType}, proxy);
+        return Proxy.newProxyInstance(
+            operatorType.getClassLoader(), new Class[] { operatorType, ProxiedOperator.class }, proxy
+        );
     }
 
     private <T> OperatorProxy createOperatorProxy(
         Class<T> operatorType, BeanOperationParser beanOperationParser, BeanOperationExecutor beanOperationExecutor) {
-        Map<String, MethodInvoker> beanOperationsMap = new HashMap<>(8);
+        Map<String, MethodInvoker> proxyMethods = new HashMap<>(8);
         ReflectUtils.traverseTypeHierarchy(operatorType, type -> Stream
             .of(ReflectUtils.getDeclaredMethods(type))
             .filter(method -> !method.isDefault())
@@ -114,10 +118,24 @@ public class OperatorProxyFactory {
                 checkOperationOfMethod(operations);
                 Method method = (Method)operations.getSource();
                 MethodInvoker invoker = createOperatorMethod(operations, method, beanOperationExecutor);
-                beanOperationsMap.put(method.getName(), invoker);
+                // using full name to distinguishing method overloading
+                proxyMethods.put(method.toString(), invoker);
             })
         );
-        return new OperatorProxy(beanOperationsMap);
+        return doCreateOperatorProxy(operatorType, proxyMethods);
+    }
+
+    /**
+     * Create proxy object for operator interface.
+     *
+     * @param operatorType operator type
+     * @param proxyMethods proxied methods with full method names;
+     * @return OperatorProxy
+     */
+    @NonNull
+    protected <T> OperatorProxy doCreateOperatorProxy(
+        Class<T> operatorType, Map<String, MethodInvoker> proxyMethods) {
+        return new OperatorProxy(proxyMethods, operatorType);
     }
 
     private void checkOperationOfMethod(BeanOperations operations) {
@@ -149,15 +167,51 @@ public class OperatorProxyFactory {
      * @author huangchengxing
      * @since  1.3.0
      */
+    @ToString(onlyExplicitlyIncluded = true)
     @RequiredArgsConstructor
-    private static class OperatorProxy implements InvocationHandler {
+    protected static class OperatorProxy implements InvocationHandler {
         private final Map<String, MethodInvoker> proxiedMethods;
+        @ToString.Include
+        private final Class<?> proxyClass;
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            MethodInvoker invoker = proxiedMethods.get(method.getName());
-            return Objects.isNull(invoker) ?
-                ReflectUtils.invokeRaw(proxy, method, args) : invoker.invoke(proxy, args);
+            // fix https://gitee.com/opengoofy/crane4j/issues/I8MZOK
+            if (Object.class.equals(method.getDeclaringClass())) {
+                return method.invoke(this, args);
+            }
+            MethodInvoker invoker = proxiedMethods.get(method.toString());
+            if (Objects.nonNull(invoker)) {
+                return invoker.invoke(proxy, args);
+            }
+            throw new Crane4jException(
+                "method [{}] is not declaring by proxied class [{}] or Object.class", method, proxyClass
+            );
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if ((o instanceof ProxiedOperator) && Proxy.isProxyClass(o.getClass())) {
+                o = Proxy.getInvocationHandler(o);
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            OperatorProxy that = (OperatorProxy)o;
+            return Objects.equals(proxiedMethods, that.proxiedMethods)
+                && Objects.equals(proxyClass, that.proxyClass);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(proxiedMethods, proxyClass);
         }
     }
 
+    /**
+     * Identification interface, used to indicate that the current object is a proxy object.
+     */
+    public interface ProxiedOperator { }
 }
