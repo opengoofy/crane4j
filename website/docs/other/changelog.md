@@ -281,3 +281,11 @@
 **Doc**
 
 + [文档优化计划](https://github.com/opengoofy/crane4j/issues/143)；
+
+## 2.3.1 (2023-12-10)
+
+这是一个 Bug 修复版本，请尽快升级。
+
+**Fix**
+
+- [调用Operator实例的Object基本方法会发生死循环直到栈溢出](https://gitee.com/opengoofy/crane4j/issues/I8MZOK)；
