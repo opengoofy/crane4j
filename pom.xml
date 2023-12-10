@@ -62,7 +62,7 @@
     <maven-source-plugin>3.2.1</maven-source-plugin>
     <maven-compiler-plugin>3.8.0</maven-compiler-plugin>
     <maven-gpg-plugin>1.6</maven-gpg-plugin>
-    <skip.maven.gpg.plugin>false</skip.maven.gpg.plugin>
+    <skip.maven.gpg.plugin>true</skip.maven.gpg.plugin>
     <skip.jacoco.plugin>true</skip.jacoco.plugin>
   </properties>
 
