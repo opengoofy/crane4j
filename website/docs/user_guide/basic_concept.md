@@ -210,6 +210,6 @@ private String customerType;
 | 优点             | 配置方便，且配置集中                                         | 灵活度高，便于复用相同的数据源 |
 | 缺点             | 即使数据源相同也需要重复配置                                 | 配置较为零散                   |
 
-选项式配置的注解基于注解解析器 `OperationAnnotationHandler` 实现，你也可以添加自己的注解处理器以便支持自定义注解。具体请参见后文 “[注解处理器](./..advanced/operation_annotation_handler.md)” 一节。
+选项式配置的注解基于注解解析器 `OperationAnnotationHandler` 实现，你也可以添加自己的注解处理器以便支持自定义注解。具体请参见后文 “[注解处理器](./../advanced/operation_annotation_handler.md)” 一节。
 
 此外，基于 Spring 的 `MergedAnnotation` 和 Hutool 的 `SynthesizedAnnotation` ，crane4j 也支持组合式注解，具体参见后文的 “[组合注解](./../advanced/combination_annotation.md)” 一节。
