@@ -1,12 +1,12 @@
 {
   "name": "crane4j-doc",
-  "version": "0.0.1-alpha",
+  "version": "2.3.1",
   "description": "crane4j文档项目",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "set NODE_OPTIONS=--openssl-legacy-provider & vuepress dev docs",
-    "build": "set NODE_OPTIONS=--openssl-legacy-provider & vuepress build docs",
+    "dev": "vuepress dev docs",
+    "build": "vuepress build docs",
     "postinstall": "patch-package"
   },
   "author": "",
