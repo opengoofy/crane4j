@@ -187,3 +187,10 @@ public void doOperate() {
 若无法访问连接，或者微信群二维码失效，也可以联系作者加群：
 
 ![联系作者](https://foruda.gitee.com/images/1678072903420592910/c0dbb802_5714667.png)
+
+## 鸣谢
+
+感谢 JetBrains 提供的 Licenses ！
+
+![JetBrains Logo (Main) logo](https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg)
+
