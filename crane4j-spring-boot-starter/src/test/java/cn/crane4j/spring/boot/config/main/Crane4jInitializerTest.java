@@ -1,7 +1,7 @@
 package cn.crane4j.spring.boot.config.main;
 
 import cn.crane4j.core.cache.CacheManager;
-import cn.crane4j.core.container.CacheableContainer;
+import cn.crane4j.core.cache.CacheableContainer;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ImmutableMapContainer;
 import cn.crane4j.core.parser.BeanOperationParser;
@@ -43,7 +43,6 @@ public class Crane4jInitializerTest {
     @Autowired
     private Crane4jAutoConfiguration.Properties properties;
 
-    @SuppressWarnings("unchecked")
     @Test
     public void test() {
         Assert.assertTrue(properties.isEnableAsmReflect());
@@ -70,15 +69,14 @@ public class Crane4jInitializerTest {
             properties.getContainerEnumPackages()
         );
         Assert.assertTrue(context.getContainer("test1") instanceof ImmutableMapContainer);
+
+        // 包装缓存容器
         Container<?> container = context.getContainer("test2");
         Assert.assertTrue(container instanceof CacheableContainer);
         Assert.assertTrue(((CacheableContainer<?>)container).getContainer() instanceof ImmutableMapContainer);
         Assert.assertSame(
             applicationContext.getBean(CacheManager.class),
             ((CacheableContainer<?>)container).getCacheManager()
-        );
-        Assert.assertEquals(
-            "shared-cache", ((CacheableContainer<?>)container).getCacheName()
         );
 
         // 注册常量类容器

@@ -2,13 +2,12 @@ package cn.crane4j.core.support.container;
 
 import cn.crane4j.annotation.ContainerCache;
 import cn.crane4j.annotation.ContainerMethod;
-import cn.crane4j.core.cache.ConcurrentMapCacheManager;
-import cn.crane4j.core.container.CacheableContainer;
+import cn.crane4j.core.cache.CacheableContainer;
 import cn.crane4j.core.container.Container;
+import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.SimpleAnnotationFinder;
+import cn.crane4j.core.support.SimpleCrane4jGlobalConfiguration;
 import cn.crane4j.core.support.converter.ConverterManager;
-import cn.crane4j.core.support.converter.HutoolConverterManager;
-import cn.crane4j.core.support.reflect.ReflectivePropertyOperator;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.ReflectUtils;
 import lombok.AllArgsConstructor;
@@ -23,7 +22,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -40,12 +38,13 @@ public class CacheableMethodContainerFactoryTest {
 
     @Before
     public void init() {
-        ConverterManager converterManager = new HutoolConverterManager();
+        Crane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create();
+        ConverterManager converterManager = configuration.getConverterManager();
         MethodInvokerContainerCreator containerCreator = new MethodInvokerContainerCreator(
-            new ReflectivePropertyOperator(converterManager), converterManager
+            configuration.getPropertyOperator(), converterManager
         );
         factory = new CacheableMethodContainerFactory(
-            containerCreator, new SimpleAnnotationFinder(), new ConcurrentMapCacheManager(ConcurrentHashMap::new)
+            containerCreator, new SimpleAnnotationFinder(), configuration
         );
         service = new Service();
         annotatedMethod = ReflectUtils.getMethod(Service.class, "annotatedMethod", List.class);

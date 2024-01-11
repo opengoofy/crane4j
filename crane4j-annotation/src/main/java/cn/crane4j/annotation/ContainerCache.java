@@ -5,27 +5,53 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.concurrent.TimeUnit;
 
 /**
- * If a method has been annotated by {@link ContainerMethod},
- * upgrade it to a cacheable container.
+ * <p>An annotation to mark a container as cacheable.<br />
+ * It can be used on a method which annotated by {@link ContainerMethod},
+ * or a class which implements {@link cn.crane4j.core.container.Container} interface.
+ *
+ * <p>The actual cache implementation is determined by what cache manager is specified in the annotation,
+ * when container is created, the cache factory will be used to create a cache instance,
+ * and wrap the container with {@link cn.crane4j.core.cache.CacheableContainer}.
  *
  * @author huangchengxing
  * @see ContainerMethod
+ * @see cn.crane4j.core.cache.CacheManager
+ * @see cn.crane4j.core.cache.CacheableContainerProcessor
  * @see cn.crane4j.core.support.container.CacheableMethodContainerFactory
- * @see cn.crane4j.core.support.container.ContainerMethodAnnotationProcessor
  */
 @Documented
-@Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
+@Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ContainerCache {
 
-    // TODO supprot specified cache manager and expire time
+    /**
+     * The name of the cache manager
+     *
+     * @return cache manager name
+     * @see cn.crane4j.core.cache.CacheManager
+     *
+     * @since 2.4.0
+     */
+    String cacheManager() default "";
 
     /**
-     * The cache name, when empty, defaults to {@link ContainerMethod#namespace()} of the marked method.
+     * The time to live of the cache,
+     * default to -1L, which means the cache will never proactive evict.
      *
-     * @return cache name
+     * @return time to live
+     * @since 2.4.0
      */
-    String cacheName() default "";
+    long expirationTime() default -1L;
+
+    /**
+     * The time unit of the cache expiry time,
+     * default to {@link TimeUnit#MILLISECONDS}.
+     *
+     * @return time unit
+     * @since 2.4.0
+     */
+    TimeUnit timeUnit() default TimeUnit.MILLISECONDS;
 }

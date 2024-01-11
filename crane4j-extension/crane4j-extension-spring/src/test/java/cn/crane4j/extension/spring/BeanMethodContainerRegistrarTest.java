@@ -3,7 +3,7 @@ package cn.crane4j.extension.spring;
 import cn.crane4j.annotation.ContainerCache;
 import cn.crane4j.annotation.ContainerMethod;
 import cn.crane4j.annotation.MappingType;
-import cn.crane4j.core.container.CacheableContainer;
+import cn.crane4j.core.cache.CacheableContainer;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.MethodInvokerContainer;
 import lombok.AllArgsConstructor;

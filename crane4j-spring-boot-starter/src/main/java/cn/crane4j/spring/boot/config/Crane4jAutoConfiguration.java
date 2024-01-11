@@ -3,11 +3,13 @@ package cn.crane4j.spring.boot.config;
 import cn.crane4j.annotation.ContainerConstant;
 import cn.crane4j.annotation.ContainerEnum;
 import cn.crane4j.annotation.ContainerMethod;
+import cn.crane4j.core.cache.CacheDefinition;
 import cn.crane4j.core.cache.CacheManager;
-import cn.crane4j.core.cache.ConcurrentMapCacheManager;
+import cn.crane4j.core.cache.CacheableContainerProcessor;
+import cn.crane4j.core.cache.GuavaCacheManager;
+import cn.crane4j.core.cache.MapCacheManager;
 import cn.crane4j.core.container.ContainerManager;
 import cn.crane4j.core.container.Containers;
-import cn.crane4j.core.container.lifecycle.CacheableContainerProcessor;
 import cn.crane4j.core.container.lifecycle.ContainerInstanceLifecycleProcessor;
 import cn.crane4j.core.container.lifecycle.ContainerRegisterLogger;
 import cn.crane4j.core.executor.BeanOperationExecutor;
@@ -61,7 +63,6 @@ import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.support.reflect.PropertyOperatorHolder;
 import cn.crane4j.core.support.reflect.ReflectivePropertyOperator;
-import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.StringUtils;
 import cn.crane4j.extension.spring.BeanAwareAssembleMethodAnnotationHandler;
 import cn.crane4j.extension.spring.BeanMethodContainerRegistrar;
@@ -79,6 +80,7 @@ import cn.crane4j.extension.spring.scanner.ClassScanner;
 import cn.crane4j.extension.spring.scanner.ScannedContainerRegistrar;
 import cn.crane4j.extension.spring.util.ContainerResolveUtils;
 import cn.crane4j.spring.boot.annotation.EnableCrane4j;
+import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -112,11 +114,12 @@ import org.springframework.util.StringValueResolver;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -204,10 +207,17 @@ public class Crane4jAutoConfiguration {
         return new SpelExpressionEvaluator(new SpelExpressionParser());
     }
 
-    @ConditionalOnMissingBean(CacheManager.class)
-    @Bean
-    public ConcurrentMapCacheManager concurrentMapCacheManager() {
-        return new ConcurrentMapCacheManager(CollectionUtils::newWeakConcurrentMap);
+    @Primary
+    @ConditionalOnMissingBean(MapCacheManager.class)
+    @Bean({"mapCacheManager", CacheManager.DEFAULT_MAP_CACHE_MANAGER_NAME})
+    public MapCacheManager mapCacheManager() {
+        return MapCacheManager.newWeakConcurrentMapCacheManager();
+    }
+
+    @ConditionalOnMissingBean(GuavaCacheManager.class)
+    @Bean({"guavaCacheManager", CacheManager.DEFAULT_GUAVA_CACHE_MANAGER_NAME})
+    public GuavaCacheManager guavaCacheManager() {
+        return new GuavaCacheManager();
     }
 
     @Order(0)
@@ -225,15 +235,13 @@ public class Crane4jAutoConfiguration {
 
     @Order(2)
     @ConditionalOnMissingBean
-    @ConditionalOnBean(CacheManager.class)
     @Bean
-    public CacheableContainerProcessor cacheableContainerProcessor(CacheManager cacheManager, Properties properties) {
-        Map<String, String> cacheMap = new HashMap<>(16);
-        properties.getCacheContainers().forEach((cacheName, namespaces) ->
-            namespaces.forEach(namespace -> cacheMap.put(namespace, cacheName))
-        );
-        CacheableContainerProcessor processor = new CacheableContainerProcessor(cacheManager);
-        processor.setCacheNameSelector((definition, container) -> cacheMap.get(container.getNamespace()));
+    public CacheableContainerProcessor cacheableContainerProcessor(
+        Crane4jGlobalConfiguration configuration, AnnotationFinder annotationFinder, Properties properties) {
+        CacheableContainerProcessor processor = new CacheableContainerProcessor(configuration, annotationFinder);
+        Map<String, CacheDefinition> definitions = properties.getCaches().stream()
+            .collect(Collectors.toMap(CacheDefinition::getName, Function.identity()));
+        processor.setCacheDefinitionRetriever((d, c) -> definitions.get(c.getNamespace()));
         return processor;
     }
 
@@ -418,8 +426,8 @@ public class Crane4jAutoConfiguration {
     @ConditionalOnBean(CacheManager.class)
     @Bean
     public CacheableMethodContainerFactory cacheableMethodContainerFactory(
-        CacheManager cacheManager, MethodInvokerContainerCreator methodInvokerContainerCreator, AnnotationFinder annotationFinder) {
-        return new CacheableMethodContainerFactory(methodInvokerContainerCreator, annotationFinder, cacheManager);
+        Crane4jGlobalConfiguration configuration, MethodInvokerContainerCreator methodInvokerContainerCreator, AnnotationFinder annotationFinder) {
+        return new CacheableMethodContainerFactory(methodInvokerContainerCreator, annotationFinder, configuration);
     }
 
     @Primary
@@ -630,9 +638,50 @@ public class Crane4jAutoConfiguration {
         private boolean enableMethodContainer = true;
 
         /**
-         * Declare which data sources need to be packaged as caches in the format {@code cache name: namespace of container}.
+         * Container cache configuration.
          */
-        private Map<String, Set<String>> cacheContainers = new LinkedHashMap<>();
+        private List<ContainerCacheProperties> caches = new ArrayList<>();
+
+        /**
+         * Configuration of cache.
+         *
+         * @author huangchengxing
+         * @since 2.4.0
+         */
+        @Data
+        public static class ContainerCacheProperties implements CacheDefinition {
+
+            /**
+             * The namespace of container
+             */
+            private String namespace;
+
+            /**
+             * The name of cache manager
+             */
+            private String cacheManager;
+
+            /**
+             * The expiry time of cache
+             */
+            private Long expireTime;
+
+            /**
+             * The time unit of expire time,
+             * default is {@link TimeUnit#MILLISECONDS}
+             */
+            private TimeUnit timeUnit = TimeUnit.MILLISECONDS;
+
+            /**
+             * Get the name of this cache.
+             *
+             * @return cache name
+             */
+            @Override
+            public String getName() {
+                return namespace;
+            }
+        }
     }
 
     /**

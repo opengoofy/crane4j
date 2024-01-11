@@ -1,30 +1,61 @@
 package cn.crane4j.core.cache;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.util.concurrent.TimeUnit;
+
 /**
- * Cache manager.
+ * {@link CacheObject} manager.
  *
  * @author huangchengxing
- * @see Cache
- * @see ConcurrentMapCacheManager
+ * @see CacheObject
+ * @see GuavaCacheManager
+ * @see MapCacheManager#newWeakConcurrentMapCacheManager()
+ * @see MapCacheManager#newConcurrentHashMapCacheManager()
+ * @since 2.4.0
  */
 public interface CacheManager {
 
-    /**
-     * <p>Delete the corresponding cache if it already exists.<br />
-     * The {@link Cache#isExpired()} of a deleted cache object must return false.
-     *
-     * @param cacheName cache name
-     */
-    void removeCache(String cacheName);
+    String DEFAULT_MAP_CACHE_MANAGER_NAME = "WeakConcurrentHashMapCacheFactory";
+    String DEFAULT_GUAVA_CACHE_MANAGER_NAME = "GuavaCacheManager";
 
     /**
-     * <p>Get cache, if it does not exist create it first.<br />
-     * The obtained cache is <b>not always</b> guaranteed to be valid,
-     * caller needs to ensure the timeliness of the cache itself through {@link Cache#isExpired()}.
+     * Create cache instance, if cache instance already created,
+     * remove the old cache instance and create a new cache instance.
      *
-     * @param cacheName cache name
+     * @param name cache name
+     * @param expireTime expire time
+     * @param timeUnit time unit
      * @param <K> key type
-     * @return cache object
+     * @return cache instance
      */
-    <K> Cache<K> getCache(String cacheName);
+    @NonNull
+    <K> CacheObject<K> createCache(String name, Long expireTime, TimeUnit timeUnit);
+
+    /**
+     * Get cache instance by name,
+     * if cache instance still not created by {@link #createCache}, return null.
+     *
+     * @param name cache name
+     * @return cache instance
+     */
+    @Nullable
+    <K> CacheObject<K> getCache(String name);
+
+    /**
+     * <p>Remove cache.<br />
+     * When a cache is removed, manager will call {@link CacheObject#clear()} to clear the cache,
+     * and mark the cache as invalid by {@link CacheObject#isInvalid()}.
+     *
+     * @param name cache name
+     * @see CacheObject#isInvalid()
+     * @see CacheObject#clear()
+     */
+    void removeCache(String name);
+
+    /**
+     * Clear all cache.
+     */
+    void clearAll();
 }

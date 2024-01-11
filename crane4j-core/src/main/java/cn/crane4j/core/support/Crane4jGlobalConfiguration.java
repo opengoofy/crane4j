@@ -1,5 +1,6 @@
 package cn.crane4j.core.support;
 
+import cn.crane4j.core.cache.CacheManager;
 import cn.crane4j.core.container.ContainerManager;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
@@ -165,4 +166,14 @@ public interface Crane4jGlobalConfiguration extends ContainerManager {
     default DisassembleOperationHandler getDisassembleOperationHandler(Class<?> handlerType) {
         return getDisassembleOperationHandler(null, handlerType);
     }
+
+    /**
+     * Get cache factory.
+     *
+     * @param name cache factory name
+     * @return cache factory
+     * @throws IllegalArgumentException if cache factory is not found by name
+     * @since 2.4.0
+     */
+    @NonNull CacheManager getCacheManager(String name);
 }
