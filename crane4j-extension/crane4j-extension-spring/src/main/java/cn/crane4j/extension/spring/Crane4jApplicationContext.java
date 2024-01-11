@@ -1,5 +1,6 @@
 package cn.crane4j.extension.spring;
 
+import cn.crane4j.core.cache.CacheManager;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerDefinition;
 import cn.crane4j.core.container.ContainerProvider;
@@ -210,6 +211,19 @@ public class Crane4jApplicationContext extends DefaultContainerManager
             DisassembleOperationHandler.class, handlerType, handlerName,
             (t, n) -> applicationContext.getBean(n, t), applicationContext::getBean
         );
+    }
+
+    /**
+     * Get cache factory.
+     *
+     * @param name cache factory name
+     * @return cache factory
+     * @since 2.4.0
+     */
+    @NonNull
+    @Override
+    public CacheManager getCacheManager(String name) {
+        return applicationContext.getBean(name, CacheManager.class);
     }
 
     // ============================ life cycle ============================

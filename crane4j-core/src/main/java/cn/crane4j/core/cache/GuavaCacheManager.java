@@ -1,74 +1,113 @@
 package cn.crane4j.core.cache;
 
-import cn.crane4j.core.util.CollectionUtils;
-import com.google.common.cache.LoadingCache;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import cn.crane4j.core.util.Asserts;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.function.Supplier;
+import java.util.concurrent.TimeUnit;
 
 /**
- * Simple implementation of {@link CacheManager} based on {@link LoadingCache}.
+ * An implementation of the {@link CacheManager} that
+ * creates a cache instance what stores data in the {@link Cache}.
  *
  * @author huangchengxing
+ * @since 2.4.0
  */
-@Slf4j
-@RequiredArgsConstructor
-public class GuavaCacheManager implements CacheManager {
-
-    private final ConcurrentMap<String, CacheImpl<?>> caches = new ConcurrentHashMap<>(8);
-    private final Supplier<com.google.common.cache.Cache<Object, ?>> cacheFactory;
+@NoArgsConstructor
+public class GuavaCacheManager extends AbstractCacheManager {
 
     /**
-     * <p>Delete the corresponding cache if it already exists.<br />
-     * The {@link Cache#isExpired()} of a deleted cache object must return false.
-     *
-     * @param cacheName cache name
+     * The cache factory.
      */
-    @Override
-    public void removeCache(String cacheName) {
-        caches.compute(cacheName, (name, cache) -> {
-            if (Objects.nonNull(cache)) {
-                log.info("remove cache [{}]", cacheName);
-                cache.setExpired(true);
-                cache.cache.asMap().clear();
+    @NonNull
+    @Setter
+    private CacheFactory cacheFactory = DefaultCacheFactory.INSTANCE;
+
+    /**
+     * Create cache instance.
+     *
+     * @param name cache name
+     * @param expireTime expire time
+     * @param timeUnit   time unit
+     * @return cache instance
+     */
+    @NonNull
+    protected <K> GuavaCacheObject<K> doCreateCache(String name, Long expireTime, TimeUnit timeUnit) {
+        Cache<Object, Object> cache = cacheFactory.getCache(expireTime, timeUnit);
+        Asserts.isNotNull(cache, "Cache factory must not be null");
+        return new GuavaCacheObject<>(name, cache);
+    }
+
+    /**
+     * A factory to create a cache instance.
+     *
+     * @see CacheBuilder
+     */
+    @FunctionalInterface
+    public interface CacheFactory {
+
+        /**
+         * Get the cache instance.
+         *
+         * @param expireTime expire time
+         * @param timeUnit  time unit
+         * @return guava cache instance
+         */
+        Cache<Object, Object> getCache(Long expireTime, TimeUnit timeUnit);
+    }
+
+    /**
+     * A default {@link CacheFactory} implementation,
+     * if expire time greater than 0, use {@link CacheBuilder#expireAfterWrite(long, TimeUnit)},
+     * if expire time less than 0, use {@link CacheBuilder#weakKeys()} and {@link CacheBuilder#weakValues()}.
+     *
+     * @author huangchengxing
+     */
+    public static class DefaultCacheFactory implements CacheFactory {
+
+        public static final DefaultCacheFactory INSTANCE = new DefaultCacheFactory();
+
+        /**
+         * Get the cache instance.
+         *
+         * @param expireTime expire time
+         * @param timeUnit   time unit
+         * @return guava cache instance
+         */
+        @Override
+        public Cache<Object, Object> getCache(Long expireTime, TimeUnit timeUnit) {
+            Asserts.isNotEquals(expireTime, 0L, "Expire time must not be 0");
+            if (expireTime > 1) {
+                return CacheBuilder.newBuilder()
+                    .expireAfterWrite(expireTime, timeUnit)
+                    .build();
             }
-            return null;
-        });
+            // if expire time less than 0, use weak keys and weak values
+            return CacheBuilder.newBuilder()
+                .weakKeys().weakValues()
+                .build();
+        }
     }
 
     /**
-     * <p>Get cache, if it does not exist create it first.<br />
-     * The obtained cache is <b>not always</b> guaranteed to be valid,
-     * caller needs to ensure the timeliness of the cache itself through {@link Cache#isExpired()}.
+     * A {@link CacheObject} implementation that stores data in the {@link Cache}.
      *
-     * @param cacheName cache name
-     * @return cache object
+     * @author huangchengxing
+     * @since 2.4.0
      */
-    @SuppressWarnings("unchecked")
-    @Override
-    public <K> Cache<K> getCache(String cacheName) {
-        return (Cache<K>) CollectionUtils.computeIfAbsent(caches, cacheName, n -> {
-            com.google.common.cache.Cache<K, Object> cache = (com.google.common.cache.Cache<K, Object>)cacheFactory.get();
-            log.info("create cache [{}]", cacheName);
-            return new CacheImpl<>(cache);
-        });
-    }
+    private static class GuavaCacheObject<K> extends AbstractCacheObject<K> {
 
-    @RequiredArgsConstructor
-    private static class CacheImpl<K> implements Cache<K> {
+        private final Cache<Object, Object> cache;
 
-        @Setter
-        @Getter
-        private boolean expired = false;
-        private final com.google.common.cache.Cache<K, Object> cache;
+        public GuavaCacheObject(String name, Cache<Object, Object> cache) {
+            super(name);
+            this.cache = cache;
+        }
 
         /**
          * Get the cache according to the key value.
@@ -76,21 +115,10 @@ public class GuavaCacheManager implements CacheManager {
          * @param key key
          * @return cache value
          */
-        @SneakyThrows
+        @Nullable
         @Override
         public Object get(K key) {
-            return cache.get(key, () -> null);
-        }
-
-        /**
-         * Get all cache according to the key values.
-         *
-         * @param keys keys
-         * @return cache value
-         */
-        @Override
-        public Map<K, Object> getAll(Iterable<K> keys) {
-            return cache.getAllPresent(keys);
+            return cache.getIfPresent(key);
         }
 
         /**
@@ -105,16 +133,6 @@ public class GuavaCacheManager implements CacheManager {
         }
 
         /**
-         * Add all cache value.
-         *
-         * @param caches caches
-         */
-        @Override
-        public void putAll(Map<K, Object> caches) {
-            cache.putAll(caches);
-        }
-
-        /**
          * Add cache value if it does not exist.
          *
          * @param key        key
@@ -124,6 +142,24 @@ public class GuavaCacheManager implements CacheManager {
         @Override
         public void putIfAbsent(K key, Object cacheValue) {
             cache.get(key, () -> cacheValue);
+        }
+
+        /**
+         * Remove cache value.
+         *
+         * @param key key
+         */
+        @Override
+        public void remove(K key) {
+            cache.invalidate(key);
+        }
+
+        /**
+         * Clear all cache value.
+         */
+        @Override
+        public void clear() {
+            cache.invalidateAll();
         }
     }
 }

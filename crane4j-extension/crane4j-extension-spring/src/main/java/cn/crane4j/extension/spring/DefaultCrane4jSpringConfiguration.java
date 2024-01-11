@@ -1,7 +1,8 @@
 package cn.crane4j.extension.spring;
 
 import cn.crane4j.core.cache.CacheManager;
-import cn.crane4j.core.cache.ConcurrentMapCacheManager;
+import cn.crane4j.core.cache.GuavaCacheManager;
+import cn.crane4j.core.cache.MapCacheManager;
 import cn.crane4j.core.container.ContainerManager;
 import cn.crane4j.core.container.lifecycle.ContainerInstanceLifecycleProcessor;
 import cn.crane4j.core.container.lifecycle.ContainerRegisterLogger;
@@ -53,7 +54,6 @@ import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.support.reflect.PropertyOperatorHolder;
 import cn.crane4j.core.support.reflect.ReflectivePropertyOperator;
-import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.extension.spring.aop.MethodArgumentAutoOperateAdvisor;
 import cn.crane4j.extension.spring.aop.MethodResultAutoOperateAdvisor;
 import cn.crane4j.extension.spring.expression.SpelExpressionContext;
@@ -138,10 +138,17 @@ public class DefaultCrane4jSpringConfiguration implements SmartInitializingSingl
         return new SpelExpressionEvaluator(new SpelExpressionParser());
     }
 
-    @Bean
-    public ConcurrentMapCacheManager concurrentMapCacheManager() {
-        return new ConcurrentMapCacheManager(CollectionUtils::newWeakConcurrentMap);
+    @Primary
+    @Bean({"mapCacheManager", CacheManager.DEFAULT_MAP_CACHE_MANAGER_NAME})
+    public MapCacheManager mapCacheManager() {
+        return MapCacheManager.newWeakConcurrentMapCacheManager();
     }
+
+    @Bean({"guavaCacheManager", CacheManager.DEFAULT_GUAVA_CACHE_MANAGER_NAME})
+    public GuavaCacheManager guavaCacheManager() {
+        return new GuavaCacheManager();
+    }
+
 
     @Order(0)
     @Bean
@@ -269,8 +276,8 @@ public class DefaultCrane4jSpringConfiguration implements SmartInitializingSingl
     @Order(Ordered.LOWEST_PRECEDENCE - 1)
     @Bean
     public CacheableMethodContainerFactory cacheableMethodContainerFactory(
-        CacheManager cacheManager, MethodInvokerContainerCreator methodInvokerContainerCreator, AnnotationFinder annotationFinder) {
-        return new CacheableMethodContainerFactory(methodInvokerContainerCreator, annotationFinder, cacheManager);
+        Crane4jGlobalConfiguration configuration, MethodInvokerContainerCreator methodInvokerContainerCreator, AnnotationFinder annotationFinder) {
+        return new CacheableMethodContainerFactory(methodInvokerContainerCreator, annotationFinder, configuration);
     }
 
     @Primary

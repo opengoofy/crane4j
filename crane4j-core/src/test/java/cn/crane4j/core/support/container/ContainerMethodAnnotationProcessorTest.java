@@ -3,15 +3,14 @@ package cn.crane4j.core.support.container;
 import cn.crane4j.annotation.ContainerCache;
 import cn.crane4j.annotation.ContainerMethod;
 import cn.crane4j.annotation.MappingType;
-import cn.crane4j.core.cache.ConcurrentMapCacheManager;
-import cn.crane4j.core.container.CacheableContainer;
+import cn.crane4j.core.cache.CacheableContainer;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.MethodInvokerContainer;
 import cn.crane4j.core.support.AnnotationFinder;
+import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.SimpleAnnotationFinder;
+import cn.crane4j.core.support.SimpleCrane4jGlobalConfiguration;
 import cn.crane4j.core.support.converter.ConverterManager;
-import cn.crane4j.core.support.converter.HutoolConverterManager;
-import cn.crane4j.core.support.reflect.ReflectivePropertyOperator;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -24,7 +23,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -39,14 +37,15 @@ public class ContainerMethodAnnotationProcessorTest {
 
     @Before
     public void init() {
-        ConverterManager converterManager = new HutoolConverterManager();
+        Crane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create();
+        ConverterManager converterManager = configuration.getConverterManager();
         MethodInvokerContainerCreator containerCreator = new MethodInvokerContainerCreator(
-            new ReflectivePropertyOperator(converterManager), converterManager
+            configuration.getPropertyOperator(), converterManager
         );
-        AnnotationFinder annotationFinder = new SimpleAnnotationFinder();
+        AnnotationFinder annotationFinder = SimpleAnnotationFinder.INSTANCE;
         Collection<MethodContainerFactory> factories = Arrays.asList(
             new DefaultMethodContainerFactory(containerCreator, annotationFinder),
-            new CacheableMethodContainerFactory(containerCreator, annotationFinder, new ConcurrentMapCacheManager(ConcurrentHashMap::new))
+            new CacheableMethodContainerFactory(containerCreator, annotationFinder, configuration)
         );
         processor = new ContainerMethodAnnotationProcessor(factories, new SimpleAnnotationFinder());
     }

@@ -1,5 +1,8 @@
 package cn.crane4j.core.support;
 
+import cn.crane4j.core.cache.CacheManager;
+import cn.crane4j.core.cache.GuavaCacheManager;
+import cn.crane4j.core.cache.MapCacheManager;
 import cn.crane4j.core.container.ContainerProvider;
 import cn.crane4j.core.container.DefaultContainerManager;
 import cn.crane4j.core.container.lifecycle.ContainerRegisterLogger;
@@ -66,6 +69,7 @@ public class SimpleCrane4jGlobalConfiguration extends DefaultContainerManager
     private final Map<String, AssembleOperationHandler> assembleOperationHandlerMap = new HashMap<>(4);
     private final Map<String, DisassembleOperationHandler> disassembleOperationHandlerMap = new HashMap<>(4);
     private final Map<String, BeanOperationExecutor> beanOperationExecutorMap = new HashMap<>(4);
+    private final Map<String, CacheManager> cacheManagerMap = new HashMap<>(4);
     @Delegate
     private final PropertyMappingStrategyManager propertyMappingStrategyManager = new SimplePropertyMappingStrategyManager();
 
@@ -153,6 +157,12 @@ public class SimpleCrane4jGlobalConfiguration extends DefaultContainerManager
         // container providers
         configuration.registerContainerProvider(configuration.getClass().getSimpleName(), configuration);
         configuration.registerContainerProvider(ContainerProvider.class.getSimpleName(), configuration);
+
+        // cache manager
+        configuration.getCacheManagerMap()
+            .put(CacheManager.DEFAULT_GUAVA_CACHE_MANAGER_NAME, new GuavaCacheManager());
+        configuration.getCacheManagerMap()
+            .put(CacheManager.DEFAULT_MAP_CACHE_MANAGER_NAME, MapCacheManager.newWeakConcurrentMapCacheManager());
 
         return configuration;
     }
@@ -244,5 +254,20 @@ public class SimpleCrane4jGlobalConfiguration extends DefaultContainerManager
         );
         Asserts.isNotNull(parser, "cannot find disassemble handler [{}]({})", handlerName, handlerType);
         return parser;
+    }
+
+    /**
+     * Get cache factory.
+     *
+     * @param name cache factory name
+     * @return cache factory
+     * @since 2.4.0
+     */
+    @NonNull
+    @Override
+    public CacheManager getCacheManager(String name) {
+        CacheManager factory = cacheManagerMap.get(name);
+        Asserts.isNotNull(factory, "cannot find cache factory [{}]", name);
+        return factory;
     }
 }

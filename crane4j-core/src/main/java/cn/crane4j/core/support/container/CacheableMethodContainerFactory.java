@@ -2,10 +2,13 @@ package cn.crane4j.core.support.container;
 
 import cn.crane4j.annotation.ContainerCache;
 import cn.crane4j.annotation.ContainerMethod;
+import cn.crane4j.core.cache.CacheDefinition;
 import cn.crane4j.core.cache.CacheManager;
-import cn.crane4j.core.container.CacheableContainer;
+import cn.crane4j.core.cache.CacheableContainer;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.support.AnnotationFinder;
+import cn.crane4j.core.support.Crane4jGlobalConfiguration;
+import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -14,7 +17,6 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -30,12 +32,13 @@ import java.util.stream.Collectors;
 public class CacheableMethodContainerFactory extends DefaultMethodContainerFactory {
 
     public static final int ORDER = DefaultMethodContainerFactory.ORDER - 1;
-    private final CacheManager cacheManager;
+    private final Crane4jGlobalConfiguration configuration;
 
     public CacheableMethodContainerFactory(
-        MethodInvokerContainerCreator methodInvokerContainerCreator, AnnotationFinder annotationFinder, CacheManager cacheManager) {
+        MethodInvokerContainerCreator methodInvokerContainerCreator,
+        AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration) {
         super(methodInvokerContainerCreator, annotationFinder);
-        this.cacheManager = cacheManager;
+        this.configuration = configuration;
     }
 
     /**
@@ -75,10 +78,18 @@ public class CacheableMethodContainerFactory extends DefaultMethodContainerFacto
     public List<Container<Object>> get(@Nullable Object source, Method method, Collection<ContainerMethod> annotations) {
         log.debug("create cacheable method container from [{}]", method);
         ContainerCache annotation = annotationFinder.findAnnotation(method, ContainerCache.class);
+        Asserts.isNotNull(annotation, "method [{}] must be annotated by @ContainerCache", method);
+        String managerName = StringUtils.emptyToDefault(annotation.cacheManager(), CacheManager.DEFAULT_MAP_CACHE_MANAGER_NAME);
+        CacheManager cacheManager = configuration.getCacheManager(managerName);
         // if cache name is not specified, the namespace of the container is taken by default
-        Function<Container<Object>, String> cacheNameFactory = container -> StringUtils.emptyToDefault(annotation.cacheName(), container.getNamespace());
         return super.get(source, method, annotations).stream()
-            .map(container -> new CacheableContainer<>(container, cacheManager, cacheNameFactory.apply(container)))
+            .map(container -> {
+                CacheDefinition cacheDefinition = new CacheDefinition.Impl(
+                    container.getNamespace(), managerName,
+                    annotation.expirationTime(), annotation.timeUnit()
+                );
+                return new CacheableContainer<>(container, cacheDefinition, cacheManager);
+            })
             .collect(Collectors.toList());
     }
 }
