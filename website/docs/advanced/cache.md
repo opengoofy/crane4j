@@ -1,128 +1,157 @@
 # 缓存
 
-在 `crane4j` 中，每个缓存对应一个 `Cache` 对象，用于提供缓存的读写功能。数据源容器通过持有 `Cache` 对象来实现对缓存的操作。所有的 `Cache` 对象都由全局的缓存管理器 `CacheManager` 进行管理。
+在 `crane4j` 中，缓存功能由缓存管理器 `CacheManager` 和具体的缓存对象 `Cache` 共同完成。
 
-缓存管理器 `CacheManager` 负责创建、配置和管理缓存对象。它提供了一组接口和方法，用于获取、创建、删除和管理缓存。通过 `CacheManager`，我们可以对缓存进行统一的管理和控制。
-
-下图展示了 `Cache`、数据源容器和缓存管理器之间的关系：
+缓存管理器 `CacheManager` 负责管理缓存对象 `CacheObject` 的创建和销毁，而缓存对象 `CacheObject` 提供对缓存数据的具体的增删改查操作。
 
 ![缓存结构](https://img.xiajibagao.top/image-20230225011748030.png)
 
-在这个结构中，数据源容器通过 `Cache` 对象与缓存进行交互，而 `Cache` 对象则由缓存管理器 `CacheManager` 管理和配置。
+**对于所有的数据源容器来说，缓存的粒度都是 key 级别，即第一次查询 a、b，则会对 a、b 进行查询并缓存。第二次查询 a、b、c 时，只会查询 c 并将其增量添加到缓存中，而 a、b 则直接从缓存中获取。**
 
 :::tip
 
-在目前的版本中，由于缺乏 redis 支持，以及缺少细粒度控制缓存过期时间等原因，缓存的实用价值依然有限，在后续版本将会进一步完善它。
+注意：此部分功能需要依赖 2.4.0 及以上版本。
 
 :::
 
-## 1.CacheManager
+## 1.使用
 
-在 `crane4j` 中，缓存功能由缓存管理器 `CacheManager` 和具体的缓存对象 `Cache` 共同完成。缓存管理器负责管理缓存对象的创建和销毁，而缓存对象提供具体的读写功能。
+### 1.1.通过注解配置
 
-`crane4j` 默认提供了两种缓存管理器实现：
+你可以在类或者方法上添加 `@ContainerCache` 注解，以便快速的为数据源容器配置缓存。
 
-- `ConcurrentMapCacheManager`：基于 `WeakConcurrentMap` 实现的缓存对象，无法设置过期策略，只能依赖 JVM 自动回收缓存。它是默认的缓存管理器；
-- `GuavaCacheManager`：基于 `Guava` 的 `Cache` 实现的缓存对象，支持配置过期时间和并发等级等选项；
+比如，你可以直接**在实现了 `Container` 接口的类上添加注解**，表示这个数据源容器需要应用缓存：
 
-要替换默认的缓存管理器，可以在配置类中声明一个 `GuavaCacheManager` 实例，并将其作为 Bean 注册到 Spring 上下文中。通过自定义的 `GuavaCacheManager`，可以配置自定义的缓存过期时间和并发级别等参数。
+~~~java
+@ContainerCache(
+    expirationTime = 1000L, // 配置过期时间
+    timeUnit = TimeUnit.SECONDS, // 指定过期时间单位
+)
+private static class TestContainer implements Container<Object> {
+    @Getter
+    private final String namespace = "test";
+    @Override
+    public Map<Object, ?> get(Collection<Object> keys) {
+        return null;
+    }
+}
+~~~
 
-在使用缓存时，可以通过缓存管理器 `CacheManager` 创建和获取缓存对象 `Cache`，然后使用 `Cache` 对象进行缓存的读写和销毁操作。
+此外，你也可以**在带有 `@ContainerMethod` 注解的方法上添加注解**，表示这个方法容器也需要应用缓存：
 
-```java
-// 获取名为 "foo" 的缓存对象
-Cache<String> cache = cacheManager.getCache("foo");
-
-// 使用缓存对象进行读写操作
-cache.get("cacheKey");
-cache.put("cacheKey", "cacheValue");
-
-// 销毁名为 "foo" 的缓存对象
-cacheManager.removeCache("foo");
-```
-
-需要注意的是，销毁缓存对象后，之前获取到的缓存对象仍然可以使用，但是数据可能已被清空。可以通过 `Cache.isExpired()` 方法判断缓存是否已过期。
-
-缓存管理器和缓存对象一般不直接使用，而是与缓存容器等机制结合使用，以实现更高级的缓存功能。
-
-## 2.结合数据源容器使用
-
-在 `crane4j` 中，数据源缓存容器基于缓存容器包装类 `CacheableContainer` 实现，它可以包装任何容器，使其具备缓存功能。
-
-下面是创建数据源缓存容器的示例代码：
-
-```java
-// 1、创建一个原始容器
-Container<String> original = LambdaContainer.forLambda("original", keys -> {
-    return Collections.emptyMap();
-});
-///2、获取缓存管理器
-CacheManager cacheManager = StringUtils.getBean(CacheManager.class);
-// 3、基于原始容器与缓存对象，构建带有缓存功能的容器
-CacheableContainer<String> container = new CacheableContainer<>(original, cacheManager, "cacheName");
-```
-
-在上述示例中，通过 `LambdaContainer` 创建了一个原始容器 `original`，然后使用缓存管理器 `CacheManager` 和指定的缓存对象名称 `"cacheName"`，构建了带有缓存功能的容器 `container`。
-
-容器缓存的粒度是 key 级别，即第一次查询 a、b，则会对 a、b 进行查询并缓存。第二次查询 a、b、c 时，只会查询 c 并将其增量添加到缓存中，而 a、b 则直接从缓存中获取。
-
-## 3.配置缓存容器
-
-在 `crane4j` 中，你可以通过三种方式将一个普通容器配置为缓存容器。
-
-### 3.1.手动替换
-
-可以获取全局配置类 `Crane4jGlobalConfiguration`，然后使用 `replaceContainer` 方法将原始的容器替换为包装后的缓存容器。
-
-示例代码如下：
-
-```java
-Crane4jGlobalConfiguration configuration = StringUtils.getBean(Crane4jGlobalConfiguration.class);
-CacheManager cacheManager = StringUtils.getBean(CacheManager.class);
-
-// 将原始容器包装并替换为缓存容器
-configuration.compute("namespace", container -> {
-    return new CacheableContainer<>((Container<Object>) container, cacheManager, "cacheName");
-});
-```
-
-在上述示例中，使用 `Crane4jGlobalConfiguration` 获取全局配置类实例，然后通过 `replaceContainer` 方法将指定命名空间的原始容器替换为缓存容器。需要传入原始容器、缓存管理器和缓存对象的名称。
-
-### 3.2.添加注解
-
-如果使用 `@ContainerMethod` 声明的方法容器，可以在方法上添加 `@ContainerCache` 注解或 `@CacheContainerMethod` 组合注解，将方法容器声明为可缓存容器。
-
-示例代码如下：
-
-```java
-@ContainerCache // 声明该方法容器为可缓存容器
-@ContainerMethod(resultType = Foo.class)
-public List<Foo> oneToManyMethod(List<String> args) {
+~~~java
+@ContainerCache(
+    expirationTime = 1000L, // 配置过期时间
+    timeUnit = TimeUnit.SECONDS, // 指定过期时间单位
+)
+@ContainerMethod(namespace = "annotatedMethod", resultType = Foo.class)
+public List<Foo> annotatedMethod(List<String> args) {
     return args.stream().map(key -> new Foo(key, key)).collect(Collectors.toList());
 }
-```
+~~~
 
-或者使用 `@CacheContainerMethod` 组合注解：
+:::tip
 
-```java
-@CacheContainerMethod(resultType = Foo.class)
-public List<Foo> oneToManyMethod(List<String> args) {
-    return args.stream().map(key -> new Foo(key, key)).collect(Collectors.toList());
-}
-```
+- 关于 `@ContainerMethod` 的使用方法，请参见 [方法数据源容器](./../basic/container/method_container) 一节。
 
-方法容器创建后，会自动包装为缓存容器。
+:::
 
-### 3.3.配置文件
+### 1.2.使用配置文件配置
 
-可以在配置文件中声明要将哪些容器包装为缓存容器。
+除注解外，你也可以通过配置文件配置要对哪些容器应用缓存：
 
-示例配置如下（YAML 格式）：
-
-```yaml
+~~~yml
 crane4j:
-  cache-containers:
-    cache-name: container-namespace
+  caches:
+  	  # 容器的命名空间
+    - namespace: test1
+      # 过期时间
+      expire-time: 60
+      # 时间单位
+      time-unit: SECONDS
+      # 要使用的缓存管理器
+	  container-manager: GuavaCacheManager
+    - namespace: test2
+      expire-time: 600
+      time-unit: MILLISECONDS
+~~~
+
+其中，`namespace` 即为要应用缓存的数据源容器的 `namespace`。
+
+### 3.3.手动配置
+
+除通过上述方式自动配置缓存外，你也可以通过获取 `CacheManager` 手动的创建具备缓存功能的数据源容器，比如：
+
+~~~java
+// 准备一个数据源容器
+Container<String> container = Containers.forMap(Collections.singletonMap("test", 1));
+
+// 从全局配置中获取 CacheManager
+CacheManager cacheManager = configuration.getCacheManager("MapCacheManager");
+// 定义缓存配置
+CacheDefinition def = new CacheDefinition.Impl(
+    container.getNamespace(), "MapCacheManager", 
+    100L, TimeUnit.MILLISECONDS
+);
+// 使用 CacheableContainer 进行包装
+CacheableContainer<String> cacheableContainer = new CacheableContainer<>(container, def, cacheManager);
+~~~
+
+当执行时，`CacheableContainer` 将会自动从 `CacheManager` 中获取缓存。
+
+## 2.缓存管理器
+
+`crane4j` 默认提供了两种类型的缓存管理器：
+
+- **本地缓存**：本地缓存管理器 `MapCacheManager` 是基于 `Map` 集合实现的本地缓存管理器，默认使用 `WeakConcurrentMap` 实现，不能设置超时时间，当 JVM 触发 GC 时回收。
+- **Guava 缓存**：Guava 缓存管理器 `GuavaCacheManager` 是基于 `Guava` 的 `Cache` 实现的缓存对象，它支持配置过期时间和并发等级等各种功能；
+
+### 2.1.指定缓存管理器
+
+在使用 `@ContainerCache` 注解时，你可以通过 `cacheManager` 属性指定要使用的管理器：
+
+```java
+@ContainerCache(cacheManager = "GuavaCacheManager") // 指定缓存管理器
+@ContainerMethod(namespace = "annotatedMethod", resultType = Foo.class)
+public List<Foo> annotatedMethod(List<String> args) {
+    return args.stream().map(key -> new Foo(key, key)).collect(Collectors.toList());
+}
 ```
 
-上述配置中，声明了将命名空间为 `container-namespace` 的容器包装为缓存容器，并使用了指定的缓存名称 `cache-name`。
+此外，你也可以注册自己的缓存管理器：
+
+- 在 Spring 环境，你仅需要将其交给 Spring 托管即可，项目启动后 Crane4j 将会自动获取并注册它，此后你可以通过它的 beanName 获取它。
+- 在非 Spring 环境，你需要在创建/获取 `SimpleCrane4jGlobalConfiguration` 后，获取 `cacheManagerMap` 属性并注册你的管理器。
+
+### 2.2.刷新缓存
+
+一般情况下，缓存会根据你设置的过期时间自动过期，不过在某些时候，你可能需要手动的刷新缓存。此时，你可以选择直接**通过缓存管理器移除这个缓存**：
+
+~~~java
+// 创建一个缓存 test
+CacheManager cacheManager = new GuavaCacheManager();
+CacheObject<String> cache = cacheManager.createCache("test", -1L, TimeUnit.MILLISECONDS);
+
+// 移除缓存 test
+cacheManager.removeCache("test");
+// 此时 test 缓存将会被清空，并且标记为过期
+cache.isInvalid(); // = true
+~~~
+
+当缓存被管理器移除后，它将会被标记为“失效”。当数据源容器尝试操作它时，若发现它已经失效，则会从管理器重新创建并获取一个缓存对象。
+
+当然，除直接移除缓存外，你也可以通过**管理器获取具体的缓存对象，然后根据你的需要移除某些键值**：
+
+~~~java
+// 创建一个缓存 test
+CacheManager cacheManager = new GuavaCacheManager();
+CacheObject<String> cache = cacheManager.createCache("test", -1L, TimeUnit.MILLISECONDS);
+
+// 获取缓存，此时与上文创建的缓存为同一个对象
+CacheObject<String> cache = cacheManager.getCache("test");
+cache.remove("something");
+cache.clear();
+~~~
+
+**在默认情况下，你总是可以通过容器的 `namespace` 获取它所持有的缓存对象。**
+

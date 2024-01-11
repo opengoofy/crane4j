@@ -125,7 +125,7 @@ Crane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.crea
 MethodContainerAnnotationProcessor processor = ConfigurationUtil.createContainerMethodAnnotationProcessor(configuration);
 ~~~
 
-## 6、选项式配置
+## 6.选项式配置
 
 在 2.2 及以上版本，你可以使用 `@AssembleMethod` 注解进行选项式风格的配置。通过在类或属性上添加 `@AssembleMethod` 注解，并指定要绑定的目标类中的指定方法，你可以快速的使用 spring 容器 bean 中的方法、或任意类中的静态方法作为数据源容器。
 

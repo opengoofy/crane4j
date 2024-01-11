@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
  */
 public interface CacheManager {
 
-    String DEFAULT_MAP_CACHE_MANAGER_NAME = "WeakConcurrentHashMapCacheFactory";
+    String DEFAULT_MAP_CACHE_MANAGER_NAME = "MapCacheFactory";
     String DEFAULT_GUAVA_CACHE_MANAGER_NAME = "GuavaCacheManager";
 
     /**

@@ -20,7 +20,7 @@ crane4j:
   container-constant-packages: cn.crane4j.spring.boot.config.main.*
   # 扫描指定包路径下的所有类，使用容器中的配置解析器对其进行预解析
   operate-entity-packages: cn.crane4j.spring.boot.config.main.*
-  # 声明哪些数据源需要包装为缓存，
+  # 声明哪些数据源需要包装为缓存
   caches:
     - namespace: test2
       expire-time: 60
