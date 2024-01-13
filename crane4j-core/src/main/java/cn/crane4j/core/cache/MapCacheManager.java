@@ -98,11 +98,11 @@ public abstract class MapCacheManager extends AbstractCacheManager {
          * Add cache value if it does not exist.
          *
          * @param key key
-         * @param cacheValue cache value
+         * @param value cache value
          */
         @Override
-        public void putIfAbsent(K key, Object cacheValue) {
-            map.putIfAbsent(key, cacheValue);
+        public void putIfAbsent(K key, Object value) {
+            map.putIfAbsent(key, value);
         }
 
         /**
