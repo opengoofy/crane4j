@@ -17,6 +17,7 @@
         <module>crane4j-extension-spring</module>
         <module>crane4j-extension-mybatis-plus</module>
         <module>crane4j-extension-jackson</module>
+        <module>crane4j-extension-redis</module>
     </modules>
 
     <dependencies>

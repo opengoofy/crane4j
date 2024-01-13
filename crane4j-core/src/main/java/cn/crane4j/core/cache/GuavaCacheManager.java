@@ -136,12 +136,12 @@ public class GuavaCacheManager extends AbstractCacheManager {
          * Add cache value if it does not exist.
          *
          * @param key        key
-         * @param cacheValue cache value
+         * @param value cache value
          */
         @SneakyThrows
         @Override
-        public void putIfAbsent(K key, Object cacheValue) {
-            cache.get(key, () -> cacheValue);
+        public void putIfAbsent(K key, Object value) {
+            cache.get(key, () -> value);
         }
 
         /**

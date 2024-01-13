@@ -48,7 +48,7 @@ public class OneToOneAssembleOperationHandlerTest extends BaseExecutorTest {
         configuration.registerContainer(container);
 
         @SuppressWarnings("all")
-        Container<Bean> container2 = LambdaContainer.forLambda(
+        Container<Bean> container2 = LambdaContainer.<Bean>forLambda(
             "identity", beans -> beans.stream()
                 .collect(Collectors.toMap(Function.identity(), Function.identity()))
         );

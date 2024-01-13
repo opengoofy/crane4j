@@ -88,9 +88,9 @@ public interface CacheObject<K> {
      * Add cache value if it does not exist.
      *
      * @param key key
-     * @param cacheValue cache value
+     * @param value cache value
      */
-    void putIfAbsent(K key, Object cacheValue);
+    void putIfAbsent(K key, Object value);
 
     /**
      * Remove cache value.
