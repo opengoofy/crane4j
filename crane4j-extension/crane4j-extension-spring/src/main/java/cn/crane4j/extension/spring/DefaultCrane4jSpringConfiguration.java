@@ -44,10 +44,12 @@ import cn.crane4j.core.support.container.MethodInvokerContainerCreator;
 import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
 import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
-import cn.crane4j.core.support.operator.DefaultOperatorProxyMethodFactory;
+import cn.crane4j.core.support.operator.ArgAutoOperateProxyMethodFactory;
 import cn.crane4j.core.support.operator.DynamicContainerOperatorProxyMethodFactory;
+import cn.crane4j.core.support.operator.OperationAnnotationProxyMethodFactory;
 import cn.crane4j.core.support.operator.OperatorProxyFactory;
 import cn.crane4j.core.support.operator.OperatorProxyMethodFactory;
+import cn.crane4j.core.support.operator.ParametersFillProxyMethodFactory;
 import cn.crane4j.core.support.reflect.CacheablePropertyOperator;
 import cn.crane4j.core.support.reflect.ChainAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
@@ -273,6 +275,23 @@ public class DefaultCrane4jSpringConfiguration implements SmartInitializingSingl
         );
     }
 
+    @Order
+    @Bean
+    public ParametersFillProxyMethodFactory parametersFillProxyMethodFactory(
+        BeanOperationParser beanOperationParser) {
+        return new ParametersFillProxyMethodFactory(beanOperationParser);
+    }
+
+    @Order
+    @Bean
+    public ArgAutoOperateProxyMethodFactory argAutoOperateProxyMethodFactory(
+        AutoOperateAnnotatedElementResolver elementResolver, MethodBaseExpressionExecuteDelegate expressionExecuteDelegate,
+        ParameterNameFinder parameterNameFinder, AnnotationFinder annotationFinder) {
+        return new ArgAutoOperateProxyMethodFactory(
+            elementResolver, expressionExecuteDelegate, parameterNameFinder, annotationFinder
+        );
+    }
+
     @Order(Ordered.LOWEST_PRECEDENCE - 1)
     @Bean
     public CacheableMethodContainerFactory cacheableMethodContainerFactory(
@@ -308,8 +327,8 @@ public class DefaultCrane4jSpringConfiguration implements SmartInitializingSingl
     // ============== operator interface components ==============
 
     @Bean
-    public DefaultOperatorProxyMethodFactory defaultProxyMethodFactory(ConverterManager converterManager) {
-        return new DefaultOperatorProxyMethodFactory(converterManager);
+    public OperationAnnotationProxyMethodFactory operationAnnotationProxyMethodFactory(ConverterManager converterManager) {
+        return new OperationAnnotationProxyMethodFactory(converterManager);
     }
 
     @Bean

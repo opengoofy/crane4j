@@ -5,23 +5,38 @@ import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.support.converter.ParameterConvertibleMethodInvoker;
+import cn.crane4j.core.util.ArrayUtils;
 import cn.crane4j.core.util.CollectionUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.lang.reflect.Method;
 import java.util.Objects;
 
 /**
- * A Default factory that creates proxy method.
+ * <p>A proxy method factory that supports filling parameters
+ * according to operation annotation which is annotated on method.
+ * <p>for example:
+ * <pre>{@code
+ * @Assemble(
+ *  container = "dept", key = "deptId",
+ *  props = @Mapping(ref = "deptName")
+ * )
+ * @Assemble(
+ *  container = "user", key = "id",
+ *  props = @Mapping(ref = "name")
+ * )
+ * void operateMethod(Foo foo);
+ * }</pre>
  *
  * @author huangchengxing
  * @since  1.3.0
  */
+@Slf4j
 @RequiredArgsConstructor
-public class DefaultOperatorProxyMethodFactory implements OperatorProxyMethodFactory {
+public class OperationAnnotationProxyMethodFactory implements OperatorProxyMethodFactory {
 
-    public static final int ORDER = Integer.MAX_VALUE;
     private final ConverterManager converterManager;
 
     /**
@@ -32,7 +47,7 @@ public class DefaultOperatorProxyMethodFactory implements OperatorProxyMethodFac
      */
     @Override
     public int getSort() {
-        return ORDER;
+        return OPERATION_ANNOTATION_PROXY_METHOD_FACTORY_ORDER;
     }
 
     /**
@@ -46,9 +61,14 @@ public class DefaultOperatorProxyMethodFactory implements OperatorProxyMethodFac
     @Nullable
     @Override
     public MethodInvoker get(BeanOperations beanOperations, Method method, BeanOperationExecutor beanOperationExecutor) {
+        if (beanOperations.isEmpty()) {
+            return null;
+        }
         MethodInvoker invoker = new ProxyMethod(beanOperations, beanOperationExecutor);
+        log.info("create operation annotation proxy method for method: {}", method);
         return ParameterConvertibleMethodInvoker.create(invoker, converterManager, method.getParameterTypes());
     }
+
     /**
      * Standard operator method.
      *
@@ -62,11 +82,14 @@ public class DefaultOperatorProxyMethodFactory implements OperatorProxyMethodFac
 
         @Override
         public Object invoke(Object target, Object... args) {
-            Object arg = args[0];
-            if (Objects.nonNull(arg)) {
-                beanOperationExecutor.execute(CollectionUtils.adaptObjectToCollection(arg), operations);
+            if (ArrayUtils.isNotEmpty(args)) {
+                for (Object arg : args) {
+                    if (Objects.nonNull(arg)) {
+                        beanOperationExecutor.execute(CollectionUtils.adaptObjectToCollection(arg), operations);
+                    }
+                }
             }
-            return arg;
+            return null;
         }
     }
 }

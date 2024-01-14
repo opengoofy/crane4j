@@ -52,10 +52,12 @@ import cn.crane4j.core.support.container.MethodInvokerContainerCreator;
 import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
 import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
-import cn.crane4j.core.support.operator.DefaultOperatorProxyMethodFactory;
+import cn.crane4j.core.support.operator.ArgAutoOperateProxyMethodFactory;
 import cn.crane4j.core.support.operator.DynamicContainerOperatorProxyMethodFactory;
+import cn.crane4j.core.support.operator.OperationAnnotationProxyMethodFactory;
 import cn.crane4j.core.support.operator.OperatorProxyFactory;
 import cn.crane4j.core.support.operator.OperatorProxyMethodFactory;
+import cn.crane4j.core.support.operator.ParametersFillProxyMethodFactory;
 import cn.crane4j.core.support.reflect.AsmReflectivePropertyOperator;
 import cn.crane4j.core.support.reflect.CacheablePropertyOperator;
 import cn.crane4j.core.support.reflect.ChainAccessiblePropertyOperator;
@@ -473,8 +475,8 @@ public class Crane4jAutoConfiguration {
     @ConditionalOnBean(OperatorProxyFactory.class)
     @ConditionalOnMissingBean
     @Bean
-    public DefaultOperatorProxyMethodFactory defaultProxyMethodFactory(ConverterManager converterManager) {
-        return new DefaultOperatorProxyMethodFactory(converterManager);
+    public OperationAnnotationProxyMethodFactory operationAnnotationProxyMethodFactory(ConverterManager converterManager) {
+        return new OperationAnnotationProxyMethodFactory(converterManager);
     }
 
     @ConditionalOnBean(OperatorProxyFactory.class)
@@ -486,6 +488,27 @@ public class Crane4jAutoConfiguration {
         AnnotationFinder annotationFinder, ContainerAdapterRegister containerAdapterRegister) {
         return new DynamicContainerOperatorProxyMethodFactory(
             converterManager, parameterNameFinder, annotationFinder, containerAdapterRegister
+        );
+    }
+
+    @ConditionalOnBean(OperatorProxyFactory.class)
+    @ConditionalOnMissingBean
+    @Order
+    @Bean
+    public ParametersFillProxyMethodFactory parametersFillProxyMethodFactory(
+        BeanOperationParser beanOperationParser) {
+        return new ParametersFillProxyMethodFactory(beanOperationParser);
+    }
+
+    @ConditionalOnBean(OperatorProxyFactory.class)
+    @ConditionalOnMissingBean
+    @Order
+    @Bean
+    public ArgAutoOperateProxyMethodFactory argAutoOperateProxyMethodFactory(
+        AutoOperateAnnotatedElementResolver elementResolver, MethodBaseExpressionExecuteDelegate expressionExecuteDelegate,
+        ParameterNameFinder parameterNameFinder, AnnotationFinder annotationFinder) {
+        return new ArgAutoOperateProxyMethodFactory(
+            elementResolver, expressionExecuteDelegate, parameterNameFinder, annotationFinder
         );
     }
 

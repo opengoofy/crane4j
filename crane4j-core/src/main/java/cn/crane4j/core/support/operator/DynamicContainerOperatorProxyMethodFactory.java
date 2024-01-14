@@ -9,7 +9,6 @@ import cn.crane4j.core.support.ContainerAdapterRegister;
 import cn.crane4j.core.support.Grouped;
 import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.support.ParameterNameFinder;
-import cn.crane4j.core.support.container.DefaultMethodContainerFactory;
 import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.support.converter.ParameterConvertibleMethodInvoker;
 import cn.crane4j.core.util.CollectionUtils;
@@ -43,7 +42,6 @@ import java.util.stream.IntStream;
 @Slf4j
 public class DynamicContainerOperatorProxyMethodFactory implements OperatorProxyMethodFactory {
 
-    public static final int ORDER = DefaultMethodContainerFactory.ORDER - 1;
     private final ConverterManager converterManager;
     private final ParameterNameFinder parameterNameFinder;
     private final AnnotationFinder annotationFinder;
@@ -75,7 +73,7 @@ public class DynamicContainerOperatorProxyMethodFactory implements OperatorProxy
      */
     @Override
     public int getSort() {
-        return ORDER;
+        return DYNAMIC_CONTAINER_OPERATOR_PROXY_METHOD_FACTORY_ORDER;
     }
 
     /**
@@ -90,7 +88,7 @@ public class DynamicContainerOperatorProxyMethodFactory implements OperatorProxy
     @Override
     public MethodInvoker get(BeanOperations beanOperations, Method method, BeanOperationExecutor beanOperationExecutor) {
         Map<String, Parameter> parameterNameMap = ReflectUtils.resolveParameterNames(parameterNameFinder, method);
-        // not any other argument need adapt as container
+        // not any other argument need adapting as container
         if (parameterNameMap.size() == 1) {
             return null;
         }
@@ -99,6 +97,7 @@ public class DynamicContainerOperatorProxyMethodFactory implements OperatorProxy
         if (Arrays.stream(adaptors).allMatch(Objects::isNull)) {
             return null;
         }
+        log.info("create dynamic container proxy method for method: {}", method);
         MethodInvoker invoker = new DynamicContainerMethodInvoker(beanOperations, beanOperationExecutor, adaptors);
         return ParameterConvertibleMethodInvoker.create(invoker, converterManager, method.getParameterTypes());
     }
@@ -111,7 +110,7 @@ public class DynamicContainerOperatorProxyMethodFactory implements OperatorProxy
         AtomicInteger index = new AtomicInteger(0);
         parameterNameMap.forEach((n, p) -> {
             int curr = index.getAndIncrement();
-            // first argument must is target which need operate
+            // the first argument must is target which need operate
             if (curr == 0) {
                 return;
             }
@@ -154,7 +153,7 @@ public class DynamicContainerOperatorProxyMethodFactory implements OperatorProxy
          *
          * @param target target
          * @param args   args
-         * @return result of invoke
+         * @return result of invoking
          */
         @Override
         public Object invoke(Object target, Object... args) {

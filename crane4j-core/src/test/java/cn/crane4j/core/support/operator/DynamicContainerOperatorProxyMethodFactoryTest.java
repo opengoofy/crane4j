@@ -58,7 +58,7 @@ public class DynamicContainerOperatorProxyMethodFactoryTest {
     @Test
     public void get() {
         // order
-        Assert.assertEquals(DynamicContainerOperatorProxyMethodFactory.ORDER, proxyMethodFactory.getSort());
+        Assert.assertEquals(OperatorProxyMethodFactory.DYNAMIC_CONTAINER_OPERATOR_PROXY_METHOD_FACTORY_ORDER, proxyMethodFactory.getSort());
 
         Method oneArgMethod = ReflectUtils.getMethod(OperatorInterface.class, "oneArgMethod", Foo.class);
         MethodInvoker invoker = proxyMethodFactory.get(beanOperations, oneArgMethod, operationExecutor);
