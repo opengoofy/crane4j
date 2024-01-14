@@ -14,6 +14,7 @@ import java.lang.annotation.Target;
  *
  * @author huangchengxing
  */
+@Deprecated
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented

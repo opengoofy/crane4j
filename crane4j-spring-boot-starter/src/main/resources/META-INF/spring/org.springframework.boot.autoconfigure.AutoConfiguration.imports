@@ -1,0 +1,3 @@
+cn.crane4j.spring.boot.config.Crane4jAutoConfiguration
+cn.crane4j.spring.boot.config.Crane4jJacksonConfiguration
+cn.crane4j.spring.boot.config.Crane4jMybatisPlusAutoConfiguration

@@ -12,26 +12,17 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Enable crane4j components and other extension plugins.
+ * Scan the crane4j components and other extension plugins.
  *
  * @author huangchengxing
- * @see EnableCrane4jFramework
- * @see EnableCrane4jMybatisPlusExtension
- * @see OperatorScan
- * @see ContainerConstantScan
- * @see ContainerEnumScan
  */
-@Deprecated
 @OperatorScan
 @ContainerConstantScan
 @ContainerEnumScan
-@EnableCrane4jFramework
-@EnableCrane4jMybatisPlusExtension
-@EnableCrane4jJacksonExtension
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface EnableCrane4j {
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD, ElementType.TYPE})
+public @interface Crane4jComponentScan {
 
     /**
      * The package path which has the operator interface.
