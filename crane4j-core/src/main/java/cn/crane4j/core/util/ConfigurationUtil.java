@@ -19,9 +19,10 @@ import cn.crane4j.core.support.container.ContainerMethodAnnotationProcessor;
 import cn.crane4j.core.support.container.DefaultMethodContainerFactory;
 import cn.crane4j.core.support.container.MethodContainerFactory;
 import cn.crane4j.core.support.container.MethodInvokerContainerCreator;
-import cn.crane4j.core.support.operator.DefaultOperatorProxyMethodFactory;
 import cn.crane4j.core.support.operator.DynamicContainerOperatorProxyMethodFactory;
+import cn.crane4j.core.support.operator.OperationAnnotationProxyMethodFactory;
 import cn.crane4j.core.support.operator.OperatorProxyFactory;
+import cn.crane4j.core.support.operator.ParametersFillProxyMethodFactory;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -54,10 +55,13 @@ public class ConfigurationUtil {
     public static OperatorProxyFactory createOperatorProxyFactory(Crane4jGlobalConfiguration configuration) {
         AnnotationFinder annotationFinder = SimpleAnnotationFinder.INSTANCE;
         OperatorProxyFactory operatorProxyFactory = new OperatorProxyFactory(configuration, annotationFinder);
-        operatorProxyFactory.addProxyMethodFactory(new DefaultOperatorProxyMethodFactory(configuration.getConverterManager()));
+        operatorProxyFactory.addProxyMethodFactory(new OperationAnnotationProxyMethodFactory(configuration.getConverterManager()));
         operatorProxyFactory.addProxyMethodFactory(new DynamicContainerOperatorProxyMethodFactory(
             configuration.getConverterManager(), SimpleParameterNameFinder.INSTANCE,
             annotationFinder, DefaultContainerAdapterRegister.INSTANCE
+        ));
+        operatorProxyFactory.addProxyMethodFactory(new ParametersFillProxyMethodFactory(
+            configuration.getBeanOperationsParser(BeanOperationParser.class)
         ));
         return operatorProxyFactory;
     }

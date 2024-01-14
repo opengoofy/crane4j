@@ -53,6 +53,9 @@ public interface ConverterManager {
         if (Objects.isNull(target)) {
             return defaultResult;
         }
+        if (resultType.isInstance(target)) {
+            return (R) target;
+        }
         BiFunction<T, R, R> converter = getConverter((Class<T>) target.getClass(), resultType);
         return Objects.nonNull(converter) ? converter.apply(target, defaultResult) : defaultResult;
     }

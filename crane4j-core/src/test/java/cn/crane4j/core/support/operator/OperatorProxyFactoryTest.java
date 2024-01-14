@@ -36,7 +36,7 @@ public class OperatorProxyFactoryTest {
         Crane4jGlobalConfiguration globalConfiguration = SimpleCrane4jGlobalConfiguration.create();
         AnnotationFinder annotationFinder = new SimpleAnnotationFinder();
         this.operatorProxyFactory = new OperatorProxyFactory(globalConfiguration, annotationFinder);
-        this.operatorProxyFactory.addProxyMethodFactory(new DefaultOperatorProxyMethodFactory(new SimpleConverterManager()));
+        this.operatorProxyFactory.addProxyMethodFactory(new OperationAnnotationProxyMethodFactory(new SimpleConverterManager()));
 
         LambdaContainer<Integer> container = LambdaContainer.forLambda(
             "test", ids -> ids.stream().collect(Collectors.toMap(id -> id, id -> "name" + id))

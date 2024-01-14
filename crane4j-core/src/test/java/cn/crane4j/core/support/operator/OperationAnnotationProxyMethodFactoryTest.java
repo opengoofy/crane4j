@@ -21,11 +21,11 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * test for {@link DefaultOperatorProxyMethodFactory}
+ * test for {@link OperationAnnotationProxyMethodFactory}
  *
  * @author huangchengxing
  */
-public class DefaultOperatorProxyMethodFactoryTest {
+public class OperationAnnotationProxyMethodFactoryTest {
 
     @Test
     public void get() {
@@ -35,17 +35,23 @@ public class DefaultOperatorProxyMethodFactoryTest {
             "test", ids -> ids.stream().collect(Collectors.toMap(Function.identity(), String::valueOf))
         ));
         BeanOperationParser operationParser = configuration.getBeanOperationsParser(BeanOperationParser.class);
-        BeanOperations beanOperations = operationParser.parse(Foo.class);
         BeanOperationExecutor operationExecutor = configuration.getBeanOperationExecutor(BeanOperationExecutor.class);
-        DefaultOperatorProxyMethodFactory proxyMethodFactory = new DefaultOperatorProxyMethodFactory(configuration.getConverterManager());
+        OperationAnnotationProxyMethodFactory proxyMethodFactory = new OperationAnnotationProxyMethodFactory(configuration.getConverterManager());
 
         // order
-        Assert.assertEquals(DefaultOperatorProxyMethodFactory.ORDER, proxyMethodFactory.getSort());
+        Assert.assertEquals(OperatorProxyMethodFactory.OPERATION_ANNOTATION_PROXY_METHOD_FACTORY_ORDER, proxyMethodFactory.getSort());
 
-        // generate proxy method
-        Method noneArgMethod = ReflectUtils.getMethod(OperatorInterface.class, "oneArgMethod", Foo.class);
-        Assert.assertNotNull(noneArgMethod);
-        MethodInvoker invoker = proxyMethodFactory.get(beanOperations, noneArgMethod, operationExecutor);
+        // ignore none annotation method
+        Method noneAnnotationMethod = ReflectUtils.getMethod(OperatorInterface.class, "noneAnnotationMethod", Foo.class);
+        Assert.assertNotNull(noneAnnotationMethod);
+        BeanOperations beanOperations = operationParser.parse(noneAnnotationMethod);
+        Assert.assertNull(proxyMethodFactory.get(beanOperations, noneAnnotationMethod, operationExecutor));
+
+        // process annotated method
+        Method operateMethod = ReflectUtils.getMethod(OperatorInterface.class, "operateMethod", Foo.class);
+        Assert.assertNotNull(operateMethod);
+        beanOperations = operationParser.parse(operateMethod);
+        MethodInvoker invoker = proxyMethodFactory.get(beanOperations, operateMethod, operationExecutor);
         Assert.assertNotNull(invoker);
 
         // execute operation
@@ -55,14 +61,15 @@ public class DefaultOperatorProxyMethodFactoryTest {
     }
 
     private interface OperatorInterface {
-        void oneArgMethod(Foo foo);
+        void noneAnnotationMethod(Foo foo);
+        @Assemble(container = "test", key = "id", props = @Mapping(ref = "name"))
+        void operateMethod(Foo foo);
     }
 
     @Setter
     @Getter
     @RequiredArgsConstructor
     private static class Foo {
-        @Assemble(container = "test", props = @Mapping(ref = "name"))
         private final Integer id;
         private String name;
     }
