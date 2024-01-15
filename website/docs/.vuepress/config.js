@@ -94,6 +94,7 @@ const sidebarConfig = [
         children: [
             { title: 'MybatisPlus', path: "/extension/mybatis_plus_extension.md"},
             { title: 'Jackson', path: "/extension/jackson_extension.md"},
+            { title: 'Redis', path: "/extension/redis_extension.md"}
         ]
     },
     {
