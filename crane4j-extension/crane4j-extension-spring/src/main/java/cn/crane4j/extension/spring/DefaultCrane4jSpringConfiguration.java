@@ -38,7 +38,6 @@ import cn.crane4j.core.support.auto.ClassBasedAutoOperateAnnotatedElementResolve
 import cn.crane4j.core.support.auto.ComposableAutoOperateAnnotatedElementResolver;
 import cn.crane4j.core.support.auto.MethodBasedAutoOperateAnnotatedElementResolver;
 import cn.crane4j.core.support.container.CacheableMethodContainerFactory;
-import cn.crane4j.core.support.container.DefaultMethodContainerFactory;
 import cn.crane4j.core.support.container.MethodContainerFactory;
 import cn.crane4j.core.support.container.MethodInvokerContainerCreator;
 import cn.crane4j.core.support.converter.ConverterManager;
@@ -256,13 +255,6 @@ public class DefaultCrane4jSpringConfiguration implements SmartInitializingSingl
     @Bean
     public DefaultContainerAdapterRegister defaultContainerAdapterRegister() {
         return DefaultContainerAdapterRegister.INSTANCE;
-    }
-
-    @Order
-    @Bean
-    public DefaultMethodContainerFactory defaultMethodContainerFactory(
-        MethodInvokerContainerCreator methodInvokerContainerCreator, AnnotationFinder annotationFinder) {
-        return new DefaultMethodContainerFactory(methodInvokerContainerCreator, annotationFinder);
     }
 
     @Order

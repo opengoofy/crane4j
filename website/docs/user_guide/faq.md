@@ -107,3 +107,50 @@
 ## 可以支持同时根据多个 key 字段填充数据吗？
 
 可以，不过实现方式有点特殊，具体参照 [对象容器](./../basic/container/object_container.md)。
+
+## 启动应用报错 “No ServletContext set”
+
+在 2.4.0 及更早的版本中，当你在 web 环境中通过 `@EnableCrane4j` 注解引入框架后，启动项目有可能会出现 “No ServletContext set” 问题，关于该问题的解决方案参见：[在启动类添加 `@EnableCrane4j` 注解后，启动应用报错 “No ServletContext set”](https://github.com/opengoofy/crane4j/issues/126)。
+
+简单的来说分为三种：
+
+- 升级 crane4j 到 2.4.0 或更高版本。
+
+- 在自己的项目中定义一个配置类，去继承 `Crane4jAutoConfiguration`：
+
+    ~~~java
+    /**
+     * 在项目里面另外建一个配置类继承 Crane4jAutoConfiguration
+     * 
+     * @author huangchengxing
+     */
+    @Configuration
+    public class Crane4jConfig extends Crane4jAutoConfiguration {}
+    ~~~
+
+- 在自己的项目中的 `META-INF` 文件夹下通过 SPI 文件引入 crane4j 配置类：
+
+    1. 在 springboot 2.7 及以上版本，你需要在 `spirng` 文件夹下提供一个 `org.springframework.boot.autoconfigure.AutoConfiguration.imports` 文件，里面内容如下：
+
+        ~~~
+        cn.crane4j.spring.boot.config.Crane4jAutoConfiguration
+        cn.crane4j.spring.boot.config.Crane4jJacksonConfiguration
+        cn.crane4j.spring.boot.config.Crane4jMybatisPlusAutoConfiguration
+        ~~~
+
+    2. 在 springboot 2.7 以下版本，你需要提供一个 `spring.factories` 文件，里面内容如下：
+
+        ~~~
+        org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+          cn.crane4j.spring.boot.config.Crane4jAutoConfiguration,\
+          cn.crane4j.spring.boot.config.Crane4jJacksonConfiguration,\
+          cn.crane4j.spring.boot.config.Crane4jMybatisPlusAutoConfiguration
+        ~~~
+
+
+## 可以多线程填充吗？
+
+你可以通过在手动或自动装配时指定使用异步执行器来实现多线程填充的效果，具体参见：
+
+- [基本概念-操作执行器](./basic_concept)；
+- [触发填充操作-指定执行器](./basic/trigger_operation)；

@@ -19,6 +19,8 @@ import java.util.List;
  */
 public interface MethodContainerFactory extends Sorted {
 
+    int DEFAULT_METHOD_CONTAINER_FACTORY_ORDER = Integer.MAX_VALUE;
+
     /**
      * Whether the method is supported.
      *

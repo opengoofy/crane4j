@@ -8,7 +8,6 @@ import cn.crane4j.core.cache.CacheableContainer;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
-import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -24,6 +23,9 @@ import java.util.stream.Collectors;
  * On the basis of the former, if {@link ContainerCache} annotation exists on the method,
  * the obtained method container will be wrapped as {@link CacheableContainer}.
  *
+ * <p><b>NOTE</b>: Not recommended to use with {@link DefaultMethodContainerFactory},
+ * in actual use, only one of them is needed to be configured.
+ *
  * @author huangchengxing
  * @see ContainerCache
  * @see CacheableContainer
@@ -31,7 +33,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CacheableMethodContainerFactory extends DefaultMethodContainerFactory {
 
-    public static final int ORDER = DefaultMethodContainerFactory.ORDER - 1;
     private final Crane4jGlobalConfiguration configuration;
 
     public CacheableMethodContainerFactory(
@@ -39,31 +40,6 @@ public class CacheableMethodContainerFactory extends DefaultMethodContainerFacto
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration) {
         super(methodInvokerContainerCreator, annotationFinder);
         this.configuration = configuration;
-    }
-
-    /**
-     * <p>Gets the sorting value.<br />
-     * The smaller the value, the higher the priority of the object.
-     *
-     * @return sorting value
-     */
-    @Override
-    public int getSort() {
-        return ORDER;
-    }
-
-    /**
-     * Whether the method is supported.
-     *
-     * @param source method's calling object
-     * @param method method
-     * @param annotations annotations
-     * @return true if supported, false otherwise
-     */
-    @Override
-    public boolean support(@Nullable Object source, Method method, Collection<ContainerMethod> annotations) {
-        ContainerCache annotation = annotationFinder.findAnnotation(method, ContainerCache.class);
-        return Objects.nonNull(annotation) && super.support(source, method, annotations);
     }
 
     /**
@@ -78,10 +54,12 @@ public class CacheableMethodContainerFactory extends DefaultMethodContainerFacto
     public List<Container<Object>> get(@Nullable Object source, Method method, Collection<ContainerMethod> annotations) {
         log.debug("create cacheable method container from [{}]", method);
         ContainerCache annotation = annotationFinder.findAnnotation(method, ContainerCache.class);
-        Asserts.isNotNull(annotation, "method [{}] must be annotated by @ContainerCache", method);
+        if (Objects.isNull(annotation)) {
+            return super.get(source, method, annotations);
+        }
+        // wrap method container as cacheable container
         String managerName = StringUtils.emptyToDefault(annotation.cacheManager(), CacheManager.DEFAULT_MAP_CACHE_MANAGER_NAME);
         CacheManager cacheManager = configuration.getCacheManager(managerName);
-        // if cache name is not specified, the namespace of the container is taken by default
         return super.get(source, method, annotations).stream()
             .map(container -> {
                 CacheDefinition cacheDefinition = new CacheDefinition.Impl(

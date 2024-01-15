@@ -18,8 +18,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -43,8 +43,7 @@ public class ContainerMethodAnnotationProcessorTest {
             configuration.getPropertyOperator(), converterManager
         );
         AnnotationFinder annotationFinder = SimpleAnnotationFinder.INSTANCE;
-        Collection<MethodContainerFactory> factories = Arrays.asList(
-            new DefaultMethodContainerFactory(containerCreator, annotationFinder),
+        Collection<MethodContainerFactory> factories = Collections.singletonList(
             new CacheableMethodContainerFactory(containerCreator, annotationFinder, configuration)
         );
         processor = new ContainerMethodAnnotationProcessor(factories, new SimpleAnnotationFinder());
@@ -113,12 +112,15 @@ public class ContainerMethodAnnotationProcessorTest {
         public List<Foo> oneToManyMethod(List<String> args) {
             return args.stream().map(key -> new Foo(key, key)).collect(Collectors.toList());
         }
+        public List<String> groupedByIndex(List<String> args) {
+            return args;
+        }
     }
 
     @AllArgsConstructor
     @EqualsAndHashCode
     @Getter
-    private static class Foo {
+    protected static class Foo {
         private String id;
         private String name;
     }

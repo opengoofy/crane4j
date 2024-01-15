@@ -45,7 +45,7 @@ public interface AssembleOperation extends KeyTriggerOperation {
     Set<PropertyMapping> getPropertyMappings();
 
     /**
-     * Get key property type.
+     * Get the type of key property.
      *
      * @return key type
      */
