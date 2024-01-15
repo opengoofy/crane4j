@@ -14,6 +14,30 @@ import org.junit.Test;
 public class ClassUtilsTest {
 
     @Test
+    public void isPrimitiveTypeOrWrapperType() {
+        Assert.assertTrue(ClassUtils.isPrimitiveTypeOrWrapperType(Boolean.TYPE));
+        Assert.assertTrue(ClassUtils.isPrimitiveTypeOrWrapperType(Boolean.class));
+        Assert.assertTrue(ClassUtils.isPrimitiveTypeOrWrapperType(Byte.TYPE));
+        Assert.assertTrue(ClassUtils.isPrimitiveTypeOrWrapperType(Byte.class));
+        Assert.assertTrue(ClassUtils.isPrimitiveTypeOrWrapperType(Character.TYPE));
+        Assert.assertTrue(ClassUtils.isPrimitiveTypeOrWrapperType(Character.class));
+        Assert.assertTrue(ClassUtils.isPrimitiveTypeOrWrapperType(Double.TYPE));
+        Assert.assertTrue(ClassUtils.isPrimitiveTypeOrWrapperType(Double.class));
+        Assert.assertTrue(ClassUtils.isPrimitiveTypeOrWrapperType(Float.TYPE));
+        Assert.assertTrue(ClassUtils.isPrimitiveTypeOrWrapperType(Float.class));
+        Assert.assertTrue(ClassUtils.isPrimitiveTypeOrWrapperType(Integer.TYPE));
+        Assert.assertTrue(ClassUtils.isPrimitiveTypeOrWrapperType(Integer.class));
+        Assert.assertTrue(ClassUtils.isPrimitiveTypeOrWrapperType(Long.TYPE));
+        Assert.assertTrue(ClassUtils.isPrimitiveTypeOrWrapperType(Long.class));
+        Assert.assertTrue(ClassUtils.isPrimitiveTypeOrWrapperType(Short.TYPE));
+        Assert.assertTrue(ClassUtils.isPrimitiveTypeOrWrapperType(Short.class));
+        Assert.assertTrue(ClassUtils.isPrimitiveTypeOrWrapperType(Void.TYPE));
+        Assert.assertTrue(ClassUtils.isPrimitiveTypeOrWrapperType(Void.class));
+        Assert.assertFalse(ClassUtils.isPrimitiveTypeOrWrapperType(String.class));
+        Assert.assertFalse(ClassUtils.isPrimitiveTypeOrWrapperType(ClassUtilsTest.class));
+    }
+
+    @Test
     public void testIsObjectOrVoid() {
         Assert.assertFalse(ClassUtils.isObjectOrVoid(String.class));
         Assert.assertTrue(ClassUtils.isObjectOrVoid(Object.class));

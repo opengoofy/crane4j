@@ -1,5 +1,6 @@
 package cn.crane4j.core.support.container.query;
 
+import cn.crane4j.annotation.DuplicateStrategy;
 import cn.crane4j.annotation.MappingType;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerProvider;
@@ -167,7 +168,7 @@ public abstract class AbstractQueryContainerProvider<T> implements ContainerProv
         );
         return methodInvokerContainerCreator.createContainer(
             repository.getTarget(), methodInvoker, queryInfo.getMappingType(),
-            namespace, repository.getEntityType(), keyProperty
+            namespace, repository.getEntityType(), keyProperty, DuplicateStrategy.ALERT
         );
     }
 

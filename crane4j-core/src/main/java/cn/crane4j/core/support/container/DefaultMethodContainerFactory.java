@@ -49,7 +49,7 @@ public class DefaultMethodContainerFactory implements MethodContainerFactory {
      */
     @Override
     public int getSort() {
-        return ORDER;
+        return DEFAULT_METHOD_CONTAINER_FACTORY_ORDER;
     }
 
     /**
@@ -84,9 +84,8 @@ public class DefaultMethodContainerFactory implements MethodContainerFactory {
     private Container<Object> createContainer(Object source, Method method, ContainerMethod annotation) {
         MethodInvokerContainer container = methodInvokerContainerCreator.createContainer(
             source, method, annotation.type(), annotation.namespace(),
-            annotation.resultType(), annotation.resultKey()
+            annotation.resultType(), annotation.resultKey(), annotation.duplicateStrategy()
         );
-        container.setDuplicateStrategy(annotation.duplicateStrategy());
         return container;
     }
 }

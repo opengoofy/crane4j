@@ -106,6 +106,8 @@ CacheableContainer<String> cacheableContainer = new CacheableContainer<>(contain
 - **本地缓存**：本地缓存管理器 `MapCacheManager` 是基于 `Map` 集合实现的本地缓存管理器，默认使用 `WeakConcurrentMap` 实现，不能设置超时时间，当 JVM 触发 GC 时回收。
 - **Guava 缓存**：Guava 缓存管理器 `GuavaCacheManager` 是基于 `Guava` 的 `Cache` 实现的缓存对象，它支持配置过期时间和并发等级等各种功能；
 
+此外，你也可以引入 crane4j 的 Redis 扩展插件，它允许你使用基于 Redis 的缓存管理器，具体可以参见：[Redis 扩展](./../advanced/redis_extension)。
+
 ### 2.1.指定缓存管理器
 
 在使用 `@ContainerCache` 注解时，你可以通过 `cacheManager` 属性指定要使用的管理器：

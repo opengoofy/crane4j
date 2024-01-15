@@ -22,7 +22,9 @@ operator.fill(fooList); // 填充 foo 对象
 - 用于填充的对象是 `JSONObject` / `Map`，就没有对应的 Java 类，因此也无法在类上或类的属性上添加注解配置；
 - 填充的对象的字段非常像，但是它们确实不是一个类，也不存在提取公共父类的可能，又不想要每个类都重复配置；
 
-## 1.配置操作者接口
+## 1.统一填充方法参数
+
+### 1.1.声明装配操作
 
 首先，在一个**接口**上添加 `@Operator` 注解，将其声明为操作者。
 
@@ -38,15 +40,17 @@ private interface OperatorInterface {
 }
 ```
 
-接着，你需要为接口生成代理类，然后才能使用代理类进行填充。
+关于如何配置一个装配操作，你可以直接参见文档：[声明装配操作](./../basic/declare_assemble_operation)。
 
 :::warning
 
-注意，此时需要显式的指定 key 字段
+注意，在方法上声明装配操作时，注解上需要显式的指定 key 字段。比如上文就显式的指定 key 字段为 “id”。
 
 :::
 
-### 1.1.在 Spring 环境
+### 1.2.创建代理对象
+
+**在 Spring 环境**
 
 在 Spring 环境中，你需要在启动类或配置类添加 `@OperatorScan` 注解指定扫描路径，就像 Mybatis 的 `MapperScan` 一样：
 
@@ -61,9 +65,7 @@ protected class ExampleApplication {
 }
 ~~~
 
-在项目启动后，将自动为接口创建 `BeanDefinition`，并在 Spring 容器中创建对应的 Bean。
-
-因此，你可以像使用 MyBatis 的 Mapper 一样，通过依赖注入来使用操作者接口：
+在项目启动后，将自动为接口创建 `BeanDefinition`，并在 Spring 容器中创建对应的 Bean。此时，你可以通过依赖注入来获得操作者接口：
 
 ```java
 @Component
@@ -73,7 +75,7 @@ public class FooService {
 }
 ```
 
-### 1.2.在非 Spring 环境
+**在非 Spring 环境**
 
 在非 Spring 环境，你需要手动的创建代理工厂，然后才能基于代理工厂为接口创建代理对象：
 
@@ -85,24 +87,37 @@ OperatorProxyFactory proxyFactory = ConfigurationUtil.createOperatorProxyFactory
 OperatorInterface operator = proxyFactory.get(OperatorInterface.class);
 ~~~
 
-## 2.使用接口填充
+### 1.3.对入参进行填充
 
-无论如何，当你获得操作接口对应的代理对象后，你就可以基于方法填充任意类型的对象了。
+无论如何，当你获得对应的代理对象后，你就可以基于方法填充任意类型的对象了。
 
 ~~~java
 List<Foo> fooList = new ArrayList<>();
 operator.fill(fooList); // 填充 foo 对象
 ~~~
 
-在调用 `fill` 方法后，我们的输入参数 `targets` 将根据 `operate` 方法上的配置进行填充。
+在调用代理对象的 `fill` 方法后，我们的输入参数 `targets` 将根据 `operate` 方法上的配置进行填充。
 
-## 3.动态数据源容器
+### 1.4.指定执行器和解析器
 
-有些时候，我们会希望动态的替换一次填充操作中的特定数据源容器，我们仅需在方法参数上添加 `@ContainerParam` ，即可在一次填充中使用入参作为临时的数据源替换默认的全局数据源。
+类似于 `@AutoOperate`，`@Operator` 接口也可以指定用于执行操作的执行器和配置解析器。
 
-### 3.1.将参数声明为临时数据源
+比如：
 
-当抽象方法具备复数参数时，我们可以为第二个或后面的几个参数作为临时数据源。
+~~~java
+@Operator(
+    executorType = OrderedBeanOperationExecutor.class,
+    parserType = TypeHierarchyBeanOperationParser.class
+)
+private interface OperatorInterface {
+    @Assemble(key = "id", container = "test", props = @Mapping(ref = "name"))
+    void operate(Collection<Map<String, Object>> targets);
+}
+~~~
+
+### 1.5.将其它参数作为数据源
+
+当抽象方法具备复数参数时，我们可以将第二个及后面的几个参数作为临时数据源。
 
 比如：
 
@@ -130,7 +145,7 @@ operator.operate(targets, users);
 
 该功能基于 `DynamicContainerOperatorProxyMethodFactory` 实现。
 
-### 3.2.参数类型适配
+**适配不同的参数类型**
 
 除了可以将 Map 集合适配为容器外，也支持直接传入 `Container`，或 `DataProvider` 类型的参数：
 
@@ -160,32 +175,94 @@ register.registerAdapter(
 );
 ```
 
-## 4.指定执行器和解析器
+## 2.分别填充方法参数
 
-类似于 `@AutoOperate`，`@Operator` 接口也可以指定用于执行操作的执行器和配置解析器。
+当你直接在方法上通过 `@AssembleXXX` 注解声明装配操作时，crane4j 将会统一按照该配置对参数进行填充。
 
-比如：
+不过，你也可以选择不在方法上加任何注解。在这种情况下，crane4j 将会**分别解析每个参数的类型，然后分别按照每个参数类型对应的操作配置对参数进行填充**。
+
+### 2.1.简单使用
+
+比如，当你需要在很多地方填充某个特定类型的对象时，你可以直接在操作者接口中定义一个抽象方法：
 
 ~~~java
-@Operator(
-    executorType = OrderedBeanOperationExecutor.class,
-    parserType = TypeHierarchyBeanOperationParser.class
-)
+@Operator
 private interface OperatorInterface {
-    @Assemble(key = "id", container = "test", props = @Mapping(ref = "name"))
-    void operate(Collection<Map<String, Object>> targets);
+    void fill(Foo1 foo1, Foo2 foo2);
 }
 ~~~
 
-## 5.方法工厂
+在这种情况下，你可以通过 `operateMethod` 去填充 `Foo1` 和 `Foo2` 两个类型的对象：
 
-与 Spring 中将被 `@EventListener` 注解的方法适配为监听器机制类似，操作者接口中抽象方法的解析也是基于策略模式。
+~~~java
+@Component
+public class Example {
+    @Autowired
+    private OperatorInterface operator;
+    
+    public Tuple<Foo1, Foo2> doSomething() {
+        Foo1 foo1 = new Foo1(1);
+        Foo2 foo2 = new Foo2(2);
+        operator.fill(foo1, foo2); // 填充 foo1 和 foo2
+        return Tuple.of(new)
+    }
+}
+~~~
 
-操作者的方法工厂 `OperatorProxyMethodFactory` 默认提供了两种实现：
+这种做法等效于使用 `OperateTemplate` 进行手动填充：
 
-- `DefaultProxyMethodFactory`：默认的代理方法工厂，支持处理所有有参方法；
-- `DynamicSourceProxyMethodFactory`：动态数据源方法工厂，用于支持有不止一个参数的方法；
+~~~java
+@Component
+public class Example {
+    @Autowired
+    private OperateTemplate operateTemplate;
+    
+    public Tuple<Foo1, Foo2> doSomething() {
+        Foo1 foo1 = new Foo1(1);
+        Foo2 foo2 = new Foo2(2);
+        operateTemplate.execute(foo1); // 填充 foo1
+        operateTemplate.execute(foo2); // 填充 foo2
+        return Tuple.of(new)
+    }
+}
+~~~
 
-接口中的一个抽象方法仅会使用最匹配的工厂去生成代理方法。因此若有必要，用户也可以自行实现接口并提高工厂的优先级以替换默认策略。
+两者差别不大，不过这种写法可以减少一次类型判断从而轻微的提高性能，并且更容易集中管理配置，你可以根据情况选择。
+
+此外，在这种模式下，将会使用 `@Operator` 注解上的指定的执行器和解析器。
+
+:::tip
+
+关于 `OperateTemplate` 与手动填充，请参见：[触发填充-手动填充](./../basic/trigger_operation)。
+
+:::
+
+### 2.2.使用 @AutoOperate 注解
+
+除上述情况外，你也可以使用 `@AutoOperate` 注解来进一步指定如何填充参数：
+
+~~~java
+@Operator
+private interface OperatorInterface {
+    
+    @ArgAutoOperate
+    void fill(
+        @AutoOperate(type = Foo1.class, condition = "#foo1.id != null") Foo1 foo1, 
+        @AutoOperate(type = Foo1.class, condition = "#foo2.id != null") Foo2 foo2);
+}
+~~~
+
+在此处，`@AutoOperate` 注解的使用方式与自动填充中完全一致，具体内容请参见文档：[触发填充-自动填充](./../basic/trigger_operation)。
+
+## 3.方法工厂
+
+与 Spring 中基于 `@EventListener` 注解的声明式监听器机制类似，操作者接口中抽象方法的适配基于不同的方法工厂 `OperatorProxyMethodFactory` 实现，默认的四种实现调用顺序如下：
+
+- `OperationAnnotationProxyMethodFactory`：用于统一填充方法参数；
+- `DynamicSourceProxyMethodFactory`：若方法具备带有 `@ContainerParam` 注解的参数，则使用该参数作为临时数据源对首个参数进行填充；
+- `ParametersFillProxyMethodFactory`：用于分别对每一个参数进行填充；
+- `ArgAutoOperateProxyMethodFactory`：若方法带有 `@ArgAutoOperate` 注解，则分别对方法中每一个带有 `@AutoOperate` 注解的参数进行填充；
+
+当有多个方法工厂时，将会使用首个匹配的工厂去生成代理方法。因此，若有必要，用户也可以自行实现接口并提高工厂的优先级以替换默认策略。
 
 在 Spring 环境中，只需将自定义工厂类声明为 Spring Bean，即可自动注册。在非 Spring 环境中，用户需要在创建代理工厂 `OperatorProxyFactory` 时将所需的方法工厂作为参数传入。

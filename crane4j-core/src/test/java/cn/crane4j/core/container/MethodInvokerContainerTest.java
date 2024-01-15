@@ -1,8 +1,6 @@
 package cn.crane4j.core.container;
 
-import cn.crane4j.annotation.MappingType;
-import cn.crane4j.core.exception.Crane4jException;
-import cn.crane4j.core.support.MethodInvoker;
+import cn.crane4j.annotation.DuplicateStrategy;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -33,17 +31,10 @@ public class MethodInvokerContainerTest {
     @SuppressWarnings("unchecked")
     @Test
     public void getWhenMapped() {
-        String namespace = MethodInvokerContainer.class.getSimpleName();
-        MethodInvoker invoker = (t, arg) -> service.mappedMethod((Collection<String>)arg[0]);
-        Assert.assertThrows(Crane4jException.class, () -> new MethodInvokerContainer(
-            namespace, invoker,
-            service, null, MappingType.ONE_TO_MANY
-        ));
-
-        MethodInvokerContainer container = new MethodInvokerContainer(
+        MethodInvokerContainer container = MethodInvokerContainer.create(
             MethodInvokerContainer.class.getSimpleName(),
             (t, arg) -> service.mappedMethod((Collection<String>)arg[0]),
-            service, null, MappingType.MAPPED
+            service, true
         );
         Assert.assertEquals(MethodInvokerContainer.class.getSimpleName(), container.getNamespace());
 
@@ -57,10 +48,10 @@ public class MethodInvokerContainerTest {
     @SuppressWarnings("unchecked")
     @Test
     public void getWhenOneToOne() {
-        MethodInvokerContainer container = new MethodInvokerContainer(
+        MethodInvokerContainer container = MethodInvokerContainer.oneToOne(
             MethodInvokerContainer.class.getSimpleName(),
             (t, arg) -> service.noneMappedMethod((Collection<String>)arg[0]),
-            service, t -> ((Foo) t).key, MappingType.ONE_TO_ONE
+            service, t -> ((Foo) t).key, DuplicateStrategy.ALERT
         );
         Assert.assertEquals(MethodInvokerContainer.class.getSimpleName(), container.getNamespace());
 
@@ -74,10 +65,10 @@ public class MethodInvokerContainerTest {
     @SuppressWarnings("unchecked")
     @Test
     public void getWhenOneToMany() {
-        MethodInvokerContainer container = new MethodInvokerContainer(
+        MethodInvokerContainer container = MethodInvokerContainer.oneToMany(
             MethodInvokerContainer.class.getSimpleName(),
             (t, arg) -> service.noneMappedMethod((Collection<String>)arg[0]),
-            service, t -> ((Foo) t).name, MappingType.ONE_TO_MANY
+            service, t -> ((Foo) t).name
         );
         Assert.assertEquals(MethodInvokerContainer.class.getSimpleName(), container.getNamespace());
 
@@ -86,6 +77,20 @@ public class MethodInvokerContainerTest {
 
         data = container.get(null);
         Assert.assertTrue(data.isEmpty());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void getWhenNotKeyExtractor() {
+        MethodInvokerContainer container = MethodInvokerContainer.create(
+            MethodInvokerContainer.class.getSimpleName(),
+            (t, arg) -> service.noneMappedMethod((Collection<String>)arg[0]),
+            service, false
+        );
+        Assert.assertEquals(MethodInvokerContainer.class.getSimpleName(), container.getNamespace());
+        Map<Object, ?> map = container.get(Arrays.asList("2", "1"));
+        Assert.assertEquals(foo1, map.get("2"));
+        Assert.assertEquals(foo2, map.get("1"));
     }
 
     @AllArgsConstructor

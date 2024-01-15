@@ -418,6 +418,7 @@ public class Crane4jAutoConfiguration {
     }
 
     @Order
+    @ConditionalOnMissingBean(CacheManager.class)
     @Bean
     public DefaultMethodContainerFactory defaultMethodContainerFactory(
         MethodInvokerContainerCreator methodInvokerContainerCreator, AnnotationFinder annotationFinder) {

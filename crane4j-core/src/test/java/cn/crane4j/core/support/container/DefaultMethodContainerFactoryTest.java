@@ -40,6 +40,7 @@ public class DefaultMethodContainerFactoryTest {
     private final Foo foo1 = new Foo("1", "foo");
     private final Foo foo2 = new Foo("2", "foo");
 
+    private Method noneMappedMethod;
     private Method noneResultMethod;
     private Method mappedMethod;
     private Method onoToOneMethod;
@@ -55,6 +56,8 @@ public class DefaultMethodContainerFactoryTest {
             containerCreator, new SimpleAnnotationFinder()
         );
         serviceImpl = new ServiceImpl();
+        noneMappedMethod = ReflectUtils.getMethod(ServiceImpl.class, "noneMappedMethod", String.class);
+        Assert.assertNotNull(noneMappedMethod);
         noneResultMethod = ReflectUtils.getMethod(ServiceImpl.class, "noneResultMethod");
         Assert.assertNotNull(noneResultMethod);
         mappedMethod = ReflectUtils.getMethod(ServiceImpl.class, "mappedMethod", List.class);
@@ -67,6 +70,8 @@ public class DefaultMethodContainerFactoryTest {
         @SuppressWarnings("unchecked")
         InvocationHandler handler = (t, m, args) -> {
             switch (m.getName()) {
+                case "noneMappedMethod":
+                    return serviceImpl.noneMappedMethod(String.valueOf(args[0]));
                 case "noneResultMethod":
                     serviceImpl.noneResultMethod();
                     return null;
@@ -84,15 +89,30 @@ public class DefaultMethodContainerFactoryTest {
 
     @Test
     public void getSort() {
-        Assert.assertEquals(DefaultMethodContainerFactory.ORDER, factory.getSort());
+        Assert.assertEquals(MethodContainerFactory.DEFAULT_METHOD_CONTAINER_FACTORY_ORDER, factory.getSort());
     }
 
     @Test
     public void support() {
+        Assert.assertTrue(factory.support(serviceImpl, noneMappedMethod, findAnnotations(noneMappedMethod)));
         Assert.assertFalse(factory.support(serviceImpl, noneResultMethod, findAnnotations(noneResultMethod)));
         Assert.assertTrue(factory.support(serviceImpl, mappedMethod, findAnnotations(mappedMethod)));
         Assert.assertTrue(factory.support(serviceImpl, onoToOneMethod, findAnnotations(onoToOneMethod)));
         Assert.assertTrue(factory.support(serviceImpl, oneToManyMethod, findAnnotations(oneToManyMethod)));
+    }
+
+    @Test
+    public void getWhenNoneMappedMethod() {
+        List<Container<Object>> containers = factory.get(serviceImpl, noneMappedMethod, findAnnotations(noneMappedMethod));
+        Assert.assertEquals(1, containers.size());
+        Container<Object> container = containers.get(0);
+        Assert.assertNotNull(container);
+        Assert.assertEquals("noneMappedMethod", container.getNamespace());
+
+        Map<Object, ?> values = container.get(Arrays.asList("1", "2"));
+        Assert.assertEquals(2, values.size());
+        Assert.assertEquals("1", values.get("1"));
+        Assert.assertNull(values.get("2"));
     }
 
     @Test
@@ -183,6 +203,12 @@ public class DefaultMethodContainerFactoryTest {
     }
 
     private class ServiceImpl implements Service {
+
+        @ContainerMethod(namespace = "noneMappedMethod", type = MappingType.NONE)
+        public String noneMappedMethod(String arg) {
+            return arg;
+        }
+
         @ContainerMethod(namespace = "noneResultMethod", type = MappingType.MAPPED, resultType = Foo.class)
         public void noneResultMethod() { }
 

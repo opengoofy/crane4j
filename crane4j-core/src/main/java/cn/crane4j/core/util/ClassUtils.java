@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -14,6 +16,39 @@ import java.util.Objects;
  */
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class ClassUtils {
+
+    /**
+     * primitive type and wrapper type mapping
+     */
+    private static final Map<Class<?>, Class<?>> PRIMITIVE_TYPE_TO_WRAPPER_TYPE = new HashMap<>(16);
+    /**
+     * wrapper type and primitive type mapping
+     */
+    private static final Map<Class<?>, Class<?>> WRAPPER_TYPE_TO_PRIMITIVE_TYPE = new HashMap<>(16);
+
+    static {
+        PRIMITIVE_TYPE_TO_WRAPPER_TYPE.put(Boolean.TYPE, Boolean.class);
+        PRIMITIVE_TYPE_TO_WRAPPER_TYPE.put(Byte.TYPE, Byte.class);
+        PRIMITIVE_TYPE_TO_WRAPPER_TYPE.put(Character.TYPE, Character.class);
+        PRIMITIVE_TYPE_TO_WRAPPER_TYPE.put(Double.TYPE, Double.class);
+        PRIMITIVE_TYPE_TO_WRAPPER_TYPE.put(Float.TYPE, Float.class);
+        PRIMITIVE_TYPE_TO_WRAPPER_TYPE.put(Integer.TYPE, Integer.class);
+        PRIMITIVE_TYPE_TO_WRAPPER_TYPE.put(Long.TYPE, Long.class);
+        PRIMITIVE_TYPE_TO_WRAPPER_TYPE.put(Short.TYPE, Short.class);
+        PRIMITIVE_TYPE_TO_WRAPPER_TYPE.put(Void.TYPE, Void.class);
+        PRIMITIVE_TYPE_TO_WRAPPER_TYPE.forEach((key, value) -> WRAPPER_TYPE_TO_PRIMITIVE_TYPE.put(value, key));
+    }
+
+    /**
+     * Whether the given class is primitive type or wrapper type.
+     *
+     * @param type type
+     * @return boolean
+     */
+    public static boolean isPrimitiveTypeOrWrapperType(Class<?> type) {
+        return PRIMITIVE_TYPE_TO_WRAPPER_TYPE.containsKey(type)
+            || WRAPPER_TYPE_TO_PRIMITIVE_TYPE.containsKey(type);
+    }
 
     /**
      * Whether the given class is {@code Object} or {@code Void}.

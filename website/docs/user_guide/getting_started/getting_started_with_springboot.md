@@ -50,7 +50,9 @@
 
 ## 2.启用配置
 
-在**启动类**或者**配置类**添加 `@EnableCrane4j` 注解或 `@EnableCrane4jFramework` 注解即可启用自动配置：
+如果你使用的是 2.4.0 及更高版本，那么你不需要做任何额外的配置来引入 crane4j，crane4j 将借助 SpringBoot 的自动装配自动加载必要的组件。
+
+如果你使用的是 2.4.0 以下的版本，那么你需要在**启动类**或者**配置类**上，添加 `@EnableCrane4j` 注解或这 `@EnableCrane4jFramework` 注解来引入自动配置：
 
 ~~~java
 @EnableCrane4j
@@ -60,6 +62,16 @@ public class Crane4jConfiguration {
 ~~~
 
 项目启动后，`crane4j` 相关组件将会注册到 Spring 上下文中。
+
+:::warning
+
+在 web 环境中，通过注解启用框架时有可能会出现 “No ServletContext set” 问题，关于该问题的解决方案参见：
+
+[在启动类添加 `@EnableCrane4j` 注解后，启动应用报错 “No ServletContext set”](https://github.com/opengoofy/crane4j/issues/126)
+
+当然，最推荐的还是直接升级 crane4j 版本。
+
+:::
 
 ## 3.配置数据源
 

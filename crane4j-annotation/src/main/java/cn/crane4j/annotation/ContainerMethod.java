@@ -79,7 +79,8 @@ public @interface ContainerMethod {
 
     /**
      * The key field of the data source object returned by the method.<br />
-     * If {@link #type()} is {@link MappingType#MAPPED}, this parameter is ignored.
+     * If {@link #type()} is {@link MappingType#MAPPED} or specified to a primitive type (or it's wrapper type),
+     * this parameter is ignored.
      *
      * @return key field name
      */
@@ -87,11 +88,12 @@ public @interface ContainerMethod {
 
     /**
      * Data source object type returned by method.<br />
-     * If {@link #type()} is {@link MappingType#MAPPED}, this parameter is ignored.
+     * If {@link #type()} is {@link MappingType#MAPPED} or specified to a primitive type (or it's wrapper type),
+     * this parameter is ignored.
      *
      * @return type
      */
-    Class<?> resultType();
+    Class<?> resultType() default Void.class;
 
     /**
      * The name of method which will be used to adapt the method container.<br/>

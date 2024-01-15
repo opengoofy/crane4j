@@ -55,13 +55,13 @@ public class CacheableMethodContainerFactoryTest {
 
     @Test
     public void getSort() {
-        Assert.assertEquals(CacheableMethodContainerFactory.ORDER, factory.getSort());
+        Assert.assertEquals(MethodContainerFactory.DEFAULT_METHOD_CONTAINER_FACTORY_ORDER, factory.getSort());
     }
 
     @Test
     public void support() {
         Assert.assertTrue(factory.support(service, annotatedMethod, findAnnotations(annotatedMethod)));
-        Assert.assertFalse(factory.support(service, noneAnnotatedMethod, findAnnotations(noneAnnotatedMethod)));
+        Assert.assertTrue(factory.support(service, noneAnnotatedMethod, findAnnotations(noneAnnotatedMethod)));
     }
 
     @Test
