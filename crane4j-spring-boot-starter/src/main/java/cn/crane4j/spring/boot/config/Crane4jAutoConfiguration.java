@@ -435,8 +435,10 @@ public class Crane4jAutoConfiguration {
     @Primary
     @Bean
     public OneToOneAssembleOperationHandler oneToOneAssembleOperationHandler(
-        PropertyOperator propertyOperator, ConverterManager converterManager) {
-        return new OneToOneAssembleOperationHandler(propertyOperator, converterManager);
+        PropertyOperator propertyOperator, ConverterManager converterManager, Properties properties) {
+        OneToOneAssembleOperationHandler handler = new OneToOneAssembleOperationHandler(propertyOperator, converterManager);
+        handler.setIgnoreNullKey(properties.isIgnoreNullKeyWhenAssembling());
+        return handler;
     }
 
     @Bean
@@ -612,9 +614,17 @@ public class Crane4jAutoConfiguration {
         private Set<String> containerEnumPackages = new LinkedHashSet<>();
 
         /**
-         * Whether to load only the enumeration annotated by {@link ContainerEnum}.
+         * Whether to load only the enum class which annotated by {@link ContainerEnum}.
          */
         private boolean onlyLoadAnnotatedEnum = false;
+
+        /**
+         * Whether to ignore the null key when assembling.
+         * 
+         * @see OneToOneAssembleOperationHandler#collectToEntities
+         * @since 2.4.0
+         */
+        private boolean ignoreNullKeyWhenAssembling = true;
 
         /**
          * <p>Scan the specified package path, adapt the constant class annotated by

@@ -9,6 +9,7 @@ import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.util.StringUtils;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,6 +40,12 @@ public class OneToOneAssembleOperationHandler
      * converter manager.
      */
     private final ConverterManager converterManager;
+
+    /**
+     * whether ignore null key.
+     */
+    @Setter
+    private boolean ignoreNullKey = false;
 
     /**
      * Split the {@link AssembleExecution} into pending objects and wrap it as {@link Target}.
