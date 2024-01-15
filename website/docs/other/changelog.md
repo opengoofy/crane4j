@@ -289,3 +289,19 @@
 **Fix**
 
 - [调用Operator实例的Object基本方法会发生死循环直到栈溢出](https://gitee.com/opengoofy/crane4j/issues/I8MZOK)；
+
+## 2.4.0 (2024-01-15)
+
+这是一个功能迭代版本，重构并大幅度增强了缓存功能，并修复了一些问题。
+
+具体内容参见：[Milestone](https://github.com/opengoofy/crane4j/milestone/8)。
+
+**Feature**
+
+- [Operator 接口支持基于 `@AutoOperate` 注解的自动填充](https://github.com/opengoofy/crane4j/issues/185)；
+- [支持 redis 缓存](https://github.com/opengoofy/crane4j/issues/3)；
+- [`@AssembleEnum` 直接直接内嵌一个 `@ContainerEnum` 注解用于配置](https://github.com/opengoofy/crane4j/issues/176)；
+- [将启用框架的方式从注解改为 SPI](https://gitee.com/opengoofy/crane4j/issues/I8VXTE)；
+- [方法缓存希望可以像 Spring 那样，通过注解配置到期时间和刷新](https://gitee.com/opengoofy/crane4j/issues/I8UZSO)；
+- [基于 `@ContainerMethod` 的方法容器，希望返回值可以支持 `String` 或基础数据类型及其包装类](https://gitee.com/opengoofy/crane4j/issues/I8UZH4)；
+- [声明装配操作时是否可以根据条件判断是否应用此次操作？](https://gitee.com/opengoofy/crane4j/issues/I8W0SN)；
