@@ -80,12 +80,52 @@ public class ChildClass extends SuperClass {}
 | `MappingType.MAPPED`      | 返回值已经是分组后的 `Map` 集合，无需分组 | 原始的方法返回值        | 当返回值已经是 `Map` 时                                      |
 | `MappingType.NONE`        | 将输入的 key 值与结果按顺序合并           | `Map<key, value>`       | 方法的返回值是 String 或基础数据类型（及其包装类）的时候     |
 
-## 4.结果缓存
+下面是它们的一些使用场景，你可以参照着理解一下：
+
+~~~java
+
+// ========== MappingType.ONE_TO_ONE ==========
+
+@ContainerMethod(
+    namespace = "userName", type = MappingType.ONE_TO_ONE,
+    resultType = User.class, resultKey = "deptId"
+)
+public List<User> listUserByIds(List<Integer> ids);  // 查询用户，并按用户 ID 一对一分组
+
+// ========== MappingType.ONE_TO_MANY ==========
+
+@ContainerMethod(
+    namespace = "userName", type = MappingType.ONE_TO_MANY,
+    resultType = User.class, resultKey = "deptId"
+)
+public List<User> listUserByDeptId(List<Integer> deptIds); // 查询用户，并按用户的所属部门 ID 一对多分组
+
+// ========== MappingType.MAPPED ==========
+
+@ContainerMethod(namespace = "userName", type = MappingType.MAPPED)
+public Map<Integer, User> listUserMapByIds(List<Integer> ids); // 查询结果集已经分好组了
+
+@ContainerMethod(namespace = "userName", type = MappingType.MAPPED)
+public Map<Integer, List<User>> listUserByDeptIds(List<Integer> deptIds);
+
+// ========== MappingType.NONE ==========
+
+@ContainerMethod(namespace = "userName", type = MappingType.NONE)
+public String getUserNameById(Integer id);  // 查询结果集是 String 类型，无法获取 key 值，因此直接按顺序合并即可
+
+@ContainerMethod(namespace = "userName", type = MappingType.NONE)
+public List<Integer> listUserAgeNameByIds(List<Integer> ids);
+~~~
+
+## 4.缓存
 
 在 2.0 及以上版本，你可以在方法上添加 `@ContainerCache` 注解，使其具备缓存功能：
 
 ~~~java
-@ContainerCache
+@ContainerCache(
+    expirationTime = 1000L, // 配置过期时间
+    timeUnit = TimeUnit.SECONDS, // 指定过期时间单位
+)
 @ContainerMethod(
     namespace = "onoToOneMethod",
     resultType = Foo.class, resultKey = "id" // 返回的数据源对象类型为 Foo，并且需要按 id 分组
@@ -95,9 +135,9 @@ public Set<Foo> onoToOneMethod(List<String> args) {
 }
 ~~~
 
-缓存的失效时间取决于你在 `CacheManager` 中设置的时间，目前它是全局的，无法在每个方法上单独设置。
+如果你的方法上同时声明了多个方法容器，那么它们都将具备缓存功能。
 
-具体内容，可参见后文 “[缓存](./../advanced/cache.md)” 一节。
+具体可参见后文 [缓存](./../../advanced/cache.md) 一节。
 
 ## 5.手动注册
 
@@ -128,7 +168,9 @@ MethodContainerAnnotationProcessor processor = ConfigurationUtil.createContainer
 
 ## 6.选项式配置
 
-在 2.2 及以上版本，你可以使用 `@AssembleMethod` 注解进行选项式风格的配置。通过在类或属性上添加 `@AssembleMethod` 注解，并指定要绑定的目标类中的指定方法，你可以快速的使用 spring 容器 bean 中的方法、或任意类中的静态方法作为数据源容器。
+在 2.2 及以上版本，你可以使用 `@AssembleMethod` 注解进行选项式风格的配置。通过在类或属性上添加 `@AssembleMethod` 注解，并指定要绑定的目标类中的指定方法。
+
+在这种情况下，你可以快速的使用 spring 容器中的 bean 里面的方法、或任意类中的静态方法作为数据源容器。
 
 比如：
 
@@ -159,3 +201,5 @@ private static class Foo {
 | `targetType` | 指定调用类的类型                                  | 目标类                                                       | 无，与 `target` 二选一必填     |
 | `target`     | 指定调用类的类型全限定名，或者容器中的 `beanName` | 调用类的全限定名字符串，如果在 Spring 容器中，则可以是 `beanName` | 无，与 `targetType` 二选一必填 |
 | `method`     | 指定绑定方法                                      | `@ContainerMethod`                                           | 无，必填                       |
+
+此外，在选项式配置中，你同样可以通过在被 `@ContainerMethod` 注解绑定的方法上添加 `@ContainerCache` 注解的方式实现配置缓存。在后续版本迭代中，会考虑在 `@AssembleMethod` 注解中增加一些缓存相关的配置。
