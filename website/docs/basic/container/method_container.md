@@ -75,9 +75,10 @@ public class ChildClass extends SuperClass {}
 
 | 类型                      | 说明                                      | 分组结果                | 场景                                                         |
 | ------------------------- | ----------------------------------------- | ----------------------- | ------------------------------------------------------------ |
-| `ONE_TO_ONE`              | 按 key 值一对一分组                       | `Map<key, value>`       | 默认                                                         |
+| `MappingType.ONE_TO_ONE`  | 按 key 值一对一分组                       | `Map<key, value>`       | 默认                                                         |
 | `MappingType.ONE_TO_MANY` | 按 key 值一对多分组                       | `Map<key, List<value>>` | 一个 key 对应多个值<br />比如一个 `classId` 对应多个 `Student` |
 | `MappingType.MAPPED`      | 返回值已经是分组后的 `Map` 集合，无需分组 | 原始的方法返回值        | 当返回值已经是 `Map` 时                                      |
+| `MappingType.NONE`        | 将输入的 key 值与结果按顺序合并           | `Map<key, value>`       | 方法的返回值是 String 或基础数据类型（及其包装类）的时候     |
 
 ## 4.结果缓存
 

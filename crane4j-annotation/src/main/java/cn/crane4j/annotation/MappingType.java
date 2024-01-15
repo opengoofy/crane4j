@@ -33,9 +33,9 @@ public enum MappingType {
     MAPPED,
 
     /**
-     * <p>One key corresponds to one data source object, that is,
-     * in the returned data source object collection,
-     * multiple data source objects correspond to the same key value.
+     * <p>One key corresponds to one data source object.<br/>
+     * After obtaining the data source object,
+     * it will be mapped to the key specified by {@link ContainerMethod#resultKey()}.
      *
      * <p>When using this type,
      * the type which specified by {@link ContainerMethod#resultType()} <strong>must be {@code Map} or java bean</strong>.
@@ -43,9 +43,9 @@ public enum MappingType {
     ONE_TO_ONE,
 
     /**
-     * <p>One key corresponds to multiple data source objects,
-     * that is, one data source object only corresponds
-     * to the same key value in the returned data source object collection.
+     * <p>One key corresponds to multiple data source objects.<br/>
+     * After obtaining the data source object,
+     * it will be grouped with the key specified by {@link ContainerMethod#resultKey()}.
      *
      * <p>When using this type,
      * the type which specified by {@link ContainerMethod#resultType()} <strong>must be {@code Map} or java bean</strong>.
