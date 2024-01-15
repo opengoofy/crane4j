@@ -40,7 +40,7 @@ private interface OperatorInterface {
 }
 ```
 
-关于如何配置一个装配操作，你可以直接参见文档：[声明装配操作](./../basic/declare_assemble_operation)。
+关于如何配置一个装配操作，你可以直接参见文档：[声明装配操作](./../basic/declare_assemble_operation.md)。
 
 :::warning
 
@@ -233,7 +233,7 @@ public class Example {
 
 :::tip
 
-关于 `OperateTemplate` 与手动填充，请参见：[触发填充-手动填充](./../basic/trigger_operation)。
+关于 `OperateTemplate` 与手动填充，请参见：[触发填充-手动填充](./../basic/trigger_operation.md)。
 
 :::
 
@@ -252,7 +252,7 @@ private interface OperatorInterface {
 }
 ~~~
 
-在此处，`@AutoOperate` 注解的使用方式与自动填充中完全一致，具体内容请参见文档：[触发填充-自动填充](./../basic/trigger_operation)。
+在此处，`@AutoOperate` 注解的使用方式与自动填充中完全一致，具体内容请参见文档：[触发填充-自动填充](./../basic/trigger_operation.md)。
 
 ## 3.方法工厂
 

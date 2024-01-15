@@ -59,7 +59,7 @@ public class Crane4jConfig {
 } 
 ~~~
 
-关于如何使用缓存管理器，请参见：[缓存](./../advanced/cache)。
+关于如何使用缓存管理器，请参见：[缓存](./../advanced/cache.md)。
 
 ## 3.键前缀
 
