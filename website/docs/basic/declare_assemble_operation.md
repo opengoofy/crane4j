@@ -32,6 +32,17 @@ public class Student {
 2. 从命名空间为 `student` 的数据源容器中获取数据源对象；
 3. 获取与 `id` 字段值对应的数据，将数据源对象中的 `studentName` 字段值映射到 `name` 字段上；
 
+:::tip
+
+注意，默认情况下，即使你的 key 字段（即上文的 id 字段）为 null，cranej4 依然会认为它是一个有效值，会使用 null 尝试查出一个对应的数据。
+
+如果你希望过滤掉为 key 字段值为 null 的操作，你可以：
+
+- 获取 `OneToOneAssembleOperationHandler` 后，调用 `setIgnoreNullKey` 方法设置过滤 null 值；
+- 在 springboot 环境，直接在配置文件里面添加 `crane4j.ignore-null-key-when-assembling`；
+
+:::
+
 ### 1.2.在类上声明
 
 不过，你也可以在类上声明，此时你需要显式的指定该操作要绑定的 key 字段。比如：

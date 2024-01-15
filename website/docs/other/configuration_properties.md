@@ -117,3 +117,19 @@ crane4j:
  # 操作配置预解析
  operate-entity-packages: cn.crane4j.springboot.config.*
 ~~~
+
+## 5.是否忽略 key 值为 null 的操作
+
+在默认情况下，即使 key 值为 null，crane4j 依然认为其为有效值，并尝试通过容器获取对应的数据。
+
+举个例子，你定义了一个根据 id 查询用户信息并填充数据的操作，但是当 id 为 null，时 crane4j 依然会拿着 null 去调用查询用户信息的方法。
+
+如果你认为 null 值都是无效值，当 key 值为 null 时即表示忽略这个操作，那么可以配置：
+
+~~~yml
+crane4j:
+ # 操作配置预解析
+ ignore-null-key-when-assembling: true
+~~~
+
+该值默认为 true。
