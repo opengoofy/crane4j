@@ -8,6 +8,7 @@ import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.PropertyMapping;
+import cn.crane4j.core.parser.SimplePropertyMapping;
 import cn.crane4j.core.parser.handler.strategy.OverwriteNotNullMappingStrategy;
 import cn.crane4j.core.parser.handler.strategy.PropertyMappingStrategy;
 import cn.crane4j.core.parser.handler.strategy.PropertyMappingStrategyManager;
@@ -34,6 +35,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -280,7 +282,9 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
         if (CollectionUtils.isNotEmpty(templateMappings)) {
             propertyMappings.addAll(templateMappings);
         }
-        return propertyMappings;
+        // fix https://github.com/opengoofy/crane4j/issues/190
+        return propertyMappings.isEmpty() ?
+            Collections.singleton(new SimplePropertyMapping("", key)) : propertyMappings;
     }
 
     /**
