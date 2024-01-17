@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 /**
@@ -27,18 +27,18 @@ public class AsyncBeanOperationExecutor extends DisorderedBeanOperationExecutor 
     /**
      * thread pool used to perform operations.
      */
-    private final ExecutorService executorService;
+    private final Executor executor;
 
     /**
      * Create an instance of {@link AsyncBeanOperationExecutor}.
      *
      * @param containerManager container manager
-     * @param executorService thread pool used to perform operations
+     * @param executor thread pool used to perform operations
      */
     public AsyncBeanOperationExecutor(
-            ContainerManager containerManager, ExecutorService executorService) {
+            ContainerManager containerManager, Executor executor) {
         super(containerManager);
-        this.executorService = executorService;
+        this.executor = executor;
     }
 
     /**
@@ -65,7 +65,7 @@ public class AsyncBeanOperationExecutor extends DisorderedBeanOperationExecutor 
     protected void executeOperations(List<AssembleExecution> executions, Options options) throws OperationExecuteException {
         CompletableFuture<Void>[] tasks = executions.stream()
             .map(execution -> (Runnable)() -> doExecuteOperations(execution))
-            .map(task -> CompletableFuture.runAsync(task, executorService))
+            .map(task -> CompletableFuture.runAsync(task, executor))
             .toArray(CompletableFuture[]::new);
         try {
             CompletableFuture.allOf(tasks).join();
@@ -90,7 +90,7 @@ public class AsyncBeanOperationExecutor extends DisorderedBeanOperationExecutor 
         executionGroups.forEach((c, he) ->
             he.forEach((h, es) -> tasks.add(() -> h.process(c, es))));
         tasks.stream()
-            .map(t -> CompletableFuture.runAsync(t, executorService))
+            .map(t -> CompletableFuture.runAsync(t, executor))
             .collect(Collectors.collectingAndThen(
                 Collectors.toList(), ts -> CompletableFuture.allOf(ts.toArray(new CompletableFuture[0]))
             ))

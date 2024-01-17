@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class DefaultMethodContainerFactory implements MethodContainerFactory {
 
-    public static final int ORDER = Integer.MAX_VALUE;
     protected final MethodInvokerContainerCreator methodInvokerContainerCreator;
     protected final AnnotationFinder annotationFinder;
 
@@ -82,10 +81,9 @@ public class DefaultMethodContainerFactory implements MethodContainerFactory {
     }
 
     private Container<Object> createContainer(Object source, Method method, ContainerMethod annotation) {
-        MethodInvokerContainer container = methodInvokerContainerCreator.createContainer(
+        return methodInvokerContainerCreator.createContainer(
             source, method, annotation.type(), annotation.namespace(),
             annotation.resultType(), annotation.resultKey(), annotation.duplicateStrategy()
         );
-        return container;
     }
 }
