@@ -8,6 +8,7 @@ import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.PropertyMapping;
+import cn.crane4j.core.parser.SimplePropertyMapping;
 import cn.crane4j.core.parser.handler.strategy.OverwriteNotNullMappingStrategy;
 import cn.crane4j.core.parser.handler.strategy.PropertyMappingStrategy;
 import cn.crane4j.core.parser.handler.strategy.PropertyMappingStrategyManager;
@@ -35,6 +36,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -180,6 +182,11 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
         Class<?> keyType = parseKeyType(standardAnnotation, annotation);
         AssembleOperationHandler assembleOperationHandler = parseAssembleOperationHandler(element, standardAnnotation);
         Set<PropertyMapping> propertyMappings = parsePropertyMappings(element, standardAnnotation, key);
+        // fix https://github.com/opengoofy/crane4j/issues/190
+        // if no property mapping is specified, the default property mapping is the key itself
+        propertyMappings = propertyMappings.isEmpty() ?
+            CollectionUtils.newCollection(LinkedHashSet::new, new SimplePropertyMapping("", key)) : propertyMappings;
+
         int sort = parseSort(element, standardAnnotation);
         Set<String> groups = parseGroups(element, standardAnnotation);
         PropertyMappingStrategy propertyMappingStrategy = parserPropertyMappingStrategy(standardAnnotation, annotation);

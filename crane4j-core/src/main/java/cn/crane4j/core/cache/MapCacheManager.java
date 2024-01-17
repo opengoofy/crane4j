@@ -62,7 +62,7 @@ public abstract class MapCacheManager extends AbstractCacheManager {
      * @author huangchengxing
      * @since 2.4.0
      */
-    private static class MapCacheObject<K> extends AbstractCacheObject<K> {
+    protected static class MapCacheObject<K> extends AbstractCacheObject<K> {
 
         private final Map<K, Object> map;
 

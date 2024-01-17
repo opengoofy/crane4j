@@ -100,7 +100,7 @@ public class GuavaCacheManager extends AbstractCacheManager {
      * @author huangchengxing
      * @since 2.4.0
      */
-    private static class GuavaCacheObject<K> extends AbstractCacheObject<K> {
+    protected static class GuavaCacheObject<K> extends AbstractCacheObject<K> {
 
         private final Cache<Object, Object> cache;
 
