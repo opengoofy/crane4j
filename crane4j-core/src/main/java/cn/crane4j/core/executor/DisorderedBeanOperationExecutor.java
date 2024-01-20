@@ -20,7 +20,7 @@ import java.util.Map;
  * @author huangchengxing
  */
 @Slf4j
-public class DisorderedBeanOperationExecutor extends AbstractBeanOperationExecutor {
+public class DisorderedBeanOperationExecutor extends OperationAwareBeanOperationExecutor {
 
     /**
      * Create an instance of {@link DisorderedBeanOperationExecutor}.

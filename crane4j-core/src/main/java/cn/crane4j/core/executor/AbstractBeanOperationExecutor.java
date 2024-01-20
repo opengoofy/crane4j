@@ -2,6 +2,7 @@ package cn.crane4j.core.executor;
 
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerManager;
+import cn.crane4j.core.container.lifecycle.SmartOperationAware;
 import cn.crane4j.core.exception.OperationExecuteException;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
 import cn.crane4j.core.parser.BeanOperations;
@@ -12,6 +13,7 @@ import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.MultiMap;
 import cn.crane4j.core.util.TimerUtil;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -55,6 +57,8 @@ import java.util.function.Predicate;
  * it is recommended to minimize the number of accesses to the {@link Container}.
  *
  * @author huangchengxing
+ * @see OperationAwareBeanOperationExecutor
+ * @see SmartOperationAware
  * @see AsyncBeanOperationExecutor
  * @see DisorderedBeanOperationExecutor
  * @see OrderedBeanOperationExecutor
@@ -70,8 +74,8 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
 
     /**
      * <p>Wait time in milliseconds if the operation is not active.<br/>
-     * In normal cases, this time is unnecessary set to a large value,
-     * because the operation is usually active when the {@link #execute} method is called,
+     * In normal cases, this time is unnecessary set to a large value.
+     * The operation is usually active when the {@link #execute} method is called,
      * Unless there is a circular dependency between the operation and the resolution of another object during the parsing process.
      *
      * <p>NOTE: This is not a good solution, so in future versions,
@@ -92,6 +96,9 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
      * @param targets targets
      * @param operations operations to be performed
      * @param options options for execution
+     * @see #beforeDisassembleOperation
+     * @see #beforeAssembleOperation
+     * @see #afterOperationsCompletion
      */
     @Override
     public void execute(Collection<?> targets, BeanOperations operations, Options options) {
@@ -100,28 +107,31 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
         }
 
         // When the following all conditions are met, the operation will be abandoned:
-        // 1. the operation is not active;
-        // 2. the operation is still not active after waiting for a period of time;
-        // 3. the execution of non-active operations is not enabled.
+        // 1. The operation is not active;
+        // 2. The operation is still not active after waiting for a period of time;
+        // 3. The execution of non-active operations is not enabled.
         if (!operations.isActive() &&
             !waitForOperationActiveUntilTimeout(operations)
             && !enableExecuteNotActiveOperation) {
             log.warn("bean operation of [{}] is still not ready, abort execution of the operation", operations.getSource());
             return;
         }
+
         // complete the disassembly first if necessary
-        MultiMap<BeanOperations, Object> collector = MultiMap.linkedListMultimap();
-        collector.putAll(operations, targets);
+        beforeDisassembleOperation(targets, operations, options);
+        MultiMap<BeanOperations, Object> targetWithOperations = MultiMap.linkedListMultimap();
+        targetWithOperations.putAll(operations, targets);
         Predicate<? super KeyTriggerOperation> filter = options.getFilter();
         TimerUtil.getExecutionTime(
             log.isDebugEnabled(),
             time -> log.debug("disassemble operations completed in {} ms", time),
-            () -> disassembleIfNecessary(targets, operations, filter, collector)
+            () -> disassembleIfNecessary(targets, operations, filter, targetWithOperations)
         );
 
         // flattened objects are grouped according to assembly operations, then encapsulated as execution objects
+        beforeAssembleOperation(targetWithOperations);
         List<AssembleExecution> executions = new ArrayList<>();
-        collector.asMap().forEach((op, ts) -> op.getAssembleOperations()
+        targetWithOperations.asMap().forEach((op, ts) -> op.getAssembleOperations()
             .stream()
             .filter(filter)
             .map(p -> createAssembleExecution(op, p, ts, options))
@@ -134,6 +144,7 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
             time -> log.debug("assemble operations completed in {} ms", time),
             () -> executeOperations(executions, options)
         );
+        afterOperationsCompletion(targetWithOperations);
     }
 
     /**
@@ -147,6 +158,7 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
      */
     protected AssembleExecution createAssembleExecution(
         BeanOperations beanOperations, AssembleOperation operation, Collection<Object> targets, Options options) {
+        targets = filterTargetsForSupportedOperation(targets, operation);
         String namespace = operation.getContainer();
         Container<?> container = options.getContainer(containerManager, namespace);
         Asserts.isNotNull(container, "container of [{}] not found", namespace);
@@ -174,7 +186,53 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
      */
     protected abstract void executeOperations(List<AssembleExecution> executions, Options options) throws OperationExecuteException;
 
-    private static <T> void disassembleIfNecessary(
+    /**
+     * Do something before the assembly operation begin.
+     *
+     * @param targetWithOperations target with operations
+     */
+    protected void beforeAssembleOperation(MultiMap<BeanOperations, Object> targetWithOperations) {
+        // do nothing
+    }
+
+    /**
+     * Do something before the disassemble operations begin.
+     *
+     * @param targets targets
+     * @param operations operations
+     * @param options options for execution
+     * @since 2.5.0
+     */
+    protected void beforeDisassembleOperation(
+        Collection<?> targets, BeanOperations operations, Options options) {
+        // do nothing
+    }
+
+    /**
+     * Do something after all operations completed.
+     *
+     * @param targetWithOperations target with operations
+     * @since 2.5.0
+     */
+    protected void afterOperationsCompletion(MultiMap<BeanOperations, Object> targetWithOperations) {
+        // do nothing
+    }
+
+    /**
+     * Filter the targets that do not support the operation.
+     *
+     * @param targets targets
+     * @param operation operation
+     * @return filtered targets
+     * @since 2.5.0
+     */
+    @NonNull
+    protected <T> Collection<T> filterTargetsForSupportedOperation(
+        Collection<T> targets, KeyTriggerOperation operation) {
+        return targets;
+    }
+
+    private <T> void disassembleIfNecessary(
         Collection<T> targets, BeanOperations operations,
         Predicate<? super KeyTriggerOperation> filter, MultiMap<BeanOperations, Object> collector) {
         Collection<DisassembleOperation> internalOperations = operations.getDisassembleOperations();
@@ -186,9 +244,10 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
             .forEach(internal -> doDisassembleAndCollect(targets, internal, filter, collector));
     }
 
-    private static <T> void doDisassembleAndCollect(
+    private <T> void doDisassembleAndCollect(
         Collection<T> targets, DisassembleOperation disassembleOperation, Predicate<? super KeyTriggerOperation> filter, MultiMap<BeanOperations, Object> collector) {
         DisassembleOperationHandler handler = disassembleOperation.getDisassembleOperationHandler();
+        targets = filterTargetsForSupportedOperation(targets, disassembleOperation);
         Collection<?> internalTargets = handler.process(disassembleOperation, targets);
         if (CollectionUtils.isEmpty(internalTargets)) {
             return;
