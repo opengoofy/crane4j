@@ -21,7 +21,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
 /**
- * test for {@link BeanOperationExecutor}
+ * test for {@link AbstractBeanOperationExecutor}
  *
  * @author huangchengxing
  */
@@ -58,13 +58,6 @@ public class AbstractBeanOperationExecutorTest extends BaseExecutorTest {
         );
         Assert.assertEquals(2, executions.size());
     }
-
-    //@Test
-    //public void executeWhenBeanOperationsNotActive() {
-        //BeanOperations operations = new SimpleBeanOperations(Void.TYPE);
-        //Runnable runnable = () -> executor.execute(Collections.singleton(new Object()), operations);
-        //Assert.assertThrows(Crane4jException.class, runnable::run);
-    //}
 
     private static void checkAssembleOperation(
         AssembleExecution executionForId, Class<?> targetType, int targetSize, String key) {

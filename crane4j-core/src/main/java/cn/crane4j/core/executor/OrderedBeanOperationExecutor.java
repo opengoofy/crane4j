@@ -16,7 +16,7 @@ import java.util.List;
  *
  * @author huangchengxing
  */
-public class OrderedBeanOperationExecutor extends AbstractBeanOperationExecutor {
+public class OrderedBeanOperationExecutor extends OperationAwareBeanOperationExecutor {
 
     /**
      * comparator

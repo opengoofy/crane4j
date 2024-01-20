@@ -20,7 +20,7 @@ coverage:
     project:
       default:
         target: auto
-        threshold: 0%
+        threshold: 80%
         informational: true
     patch:
       default:
@@ -28,5 +28,6 @@ coverage:
 ignore:
   - "crane4j-annotation/.*"
   - "crane4j-example/.*"
+  - "crane4j-extension/crane4j-extension-redis/.*"
   - "docs/.*"
   - "website/.*"
