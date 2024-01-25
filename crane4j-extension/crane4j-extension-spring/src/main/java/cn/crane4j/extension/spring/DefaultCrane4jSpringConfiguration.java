@@ -397,8 +397,8 @@ public class DefaultCrane4jSpringConfiguration implements SmartInitializingSingl
 
     @Bean
     public BeanMethodContainerRegistrar beanMethodContainerRegistrar(
-        AnnotationFinder annotationFinder, Collection<MethodContainerFactory> factories, Crane4jGlobalConfiguration configuration) {
-        return new BeanMethodContainerRegistrar(factories, annotationFinder, configuration);
+        AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration) {
+        return new BeanMethodContainerRegistrar(annotationFinder, configuration);
     }
 
     /**

@@ -35,9 +35,11 @@ public class BeanMethodContainerRegistrarTest {
     private Crane4jApplicationContext context;
     @Autowired
     private BeanMethodContainerRegistrar beanMethodContainerRegistrar;
+    @Autowired
+    private Service service;
 
     @Test
-    public void test() {
+    public void testAutoRegister() {
         Assert.assertFalse(context.containsContainer("noneResultMethod"));
 
         // mappedMethod
@@ -56,6 +58,26 @@ public class BeanMethodContainerRegistrarTest {
         Assert.assertEquals("oneToManyMethod", oneToManyMethod.getNamespace());
 
         beanMethodContainerRegistrar.destroy();
+    }
+
+    @Test
+    public void testRegister() {
+        beanMethodContainerRegistrar.register(service, Service.class);
+
+        // mappedMethod
+        Container<?> mappedMethod = context.getContainer("mappedMethod");
+        Assert.assertTrue(mappedMethod instanceof MethodInvokerContainer);
+        Assert.assertEquals("mappedMethod", mappedMethod.getNamespace());
+
+        // onoToOneMethod
+        Container<?> onoToOneMethod = context.getContainer("onoToOneMethod");
+        Assert.assertTrue(onoToOneMethod instanceof MethodInvokerContainer);
+        Assert.assertEquals("onoToOneMethod", onoToOneMethod.getNamespace());
+
+        // oneToManyMethod
+        Container<?> oneToManyMethod = context.getContainer("oneToManyMethod");
+        Assert.assertTrue(oneToManyMethod instanceof CacheableContainer);
+        Assert.assertEquals("oneToManyMethod", oneToManyMethod.getNamespace());
     }
 
     @SuppressWarnings("unused")

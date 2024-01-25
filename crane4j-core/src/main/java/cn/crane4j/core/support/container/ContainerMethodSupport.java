@@ -30,7 +30,7 @@ public abstract class ContainerMethodSupport {
     /**
      * method container factories
      */
-    protected final Collection<MethodContainerFactory> methodContainerFactories;
+    protected List<MethodContainerFactory> methodContainerFactories;
 
     /**
      * Create a {@link ContainerMethodSupport} instance.
@@ -41,6 +41,19 @@ public abstract class ContainerMethodSupport {
         this.methodContainerFactories = methodContainerFactories.stream()
             .sorted(Crane4jGlobalSorter.comparator())
             .collect(Collectors.toList());
+    }
+
+    /**
+     * Register {@link MethodContainerFactory} instance.
+     *
+     * @param methodContainerFactory method container factory
+     * @since 2.5.0
+     */
+    public void registerMethodContainerFactory(MethodContainerFactory methodContainerFactory) {
+        if (!methodContainerFactories.contains(methodContainerFactory)) {
+            this.methodContainerFactories.add(methodContainerFactory);
+            this.methodContainerFactories.sort(Crane4jGlobalSorter.comparator());
+        }
     }
 
     /**

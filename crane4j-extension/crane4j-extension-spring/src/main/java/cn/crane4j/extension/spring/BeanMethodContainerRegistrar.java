@@ -6,15 +6,26 @@ import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.container.ContainerMethodAnnotationProcessor;
 import cn.crane4j.core.support.container.MethodContainerFactory;
+import cn.crane4j.core.util.Asserts;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.springframework.aop.support.AopUtils;
-import org.springframework.beans.BeansException;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.springframework.aop.framework.autoproxy.AutoProxyUtils;
+import org.springframework.aop.scope.ScopedObject;
+import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.SmartInitializingSingleton;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.Order;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.UnaryOperator;
 
 /**
  * <p>Post process the bean, scan the method with
@@ -30,23 +41,22 @@ import java.util.Collection;
 @Order
 @Slf4j
 public class BeanMethodContainerRegistrar
-    extends ContainerMethodAnnotationProcessor implements BeanPostProcessor, DisposableBean {
+    extends ContainerMethodAnnotationProcessor
+    implements InitializingBean, SmartInitializingSingleton, ApplicationContextAware, DisposableBean {
 
-    /**
-     * configuration
-     */
+    @Setter
+    private ApplicationContext applicationContext;
     private final Crane4jGlobalConfiguration configuration;
 
     /**
      * Create an {@link BeanMethodContainerRegistrar} instance.
      *
-     * @param factories factories
      * @param annotationFinder annotation finder
-     * @param configuration configuration
+     * @param configuration crane4j global configuration
      */
     public BeanMethodContainerRegistrar(
-        Collection<MethodContainerFactory> factories, AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration) {
-        super(factories, annotationFinder);
+        AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration) {
+        super(Collections.emptyList(), annotationFinder);
         this.configuration = configuration;
     }
 
@@ -59,31 +69,87 @@ public class BeanMethodContainerRegistrar
     }
 
     /**
-     * Do nothing.
+     * <p>register method containers which scanned from the bean methods.
      *
-     * @param bean     bean
-     * @param beanName beanName
-     * @return bean
+     * @param target target
+     * @param targetType target type
+     * @see #process
+     * @since 2.5.0
      */
+    public void register(Object target, Class<?> targetType) {
+        register(target, targetType, null);
+    }
+
+    /**
+     * <p>register method containers which scanned from the bean methods.
+     *
+     * @param target target
+     * @param targetType target type
+     * @param customizer container customizer
+     * @see #process
+     * @since 2.5.0
+     */
+    public void register(
+        Object target, Class<?> targetType, @Nullable UnaryOperator<Container<Object>> customizer) {
+        Asserts.isNotNull(applicationContext, "applicationContext must not be null");
+        Collection<Container<Object>> containers = process(target, targetType);
+        log.debug("process [{}] annotated methods for bean [{}]", containers.size(), target);
+        customizer = Objects.isNull(customizer) ? UnaryOperator.identity() : customizer;
+        containers.stream()
+            .map(customizer)
+            .forEach(configuration::registerContainer);
+    }
+
     @Override
-    public Object postProcessBeforeInitialization(@NonNull Object bean, @NonNull String beanName) throws BeansException {
-        return bean;
+    public void afterPropertiesSet() {
+        Asserts.isNotNull(applicationContext, "applicationContext must not be null");
+        Asserts.isTrue(
+            applicationContext.getAutowireCapableBeanFactory() instanceof ConfigurableListableBeanFactory,
+            "applicationContext must have a ConfigurableListableBeanFactory"
+        );
+        Map<String, MethodContainerFactory> containerFactories = applicationContext.getBeansOfType(MethodContainerFactory.class);
+        containerFactories.forEach((n, f) -> {
+            log.info("register method container factory [{}] with name [{}]", f.getClass().getName(), n);
+            registerMethodContainerFactory(f);
+        });
     }
 
     /**
      * <p>Scan and process the method with the specified annotation in the class.
      * If the annotation also exists in the class, find and process the corresponding method in the class.
-     *
-     * @param bean     bean
-     * @param beanName beanName
-     * @return bean
      */
     @Override
-    public Object postProcessAfterInitialization(@NonNull Object bean, @NonNull String beanName) throws BeansException {
-        Class<?> beanType = AopUtils.getTargetClass(bean);
-        Collection<Container<Object>> containers = process(bean, beanType);
-        log.debug("process [{}] annotated methods for bean [{}]", containers.size(), beanName);
-        containers.forEach(configuration::registerContainer);
-        return bean;
+    public void afterSingletonsInstantiated() {
+        ConfigurableListableBeanFactory beanFactory = (ConfigurableListableBeanFactory)applicationContext.getAutowireCapableBeanFactory();
+        String[] beanNames = beanFactory.getBeanNamesForType(Object.class);
+        for (String beanName : beanNames) {
+            Class<?> beanType = determineTargetType(beanFactory, beanName);
+            if (Objects.isNull(beanType)) {
+                continue;
+            }
+            Object bean = beanFactory.getBean(beanName);
+            Collection<Container<Object>> containers = process(bean, beanType);
+            log.debug("process [{}] annotated methods for bean [{}]", containers.size(), beanName);
+            containers.forEach(configuration::registerContainer);
+        }
+        nonAnnotatedClasses.clear();
+    }
+
+    @SuppressWarnings("all")
+    @Nullable
+    private Class<?> determineTargetType(ConfigurableListableBeanFactory beanFactory, String beanName) {
+        try {
+            Class<?> type = AutoProxyUtils.determineTargetClass(beanFactory, beanName);
+            if (ScopedObject.class.isAssignableFrom(type)) {
+                Class<?> targetClass = AutoProxyUtils.determineTargetClass(
+                    beanFactory, ScopedProxyUtils.getTargetBeanName(beanName)
+                );
+            }
+            return type;
+        }
+        catch (Throwable ex) {
+            log.debug("Could not resolve target class for bean with name '" + beanName + "'", ex);
+        }
+        return null;
     }
 }
