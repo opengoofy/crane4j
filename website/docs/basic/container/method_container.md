@@ -148,22 +148,26 @@ public Set<Foo> onoToOneMethod(List<String> args) {
 ~~~java
 // 从 Spring 容器中获取处理器和全局配置
 @Autowried
-private MethodContainerAnnotationProcessor processor;
-@Autowried
-private Crane4jGlobalConfiguration configuration;
+private BeanMethodContainerRegistrar beanMethodContainerRegistrar;
 
 // 基于 Foo 的实例方法创建方法容器
 Foo foo = new Foo();
-Collection<Container<Object>> containers = processor.process(foo, Foo.getClass());
-containers.forEach(configuration::registerContainer);
+beanMethodContainerRegistrar.register(foo, foo.class);
 ~~~
 
-如果你是在非 Spring 环境中，那么你需要先通过以下代码手动构建 `MethodContainerAnnotationProcessor` 实例：
+如果你是在非 Spring 环境中，那么你需要先通过以下代码手动构建 `MethodContainerAnnotationProcessor` 实例，然后再手动注册：
 
 ~~~java
 // 构建方法容器处理器
 Crane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create();
 MethodContainerAnnotationProcessor processor = ConfigurationUtil.createContainerMethodAnnotationProcessor(configuration);
+
+// 从目标对象上解析方法容器
+Foo foo = new Foo();
+Collection<Container<Object>> containers = processor.process(foo, Foo.getClass());
+
+// 将方法容器注册到全局配置对象中
+containers.forEach(configuration::registerContainer);
 ~~~
 
 ## 6.选项式配置

@@ -296,8 +296,8 @@ public class Crane4jAutoConfiguration {
     )
     @Bean
     public BeanMethodContainerRegistrar beanMethodContainerPostProcessor(
-        AnnotationFinder annotationFinder, Collection<MethodContainerFactory> factories, Crane4jGlobalConfiguration configuration) {
-        return new BeanMethodContainerRegistrar(factories, annotationFinder, configuration);
+        AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration) {
+        return new BeanMethodContainerRegistrar(annotationFinder, configuration);
     }
 
     @ConditionalOnMissingBean
