@@ -81,7 +81,6 @@ import cn.crane4j.extension.spring.expression.SpelExpressionEvaluator;
 import cn.crane4j.extension.spring.scanner.ClassScanner;
 import cn.crane4j.extension.spring.scanner.ScannedContainerRegistrar;
 import cn.crane4j.extension.spring.util.ContainerResolveUtils;
-import cn.crane4j.spring.boot.annotation.EnableCrane4j;
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -125,16 +124,13 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * <p>The automatic configuration class of crane.<br />
- * Inject the current configuration class into the Spring container,
- * or make it effective directly through {@link EnableCrane4j} annotation,
- * which will automatically assemble various components required by the crane runtime.
+ * Crane4j configuration.
  *
  * @author huangchengxing
  * @see cn.crane4j.extension.spring
  */
 @Slf4j
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @RequiredArgsConstructor
 @EnableConfigurationProperties(Crane4jAutoConfiguration.Properties.class)
 public class Crane4jAutoConfiguration {
@@ -758,14 +754,13 @@ public class Crane4jAutoConfiguration {
         @SneakyThrows
         @Override
         public void run(ApplicationArguments args) {
-            log.info("crane4j components initializing......");
             // load enumeration and register it as a container
             loadContainerEnum();
             // load a constant class and register it as a container
             loadConstantClass();
             // pre resolution class operation configuration
             loadOperateEntity();
-            log.info("crane4j components initialization completed!");
+            log.info("crane4j component initialization completed.");
         }
 
         private void loadConstantClass() {

@@ -234,7 +234,7 @@ public class Crane4jApplicationContext extends DefaultContainerManager
     @Override
     public void afterPropertiesSet() {
         applicationContext.getBeansOfType(ContainerLifecycleProcessor.class).forEach((name, processor) -> {
-            log.info("install container register aware [{}]", name);
+            log.info("install container lifecycle processor [{}]", name);
             registerContainerLifecycleProcessor(processor);
         });
     }

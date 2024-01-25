@@ -28,7 +28,7 @@ import org.springframework.context.annotation.Configuration;
  * @see cn.crane4j.extension.jackson
  */
 @Slf4j
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @AutoConfigureAfter({Crane4jAutoConfiguration.class})
 @ConditionalOnClass({ObjectMapper.class, JsonNodeAssistant.class})
 public class Crane4jJacksonConfiguration {
@@ -72,10 +72,9 @@ public class Crane4jJacksonConfiguration {
          */
         @Override
         public void run(ApplicationArguments args) {
-            log.info("crane4j jackson extension initializing......");
             registerModule();
             wrapPropertyOperatorIfNecessary();
-            log.info("crane4j jackson extension initialization completed!");
+            log.info("crane4j jackson extension component initialization completed.");
         }
 
         private void wrapPropertyOperatorIfNecessary() {
