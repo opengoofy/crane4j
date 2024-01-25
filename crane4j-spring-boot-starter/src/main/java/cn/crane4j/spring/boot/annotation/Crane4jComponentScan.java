@@ -15,6 +15,7 @@ import java.lang.annotation.Target;
  * Scan the crane4j components and other extension plugins.
  *
  * @author huangchengxing
+ * @since 2.4.0
  */
 @OperatorScan
 @ContainerConstantScan

@@ -14,6 +14,10 @@ import java.lang.annotation.Target;
 /**
  * Enable crane4j components and other extension plugins.
  *
+ * <p><b>NOTE</b>: This annotation is deprecated,
+ * because since version 2.4.0 crane4j has been integrated into spring boot autoconfig.<br />
+ * About package scan config in this annotation, you can replace it with {@link Crane4jComponentScan}.
+ *
  * @author huangchengxing
  * @see EnableCrane4jFramework
  * @see EnableCrane4jMybatisPlusExtension

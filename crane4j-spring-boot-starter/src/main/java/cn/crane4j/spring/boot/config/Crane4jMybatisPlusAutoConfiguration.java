@@ -36,7 +36,7 @@ import java.util.function.BiPredicate;
  * @author huangchengxing
  * @see cn.crane4j.extension.mybatis.plus
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(Crane4jMybatisPlusAutoConfiguration.Properties.class)
 @ConditionalOnClass({MybatisPlusAutoConfiguration.class, AssembleMpAnnotationHandler.class})
 @AutoConfigureAfter({MybatisPlusAutoConfiguration.class, Crane4jAutoConfiguration.class})
@@ -134,7 +134,6 @@ public class Crane4jMybatisPlusAutoConfiguration {
             if (!properties.isAutoRegisterMapper()) {
                 return;
             }
-            log.info("starting to register the mapper interface......");
             Set<String> includes = properties.getIncludes();
             Set<String> excludes = properties.getExcludes();
             includes.removeAll(excludes);
@@ -145,7 +144,7 @@ public class Crane4jMybatisPlusAutoConfiguration {
             mappers.entrySet().stream()
                 .filter(e -> mapperFilter.test(e.getKey(), e.getValue()))
                 .forEach(e -> register.registerRepository(e.getKey(), e.getValue()));
-            log.info("register the mapper interface completed! total: {}", mappers.size());
+            log.info("crane4j mybatis-plus extension component initialization completed.");
         }
     }
 
