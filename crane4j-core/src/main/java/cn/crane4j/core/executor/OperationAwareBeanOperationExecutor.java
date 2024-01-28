@@ -1,8 +1,8 @@
 package cn.crane4j.core.executor;
 
-import cn.crane4j.annotation.OperationAware;
+import cn.crane4j.annotation.OperationAwareBean;
 import cn.crane4j.core.container.ContainerManager;
-import cn.crane4j.core.container.lifecycle.SmartOperationAware;
+import cn.crane4j.core.container.lifecycle.SmartOperationAwareBean;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.operation.KeyTriggerOperation;
 import cn.crane4j.core.util.MultiMap;
@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
  * that supports the operation aware.
  *
  * @author huangchengxing
- * @see OperationAware
- * @see SmartOperationAware
+ * @see OperationAwareBean
+ * @see SmartOperationAwareBean
  * @since 2.5.0
  */
 public abstract class OperationAwareBeanOperationExecutor extends AbstractBeanOperationExecutor {
@@ -34,17 +34,17 @@ public abstract class OperationAwareBeanOperationExecutor extends AbstractBeanOp
     @Override
     protected void beforeAssembleOperation(MultiMap<BeanOperations, Object> targetWithOperations) {
         targetWithOperations.forEach((operations, target) -> {
-            if (target instanceof OperationAware) {
-                ((OperationAware)target).beforeAssembleOperation();
-                if (target instanceof SmartOperationAware) {
-                    ((SmartOperationAware)target).beforeAssembleOperation(operations);
+            if (target instanceof OperationAwareBean) {
+                ((OperationAwareBean)target).beforeAssembleOperation();
+                if (target instanceof SmartOperationAwareBean) {
+                    ((SmartOperationAwareBean)target).beforeAssembleOperation(operations);
                 }
             }
         });
     }
 
     /**
-     * Trigger the {@link OperationAware#afterOperationsCompletion} method of the target object.
+     * Trigger the {@link OperationAwareBean#afterOperationsCompletion} method of the target object.
      *
      * @param targetWithOperations target with operations
      * @since 2.5.0
@@ -52,10 +52,10 @@ public abstract class OperationAwareBeanOperationExecutor extends AbstractBeanOp
     @Override
     protected void afterOperationsCompletion(MultiMap<BeanOperations, Object> targetWithOperations) {
         targetWithOperations.forEach((operations, target) -> {
-            if (target instanceof OperationAware) {
-                ((OperationAware)target).afterOperationsCompletion();
-                if (target instanceof SmartOperationAware) {
-                    ((SmartOperationAware)target).afterOperationsCompletion(operations);
+            if (target instanceof OperationAwareBean) {
+                ((OperationAwareBean)target).afterOperationsCompletion();
+                if (target instanceof SmartOperationAwareBean) {
+                    ((SmartOperationAwareBean)target).afterOperationsCompletion(operations);
                 }
             }
         });
@@ -63,7 +63,7 @@ public abstract class OperationAwareBeanOperationExecutor extends AbstractBeanOp
 
     /**
      * Filter the targets that support the specified operation
-     * by the {@link SmartOperationAware#supportOperation} method.
+     * by the {@link OperationAwareBean#supportOperation} method.
      *
      * @param targets targets
      * @param operation operation
@@ -75,8 +75,18 @@ public abstract class OperationAwareBeanOperationExecutor extends AbstractBeanOp
     protected <T> Collection<T> filterTargetsForSupportedOperation(
         Collection<T> targets, KeyTriggerOperation operation) {
         return targets.stream()
-            .filter(t -> !(t instanceof SmartOperationAware)
-                || ((SmartOperationAware)t).supportOperation(operation))
+            .filter(t -> support(t, operation))
             .collect(Collectors.toList());
+    }
+
+    private boolean support(Object target, KeyTriggerOperation operation) {
+        if (target instanceof OperationAwareBean) {
+            boolean support = ((OperationAwareBean)target).supportOperation(operation.getKey());
+            if (support && target instanceof SmartOperationAwareBean) {
+                return ((SmartOperationAwareBean)target).supportOperation(operation);
+            }
+            return support;
+        }
+        return true;
     }
 }

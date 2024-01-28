@@ -39,7 +39,7 @@ public class ManyToManyAssembleOperationHandler extends OneToManyAssembleOperati
      */
     @Setter
     @NonNull
-    private Function<Object, Collection<Object>> keySplitter;
+    private KeySplitter keySplitter;
 
     /**
      * Create an {@link ManyToManyAssembleOperationHandler} instance.
@@ -50,7 +50,7 @@ public class ManyToManyAssembleOperationHandler extends OneToManyAssembleOperati
      */
     public ManyToManyAssembleOperationHandler(
         PropertyOperator propertyOperator, ConverterManager converterManager,
-        @NonNull Function<Object, Collection<Object>> keySplitter) {
+        @NonNull KeySplitter keySplitter) {
         super(propertyOperator, converterManager);
         this.keySplitter = keySplitter;
     }
@@ -113,11 +113,19 @@ public class ManyToManyAssembleOperationHandler extends OneToManyAssembleOperati
     }
 
     /**
+     * Split the value of key attribute into multiple key values.
+     *
+     * @since 2.5.0
+     */
+    public interface KeySplitter extends Function<Object, Collection<Object>> {
+    }
+
+    /**
      * The default key value splitter supports splitting {@link Collection},
      * arrays and strings with specified delimiters.
      */
     @RequiredArgsConstructor
-    public static class DefaultSplitter implements Function<Object, Collection<Object>> {
+    public static class DefaultSplitter implements KeySplitter {
         private final String strSeparator;
         @SuppressWarnings("unchecked")
         @Override

@@ -3,7 +3,7 @@ package cn.crane4j.core.executor;
 import cn.crane4j.annotation.Assemble;
 import cn.crane4j.annotation.Disassemble;
 import cn.crane4j.core.container.ContainerManager;
-import cn.crane4j.core.container.lifecycle.SmartOperationAware;
+import cn.crane4j.core.container.lifecycle.SmartOperationAwareBean;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.operation.AssembleOperation;
 import cn.crane4j.core.parser.operation.KeyTriggerOperation;
@@ -24,6 +24,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
 /**
+ * test for {@link OperationAwareBeanOperationExecutor}
+ *
  * @author huangchengxing
  */
 public class OperationAwareBeanOperationExecutorTest extends BaseExecutorTest {
@@ -56,11 +58,11 @@ public class OperationAwareBeanOperationExecutorTest extends BaseExecutorTest {
         // bean * 3
         Assert.assertEquals(6, callbackCountOfBean.get("beforeAssembleOperation").intValue());
         Assert.assertEquals(6, callbackCountOfBean.get("afterOperationsCompletion").intValue());
-        Assert.assertEquals(9, callbackCountOfBean.get("supportOperation").intValue());
+        Assert.assertEquals(18, callbackCountOfBean.get("supportOperation").intValue());
         // nestBean * 2
         Assert.assertEquals(4, callbackCountOfNestedBean.get("beforeAssembleOperation").intValue());
         Assert.assertEquals(4, callbackCountOfNestedBean.get("afterOperationsCompletion").intValue());
-        Assert.assertEquals(2, callbackCountOfNestedBean.get("supportOperation").intValue());
+        Assert.assertEquals(4, callbackCountOfNestedBean.get("supportOperation").intValue());
     }
 
     @Test
@@ -116,7 +118,7 @@ public class OperationAwareBeanOperationExecutorTest extends BaseExecutorTest {
 
     @Accessors(chain = true)
     @Data
-    private static class Bean implements SmartOperationAware {
+    private static class Bean implements SmartOperationAwareBean {
         @Assemble(groups = {"op", "id"})
         private Integer id;
         private String name;
@@ -128,6 +130,11 @@ public class OperationAwareBeanOperationExecutorTest extends BaseExecutorTest {
         @Disassemble(type = NestedBean.class, groups = "op")
         private NestedBean nestedBean;
 
+        @Override
+        public boolean supportOperation(String key) {
+            callbackCountOfBean.put("supportOperation", callbackCountOfBean.getOrDefault("supportOperation", 0) + 1);
+            return true;
+        }
         @Override
         public boolean supportOperation(KeyTriggerOperation operation) {
             callbackCountOfBean.put("supportOperation", callbackCountOfBean.getOrDefault("supportOperation", 0) + 1);
@@ -153,11 +160,16 @@ public class OperationAwareBeanOperationExecutorTest extends BaseExecutorTest {
     }
 
     @Data
-    private static class NestedBean implements SmartOperationAware {
+    private static class NestedBean implements SmartOperationAwareBean {
         @Assemble(groups = {"op", "id"})
         private Integer type;
         private String typeName;
 
+        @Override
+        public boolean supportOperation(String key) {
+            callbackCountOfNestedBean.put("supportOperation", callbackCountOfNestedBean.getOrDefault("supportOperation", 0) + 1);
+            return true;
+        }
         @Override
         public void beforeAssembleOperation() {
             callbackCountOfNestedBean.put("beforeAssembleOperation", callbackCountOfNestedBean.getOrDefault("beforeAssembleOperation", 0) + 1);
@@ -181,7 +193,7 @@ public class OperationAwareBeanOperationExecutorTest extends BaseExecutorTest {
         }
     }
 
-    private static class NoneCallbackBean implements SmartOperationAware {
+    private static class NoneCallbackBean implements SmartOperationAwareBean {
         @Assemble(groups = {"op", "id"})
         private Integer type;
     }

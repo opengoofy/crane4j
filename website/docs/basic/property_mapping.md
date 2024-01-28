@@ -240,3 +240,104 @@ public class Foo {
 具体参见后文 “[反射工厂](./../advanced/reflection_factory.md)” 部分内容。
 
 :::
+
+## 8.属性映射策略
+
+在默认情况下，当我们指定要将数据源对象的 a 属性映射到目标对象的 b 属性时，仅当 a 的属性值不为 `null` 才会对 b 属性进行赋值。在 `2.1.0` 及以上版本， 该行为可以通过在指定属性映射策略改变。
+
+### 8.1.指定策略
+
+比如，如果我们希望仅当目标对象的 b 属性值为 `null` 时，才允许将数据源对象的 a 属性值映射过来：
+
+~~~java
+public class Foo {
+    @Assemble(
+        container = "foo", props = @Mapping(src = "a", ref = "b"),
+        propertyMappingStrategy = "ReferenceMappingStrategy" // 指定属性映射策略
+    )
+    private String id;
+    private String b;
+}
+~~~
+
+默认提供了三种策略：
+
++ `OverwriteMappingStrategy`：覆写策略，不论 `src` 对应的属性值是不是 `null` ，都强制覆写 `ref` 对应的目标属性；
+
++ `OverwriteNotNullMappingStrategy`：非空时覆写策略，仅当 `src` 对应的属性值不为 `null` 时，强制覆写 `ref` 对应的目标属性。
+
+    当不指定策略时，将默认使用它作为实际的映射策略；
+
++ `ReferenceMappingStrategy`：空值引用策略，仅当 `ref` 对应的目标属性为 `null` 时，才获取 `src` 的属性值；
+
+### 8.2.自定义策略
+
+你可以通过实现 `PropertyMappingStrategy` 接口创建自定义策略。
+
+比如，原本你有如下配置，现在你希望把 `teacherNames` 字段的类型改为一个字符串，映射到该字段的数据需要从 `[name1, name2, name3......]` 格式的集合改为 `teacher_name_prefix: name1, name2, name3......` 格式的字符串
+
+~~~java
+public class StudentVO {
+    @Assemble(
+        container = "teacher",
+        handler = "manyToManyAssembleOperationHandler",
+        props = @Mapping(src = "name", ref = "teacherNames")
+    )
+    private String teacherIds;
+    private List<String> teacherNames; // 改为字符串
+}
+~~~
+
+**创建自定义策略**
+
+现在，你可以定义一个策略，对最终要映射的属性值做一些调整，比如把字符串集合转为你所需的字符串：
+
+~~~java
+@RequiredArgsConstructor
+public class CustomMappingStrategy implements PropertyMappingStrategy {
+
+    @Getter
+    private String name = "CustomMappingStrategy";
+    
+    @Override
+    public void doMapping(
+        Object target, Object source, @Nullable Object sourceValue,
+        PropertyMapping propertyMapping, Consumer<Object> mapping) {
+        // resourceValue 即为原本的字符串集合
+        List<String> teacherNames = (List<String>)sourceValue;
+        // 将字符串集合拼接为你所需的字符串格式
+        String value = "teacher_name_prefix：" + teacherNames.stream() 
+            .collect(Collectors.join(", "));
+        mapping.accept(value);
+    }
+}
+~~~
+
+**注册策略**
+
+在 Spring 环境中，你只需要将自定义策略交由 Spring 容器管理即可，项目启动后 crane4j 会自动注册。
+
+而在非 Spring 环境中，你可以直接将其注册到 `SimpleCrane4jGlobalConfiguration` 中：
+
+~~~java
+SimpleCrane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create();
+PropertyMappingStrategy customStrategy = CustomPropertyMappingStrategy();
+configuration.addPropertyMappingStrategy(customStrategy);
+~~~
+
+**引用策略**
+
+接着，在注解中通过 `propertyMappingStrategy` 引用策略即可：
+
+~~~java
+public class StudentVO {
+    @Assemble(
+        container = "teacher",
+        handler = "manyToManyAssembleOperationHandler",
+        props = @Mapping(src = "name", ref = "teacherNames"),
+        propertyMappingStrategy = "CustomMappingStrategy" // 指定策略
+    )
+    private String teacherIds; // 以逗号分隔的字符串，例如：1, 2, 3
+    private String teacherNames; // 映射为 "teacher_name_prefix：a, b, c, d....."
+}
+~~~

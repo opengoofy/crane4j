@@ -137,6 +137,12 @@ executor.execute(foos, operations);
 
 直接使用操作执行器的场景相对罕见，仅在需要使用少部分特殊功能时才会出现。
 
+:::tip
+
+关于如何使用异步执行器，请参见：[异步填充](./../advanced/async_executor.md)一节。
+
+:::
+
 ## 6.填充方式
 
 crane4j 提供了两类填充方式，它们主要的区别在于填充的触发时机：
