@@ -85,7 +85,8 @@ const sidebarConfig = [
             { title: '注解处理器', path: "/advanced/operation_annotation_handler.md"},
             { title: '使用抽象方法填充', path: "/advanced/operator_interface.md"},
             { title: '反射工厂', path: "/advanced/reflection_factory.md"},
-            { title: '类型转换', path: "/advanced/type_converter.md"}
+            { title: '类型转换', path: "/advanced/type_converter.md"},
+            { title: '异步填充', path: "/advanced/async_executor.md"},
         ]
     },
     {

@@ -2,7 +2,6 @@ package cn.crane4j.core.executor;
 
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerManager;
-import cn.crane4j.core.container.lifecycle.SmartOperationAware;
 import cn.crane4j.core.exception.OperationExecuteException;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
 import cn.crane4j.core.parser.BeanOperations;
@@ -20,9 +19,11 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -58,7 +59,6 @@ import java.util.function.Predicate;
  *
  * @author huangchengxing
  * @see OperationAwareBeanOperationExecutor
- * @see SmartOperationAware
  * @see AsyncBeanOperationExecutor
  * @see DisorderedBeanOperationExecutor
  * @see OrderedBeanOperationExecutor
@@ -89,6 +89,17 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
      */
     @Setter
     public boolean enableExecuteNotActiveOperation = false;
+
+    /**
+     * <p>process target num of each batch when executing an operation.<br />
+     * for example, if we have 1000 targets and batch size is 100,
+     * and each target has 3 operations, so we will get 3000 executions.<br />
+     * it's maybe useful when using asynchronous executor to process large number of targets.
+     *
+     * @since 2.5.0
+     */
+    @Setter
+    private int batchSize = -1;
 
     /**
      * Complete operations on all objects in {@code targets} according to the specified {@link BeanOperations} and {@link Options}.
@@ -131,12 +142,12 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
         // flattened objects are grouped according to assembly operations, then encapsulated as execution objects
         beforeAssembleOperation(targetWithOperations);
         List<AssembleExecution> executions = new ArrayList<>();
-        targetWithOperations.asMap().forEach((op, ts) -> op.getAssembleOperations()
-            .stream()
-            .filter(filter)
-            .map(p -> createAssembleExecution(op, p, ts, options))
-            .forEach(executions::add)
-        );
+        targetWithOperations.asMap().forEach((op, ts) -> {
+            List<AssembleExecution> executionsOfOp = combineExecutions(options, filter, op, ts);
+            if (CollectionUtils.isNotEmpty(executionsOfOp)) {
+                executions.addAll(executionsOfOp);
+            }
+        });
 
         // complete assembly operation
         TimerUtil.getExecutionTime(
@@ -145,6 +156,36 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
             () -> executeOperations(executions, options)
         );
         afterOperationsCompletion(targetWithOperations);
+    }
+
+    @NonNull
+    private List<AssembleExecution> combineExecutions(
+        Options options, Predicate<? super KeyTriggerOperation> filter, BeanOperations beanOperations, Collection<Object> targets) {
+        List<Collection<Object>> batches = batchSize > 1 ?
+            CollectionUtils.split(targets, batchSize) : Collections.singletonList(targets);
+        return batches.stream()
+            .map(batch -> doCombineExecutions(options, filter, beanOperations, batch))
+            .flatMap(Collection::stream)
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * Combine the {@link AssembleExecution} objects according to the specified {@link BeanOperations} and {@link Options}.
+     *
+     * @param options options for execution
+     * @param filter filter
+     * @param beanOperations bean operations
+     * @param targets targets
+     * @return {@link AssembleExecution} objects
+     */
+    @NonNull
+    protected List<AssembleExecution> doCombineExecutions(
+        Options options, Predicate<? super KeyTriggerOperation> filter, BeanOperations beanOperations, Collection<Object> targets) {
+        return beanOperations.getAssembleOperations()
+            .stream()
+            .filter(filter)
+            .map(p -> createAssembleExecution(beanOperations, p, targets, options))
+            .collect(Collectors.toList());
     }
 
     /**

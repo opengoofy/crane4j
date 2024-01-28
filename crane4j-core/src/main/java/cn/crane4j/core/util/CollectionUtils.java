@@ -27,6 +27,55 @@ import java.util.stream.Collectors;
 public class CollectionUtils {
 
     /**
+     * <p>Split the given list into sub lists.
+     *
+     * @param list list
+     * @param size size of sub list
+     * @param <T> element type
+     * @return sub lists
+     */
+    public static <T> List<Collection<T>> split(Collection<T> list, int size) {
+        return split(list, size, ls -> ls);
+    }
+
+    /**
+     * <p>Split the given list into sub lists.
+     *
+     * @param list list
+     * @param size size of sub list
+     * @param mapper mapper to convert list to sub list
+     * @param <T> element type
+     * @param <C> collection type
+     * @return sub lists
+     */
+    public static <T, C extends Collection<T>> List<C> split(
+        Collection<T> list, int size, Function<List<T>, C> mapper) {
+        if (size <= 0) {
+            throw new IllegalArgumentException("size must be greater than 0");
+        }
+        int listSize;
+        if (Objects.isNull(list) || (listSize = list.size()) == 0) {
+            return Collections.emptyList();
+        }
+        if (listSize == size) {
+            return Collections.singletonList(mapper.apply(new ArrayList<>(list)));
+        }
+        List<C> result = new ArrayList<>();
+        List<T> subList = new ArrayList<>(size);
+        for (T t : list) {
+            subList.add(t);
+            if (subList.size() == size) {
+                result.add(mapper.apply(subList));
+                subList = new ArrayList<>(size);
+            }
+        }
+        if (!subList.isEmpty()) {
+            result.add(mapper.apply(subList));
+        }
+        return result;
+    }
+
+    /**
      * <p>Get first not null element from the target.<br />
      *
      * @param iterator iterator
