@@ -1,18 +1,19 @@
 package cn.crane4j.core.container.lifecycle;
 
-import cn.crane4j.annotation.OperationAware;
+import cn.crane4j.annotation.OperationAwareBean;
+import cn.crane4j.core.executor.OperationAwareBeanOperationExecutor;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.operation.KeyTriggerOperation;
 
 /**
  * <p>An interface that make the target object aware of the operation.<br />
- * It's enhanced on the basis of {@link OperationAware} and supports awareness more arguments.
+ * It's enhanced on the basis of {@link OperationAwareBean} and supports awareness more arguments.
  *
  * @author huangchengxing
- * @see cn.crane4j.core.executor.OperationAwareBeanOperationExecutor
+ * @see OperationAwareBeanOperationExecutor
  * @since 2.5.0
  */
-public interface SmartOperationAware extends OperationAware {
+public interface SmartOperationAwareBean extends OperationAwareBean {
 
     /**
      * Whether the target object supports the specified operation.

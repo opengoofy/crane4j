@@ -60,6 +60,7 @@ public class OneToOneAssembleOperationHandler
             UnaryOperator<Object> keyExtractor = getKeyExtractor(execution);
             execution.getTargets().stream()
                 .map(t -> createTarget(execution, t, keyExtractor.apply(t)))
+                .filter(t -> !ignoreNullKey || Objects.nonNull(t.getKey()))
                 .forEach(targets::add);
         }
         return targets;

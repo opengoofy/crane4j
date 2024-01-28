@@ -129,7 +129,8 @@ public class Demo3Application implements ApplicationRunner {
 @Data
 private static class Foo {
     @AssembleEnum(
-        type = Gender.class, enumKey = "code", 
+        type = Gender.class, 
+        enums = @ContainerEnum(key = "code"), 
         props = @Mapping(ref = "cnName")
     )
     private final Integer id;
@@ -147,13 +148,16 @@ private enum Gender {
 }
 ```
 
-`@AssembleEnum` 注解提供了一些与 `@ContainerEnum` 相同的可选项：
+你可以通过 `enums` 设置一个 `@ContainerEnum`，其配置效果与在枚举类似添加 `@ContainerEnum` 完全一样。
+
+此外，如果你的枚举类已经有 `@ContainerEnum` 注解了，那么你可以通过 `followTypeConfig` 选项决定是否要优先遵循枚举类上的注解配置。
+
+`@AssembleEnum` 注解共提供下述可选项：
 
 | API                | 作用                                     | 类型                                                         | 默认值                       |
 | ------------------ | ---------------------------------------- | ------------------------------------------------------------ | ---------------------------- |
 | `type`             | 指定枚举类型                             | 枚举类                                                       | 无，与 `typeName` 二选一必填 |
 | `typeName`         | 指定枚举类型                             | 枚举类的全限定名<br />一般在枚举类与实体类不在同一包中时使用 | 无，与 `type` 二选一必填     |
-| `enumKey`          | 数据源的 key 值                          | 枚举类的属性值，同 `@ContainerEnum#key`                      | 枚举对象的 `Enum#name`       |
-| `enumValue`        | 数据源的 value 值                        | 枚举类的属性值，同 `@ContainerEnum#value`                    | 枚举对象本身                 |
-| `useContainerEnum` | 是否遵循枚举类上的 `@ContainerEnum` 注解 | 为 true 时，若枚举类上存在 `@ContainerEnum` 注解，则优先使该注解的配置 | true                         |
+| `enums`            | 枚举容器配置                             | `@ContainerEnum` 注解                                        | 空                           |
+| `followTypeConfig` | 是否遵循枚举类上的 `@ContainerEnum` 注解 | 为 true 时，若枚举类上存在 `@ContainerEnum` 注解，则优先使该注解的配置 | true                         |
 | `ref`              | 指定填充字段                             | 等效于 `props = @Mapping(ref = "xxx")`                       | 无                           |

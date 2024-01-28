@@ -81,7 +81,7 @@ const sidebarConfig = [
         children: [
             { title: '缓存', path: "/advanced/cache.md"},
             { title: '组合注解', path: "/advanced/combination_annotation.md"},
-            { title: '容器的生命周期', path: "/advanced/container_lifecycle.md"},
+            { title: '组件的回调接口', path: "/advanced/callback_of_component.md"},
             { title: '注解处理器', path: "/advanced/operation_annotation_handler.md"},
             { title: '使用抽象方法填充', path: "/advanced/operator_interface.md"},
             { title: '反射工厂', path: "/advanced/reflection_factory.md"},
