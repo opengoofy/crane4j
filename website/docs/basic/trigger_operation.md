@@ -192,7 +192,8 @@ public List<Foo> getFoo(Integer type) {
 
 :::tip
 
-关于执行器，请参照 "[基本概念](./../user_guide/basic_concept.md)" 一节中执行器部分内容。
+- 关于执行器，请参照 "[基本概念](./../user_guide/basic_concept.md)" 一节中执行器部分内容。
+- 关于如何使用异步执行器，请参见：[异步填充](./../advanced/async_executor.md)一节。
 
 :::
 

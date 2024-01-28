@@ -15,7 +15,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -36,6 +40,7 @@ public class AsyncBeanOperationExecutorTest extends BaseExecutorTest {
             1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>()
         );
         operationExecutor = new AsyncBeanOperationExecutor(configuration, executor);
+        operationExecutor.setBatchSize(5);
 
         Map<Integer, Object> sources = new HashMap<>();
         sources.put(1, new Source(1, "one"));

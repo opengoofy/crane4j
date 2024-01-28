@@ -36,7 +36,7 @@ public class AsyncBeanOperationExecutor extends DisorderedBeanOperationExecutor 
      * @param executor thread pool used to perform operations
      */
     public AsyncBeanOperationExecutor(
-            ContainerManager containerManager, Executor executor) {
+        ContainerManager containerManager, Executor executor) {
         super(containerManager);
         this.executor = executor;
     }

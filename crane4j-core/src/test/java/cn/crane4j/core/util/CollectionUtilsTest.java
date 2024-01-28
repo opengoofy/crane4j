@@ -3,7 +3,14 @@ package cn.crane4j.core.util;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * test for {@link CollectionUtils}
@@ -11,6 +18,24 @@ import java.util.*;
  * @author huangchengxing
  */
 public class CollectionUtilsTest {
+
+    @Test
+    public void split() {
+        Assert.assertThrows(IllegalArgumentException.class, () -> CollectionUtils.split(Collections.emptyList(), -1));
+        Assert.assertEquals(Collections.emptyList(), CollectionUtils.split(null, 1));
+        Assert.assertEquals(Collections.emptyList(), CollectionUtils.split(Collections.emptyList(), 1));
+
+        List<Integer> list = Arrays.asList(1, 2, 3, 4, 5);
+        List<Collection<Integer>> splitList = CollectionUtils.split(list, 2);
+        Assert.assertEquals(3, splitList.size());
+        Assert.assertEquals(2, splitList.get(0).size());
+        Assert.assertEquals(2, splitList.get(1).size());
+        Assert.assertEquals(1, splitList.get(2).size());
+
+        splitList = CollectionUtils.split(list, 5);
+        Assert.assertEquals(1, splitList.size());
+        Assert.assertEquals(list, splitList.get(0));
+    }
 
     @Test
     public void getFirstNotNull() {
