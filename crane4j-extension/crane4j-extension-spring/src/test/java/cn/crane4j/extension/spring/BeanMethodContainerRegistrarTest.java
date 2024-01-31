@@ -92,13 +92,13 @@ public class BeanMethodContainerRegistrarTest {
 
     @SuppressWarnings("all")
     // 若不指定bind则无法正确找到对应方法
-    @ContainerMethod(namespace = "noneResultMethod", type = MappingType.MAPPED, resultType = Foo.class)
+    @ContainerMethod(namespace = "noneResultMethod", type = MappingType.NO_MAPPING, resultType = Foo.class)
     // 通过类注解声明父类中的容器方法
     @ContainerMethod(
-        namespace = "noneResultMethod", type = MappingType.MAPPED, resultType = Foo.class, bindMethod = "noneResultMethod"
+        namespace = "noneResultMethod", type = MappingType.NO_MAPPING, resultType = Foo.class, bindMethod = "noneResultMethod"
     )
     @ContainerMethod(
-        namespace = "mappedMethod", type = MappingType.MAPPED, resultType = Foo.class
+        namespace = "mappedMethod", type = MappingType.NO_MAPPING, resultType = Foo.class
     )
     protected static class Service extends BaseService {
         @ContainerMethod(namespace = "onoToOneMethod", type = MappingType.ONE_TO_ONE, resultType = Foo.class)
