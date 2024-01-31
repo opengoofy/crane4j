@@ -15,9 +15,9 @@ import java.util.Map;
  * The annotated method needs to meet the following requirements：
  * <ul>
  *     <li>method must have a return value;</li>
- *     <li>If {@link #type()} is {@link MappingType#MAPPED}, the return value type must be {@link Map};</li>
+ *     <li>If {@link #type()} is {@link MappingType#NO_MAPPING}, the return value type must be {@link Map};</li>
  *     <li>
- *         If {@link #type()} is not {@link MappingType#MAPPED},
+ *         If {@link #type()} is not {@link MappingType#NO_MAPPING},
  *         the return value can be a single object, array or {@link Collection};
  *     </li>
  * </ul>
@@ -79,7 +79,7 @@ public @interface ContainerMethod {
 
     /**
      * The key field of the data source object returned by the method.<br />
-     * If {@link #type()} is {@link MappingType#MAPPED} or specified to a primitive type (or it's wrapper type),
+     * If {@link #type()} is {@link MappingType#NO_MAPPING} or {@link MappingType#ORDER_OF_KEYS},
      * this parameter is ignored.
      *
      * @return key field name
@@ -88,7 +88,7 @@ public @interface ContainerMethod {
 
     /**
      * Data source object type returned by method.<br />
-     * If {@link #type()} is {@link MappingType#MAPPED} or specified to a primitive type (or it's wrapper type),
+     * If {@link #type()} is {@link MappingType#NO_MAPPING} or {@link MappingType#ORDER_OF_KEYS},
      * this parameter is ignored.
      *
      * @return type

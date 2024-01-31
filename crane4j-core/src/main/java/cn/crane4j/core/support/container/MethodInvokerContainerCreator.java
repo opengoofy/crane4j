@@ -89,10 +89,10 @@ public class MethodInvokerContainerCreator {
         methodInvoker = wrapInvokerIfNecessary(methodInvoker, method);
         namespace = getNamespace(method, namespace);
         MethodInvokerContainer container;
-        if (mappingType == MappingType.MAPPED) {
-            container = doCreateMappedContainer(target, methodInvoker, method, namespace);
-        } else if (mappingType == MappingType.NONE) {
-            container = doCreateNoneMappingContainer(target, methodInvoker, method, namespace);
+        if (mappingType == MappingType.NO_MAPPING || mappingType == MappingType.MAPPED) {
+            container = doCreateNoMappingContainer(target, methodInvoker, method, namespace);
+        } else if (mappingType == MappingType.ORDER_OF_KEYS || mappingType == MappingType.NONE) {
+            container = doCreateOrderOfKeysContainer(target, methodInvoker, method, namespace);
         } else if (mappingType == MappingType.ONE_TO_ONE) {
             container = doCreateOneToOneContainer(
                 target, methodInvoker, method, namespace, resultType, resultKey, duplicateStrategy);
@@ -125,18 +125,18 @@ public class MethodInvokerContainerCreator {
         return methodInvoker;
     }
 
-    protected MethodInvokerContainer doCreateMappedContainer(
+    protected MethodInvokerContainer doCreateNoMappingContainer(
         @Nullable Object target, MethodInvoker methodInvoker, @Nullable Method method, String namespace) {
         if (Objects.nonNull(method)) {
             Asserts.isTrue(
                 Map.class.isAssignableFrom(method.getReturnType()),
-                "method [{}] must return a map type when mapping type is [{}]", method, MappingType.MAPPED
+                "method [{}] must return a map type when mapping type is [{}]", method, MappingType.NO_MAPPING
             );
         }
         return MethodInvokerContainer.create(namespace, methodInvoker, target, true);
     }
 
-    protected MethodInvokerContainer doCreateNoneMappingContainer(
+    protected MethodInvokerContainer doCreateOrderOfKeysContainer(
         @Nullable Object target, MethodInvoker methodInvoker, @Nullable Method method, String namespace) {
         return MethodInvokerContainer.create(namespace, methodInvoker, target, false);
     }

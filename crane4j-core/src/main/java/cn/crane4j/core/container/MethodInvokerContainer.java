@@ -62,13 +62,13 @@ public class MethodInvokerContainer implements Container<Object> {
      * @param namespace namespace
      * @param methodInvoker method to call
      * @param target object to be called, if the method is static, it can be null
-     * @param isMapped {@link MappingType#MAPPED}
+     * @param isMapped {@link MappingType#NO_MAPPING}
      * @return {@link MethodInvokerContainer}
      * @since 2.4.0
      */
     public static MethodInvokerContainer create(
         String namespace, MethodInvoker methodInvoker, @Nullable Object target, boolean isMapped) {
-        return isMapped ? new MethodInvokerContainer.Mapped(namespace, methodInvoker, target)
+        return isMapped ? new NoMapping(namespace, methodInvoker, target)
             : new MethodInvokerContainer(namespace, methodInvoker, target);
     }
 
@@ -150,13 +150,13 @@ public class MethodInvokerContainer implements Container<Object> {
     }
 
     /**
-     * {@link MappingType#MAPPED}
+     * {@link MappingType#NO_MAPPING}
      *
      * @since 2.4.0
      */
-    protected static class Mapped extends MethodInvokerContainer {
+    protected static class NoMapping extends MethodInvokerContainer {
 
-        public Mapped(String namespace, MethodInvoker methodInvoker, @Nullable Object target) {
+        public NoMapping(String namespace, MethodInvoker methodInvoker, @Nullable Object target) {
             super(namespace, methodInvoker, target);
         }
 

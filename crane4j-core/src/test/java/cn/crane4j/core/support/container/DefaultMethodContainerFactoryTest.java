@@ -204,15 +204,15 @@ public class DefaultMethodContainerFactoryTest {
 
     private class ServiceImpl implements Service {
 
-        @ContainerMethod(namespace = "noneMappedMethod", type = MappingType.NONE)
+        @ContainerMethod(namespace = "noneMappedMethod", type = MappingType.ORDER_OF_KEYS)
         public String noneMappedMethod(String arg) {
             return arg;
         }
 
-        @ContainerMethod(namespace = "noneResultMethod", type = MappingType.MAPPED, resultType = Foo.class)
+        @ContainerMethod(namespace = "noneResultMethod", type = MappingType.NO_MAPPING, resultType = Foo.class)
         public void noneResultMethod() { }
 
-        @ContainerMethod(namespace = "mappedMethod", type = MappingType.MAPPED, resultType = Foo.class)
+        @ContainerMethod(namespace = "mappedMethod", type = MappingType.NO_MAPPING, resultType = Foo.class)
         public Map<String, Foo> mappedMethod(List<String> args) {
             return Stream.of(foo1, foo2).collect(Collectors.toMap(Foo::getId, Function.identity()));
         }

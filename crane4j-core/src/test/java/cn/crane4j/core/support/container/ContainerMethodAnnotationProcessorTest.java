@@ -91,14 +91,14 @@ public class ContainerMethodAnnotationProcessorTest {
         }
     }
 
-    @ContainerMethod(namespace = "noneResultMethod", type = MappingType.MAPPED, resultType = Foo.class)
+    @ContainerMethod(namespace = "noneResultMethod", type = MappingType.NO_MAPPING, resultType = Foo.class)
     // 通过类注解声明父类中的容器方法
     @ContainerMethod(
-        namespace = "noneResultMethod", type = MappingType.MAPPED, resultType = Foo.class,
+        namespace = "noneResultMethod", type = MappingType.NO_MAPPING, resultType = Foo.class,
         bindMethod = "noneResultMethod"
     )
     @ContainerMethod(
-        namespace = "mappedMethod", type = MappingType.MAPPED, resultType = Foo.class,
+        namespace = "mappedMethod", type = MappingType.NO_MAPPING, resultType = Foo.class,
         bindMethod = "mappedMethod", bindMethodParamTypes = List.class
     )
     protected static class Service extends BaseService {

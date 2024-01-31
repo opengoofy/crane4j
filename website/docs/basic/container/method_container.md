@@ -77,8 +77,8 @@ public class ChildClass extends SuperClass {}
 | ------------------------- | ----------------------------------------- | ----------------------- | ------------------------------------------------------------ |
 | `MappingType.ONE_TO_ONE`  | 按 key 值一对一分组                       | `Map<key, value>`       | 默认                                                         |
 | `MappingType.ONE_TO_MANY` | 按 key 值一对多分组                       | `Map<key, List<value>>` | 一个 key 对应多个值<br />比如一个 `classId` 对应多个 `Student` |
-| `MappingType.MAPPED`      | 返回值已经是分组后的 `Map` 集合，无需分组 | 原始的方法返回值        | 当返回值已经是 `Map` 时                                      |
-| `MappingType.NONE`        | 将输入的 key 值与结果按顺序合并           | `Map<key, value>`       | 方法的返回值是 String 或基础数据类型（及其包装类）的时候     |
+| `MappingType.NO_MAPPING`      | 返回值已经是分组后的 `Map` 集合，无需分组 | 原始的方法返回值        | 当返回值已经是 `Map` 时                                      |
+| `MappingType.ORDER_OF_KEYS`        | 将输入的 key 值与结果按顺序合并           | `Map<key, value>`       | 方法的返回值是 String 或基础数据类型（及其包装类）的时候     |
 
 下面是它们的一些使用场景，你可以参照着理解一下：
 
@@ -100,20 +100,20 @@ public List<User> listUserByIds(List<Integer> ids);  // 查询用户，并按用
 )
 public List<User> listUserByDeptId(List<Integer> deptIds); // 查询用户，并按用户的所属部门 ID 一对多分组
 
-// ========== MappingType.MAPPED ==========
+// ========== MappingType.NO_MAPPING ==========
 
-@ContainerMethod(namespace = "userName", type = MappingType.MAPPED)
+@ContainerMethod(namespace = "userName", type = MappingType.NO_MAPPING)
 public Map<Integer, User> listUserMapByIds(List<Integer> ids); // 查询结果集已经分好组了
 
-@ContainerMethod(namespace = "userName", type = MappingType.MAPPED)
+@ContainerMethod(namespace = "userName", type = MappingType.NO_MAPPING)
 public Map<Integer, List<User>> listUserByDeptIds(List<Integer> deptIds);
 
-// ========== MappingType.NONE ==========
+// ========== MappingType.ORDER_OF_KEYS ==========
 
-@ContainerMethod(namespace = "userName", type = MappingType.NONE)
+@ContainerMethod(namespace = "userName", type = MappingType.ORDER_OF_KEYS)
 public String getUserNameById(Integer id);  // 查询结果集是 String 类型，无法获取 key 值，因此直接按顺序合并即可
 
-@ContainerMethod(namespace = "userName", type = MappingType.NONE)
+@ContainerMethod(namespace = "userName", type = MappingType.ORDER_OF_KEYS)
 public List<Integer> listUserAgeNameByIds(List<Integer> ids);
 ~~~
 
