@@ -305,3 +305,26 @@
 - [方法缓存希望可以像 Spring 那样，通过注解配置到期时间和刷新](https://gitee.com/opengoofy/crane4j/issues/I8UZSO)；
 - [基于 `@ContainerMethod` 的方法容器，希望返回值可以支持 `String` 或基础数据类型及其包装类](https://gitee.com/opengoofy/crane4j/issues/I8UZH4)；
 - [声明装配操作时是否可以根据条件判断是否应用此次操作？](https://gitee.com/opengoofy/crane4j/issues/I8W0SN)；
+
+## 2.5.0 (2024-02-01)
+
+这是一个功能迭代版本，修复了 crane4j 与 SpringBoot 集成的一些问题，完善了文档与代码注释，并优化了一些功能的使用方式。
+
+具体内容参见：[Milestone](https://github.com/opengoofy/crane4j/milestone/9)。
+
+**Feature**
+
+- [异步执行器支持指定支持指定批量大小，将基于同一数据源的操作分为多个小任务](https://github.com/opengoofy/crane4j/issues/195)；
+- [提供回调接口或组件，用于在具体的填充过程支持一些自定的操作](https://github.com/opengoofy/crane4j/issues/79)；
+- [当需要值到键的映射时，希望可以不需要在注解中指定 props 属性](https://github.com/opengoofy/crane4j/issues/190)；
+- [验证或者支持在更高的 LTS 版本运行](https://github.com/opengoofy/crane4j/issues/11)；
+
+**Refactor**
+
+- [将MappingType枚举中的 `NONE` 与 `MAPPED` 选项分别替换为 `ORDER_OF_KEYS` 和 `NO_MAPPING`](https://github.com/opengoofy/crane4j/issues/197)；
+
+**Fix**
+
+- [与 SpringBoot 项目集成后，启动出现 No ServletContext set 异常](https://gitee.com/opengoofy/crane4j/issues/I8XRVT)；
+- [声明装的配操作支持在实际执行时，根据情况动态决定是否应用](https://gitee.com/opengoofy/crane4j/issues/I8W0SN)；
+- [当 Bean 被代理后，类上的 `@ContainerCache` 注解无法被识别](https://github.com/opengoofy/crane4j/issues/199)；
