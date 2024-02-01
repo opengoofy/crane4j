@@ -5,7 +5,6 @@ import cn.crane4j.annotation.ContainerEnum;
 import cn.crane4j.annotation.ContainerMethod;
 import cn.crane4j.core.cache.CacheDefinition;
 import cn.crane4j.core.cache.CacheManager;
-import cn.crane4j.core.cache.CacheableContainerProcessor;
 import cn.crane4j.core.cache.GuavaCacheManager;
 import cn.crane4j.core.cache.MapCacheManager;
 import cn.crane4j.core.container.ContainerManager;
@@ -71,6 +70,7 @@ import cn.crane4j.extension.spring.BeanMethodContainerRegistrar;
 import cn.crane4j.extension.spring.Crane4jApplicationContext;
 import cn.crane4j.extension.spring.MergedAnnotationFinder;
 import cn.crane4j.extension.spring.ResolvableExpressionEvaluator;
+import cn.crane4j.extension.spring.SpringCacheableContainerProcessor;
 import cn.crane4j.extension.spring.SpringConverterManager;
 import cn.crane4j.extension.spring.SpringParameterNameFinder;
 import cn.crane4j.extension.spring.ValueResolveAssembleAnnotationHandler;
@@ -234,9 +234,9 @@ public class Crane4jAutoConfiguration {
     @Order(2)
     @ConditionalOnMissingBean
     @Bean
-    public CacheableContainerProcessor cacheableContainerProcessor(
-        Crane4jGlobalConfiguration configuration, AnnotationFinder annotationFinder, Properties properties) {
-        CacheableContainerProcessor processor = new CacheableContainerProcessor(configuration, annotationFinder);
+    public SpringCacheableContainerProcessor springCacheableContainerProcessor(
+        Crane4jGlobalConfiguration configuration, Properties properties) {
+        SpringCacheableContainerProcessor processor = new SpringCacheableContainerProcessor(configuration);
         Map<String, CacheDefinition> definitions = properties.getCaches().stream()
             .collect(Collectors.toMap(CacheDefinition::getName, Function.identity()));
         processor.setCacheDefinitionRetriever((d, c) -> definitions.get(c.getNamespace()));
