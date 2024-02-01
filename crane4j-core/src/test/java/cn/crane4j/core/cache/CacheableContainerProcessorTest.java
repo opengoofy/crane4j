@@ -3,7 +3,6 @@ package cn.crane4j.core.cache;
 import cn.crane4j.annotation.ContainerCache;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerDefinition;
-import cn.crane4j.core.support.SimpleAnnotationFinder;
 import cn.crane4j.core.support.SimpleCrane4jGlobalConfiguration;
 import lombok.Getter;
 import org.junit.Assert;
@@ -26,7 +25,7 @@ public class CacheableContainerProcessorTest {
     @Before
     public void init() {
         SimpleCrane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create();
-        processor = new CacheableContainerProcessor(configuration, SimpleAnnotationFinder.INSTANCE);
+        processor = new CacheableContainerProcessor(configuration);
     }
 
     @Test

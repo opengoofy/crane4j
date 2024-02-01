@@ -4,7 +4,6 @@ import cn.crane4j.annotation.ContainerCache;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerDefinition;
 import cn.crane4j.core.container.lifecycle.ContainerLifecycleProcessor;
-import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.util.StringUtils;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +29,6 @@ import java.util.concurrent.TimeUnit;
 public class CacheableContainerProcessor implements ContainerLifecycleProcessor {
 
     private final Crane4jGlobalConfiguration configuration;
-    private final AnnotationFinder annotationFinder;
 
     /**
      * <p>Cache Selector.<br/>
@@ -70,20 +68,24 @@ public class CacheableContainerProcessor implements ContainerLifecycleProcessor 
 
     @Nullable
     private CacheDefinition retrieveCacheDefinition(ContainerDefinition definition, Container<Object> container) {
-        // try retrieve by retriever
         CacheDefinition cacheDefinition = cacheDefinitionRetriever.retrieve(definition, container);
         if (Objects.nonNull(cacheDefinition)) {
             return cacheDefinition;
         }
-        // try resolve from annotation
-        Class<?> containerClass = container.getClass();
-        ContainerCache cacheable = annotationFinder.findAnnotation(containerClass, ContainerCache.class);
-        if (Objects.isNull(cacheable)) {
-            return null;
-        }
-        return new CacheDefinition.Impl(
-            container.getNamespace(), cacheable.cacheManager(),
-            cacheable.expirationTime(), cacheable.timeUnit()
+        return getCacheDefinitionFromContainer(container);
+    }
+
+    /**
+     * Get container class.
+     *
+     * @param container container
+     * @return annotation
+     */
+    protected CacheDefinition getCacheDefinitionFromContainer(Container<Object> container) {
+        ContainerCache annotation = container.getClass().getAnnotation(ContainerCache.class);
+        return Objects.isNull(annotation) ? null : new CacheDefinition.Impl(
+            container.getNamespace(), annotation.cacheManager(),
+            annotation.expirationTime(), annotation.timeUnit()
         );
     }
 
