@@ -94,7 +94,7 @@ public class AssembleEnumAnnotationHandler
     }
 
     /**
-     * Get namespace from annotation.
+     * Get the namespace from annotation.
      *
      * @param annotation annotation
      * @return namespace

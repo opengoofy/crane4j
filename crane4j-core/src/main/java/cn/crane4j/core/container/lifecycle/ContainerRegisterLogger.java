@@ -41,7 +41,7 @@ public class ContainerRegisterLogger implements ContainerLifecycleProcessor {
     }
 
     /**
-     * Callback when container is created but still not cached.
+     * Callback when the container is created but still not cached.
      *
      * @param definition definition of container, if create by {@link ContainerProvider}, definition is {@code null}
      * @param container container
@@ -55,7 +55,7 @@ public class ContainerRegisterLogger implements ContainerLifecycleProcessor {
     }
 
     /**
-     * Callback when container is destroyed.
+     * Callback when the container is destroyed.
      *
      * @param target container instance or container definition
      */

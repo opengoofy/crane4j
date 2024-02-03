@@ -60,7 +60,7 @@ public interface AssembleOperation extends KeyTriggerOperation {
     void setKeyType(Class<?> keyType);
 
     /**
-     * Get namespace of data source container.
+     * Get the namespace of data source container.
      *
      * @return container
      */

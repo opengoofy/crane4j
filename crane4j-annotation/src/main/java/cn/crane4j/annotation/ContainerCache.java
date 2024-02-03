@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
  * or a class which implements {@link cn.crane4j.core.container.Container} interface.
  *
  * <p>The actual cache implementation is determined by what cache manager is specified in the annotation,
- * when container is created, the cache factory will be used to create a cache instance,
+ * when the container is created, the cache factory will be used to create a cache instance,
  * and wrap the container with {@link cn.crane4j.core.cache.CacheableContainer}.
  *
  * @author huangchengxing

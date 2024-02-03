@@ -35,7 +35,8 @@ import java.util.Map;
  * <p>When processing {@link AssembleMethod} annotation,
  * it will create a {@link Container} for method which specified by {@link ContainerMethod},
  * and then register the {@link Container} to {@link #internalContainerProvider}.<br />
- * The target of method will be created by {@link #getTargetInstance}, by default it will create a new instance of target class.
+ * The target of method will be created by {@link #getTargetInstance},
+ * by default, it will create a new instance of target class.
  *
  * @author huangchengxing
  * @see AssembleMethod

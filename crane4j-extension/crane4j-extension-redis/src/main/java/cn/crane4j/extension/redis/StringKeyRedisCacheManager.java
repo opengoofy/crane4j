@@ -53,7 +53,7 @@ public class StringKeyRedisCacheManager extends AbstractRedisCacheManager<String
     }
 
     /**
-     * Get cache key which is used to store cache value in redis.
+     * Get the cache key which is used to store cache value in redis.
      *
      * @param cacheName cache name
      * @param key       cache key

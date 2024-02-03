@@ -96,14 +96,14 @@ public interface Container<K> {
     interface Lifecycle {
 
         /**
-         * Callback when container created.
+         * Callback when the container created.
          */
         default void init() {
             // do nothing
         }
 
         /**
-         * Callback when container destroyed.
+         * Callback when the container destroyed.
          */
         default void destroy() {
             // do nothing

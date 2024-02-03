@@ -60,7 +60,7 @@ public @interface AssembleMp {
 
 
     /**
-     * <p>Field name of key.<br />
+     * <p>key field name.<br />
      * This field value will be used to obtain the associated
      * data source object from the data source container later.
      *
@@ -81,7 +81,7 @@ public @interface AssembleMp {
      *     </li>
      * </ul>
      *
-     * @return field name of key
+     * @return key field name
      */
     String key() default "";
 
@@ -151,7 +151,7 @@ public @interface AssembleMp {
     String[] groups() default {};
 
     /**
-     * Get name of property mapping strategy.
+     * Get the name of property mapping strategy.
      *
      * @return strategy name
      * @see cn.crane4j.core.parser.handler.strategy.PropertyMappingStrategy

@@ -156,7 +156,7 @@ public class MethodInvokerContainerCreator {
     }
 
     /**
-     * Get namespace of method container.
+     * Get the namespace of method container.
      *
      * @param target target, if the method is static, it can be null
      * @param method method
@@ -202,7 +202,7 @@ public class MethodInvokerContainerCreator {
     }
 
     /**
-     * Get namespace from method.
+     * Get the namespace from method.
      *
      * @param method     method
      * @param namespace  namespace

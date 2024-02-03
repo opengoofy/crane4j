@@ -14,7 +14,7 @@ import java.util.function.Predicate;
 
 /**
  * <p>Bean operation executor, used to perform disassembly operations,
- * encapsulate the assembly operations to be performed and target objects into {@link AssembleExecution},
+ * encapsulates the assembly operations to be performed and target objects into {@link AssembleExecution},
  * and then distribute them to {@link AssembleOperationHandler} for execution.
  *
  * @author huangchengxing

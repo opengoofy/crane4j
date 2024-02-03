@@ -88,7 +88,7 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
     }
 
     /**
-     * Resolve operations from type
+     * Resolve operations from element.
      *
      * @param parser parser
      * @param beanOperations bean operations to be handler

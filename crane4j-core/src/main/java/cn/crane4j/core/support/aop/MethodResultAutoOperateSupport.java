@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * <p>Support class for completing the operation for result of method which annotated by {@link AutoOperate}.
+ * <p>Support class for completing the operation for the result of method which annotated by {@link AutoOperate}.
  *
  * <p>Before the method is called, the method return type will be resolved
  * to {@link AutoOperateAnnotatedElement} by {@link AutoOperateAnnotatedElement} and cached.<br />

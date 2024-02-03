@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A standard implementation of {@link AbstractQueryContainerProvider}.
- * provides the ability that generate query container by the specified namespace
+ * provides the ability to generate query container by the specified namespace
  * and generate namespace by the specified query information.
  *
  * @author huangchengxing

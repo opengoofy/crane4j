@@ -20,7 +20,7 @@ import java.util.Objects;
  * this method also supports configuration through annotations.
  *
  * <p>for performance reasons, when get data from container,
- * it always returns all data which set in the creation time.
+ * it always returns all data that set in the creation time.
  * and data will not be updated after the container is created.
  *
  * @param <K> key type

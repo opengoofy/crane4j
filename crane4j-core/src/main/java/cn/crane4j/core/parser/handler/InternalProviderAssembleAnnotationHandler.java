@@ -78,7 +78,7 @@ public abstract class InternalProviderAssembleAnnotationHandler<T extends Annota
     @Override
     protected String getContainerNamespace(T annotation) {
         String namespace = determineNamespace(annotation);
-        // only create when container not exist
+        // only create when the container not exist
         if (!internalContainerProvider.containsContainer(namespace)) {
             Container<Object> container = createContainer(annotation, namespace);
             Asserts.isNotNull(
@@ -120,7 +120,7 @@ public abstract class InternalProviderAssembleAnnotationHandler<T extends Annota
     }
 
     /**
-     * Get name of internal container provider.
+     * Get the name of internal container provider.
      *
      * @return provider name
      */

@@ -60,7 +60,7 @@ public class DisassembleAnnotationHandler implements OperationAnnotationHandler 
     }
 
     /**
-     * Resolve operations from type
+     * Resolve operations from element.
      *
      * @param parser         parser
      * @param beanOperations bean operations to be handler

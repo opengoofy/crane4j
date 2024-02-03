@@ -41,7 +41,7 @@ public class CacheableContainerProcessor implements ContainerLifecycleProcessor 
     private CacheDefinitionRetriever cacheDefinitionRetriever = (definition, container) -> null;
 
     /**
-     * Callback when container is created.
+     * Callback when the container is created.
      *
      * @param definition definition of container
      * @param container  container

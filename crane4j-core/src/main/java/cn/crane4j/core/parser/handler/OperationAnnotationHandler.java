@@ -11,7 +11,7 @@ import cn.crane4j.core.support.Sorted;
  * <p>A handler that resolves {@link AssembleOperation} or {@link DisassembleOperation}
  * from annotation on the element to {@link BeanOperations#getSource()}.
  *
- * <p>Generally, a handler typically only resolve one or two specific annotations from the element,
+ * <p>Generally, a handler typically only resolves the specific annotation from the element,
  * for example, {@link AssembleAnnotationHandler} resolve {@link AssembleOperation} from the element.
  * {@link TypeHierarchyBeanOperationParser} will hold multiple resolvers to resolve different annotations.
  *
@@ -28,7 +28,7 @@ import cn.crane4j.core.support.Sorted;
 public interface OperationAnnotationHandler extends Sorted {
 
     /**
-     * Resolve operations from type.
+     * Resolve operations from element.
      *
      * @param parser parser
      * @param beanOperations bean operations to be handler

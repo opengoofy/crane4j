@@ -30,7 +30,7 @@ public interface ContainerDefinition {
     }
 
     /**
-     * Get namespace of container
+     * Get the namespace of container
      *
      * @return namespace
      */

@@ -218,7 +218,7 @@ public class DefaultContainerManager implements ContainerManager {
 
     /**
      * <p>Create container comparator by given {@link CacheKey}.<br/>
-     * if definition is null, then try to create and register definition by provider based factory method first,
+     * if definition is null, then try to create and register definition by provider-based factory method first,
      * then create and cache container comparator.
      * 
      * <p>It may lock {@link #containerMap}.
@@ -238,8 +238,8 @@ public class DefaultContainerManager implements ContainerManager {
     }
 
     /**
-     * <p>Create definition by provider based factory method.<br/>
-     * if namespace is not belong to any container which has specified provider, then return null.
+     * <p>Create definition by provider-based factory method.<br/>
+     * if namespace is not belonged to any container that has a specified provider, then return null.
      *
      * @param cacheKey namespace
      * @return container definition
@@ -253,7 +253,7 @@ public class DefaultContainerManager implements ContainerManager {
         }
 
         // the container need create from provider,
-        // try to create and register definition by provider based factory method
+        // try to create and register definition by provider-based factory method
         CacheKey key = (CacheKey) cacheKey;
         ContainerProvider containerProvider = getContainerProvider(key.getProviderName());
         if (Objects.isNull(containerProvider)) {
@@ -269,7 +269,7 @@ public class DefaultContainerManager implements ContainerManager {
     }
 
     /**
-     * Get cache key for container comparator.
+     * Get the cache key for container comparator.
      *
      * @param namespace namespace of container,
      *                   which can also be the cache name for the container comparator.

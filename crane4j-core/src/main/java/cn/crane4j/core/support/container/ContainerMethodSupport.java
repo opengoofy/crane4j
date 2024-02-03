@@ -117,7 +117,7 @@ public abstract class ContainerMethodSupport {
     protected Method findMostMatchMethod(@NonNull List<Method> candidates, @NonNull Class<?>[] expectedTypes) {
         // record the number of matched parameter types for each method:
         // n < 0: no match
-        // n == 0: match but method has no parameter
+        // n == 0: match, but the method has no parameter
         // n > 0: match and the parameter type is the same as expected
         int[] matchCounts = new int[candidates.size()];
         Arrays.fill(matchCounts, 0);

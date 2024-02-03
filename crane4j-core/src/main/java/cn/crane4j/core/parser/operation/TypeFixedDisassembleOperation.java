@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NonNull;
 
 /**
- * <p>The {@link DisassembleOperation} implementation that express the disassemble operation of data from fixed type.
+ * <p>The {@link DisassembleOperation} implementation that express the disassemble operation of data from a fixed type.
  *
  * @author huangchengxing
  */

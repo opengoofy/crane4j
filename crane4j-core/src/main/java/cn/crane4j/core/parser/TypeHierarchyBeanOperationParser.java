@@ -61,12 +61,12 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
     protected final Map<AnnotatedElement, BeanOperations> currentlyInParsing = new LinkedHashMap<>(8);
     
     /**
-     * temp cache for operations of resolved element where in type hierarchy.
+     * temp cache for operations of a resolved element where in type hierarchy.
      */
     protected final Map<AnnotatedElement, BeanOperations> resolvedHierarchyElements = CollectionUtils.newWeakConcurrentMap();
 
     /**
-     *  finally cache for operations of resolved element.
+     *  cache for operations of a resolved element.
      */
     protected final Map<AnnotatedElement, BeanOperations> resolvedElements = new ConcurrentHashMap<>(64);
 
@@ -76,7 +76,7 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
     protected List<OperationAnnotationHandler> operationAnnotationHandlers = new ArrayList<>(5);
 
     /**
-     * Whether to cache hierarchy operation info of element.
+     * Whether to cache hierarchy operation info of an element.
      *
      * @see #resolvedHierarchyElements
      */
@@ -166,11 +166,11 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
         // collected resolve operation from hierarchy of source
         Collection<BeanOperations> resolvedOperations;
         if (source instanceof Class) {
-            // parse from type hierarchy
+            // parse from the type hierarchy
             resolvedOperations = doParseForType((Class<?>)source);
         }
         else if (source instanceof Method){
-            // parse method and overwrite method from type hierarchy
+            // parse method and overwrite method from the type hierarchy
             resolvedOperations = doParseForMethod((Method)source);
         }
         else {
@@ -248,7 +248,7 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
      * Parse {@link BeanOperations} from {@code source} if necessary.
      *
      * @param source source
-     * @return operations from source, may come from cache
+     * @return operations from source, it may come from cache
      */
     protected final BeanOperations resolveToOperations(AnnotatedElement source) {
         if (enableHierarchyCache) {
