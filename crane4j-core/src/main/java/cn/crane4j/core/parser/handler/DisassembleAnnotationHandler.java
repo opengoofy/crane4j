@@ -6,6 +6,7 @@ import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.operation.DisassembleOperation;
 import cn.crane4j.core.parser.operation.KeyTriggerOperation;
+import cn.crane4j.core.parser.operation.SimpleKeyTriggerOperation;
 import cn.crane4j.core.parser.operation.TypeDynamitedDisassembleOperation;
 import cn.crane4j.core.parser.operation.TypeFixedDisassembleOperation;
 import cn.crane4j.core.support.AnnotationFinder;
@@ -14,6 +15,7 @@ import cn.crane4j.core.support.Crane4jGlobalSorter;
 import cn.crane4j.core.support.Sorted;
 import cn.crane4j.core.util.ClassUtils;
 import cn.crane4j.core.util.ReflectUtils;
+import cn.crane4j.core.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -145,9 +147,27 @@ public class DisassembleAnnotationHandler implements OperationAnnotationHandler 
             );
         }
 
+        String id = parseId(element, annotation);
+        ((SimpleKeyTriggerOperation)operation).setId(id);
+
         // set group
         operation.getGroups().addAll(Arrays.asList(annotation.groups()));
         return operation;
+    }
+
+    /**
+     * Parse id from given {@link AbstractAssembleAnnotationHandler.StandardAnnotation}.
+     *
+     * @param element element
+     * @param annotation standard annotation
+     * @return id
+     * @since 2.6.0
+     */
+    protected String parseId(
+        AnnotatedElement element, Disassemble annotation) {
+        return StringUtils.emptyToDefault(
+            annotation.id(), String.valueOf(annotation.hashCode())
+        );
     }
 
     /**

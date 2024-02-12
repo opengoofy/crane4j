@@ -66,6 +66,14 @@ public @interface AssembleEnum {
     // ================= common =================
 
     /**
+     * Operation id.
+     *
+     * @return id
+     * @since 2.6.0
+     */
+    String id() default "";
+
+    /**
      * <p>key field name.<br />
      * This field value will be used to obtain the associated
      * data source object from the data source container later.
