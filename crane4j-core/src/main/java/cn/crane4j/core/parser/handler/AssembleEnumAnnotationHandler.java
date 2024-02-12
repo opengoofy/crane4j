@@ -130,7 +130,7 @@ public class AssembleEnumAnnotationHandler
     protected StandardAnnotation getStandardAnnotation(
         BeanOperations beanOperations, AnnotatedElement element, AssembleEnum annotation) {
         return new StandardAnnotationAdapter(
-            annotation, annotation.key(), annotation.keyType(), annotation.sort(),
+            annotation, annotation.id(), annotation.key(), annotation.keyType(), annotation.sort(),
             annotation.handler(), annotation.handlerType(),
             annotation.propTemplates(), annotation.props(), annotation.groups(),
             annotation.propertyMappingStrategy()

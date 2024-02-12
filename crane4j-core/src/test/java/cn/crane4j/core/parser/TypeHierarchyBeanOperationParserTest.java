@@ -115,6 +115,7 @@ public class TypeHierarchyBeanOperationParserTest {
             System.out.println(bean.getKey());
             System.out.println(disassembles);
         }
+        Assert.assertEquals(bean.getId(), bean.getKey());
         Assert.assertTrue(bean instanceof TypeFixedDisassembleOperation);
         Assert.assertEquals("bean", bean.getKey());
         Assert.assertEquals(NestedBean.class, bean.getSourceType());
@@ -135,9 +136,10 @@ public class TypeHierarchyBeanOperationParserTest {
         Assert.assertSame(nestedBeanOperations, dynamicBean.getInternalBeanOperations(new NestedBean<>()));
     }
 
-    private void checkAssembleOperation(AssembleOperation assembleOperation, String id, int supSort) {
+    private void checkAssembleOperation(AssembleOperation assembleOperation, String key, int supSort) {
+        Assert.assertEquals(key, assembleOperation.getId());
         Assert.assertNotNull(assembleOperation);
-        Assert.assertEquals(id, assembleOperation.getKey());
+        Assert.assertEquals(key, assembleOperation.getKey());
         Assert.assertSame(configuration.getAssembleOperationHandler(OneToOneAssembleOperationHandler.class), assembleOperation.getAssembleOperationHandler());
         Assert.assertEquals(CONTAINER.getNamespace(), assembleOperation.getContainer());
         Assert.assertEquals(supSort, assembleOperation.getSort());
@@ -163,6 +165,7 @@ public class TypeHierarchyBeanOperationParserTest {
     @SuppressWarnings("unused")
     private static class BaseBean {
         @Assemble(
+            id = "id",
             container = CONTAINER_NAME,
             groups = GROUP, sort = SUP_SORT,
             props = @Mapping(src = "name", ref = "name")
@@ -180,6 +183,7 @@ public class TypeHierarchyBeanOperationParserTest {
     private static class Bean extends BaseBean {
         // 装配操作
         @Assemble(
+            id = "key",
             container = CONTAINER_NAME, sort = SUB_SORT,
             groups = GROUP,
             props = @Mapping(src = "name", ref = "name")
@@ -188,7 +192,7 @@ public class TypeHierarchyBeanOperationParserTest {
         private String value;
 
         // 拆卸操作，直接指明类型为NestedBean
-        @Disassemble(sort = SUB_SORT, type = NestedBean.class, groups = GROUP)
+        @Disassemble(id = "nestedBean", sort = SUB_SORT, type = NestedBean.class, groups = GROUP)
         private NestedBean<?> nestedBean;
     }
 
@@ -199,15 +203,16 @@ public class TypeHierarchyBeanOperationParserTest {
      * 因此子类的操作会更优先执行
      */
     @Assemble(
+        id = "key",
         key = "key",
         container = CONTAINER_NAME, sort = SUB_SORT,
         groups = GROUP,
         propTemplates = MappingTemp.class
     )
     // 此处嵌套对象类型为确定类型，并且构成循环引用
-    @Disassemble(key = "bean", type = Bean.class, sort = SUB_SORT, groups = GROUP)
+    @Disassemble(id = "bean", key = "bean", type = Bean.class, sort = SUB_SORT, groups = GROUP)
     // 此处嵌套对象类型为无法确定的泛型，故不指定类型而等到执行时再推断
-    @Disassemble(key = "dynamicBean", groups = GROUP)
+    @Disassemble(id = "dynamicBean", key = "dynamicBean", groups = GROUP)
     @SuppressWarnings("unused")
     private static class NestedBean<T> extends BaseBean {
         private String key;

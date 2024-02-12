@@ -86,6 +86,14 @@ import java.lang.annotation.Target;
 public @interface Assemble {
 
     /**
+     * Operation id.
+     *
+     * @return id
+     * @since 2.6.0
+     */
+    String id() default "";
+
+    /**
      * Sort values.
      * The lower the value, the higher the priority.
      *

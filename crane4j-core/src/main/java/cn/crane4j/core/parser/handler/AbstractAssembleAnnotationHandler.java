@@ -148,7 +148,7 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
     protected Set<T> parseAnnotationForClass(Class<?> beanType) {
         return parseAnnotationForElement(beanType);
     }
-    
+
     /**
      * Parse annotation for fields
      *
@@ -178,6 +178,7 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
         StandardAnnotation standardAnnotation = getStandardAnnotation(beanOperations, element, annotation);
 
         // get configuration of standard assemble operation
+        String id = parseId(element, standardAnnotation);
         String key = parseKey(element, standardAnnotation);
         Class<?> keyType = parseKeyType(standardAnnotation, annotation);
         AssembleOperationHandler assembleOperationHandler = parseAssembleOperationHandler(element, standardAnnotation);
@@ -192,7 +193,7 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
         PropertyMappingStrategy propertyMappingStrategy = parserPropertyMappingStrategy(standardAnnotation, annotation);
 
         // create operation
-        AssembleOperation operation = createAssembleOperation(annotation, sort, key, assembleOperationHandler, propertyMappings);
+        AssembleOperation operation = createAssembleOperation(annotation, id, sort, key, assembleOperationHandler, propertyMappings);
         operation.getGroups().addAll(groups);
         operation.setPropertyMappingStrategy(propertyMappingStrategy);
         operation.setKeyType(keyType);
@@ -203,6 +204,7 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
      * Create assemble operation for given {@code annotation}, {@code sort}, {@code key}, {@code assembleOperationHandler} and {@code propertyMappings}
      *
      * @param annotation annotation
+     * @param id id
      * @param sort sort
      * @param key key
      * @param handler assemble operation handler
@@ -210,9 +212,11 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
      * @return {@link AssembleOperation} instance
      */
     protected AssembleOperation createAssembleOperation(
-        T annotation, int sort, String key, AssembleOperationHandler handler, Set<PropertyMapping> propertyMappings) {
+        T annotation, String id, int sort, String key, AssembleOperationHandler handler, Set<PropertyMapping> propertyMappings) {
         String namespace = getContainerNamespace(annotation);
-        return new SimpleAssembleOperation(key, sort, propertyMappings, namespace, handler);
+        SimpleAssembleOperation operation = new SimpleAssembleOperation(key, sort, propertyMappings, namespace, handler);
+        operation.setId(id);
+        return operation;
     }
 
     /**
@@ -238,6 +242,21 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
         BeanOperations beanOperations, AnnotatedElement element, T annotation);
 
     // =============== process standard configuration ===============
+
+    /**
+     * Parse id from given {@link StandardAnnotation}.
+     *
+     * @param element element
+     * @param annotation standard annotation
+     * @return id
+     * @since 2.6.0
+     */
+    protected String parseId(
+        AnnotatedElement element, StandardAnnotation annotation) {
+        return StringUtils.emptyToDefault(
+            annotation.getId(), String.valueOf(annotation.hashCode())
+        );
+    }
 
     /**
      * Get groups from given {@link StandardAnnotation}.
@@ -368,6 +387,14 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
     public interface StandardAnnotation {
 
         /**
+         * The id of the current operation.
+         *
+         * @return id
+         * @since 2.6.0
+         */
+        String getId();
+
+        /**
          * Key field name for query
          *
          * @return key field name
@@ -388,7 +415,7 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
          * @return sort values
          */
         int getSort();
-        
+
         /**
          * The name of the handler to be used.
          *
@@ -419,7 +446,7 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
          * @return attributes mappings
          */
         Mapping[] getProps();
-        
+
         /**
          * The group to which the current operation belongs.
          *
@@ -438,12 +465,13 @@ public abstract class AbstractAssembleAnnotationHandler<T extends Annotation> im
     /**
      * Adapting annotation to {@link StandardAnnotation}
      *
-     * @author huangchengxing 
+     * @author huangchengxing
      */
     @Getter
     @RequiredArgsConstructor
     public static class StandardAnnotationAdapter implements StandardAnnotation {
         private final Annotation annotation;
+        private final String id;
         private final String key;
         private final Class<?> keyType;
         private final int sort;
