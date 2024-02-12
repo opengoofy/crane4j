@@ -99,7 +99,7 @@ public class AssembleMpAnnotationHandler extends AbstractAssembleAnnotationHandl
     protected StandardAnnotation getStandardAnnotation(
         BeanOperations beanOperations, AnnotatedElement element, AssembleMp annotation) {
         return new StandardAnnotationAdapter(
-            annotation, annotation.key(), annotation.keyType(), annotation.sort(),
+            annotation, annotation.id(), annotation.key(), annotation.keyType(), annotation.sort(),
             annotation.handler(), annotation.handlerType(),
             annotation.propTemplates(), annotation.props(), annotation.groups(),
             annotation.propertyMappingStrategy()

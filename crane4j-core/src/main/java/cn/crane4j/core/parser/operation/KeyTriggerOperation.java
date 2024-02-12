@@ -2,6 +2,7 @@ package cn.crane4j.core.parser.operation;
 
 import cn.crane4j.core.support.Grouped;
 import cn.crane4j.core.support.Sorted;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * <p>For operations triggered by a specific key. <br />
@@ -13,6 +14,14 @@ import cn.crane4j.core.support.Sorted;
  */
 public interface KeyTriggerOperation extends Grouped, Sorted {
 
+    /**
+     * Get operation id.
+     *
+     * @return id
+     */
+    @Nullable
+    String getId();
+    
     /**
      * Get key field name.
      *

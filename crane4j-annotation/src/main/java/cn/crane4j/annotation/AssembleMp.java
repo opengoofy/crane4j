@@ -58,6 +58,13 @@ public @interface AssembleMp {
 
     // ================= common =================
 
+    /**
+     * Operation id.
+     *
+     * @return id
+     * @since 2.6.0
+     */
+    String id() default "";
 
     /**
      * <p>key field name.<br />
