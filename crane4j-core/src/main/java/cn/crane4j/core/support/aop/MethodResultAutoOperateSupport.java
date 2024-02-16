@@ -64,9 +64,18 @@ public class MethodResultAutoOperateSupport {
         // get and build method cache
         log.debug("process result for [{}]", method);
         // fix https://gitee.com/opengoofy/crane4j/issues/I82EAC
-        AutoOperateAnnotatedElement element = CollectionUtils.computeIfAbsent(
-            methodCaches, method, m -> elementResolver.resolve(method, annotation)
-        );
+        AutoOperateAnnotatedElement element = CollectionUtils.computeIfAbsent(methodCaches, method, m -> {
+            AutoOperateAnnotatedElement aoe = elementResolver.resolve(m, annotation);
+            if (Objects.isNull(aoe)) {
+                log.warn("cannot apply auto operate for method [{}], because return type [{}] have no operation configuration", m, m.getReturnType());
+                return AutoOperateAnnotatedElement.EMPTY;
+            }
+            return aoe;
+        });
+        // fix https://github.com/opengoofy/crane4j/issues/204
+        if (element == AutoOperateAnnotatedElement.EMPTY) {
+            return;
+        }
         // whether to apply the operation?
         String condition = element.getAnnotation().condition();
         if (support(method, result, args, condition)) {

@@ -87,7 +87,7 @@ public class ClassBasedAutoOperateAnnotatedElementResolver extends AbstractAutoO
             (Class<?>)element : annotation.type();
         BeanOperations beanOperations = parser.parse(type);
         if (beanOperations.isEmpty()) {
-            return AutoOperateAnnotatedElement.EMPTY;
+            return null;
         }
         DefaultAutoOperateAnnotatedElement result = DefaultAutoOperateAnnotatedElement.forStaticTypeOperation(
             annotation, type, extractor, filter, beanOperations, executor

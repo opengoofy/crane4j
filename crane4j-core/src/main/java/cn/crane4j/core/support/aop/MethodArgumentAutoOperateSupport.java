@@ -23,6 +23,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * <p>Support class for completing the operation of data
@@ -81,7 +82,6 @@ public class MethodArgumentAutoOperateSupport {
      * @param args args
      */
     public final void beforeMethodInvoke(Method method, Object[] args) {
-        // has annotation?
         if (ArrayUtils.isEmpty(args)) {
             return;
         }
@@ -125,12 +125,15 @@ public class MethodArgumentAutoOperateSupport {
      * @return operation configuration of method parameters
      */
     protected AutoOperateAnnotatedElement[] resolveParameters(@Nullable ArgAutoOperate argAutoOperate, Method method) {
+        if (method.getParameterCount() < 1) {
+            log.warn("cannot apply auto operate for method [{}], because it has no parameters", method);
+            return EMPTY_ELEMENTS;
+        }
         Map<String, AutoOperate> methodLevelAnnotations = Optional.ofNullable(argAutoOperate)
             .map(ArgAutoOperate::value)
             .map(Arrays::stream)
             .map(s -> s.collect(Collectors.toMap(AutoOperate::value, Function.identity())))
             .orElseGet(Collections::emptyMap);
-
         Map<String, Parameter> parameterMap = ReflectUtils.resolveParameterNames(parameterNameFinder, method);
         AutoOperateAnnotatedElement[] results = new AutoOperateAnnotatedElement[parameterMap.size()];
         int index = 0;
@@ -142,6 +145,10 @@ public class MethodArgumentAutoOperateSupport {
                 .ofNullable(annotationFinder.getAnnotation(param, AutoOperate.class))
                 .orElse(methodLevelAnnotations.get(paramName));
             results[index++] = Objects.isNull(annotation) ? null : elementResolver.resolve(param, annotation);
+        }
+        if (Stream.of(results).allMatch(Objects::isNull)) {
+            log.warn("cannot apply auto operate for method [{}], because all parameters have no operation configuration", method);
+            return EMPTY_ELEMENTS;
         }
         return results;
     }
