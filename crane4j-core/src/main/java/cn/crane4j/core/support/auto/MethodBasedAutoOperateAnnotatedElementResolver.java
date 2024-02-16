@@ -88,7 +88,7 @@ public class MethodBasedAutoOperateAnnotatedElementResolver extends AbstractAuto
         if (!ClassUtils.isObjectOrVoid(annotationSpecifiedType)) {
             BeanOperations beanOperations = parser.parse(annotation.type());
             return beanOperations.isEmpty() ?
-                AutoOperateAnnotatedElement.EMPTY : DefaultAutoOperateAnnotatedElement.forStaticTypeOperation(
+                null : DefaultAutoOperateAnnotatedElement.forStaticTypeOperation(
                 annotation, element, extractor, filter, beanOperations, executor
             );
         }
