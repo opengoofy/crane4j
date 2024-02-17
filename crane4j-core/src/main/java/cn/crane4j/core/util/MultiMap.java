@@ -54,6 +54,16 @@ public interface MultiMap<K, V> {
     }
 
     /**
+     * Get a new empty {@link MultiMap} instance.
+     *
+     * @return a empty {@link MultiMap} instance
+     */
+    @SuppressWarnings("unchecked")
+    static <K, V> MultiMap<K, V> emptyMultiMap() {
+        return EmptyMultiMap.INSTANCE;
+    }
+
+    /**
      * Get the total number of key-value pairs in the map.
      *
      * @return the total number of key-value pairs in the map

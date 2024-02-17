@@ -1,6 +1,7 @@
 package cn.crane4j.core.executor;
 
 import cn.crane4j.annotation.OperationAwareBean;
+import cn.crane4j.core.condition.Condition;
 import cn.crane4j.core.container.ContainerManager;
 import cn.crane4j.core.container.lifecycle.SmartOperationAwareBean;
 import cn.crane4j.core.parser.BeanOperations;
@@ -9,6 +10,8 @@ import cn.crane4j.core.util.MultiMap;
 import lombok.NonNull;
 
 import java.util.Collection;
+import java.util.Objects;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -74,12 +77,22 @@ public abstract class OperationAwareBeanOperationExecutor extends AbstractBeanOp
     @NonNull
     protected <T> Collection<T> filterTargetsForSupportedOperation(
         Collection<T> targets, KeyTriggerOperation operation) {
+        Predicate<T> filter = t -> filterBySupportOperation(t, operation);
+        Condition condition = operation.getCondition();
+        if (Objects.nonNull(condition)) {
+            filter = filter.and(t -> filterByCondition(t, operation, condition));
+        }
         return targets.stream()
-            .filter(t -> support(t, operation))
+            .filter(filter)
             .collect(Collectors.toList());
     }
 
-    private boolean support(Object target, KeyTriggerOperation operation) {
+    private boolean filterByCondition(
+        Object target, KeyTriggerOperation operation, Condition condition) {
+        return condition.test(target, operation);
+    }
+
+    private boolean filterBySupportOperation(Object target, KeyTriggerOperation operation) {
         if (target instanceof OperationAwareBean) {
             boolean support = ((OperationAwareBean)target).supportOperation(operation.getKey());
             if (support && target instanceof SmartOperationAwareBean) {

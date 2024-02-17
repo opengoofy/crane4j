@@ -3,6 +3,9 @@ package cn.crane4j.core.support;
 import cn.crane4j.core.cache.CacheManager;
 import cn.crane4j.core.cache.GuavaCacheManager;
 import cn.crane4j.core.cache.MapCacheManager;
+import cn.crane4j.core.condition.PropertyConditionParser;
+import cn.crane4j.core.condition.PropertyNotEmptyConditionParser;
+import cn.crane4j.core.condition.PropertyNotNullConditionParser;
 import cn.crane4j.core.container.ContainerProvider;
 import cn.crane4j.core.container.DefaultContainerManager;
 import cn.crane4j.core.container.lifecycle.ContainerRegisterLogger;
@@ -16,6 +19,7 @@ import cn.crane4j.core.executor.handler.OneToManyAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.OneToOneAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.ReflectiveDisassembleOperationHandler;
 import cn.crane4j.core.parser.BeanOperationParser;
+import cn.crane4j.core.parser.ConditionalTypeHierarchyBeanOperationParser;
 import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
 import cn.crane4j.core.parser.handler.AssembleAnnotationHandler;
 import cn.crane4j.core.parser.handler.AssembleEnumAnnotationHandler;
@@ -114,7 +118,16 @@ public class SimpleCrane4jGlobalConfiguration extends DefaultContainerManager
         configuration.addPropertyMappingStrategy(OverwriteNotNullMappingStrategy.INSTANCE);
         configuration.addPropertyMappingStrategy(new ReferenceMappingStrategy(operator));
 
-        TypeHierarchyBeanOperationParser beanOperationParser = new TypeHierarchyBeanOperationParser();
+        // operation parser and condition parser
+        ConditionalTypeHierarchyBeanOperationParser beanOperationParser = new ConditionalTypeHierarchyBeanOperationParser();
+        beanOperationParser.registerConditionParser(new PropertyConditionParser(annotationFinder, operator, converter));
+        beanOperationParser.registerConditionParser(new PropertyNotNullConditionParser(annotationFinder, operator));
+        beanOperationParser.registerConditionParser(new PropertyNotEmptyConditionParser(annotationFinder, operator));
+        configuration.getBeanOperationParserMap().put(BeanOperationParser.class.getSimpleName(), beanOperationParser);
+        configuration.getBeanOperationParserMap().put(TypeHierarchyBeanOperationParser.class.getSimpleName(), beanOperationParser);
+        configuration.getBeanOperationParserMap().put(beanOperationParser.getClass().getSimpleName(), beanOperationParser);
+
+        // annotation handler
         AssembleAnnotationHandler assembleAnnotationHandler = new AssembleAnnotationHandler(annotationFinder, configuration, configuration);
         beanOperationParser.addOperationAnnotationHandler(assembleAnnotationHandler);
         AssembleEnumAnnotationHandler assembleEnumAnnotationHandler = new AssembleEnumAnnotationHandler(annotationFinder, configuration, operator, configuration);
@@ -130,10 +143,6 @@ public class SimpleCrane4jGlobalConfiguration extends DefaultContainerManager
             new SimplePropertyMappingStrategyManager()
         );
         beanOperationParser.addOperationAnnotationHandler(annotationHandler);
-
-
-        configuration.getBeanOperationParserMap().put(BeanOperationParser.class.getSimpleName(), beanOperationParser);
-        configuration.getBeanOperationParserMap().put(beanOperationParser.getClass().getSimpleName(), beanOperationParser);
 
         // operation executor
         DisorderedBeanOperationExecutor disorderedBeanOperationExecutor = new DisorderedBeanOperationExecutor(configuration);

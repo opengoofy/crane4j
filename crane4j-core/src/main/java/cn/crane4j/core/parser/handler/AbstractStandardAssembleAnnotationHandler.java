@@ -123,6 +123,7 @@ public abstract class AbstractStandardAssembleAnnotationHandler<A extends Annota
             .key(keyTriggerOperation.getKey())
             .sort(keyTriggerOperation.getSort())
             .groups(keyTriggerOperation.getGroups())
+            .source(keyTriggerOperation.getSource())
             .propertyMappings(propertyMappings)
             .container(namespace)
             .assembleOperationHandler(assembleOperationHandler)

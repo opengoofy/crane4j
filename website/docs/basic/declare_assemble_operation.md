@@ -76,8 +76,14 @@ public class Student {
 
 ```java
 public class UserVO {
-    @Assemble(container = "user_role", props = @Mapping(src = "role", ref = "role"))
-    @Assemble(container = "user", props = @Mapping(src = "name", ref = "name"))
+    @Assemble(
+        id = "assemble_user_role", // 为了便于区分，你可以额外的为其指定一个 id
+    	container = "user_role", props = @Mapping(src = "role", ref = "role")
+    )
+    @Assemble(
+        id = "assemble_user",
+        container = "user", props = @Mapping(src = "name", ref = "name")
+    )
     private Integer id;
     private String name;
     private String role;
@@ -85,6 +91,14 @@ public class UserVO {
 ```
 
 无需担心多次查询数据源的问题，一般情况下，crane4j 会自动帮你合并在同一次操作中对相同数据源容器的调用。
+
+:::tip
+
+在默认情况，id 与 key 字段同名，不同的操作配置可以具备相同的 id。
+
+`id` 属性不是必须的，它主要是作为一个区分标识，便于后续用户为其绑定条件，或在回调方法中获取。关于此部分内容，具体可参见 [设置操作触发条件](./operation_condition.md) 与 [组件的回调接口](./../advanced/callback_of_component.md) 一节。
+
+:::
 
 ## 2.显式指定key类型
 

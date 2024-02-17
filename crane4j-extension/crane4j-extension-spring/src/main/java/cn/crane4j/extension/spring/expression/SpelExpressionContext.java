@@ -2,6 +2,7 @@ package cn.crane4j.extension.spring.expression;
 
 import cn.crane4j.core.support.expression.ExpressionContext;
 import cn.crane4j.core.util.ReflectUtils;
+import lombok.NoArgsConstructor;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 import java.util.Map;
@@ -12,13 +13,8 @@ import java.util.Map;
  * @author huangchengxing
  * @see SpelExpressionEvaluator
  */
+@NoArgsConstructor
 public class SpelExpressionContext extends StandardEvaluationContext implements ExpressionContext {
-
-    /**
-     * Create {@link SpelExpressionContext}
-     */
-    public SpelExpressionContext() {
-    }
 
     /**
      * Create {@link SpelExpressionContext}

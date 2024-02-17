@@ -150,6 +150,7 @@ public abstract class AbstractStandardOperationAnnotationHandler<A extends Annot
             .key(parseKey(element, standardAnnotation))
             .sort(parseSort(element, standardAnnotation))
             .groups(parseGroups(element, standardAnnotation))
+            .source(element)
             .build();
     }
 

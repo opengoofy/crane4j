@@ -1,5 +1,6 @@
 package cn.crane4j.core.parser.operation;
 
+import cn.crane4j.core.condition.Condition;
 import cn.crane4j.core.support.Grouped;
 import cn.crane4j.core.support.Sorted;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -15,9 +16,19 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public interface KeyTriggerOperation extends Grouped, Sorted {
 
     /**
+     * Get configuration source.
+     *
+     * @return source
+     * @since 2.6.0
+     */
+    @Nullable
+    Object getSource();
+
+    /**
      * Get operation id.
      *
      * @return id
+     * @since 2.6.0
      */
     @Nullable
     String getId();
@@ -28,4 +39,20 @@ public interface KeyTriggerOperation extends Grouped, Sorted {
      * @return key field name
      */
     String getKey();
+
+    /**
+     * Get operation predicate.
+     *
+     * @return operation predicate
+     * @since 2.6.0
+     */
+    @Nullable Condition getCondition();
+
+    /**
+     * Set operation predicate.
+     *
+     * @param condition operation predicate
+     * @since 2.6.0
+     */
+    void setCondition(Condition condition);
 }

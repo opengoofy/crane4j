@@ -7,6 +7,11 @@ import cn.crane4j.core.cache.CacheDefinition;
 import cn.crane4j.core.cache.CacheManager;
 import cn.crane4j.core.cache.GuavaCacheManager;
 import cn.crane4j.core.cache.MapCacheManager;
+import cn.crane4j.core.condition.ConditionParser;
+import cn.crane4j.core.condition.ExpressionConditionParser;
+import cn.crane4j.core.condition.PropertyConditionParser;
+import cn.crane4j.core.condition.PropertyNotEmptyConditionParser;
+import cn.crane4j.core.condition.PropertyNotNullConditionParser;
 import cn.crane4j.core.container.ContainerManager;
 import cn.crane4j.core.container.Containers;
 import cn.crane4j.core.container.lifecycle.ContainerInstanceLifecycleProcessor;
@@ -19,7 +24,7 @@ import cn.crane4j.core.executor.handler.OneToManyAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.OneToOneAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.ReflectiveDisassembleOperationHandler;
 import cn.crane4j.core.parser.BeanOperationParser;
-import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
+import cn.crane4j.core.parser.ConditionalTypeHierarchyBeanOperationParser;
 import cn.crane4j.core.parser.handler.AssembleAnnotationHandler;
 import cn.crane4j.core.parser.handler.AssembleEnumAnnotationHandler;
 import cn.crane4j.core.parser.handler.AssembleMethodAnnotationHandler;
@@ -382,11 +387,47 @@ public class Crane4jAutoConfiguration {
         return new DisassembleAnnotationHandler(annotationFinder, configuration);
     }
 
+    @ConditionalOnBean(ExpressionEvaluator.class)
     @ConditionalOnMissingBean
     @Bean
-    public TypeHierarchyBeanOperationParser typeHierarchyBeanOperationParser(Collection<OperationAnnotationHandler> resolvers) {
-        TypeHierarchyBeanOperationParser parser = new TypeHierarchyBeanOperationParser();
-        resolvers.forEach(parser::addOperationAnnotationHandler);
+    public ExpressionConditionParser expressionConditionParser(
+        AnnotationFinder annotationFinder, ExpressionEvaluator expressionEvaluator, BeanFactoryResolver beanFactoryResolver) {
+        ExpressionConditionParser.ContextFactory contextFactory = (t, op) -> {
+            SpelExpressionContext context = new SpelExpressionContext();
+            context.setBeanResolver(beanFactoryResolver);
+            return context;
+        };
+        return new ExpressionConditionParser(annotationFinder, expressionEvaluator, contextFactory);
+    }
+
+    @ConditionalOnMissingBean
+    @Bean
+    public PropertyNotNullConditionParser propertyNotNullConditionParser(
+        AnnotationFinder annotationFinder, PropertyOperator propertyOperator) {
+        return new PropertyNotNullConditionParser(annotationFinder, propertyOperator);
+    }
+
+    @ConditionalOnMissingBean
+    @Bean
+    public PropertyNotEmptyConditionParser propertyNotEmptyConditionParser(
+        AnnotationFinder annotationFinder, PropertyOperator propertyOperator) {
+        return new PropertyNotEmptyConditionParser(annotationFinder, propertyOperator);
+    }
+
+    @ConditionalOnMissingBean
+    @Bean
+    public PropertyConditionParser propertyConditionParser(
+        AnnotationFinder annotationFinder, PropertyOperator propertyOperator, ConverterManager converterManager) {
+        return new PropertyConditionParser(annotationFinder, propertyOperator, converterManager);
+    }
+
+    @ConditionalOnMissingBean
+    @Bean
+    public ConditionalTypeHierarchyBeanOperationParser typeHierarchyBeanOperationParser(
+        Collection<OperationAnnotationHandler> handlers, Collection<ConditionParser> parsers) {
+        ConditionalTypeHierarchyBeanOperationParser parser =  new ConditionalTypeHierarchyBeanOperationParser();
+        handlers.forEach(parser::addOperationAnnotationHandler);
+        parsers.forEach(parser::registerConditionParser);
         return parser;
     }
 
