@@ -13,6 +13,7 @@ import java.util.Collections;
  */
 public class SimpleKeyTriggerOperationTest {
 
+    private static final Object SOURCE = new Object();
     private SimpleKeyTriggerOperation operation;
 
     @Before
@@ -21,6 +22,7 @@ public class SimpleKeyTriggerOperationTest {
             .key("key")
             .sort(Integer.MIN_VALUE)
             .group("one")
+            .source(SOURCE)
             .build();
     }
 
@@ -43,5 +45,10 @@ public class SimpleKeyTriggerOperationTest {
     @Test
     public void getGroups() {
         Assert.assertEquals(Collections.singleton("one"), operation.getGroups());
+    }
+
+    @Test
+    public void getSource() {
+        Assert.assertSame(SOURCE, operation.getSource());
     }
 }

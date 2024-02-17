@@ -3,6 +3,7 @@ package cn.crane4j.core.executor;
 import cn.crane4j.annotation.Assemble;
 import cn.crane4j.annotation.Disassemble;
 import cn.crane4j.annotation.Mapping;
+import cn.crane4j.annotation.condition.ConditionOnProperty;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.Containers;
 import cn.crane4j.core.parser.BeanOperations;
@@ -55,6 +56,16 @@ public class DisorderedBeanOperationExecutorTest extends BaseExecutorTest {
         Assert.assertEquals("one", bean2.getNestedBean().getTypeName());
     }
 
+    @Test
+    public void executeWithCondition() {
+        ConditionalBean bean1 = new ConditionalBean().setId(1);
+        ConditionalBean bean2 = new ConditionalBean().setId(2);
+        BeanOperations beanOperations = parseOperations(ConditionalBean.class);
+        executor.execute(Arrays.asList(bean1, bean2), beanOperations);
+        Assert.assertEquals("one", bean1.getName());
+        Assert.assertNull(bean2.getName());
+    }
+
     @Getter
     @RequiredArgsConstructor
     private static class Source {
@@ -80,4 +91,12 @@ public class DisorderedBeanOperationExecutorTest extends BaseExecutorTest {
         private String typeName;
     }
 
+    @Accessors(chain = true)
+    @Data
+    private static class ConditionalBean {
+        @ConditionOnProperty(value = "1", valueType = Integer.class)
+        @Assemble(container = "test", props = @Mapping(ref = "name", src = "value"))
+        private Integer id;
+        private String name;
+    }
 }

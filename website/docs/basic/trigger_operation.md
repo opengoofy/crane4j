@@ -157,7 +157,8 @@ public List<Foo> getFoo(Integer type) {
 
 :::tip
 
-在 Spring 环境中，默认支持 SpEL 表达式，也可以更换表达式引擎以支持其他类型的表达式。
+- 在 Spring 环境中，默认支持 SpEL 表达式，也可以更换表达式引擎以支持其他类型的表达式。
+- 如果有必要，你也可以设置更细粒度的条件，以保证只针对特定对象的特定属性进行填充，具体参见 [设置操作触发条件](./operation_condition.md) 一节。
 
 :::
 
@@ -173,6 +174,12 @@ public List<Foo> getFoo(Integer type) {
 ```
 
 在上述示例中，执行填充操作时，只会完成带有 `base` 或 `foo` 组别的装配/拆卸操作。
+
+:::tip
+
+除分组外，你也可以通过设置操作的应用条件来实现类似的效果，具体参见 [设置操作触发条件](./operation_condition.md) 一节。
+
+:::
 
 ### 2.6.指定执行器
 

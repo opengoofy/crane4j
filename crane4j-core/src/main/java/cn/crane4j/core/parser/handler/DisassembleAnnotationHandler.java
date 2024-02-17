@@ -89,6 +89,7 @@ public class DisassembleAnnotationHandler
                 .key(keyTriggerOperation.getKey())
                 .sort(keyTriggerOperation.getSort())
                 .groups(keyTriggerOperation.getGroups())
+                .source(keyTriggerOperation.getSource())
                 .sourceType(sourceType)
                 .beanOperationParser(parser)
                 .typeResolver(globalConfiguration.getTypeResolver())

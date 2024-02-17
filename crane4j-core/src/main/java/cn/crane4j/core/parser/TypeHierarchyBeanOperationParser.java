@@ -150,7 +150,7 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
 
     private BeanOperations doParse(AnnotatedElement element) {
         BeanOperations result;
-        result = createBeanOperations(element);
+        result = createBeanOperations(element, true);
         result.setActive(false);
         currentlyInParsing.put(element, result);
         doParse(result);
@@ -198,9 +198,10 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
      * Create {@link BeanOperations} instance.
      *
      * @param element element
+     * @param root whether the element is root
      * @return {@link BeanOperations}
      */
-    protected BeanOperations createBeanOperations(AnnotatedElement element) {
+    protected BeanOperations createBeanOperations(AnnotatedElement element, boolean root) {
         return new SimpleBeanOperations(element);
     }
 
@@ -260,7 +261,7 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
      * @param source source
      * @return operations from source, it may come from cache
      */
-    protected final BeanOperations resolveToOperations(AnnotatedElement source) {
+    private BeanOperations resolveToOperations(AnnotatedElement source) {
         if (enableHierarchyCache) {
             return CollectionUtils.computeIfAbsent(
                 resolvedHierarchyElements, source, this::doResolveToOperations
@@ -269,11 +270,11 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
         return doResolveToOperations(source);
     }
 
-    private BeanOperations doResolveToOperations(AnnotatedElement source) {
+    protected BeanOperations doResolveToOperations(AnnotatedElement source) {
         if (ReflectUtils.isJdkElement(source)) {
             return BeanOperations.empty();
         }
-        BeanOperations operations = createBeanOperations(source);
+        BeanOperations operations = createBeanOperations(source, false);
         operationAnnotationHandlers.forEach(resolver -> resolver.resolve(this, operations));
         return operations;
     }
