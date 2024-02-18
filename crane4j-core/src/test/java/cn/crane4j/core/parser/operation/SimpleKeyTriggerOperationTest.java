@@ -17,8 +17,11 @@ public class SimpleKeyTriggerOperationTest {
 
     @Before
     public void initOperation() {
-        operation = new SimpleKeyTriggerOperation("key", Integer.MIN_VALUE);
-        operation.putGroup("one");
+        operation = SimpleKeyTriggerOperation.builder()
+            .key("key")
+            .sort(Integer.MIN_VALUE)
+            .group("one")
+            .build();
     }
 
     @Test
@@ -40,19 +43,5 @@ public class SimpleKeyTriggerOperationTest {
     @Test
     public void getGroups() {
         Assert.assertEquals(Collections.singleton("one"), operation.getGroups());
-    }
-
-    @Test
-    public void putGroup() {
-        Assert.assertEquals(Collections.singleton("one"), operation.getGroups());
-        operation.putGroup("two");
-        Assert.assertTrue(operation.getGroups().contains("two"));
-    }
-
-    @Test
-    public void removeGroup() {
-        Assert.assertEquals(Collections.singleton("one"), operation.getGroups());
-        operation.removeGroup("one");
-        Assert.assertFalse(operation.getGroups().contains("one"));
     }
 }

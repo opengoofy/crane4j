@@ -164,21 +164,31 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
         log.debug("parse operations from element [{}]", source);
 
         // collected resolve operation from hierarchy of source
-        Collection<BeanOperations> resolvedOperations;
+        Collection<BeanOperations> childOperations;
         if (source instanceof Class) {
             // parse from the type hierarchy
-            resolvedOperations = doParseForType((Class<?>)source);
+            childOperations = doParseForType((Class<?>)source);
         }
         else if (source instanceof Method){
             // parse method and overwrite method from the type hierarchy
-            resolvedOperations = doParseForMethod((Method)source);
+            childOperations = doParseForMethod((Method)source);
         }
         else {
             // parse for other type
-            resolvedOperations = doParseForElement(source);
+            childOperations = doParseForElement(source);
         }
+        mergeBeanOperationsToRootBeanOperations(root, childOperations);
+    }
+
+    /**
+     * Merge each child {@link BeanOperations} to root {@link BeanOperations}.
+     *
+     * @param root root
+     * @param childOperations child operations
+     */
+    protected void mergeBeanOperationsToRootBeanOperations(BeanOperations root, Collection<BeanOperations> childOperations) {
         // TODO: all operations need sort again?
-        resolvedOperations.forEach(op -> {
+        childOperations.forEach(op -> {
             op.getAssembleOperations().forEach(root::addAssembleOperations);
             op.getDisassembleOperations().forEach(root::addDisassembleOperations);
         });
@@ -201,7 +211,7 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
      * @return operations form hierarchy of {@code element}
      * @see #resolveToOperations
      */
-    protected Collection<BeanOperations> doParseForElement(AnnotatedElement element) {
+    private Collection<BeanOperations> doParseForElement(AnnotatedElement element) {
         BeanOperations current = resolveToOperations(element);
         return Collections.singletonList(current);
     }
@@ -213,7 +223,7 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
      * @return operations form type hierarchy of {@code beanType}
      * @see #resolveToOperations
      */
-    protected Collection<BeanOperations> doParseForType(Class<?> beanType) {
+    private Collection<BeanOperations> doParseForType(Class<?> beanType) {
         List<BeanOperations> results = new ArrayList<>();
         ReflectUtils.traverseTypeHierarchy(beanType, type -> {
             // current type is already resolved?
@@ -230,7 +240,7 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
      * @return operations form method where in type hierarchy of {@code beanType}
      * @see #resolveToOperations
      */
-    protected Collection<BeanOperations> doParseForMethod(Method method) {
+    private Collection<BeanOperations> doParseForMethod(Method method) {
         String methodName = method.getName();
         Class<?>[] parameterTypes = method.getParameterTypes();
         List<BeanOperations> results = new ArrayList<>();

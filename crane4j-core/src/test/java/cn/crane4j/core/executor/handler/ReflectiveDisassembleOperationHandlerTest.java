@@ -94,18 +94,18 @@ public class ReflectiveDisassembleOperationHandlerTest extends BaseExecutorTest 
     @Setter
     private static class Bean {
         @Getter
-        @Disassemble(type = Bean.class)
+        @Disassemble(type = Bean.class, sort = 1)
         private Bean bean;
         @Getter
-        @Disassemble(type = Bean.class)
+        @Disassemble(type = Bean.class, sort = 2)
         private Bean[] beanArray;
         @Getter
-        @Disassemble(type = Bean.class)
+        @Disassemble(type = Bean.class, sort = 4)
         private List<Bean> beanList;
         @Getter
-        @Disassemble(type = Bean.class)
+        @Disassemble(type = Bean.class, sort = 4)
         private List<List<Bean[]>> beanMultiList;
-        @Disassemble(type = Bean.class)
+        @Disassemble(type = Bean.class, sort = 5)
         private Bean noneGetter;
     }
 }

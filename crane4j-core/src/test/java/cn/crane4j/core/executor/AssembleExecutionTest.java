@@ -13,7 +13,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -27,10 +26,12 @@ public class AssembleExecutionTest {
     public void test() {
         List<Object> targets = Arrays.asList(new Object(), new Object());
         AssembleOperationHandler handler = new OneToOneAssembleOperationHandler(new ReflectivePropertyOperator(), SimpleConverterManager.INSTANCE);
-        AssembleOperation assembleOperation = new SimpleAssembleOperation(
-            "key", Collections.singleton(new SimplePropertyMapping("src", "ref")),
-            "container", handler
-        );
+        AssembleOperation assembleOperation = SimpleAssembleOperation.builder()
+            .key("key")
+            .propertyMapping(new SimplePropertyMapping("src", "ref"))
+            .container("container")
+            .assembleOperationHandler(handler)
+            .build();
         AssembleExecution execution = AssembleExecution.create(
             BeanOperations.empty(), assembleOperation, Container.empty(), targets
         );

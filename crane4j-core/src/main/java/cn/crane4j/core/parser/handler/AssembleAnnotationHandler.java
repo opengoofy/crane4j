@@ -28,7 +28,7 @@ import java.util.Comparator;
  */
 @Accessors(chain = true)
 @Slf4j
-public class AssembleAnnotationHandler extends AbstractAssembleAnnotationHandler<Assemble> {
+public class AssembleAnnotationHandler extends AbstractStandardAssembleAnnotationHandler<Assemble> {
 
     /**
      * Create a {@link AssembleAnnotationHandler} instance.
@@ -76,21 +76,28 @@ public class AssembleAnnotationHandler extends AbstractAssembleAnnotationHandler
     }
 
     /**
-     * Get {@link StandardAnnotation}.
+     * Get {@link StandardAssembleAnnotation}.
      *
      * @param beanOperations bean operations
      * @param element        element
      * @param annotation     annotation
-     * @return {@link StandardAnnotation} instance
+     * @return {@link StandardAssembleAnnotation} instance
      */
     @Override
-    protected StandardAnnotation getStandardAnnotation(
+    protected StandardAssembleAnnotation getStandardAnnotation(
         BeanOperations beanOperations, AnnotatedElement element, Assemble annotation) {
-        return new StandardAnnotationAdapter(
-            annotation, annotation.id(), annotation.key(), annotation.keyType(), annotation.sort(),
-            annotation.handler(), annotation.handlerType(),
-            annotation.propTemplates(), annotation.props(), annotation.groups(),
-            annotation.propertyMappingStrategy()
-        );
+        return StandardAssembleAnnotationAdapter.builder()
+            .annotation(annotation)
+            .id(annotation.id())
+            .key(annotation.key())
+            .sort(annotation.sort())
+            .groups(annotation.groups())
+            .keyType(annotation.keyType())
+            .handler(annotation.handler())
+            .handlerType(annotation.handlerType())
+            .mappingTemplates(annotation.propTemplates())
+            .props(annotation.props())
+            .propertyMappingStrategy(annotation.propertyMappingStrategy())
+            .build();
     }
 }

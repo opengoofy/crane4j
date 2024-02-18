@@ -16,12 +16,12 @@ import cn.crane4j.core.support.Sorted;
  * {@link TypeHierarchyBeanOperationParser} will hold multiple resolvers to resolve different annotations.
  *
  * <p>For implementors of assemble operation annotation handler,
- * it is recommended to derive from the provided {@link AbstractAssembleAnnotationHandler} class,
+ * it is recommended to derive from the provided {@link AbstractStandardAssembleAnnotationHandler} class,
  * which pre-implements the defined the logic of parsing and
  * constructing {@link AssembleOperation} based on standard components.
  *
  * @author huangchengxing
- * @see AbstractAssembleAnnotationHandler
+ * @see AbstractStandardAssembleAnnotationHandler
  * @see TypeHierarchyBeanOperationParser
  * @since 1.2.0
  */

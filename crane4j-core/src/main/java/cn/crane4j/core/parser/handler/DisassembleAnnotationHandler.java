@@ -6,7 +6,6 @@ import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.operation.DisassembleOperation;
 import cn.crane4j.core.parser.operation.KeyTriggerOperation;
-import cn.crane4j.core.parser.operation.SimpleKeyTriggerOperation;
 import cn.crane4j.core.parser.operation.TypeDynamitedDisassembleOperation;
 import cn.crane4j.core.parser.operation.TypeFixedDisassembleOperation;
 import cn.crane4j.core.support.AnnotationFinder;
@@ -14,23 +13,11 @@ import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.Crane4jGlobalSorter;
 import cn.crane4j.core.support.Sorted;
 import cn.crane4j.core.util.ClassUtils;
-import cn.crane4j.core.util.ReflectUtils;
-import cn.crane4j.core.util.StringUtils;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Field;
-import java.util.AbstractMap;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * <p>Annotation-based {@link OperationAnnotationHandler} implementation
@@ -42,12 +29,10 @@ import java.util.stream.Stream;
  * @since 1.2.0
  */
 @Slf4j
-@RequiredArgsConstructor
-public class DisassembleAnnotationHandler implements OperationAnnotationHandler {
+public class DisassembleAnnotationHandler
+    extends AbstractStandardOperationAnnotationHandler<Disassemble> {
 
-    protected final AnnotationFinder annotationFinder;
     protected final Crane4jGlobalConfiguration globalConfiguration;
-    protected final Comparator<KeyTriggerOperation> operationComparator;
 
     /**
      * <p>Create a {@link DisassembleAnnotationHandler} instance.<br />
@@ -58,148 +43,91 @@ public class DisassembleAnnotationHandler implements OperationAnnotationHandler 
      */
     public DisassembleAnnotationHandler(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration globalConfiguration) {
-        this(annotationFinder, globalConfiguration, Crane4jGlobalSorter.comparator());
+        super(Disassemble.class, annotationFinder, Crane4jGlobalSorter.comparator());
+        this.globalConfiguration = globalConfiguration;
     }
 
     /**
-     * Resolve operations from element.
+     * Do resolve for operations.
      *
-     * @param parser         parser
-     * @param beanOperations bean operations to be handler
+     * @param beanOperations bean operations
+     * @param operations     operations
      */
     @Override
-    public void resolve(BeanOperationParser parser, BeanOperations beanOperations) {
-        List<DisassembleOperation> disassembleOperations = parseDisassembleOperations(parser, beanOperations)
-            .stream()
-            .sorted(operationComparator)
-            .collect(Collectors.toList());
-        disassembleOperations.forEach(beanOperations::addDisassembleOperations);
+    protected void doResolve(
+        BeanOperations beanOperations, List<KeyTriggerOperation> operations) {
+        operations.stream()
+            .map(DisassembleOperation.class::cast)
+            .forEach(beanOperations::addDisassembleOperations);
     }
 
     /**
-     * Parse assemble operations from {@link Disassemble} annotations on class.
+     * Create assemble operation for given {@code element} and {@code annotation}
      *
-     * @param parser parser
-     * @param beanOperations operations of current to resolve
-     * @return {@link DisassembleOperation}
+     * @param parser         bean operation parser
+     * @param beanOperations bean operations to resolve
+     * @param element        element
+     * @param standardAnnotation standard annotation
+     * @return {@link KeyTriggerOperation} instance if element and annotation is resolvable, null otherwise
      */
-    protected List<DisassembleOperation> parseDisassembleOperations(BeanOperationParser parser, BeanOperations beanOperations) {
-        AnnotatedElement source = beanOperations.getSource();
-        if (!(source instanceof Class)) {
-            return Collections.emptyList();
-        }
-        Class<?> beanType = (Class<?>)source;
-        Map<Field, Disassemble> fieldLevelAnnotations = resolveFieldLevelAnnotations(beanType);
-        Collection<Disassemble> classLevelAnnotations = resolveClassLevelAnnotations(beanType);
-        // create operations
-        return Stream.concat(
-            fieldLevelAnnotations.entrySet().stream(),
-            classLevelAnnotations.stream().map(a -> new AbstractMap.SimpleEntry<>(beanType, a))
-        )
-            .map(e -> createDisassembleOperation(beanType, e.getKey(), e.getValue(), parser))
-            .sorted(operationComparator)
-            .collect(Collectors.toList());
-    }
+    @Nullable
+    @Override
+    protected DisassembleOperation createOperation(
+        BeanOperationParser parser, BeanOperations beanOperations, AnnotatedElement element, StandardAnnotation standardAnnotation) {
+        KeyTriggerOperation keyTriggerOperation = super.createOperation(parser, beanOperations, element, standardAnnotation);
+        Disassemble annotation = (Disassemble)standardAnnotation.getAnnotation();
 
-    /**
-     * Parse {@link Disassemble} annotations for class.
-     *
-     * @param beanType bean type
-     * @return {@link Disassemble}
-     */
-    protected Map<Field, Disassemble> resolveFieldLevelAnnotations(Class<?> beanType) {
-        Map<Field, Disassemble> disassembles = new LinkedHashMap<>();
-        ReflectUtils.scanAllAnnotationFromElements(
-            annotationFinder, Disassemble.class, ReflectUtils.getDeclaredFields(beanType), disassembles::put
-        );
-        return disassembles;
-    }
-
-    /**
-     * Create {@link DisassembleOperation} instance from annotation.
-     *
-     * @param type type
-     * @param annotation annotation
-     * @return {@link DisassembleOperation}
-     */
-    protected DisassembleOperation createDisassembleOperation(
-        Class<?> type, AnnotatedElement element, Disassemble annotation, BeanOperationParser parser) {
+        Class<?> sourceType = (Class<?>)beanOperations.getSource();
         DisassembleOperationHandler disassembleOperationHandler = globalConfiguration.getDisassembleOperationHandler(
             annotation.handler(), annotation.handlerType()
         );
-        // resolve trigger key
-        String key = parseKey(element, annotation);
-        // resolve sort value
-        int sort = parseSort(element, annotation);
-
         // wait until runtime to dynamically determine the actual type if no type is specified
         DisassembleOperation operation;
         if (ClassUtils.isObjectOrVoid(annotation.type())) {
-            operation = new TypeDynamitedDisassembleOperation(
-                key, sort, type, disassembleOperationHandler, parser, globalConfiguration.getTypeResolver()
-            );
+            operation = TypeDynamitedDisassembleOperation.builder()
+                .id(keyTriggerOperation.getId())
+                .key(keyTriggerOperation.getKey())
+                .sort(keyTriggerOperation.getSort())
+                .groups(keyTriggerOperation.getGroups())
+                .sourceType(sourceType)
+                .beanOperationParser(parser)
+                .typeResolver(globalConfiguration.getTypeResolver())
+                .disassembleOperationHandler(disassembleOperationHandler)
+                .build();
         }
         // complete the parsing now if the type has been specified in the annotation
         else {
             BeanOperations operations = parser.parse(annotation.type());
-            operation = new TypeFixedDisassembleOperation(
-                key, sort, type, operations, disassembleOperationHandler
-            );
+            operation = TypeFixedDisassembleOperation.builder()
+                .id(keyTriggerOperation.getId())
+                .key(keyTriggerOperation.getKey())
+                .sort(keyTriggerOperation.getSort())
+                .groups(keyTriggerOperation.getGroups())
+                .sourceType(sourceType)
+                .internalBeanOperations(operations)
+                .disassembleOperationHandler(disassembleOperationHandler)
+                .build();
         }
-
-        String id = parseId(element, annotation);
-        ((SimpleKeyTriggerOperation)operation).setId(id);
-
-        // set group
-        operation.getGroups().addAll(Arrays.asList(annotation.groups()));
         return operation;
     }
 
     /**
-     * Parse id from given {@link AbstractAssembleAnnotationHandler.StandardAnnotation}.
+     * Get {@link StandardAnnotation}.
      *
-     * @param element element
-     * @param annotation standard annotation
-     * @return id
-     * @since 2.6.0
+     * @param beanOperations bean operations
+     * @param element        element
+     * @param annotation     annotation
+     * @return {@link StandardAnnotation} instance
      */
-    protected String parseId(
-        AnnotatedElement element, Disassemble annotation) {
-        return StringUtils.emptyToDefault(
-            annotation.id(), String.valueOf(annotation.hashCode())
-        );
-    }
-
-    /**
-     * Parse sort value from given element and annotation. 
-     *
-     * @param element element
-     * @param annotation annotation
-     * @return sort value
-     * @see Crane4jGlobalSorter#getSortValue 
-     */
-    protected int parseSort(AnnotatedElement element, Disassemble annotation) {
-        return Crane4jGlobalSorter.INSTANCE.getSortValue(element, annotation.sort());
-    }
-
-    /**
-     * Parse operation trigger key from given element and annotation.
-     *
-     * @param element element
-     * @param annotation annotation
-     * @return operation trigger key
-     */
-    protected String parseKey(AnnotatedElement element, Disassemble annotation) {
-        return (element instanceof Field) ? ((Field) element).getName() : annotation.key();
-    }
-
-    /**
-     * Parse {@link Disassemble} annotations for class.
-     *
-     * @param beanType bean type
-     * @return {@link Disassemble}
-     */
-    protected Collection<Disassemble> resolveClassLevelAnnotations(Class<?> beanType) {
-        return annotationFinder.getAllAnnotations(beanType, Disassemble.class);
+    @Override
+    protected StandardAnnotation getStandardAnnotation(
+        BeanOperations beanOperations, AnnotatedElement element, Disassemble annotation) {
+        return StandardAnnotationAdapter.builder()
+            .annotation(annotation)
+            .groups(annotation.groups())
+            .id(annotation.id())
+            .key(annotation.key())
+            .sort(annotation.sort())
+            .build();
     }
 }

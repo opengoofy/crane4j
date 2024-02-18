@@ -30,7 +30,7 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * <p>An {@link AbstractAssembleAnnotationHandler} implementation for {@link AssembleMethod} annotation.
+ * <p>An {@link AbstractStandardAssembleAnnotationHandler} implementation for {@link AssembleMethod} annotation.
  *
  * <p>When processing {@link AssembleMethod} annotation,
  * it will create a {@link Container} for method which specified by {@link ContainerMethod},
@@ -93,22 +93,29 @@ public class AssembleMethodAnnotationHandler
     }
 
     /**
-     * Get {@link StandardAnnotation}.
+     * Get {@link StandardAssembleAnnotation}.
      *
      * @param beanOperations bean operations
      * @param element        element
      * @param annotation     annotation
-     * @return {@link StandardAnnotation} instance
+     * @return {@link StandardAssembleAnnotation} instance
      */
     @Override
-    protected StandardAnnotation getStandardAnnotation(
+    protected StandardAssembleAnnotation getStandardAnnotation(
         BeanOperations beanOperations, AnnotatedElement element, AssembleMethod annotation) {
-        return new StandardAnnotationAdapter(
-            annotation, annotation.id(), annotation.key(), annotation.keyType(), annotation.sort(),
-            annotation.handler(), annotation.handlerType(),
-            annotation.propTemplates(), annotation.props(), annotation.groups(),
-            annotation.propertyMappingStrategy()
-        );
+        return StandardAssembleAnnotationAdapter.builder()
+            .annotation(annotation)
+            .id(annotation.id())
+            .key(annotation.key())
+            .sort(annotation.sort())
+            .groups(annotation.groups())
+            .keyType(annotation.keyType())
+            .handler(annotation.handler())
+            .handlerType(annotation.handlerType())
+            .mappingTemplates(annotation.propTemplates())
+            .props(annotation.props())
+            .propertyMappingStrategy(annotation.propertyMappingStrategy())
+            .build();
     }
 
     /**

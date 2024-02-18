@@ -18,10 +18,12 @@ public class SimpleAssembleOperationTest {
 
     @Before
     public void initOperation() {
-        operation = new SimpleAssembleOperation(
-            "key", Integer.MAX_VALUE,
-            Collections.emptySet(), Container.EMPTY_CONTAINER_NAMESPACE, null
-        );
+        operation = SimpleAssembleOperation.builder()
+            .key("key")
+            .propertyMappings(Collections.emptySet())
+            .container(Container.EMPTY_CONTAINER_NAMESPACE)
+            .sort(Integer.MAX_VALUE)
+            .build();
     }
 
     @Test

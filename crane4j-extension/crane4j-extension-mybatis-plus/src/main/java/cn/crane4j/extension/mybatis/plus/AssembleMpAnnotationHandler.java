@@ -5,7 +5,7 @@ import cn.crane4j.annotation.MappingType;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerManager;
 import cn.crane4j.core.parser.BeanOperations;
-import cn.crane4j.core.parser.handler.AbstractAssembleAnnotationHandler;
+import cn.crane4j.core.parser.handler.AbstractStandardAssembleAnnotationHandler;
 import cn.crane4j.core.parser.handler.OperationAnnotationHandler;
 import cn.crane4j.core.parser.handler.strategy.PropertyMappingStrategyManager;
 import cn.crane4j.core.parser.operation.AssembleOperation;
@@ -30,7 +30,7 @@ import java.util.Comparator;
  * @since 1.2.0
  */
 @Accessors(chain = true)
-public class AssembleMpAnnotationHandler extends AbstractAssembleAnnotationHandler<AssembleMp> {
+public class AssembleMpAnnotationHandler extends AbstractStandardAssembleAnnotationHandler<AssembleMp> {
 
     private static final String QUERY_CONTAINER_PROVIDER_NAME = "MybatisQueryContainerProvider";
     private final MybatisPlusQueryContainerProvider containerRegister;
@@ -88,21 +88,28 @@ public class AssembleMpAnnotationHandler extends AbstractAssembleAnnotationHandl
     }
 
     /**
-     * Get {@link StandardAnnotation}.
+     * Get {@link StandardAssembleAnnotation}.
      *
      * @param beanOperations bean operations
      * @param element        element
      * @param annotation     annotation
-     * @return {@link StandardAnnotation} instance
+     * @return {@link StandardAssembleAnnotation} instance
      */
     @Override
-    protected StandardAnnotation getStandardAnnotation(
+    protected StandardAssembleAnnotation getStandardAnnotation(
         BeanOperations beanOperations, AnnotatedElement element, AssembleMp annotation) {
-        return new StandardAnnotationAdapter(
-            annotation, annotation.id(), annotation.key(), annotation.keyType(), annotation.sort(),
-            annotation.handler(), annotation.handlerType(),
-            annotation.propTemplates(), annotation.props(), annotation.groups(),
-            annotation.propertyMappingStrategy()
-        );
+        return StandardAssembleAnnotationAdapter.builder()
+            .annotation(annotation)
+            .id(annotation.id())
+            .key(annotation.key())
+            .sort(annotation.sort())
+            .groups(annotation.groups())
+            .keyType(annotation.keyType())
+            .handler(annotation.handler())
+            .handlerType(annotation.handlerType())
+            .mappingTemplates(annotation.propTemplates())
+            .props(annotation.props())
+            .propertyMappingStrategy(annotation.propertyMappingStrategy())
+            .build();
     }
 }

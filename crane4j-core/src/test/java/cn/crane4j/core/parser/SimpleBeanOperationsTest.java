@@ -37,9 +37,12 @@ public class SimpleBeanOperationsTest {
     @Test
     public void putAssembleOperations() {
         Assert.assertTrue(operations.getAssembleOperations().isEmpty());
-        AssembleOperation operation = new SimpleAssembleOperation(
-            "key", Integer.MIN_VALUE, Collections.emptySet(), "empty", null
-        );
+        AssembleOperation operation = SimpleAssembleOperation.builder()
+            .key("key")
+            .propertyMappings(Collections.emptySet())
+            .container("empty")
+            .sort(Integer.MIN_VALUE)
+            .build();
         operations.addAssembleOperations(operation);
         operations.addAssembleOperations(operation);
         Assert.assertEquals(1, operations.getAssembleOperations().size());
@@ -53,9 +56,10 @@ public class SimpleBeanOperationsTest {
     @Test
     public void putDisassembleOperations() {
         Assert.assertTrue(operations.getDisassembleOperations().isEmpty());
-        DisassembleOperation operation = new TypeFixedDisassembleOperation(
-            "key", Object.class, null, null
-        );
+        DisassembleOperation operation = TypeFixedDisassembleOperation.builder()
+            .key("key")
+            .sourceType(Object.class)
+            .build();
         operations.addDisassembleOperations(operation);
         operations.addDisassembleOperations(operation);
         Assert.assertEquals(1, operations.getDisassembleOperations().size());

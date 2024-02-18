@@ -16,7 +16,7 @@ import java.lang.annotation.Annotation;
 import java.util.Comparator;
 
 /**
- * <p>An implementation of {@link AbstractAssembleAnnotationHandler} that
+ * <p>An implementation of {@link AbstractStandardAssembleAnnotationHandler} that
  * creates corresponding containers while processing operation annotations.
  *
  * <p>The annotation handler maintains a {@link ContainerProvider} instance internally,
@@ -34,7 +34,7 @@ import java.util.Comparator;
  * @since 2.2.0
  */
 public abstract class InternalProviderAssembleAnnotationHandler<T extends Annotation>
-    extends AbstractAssembleAnnotationHandler<T> {
+    extends AbstractStandardAssembleAnnotationHandler<T> {
 
     public static final String INTERNAL_PROVIDER_SUFFIX = ".InternalProvider";
 
@@ -44,7 +44,7 @@ public abstract class InternalProviderAssembleAnnotationHandler<T extends Annota
     protected final ConfigurableContainerProvider internalContainerProvider;
 
     /**
-     * Create an {@link AbstractAssembleAnnotationHandler} instance.
+     * Create an {@link AbstractStandardAssembleAnnotationHandler} instance.
      *
      * @param annotationType                 annotation type
      * @param annotationFinder               annotation finder

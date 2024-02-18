@@ -20,9 +20,12 @@ public class SimpleAssembleExecutionTest {
 
     private static final AssembleOperationHandler ASSEMBLE_OPERATION_HANDLER = (c, ts) -> {};
     private static final BeanOperations BEAN_OPERATIONS = new SimpleBeanOperations(Void.TYPE);
-    private static final AssembleOperation ASSEMBLE_OPERATION = new SimpleAssembleOperation(
-        "key", Collections.emptySet(), Container.EMPTY_CONTAINER_NAMESPACE, ASSEMBLE_OPERATION_HANDLER
-    );
+    private static final AssembleOperation ASSEMBLE_OPERATION = SimpleAssembleOperation.builder()
+        .key("key")
+        .propertyMappings(Collections.emptySet())
+        .container(Container.EMPTY_CONTAINER_NAMESPACE)
+        .assembleOperationHandler(ASSEMBLE_OPERATION_HANDLER)
+        .build();
     private static final AssembleExecution EXECUTION = new AssembleExecution.SimpleAssembleExecution(
         BEAN_OPERATIONS, ASSEMBLE_OPERATION, Container.empty(), Collections.emptyList()
     );
