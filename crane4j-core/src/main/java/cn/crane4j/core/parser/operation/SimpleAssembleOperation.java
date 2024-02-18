@@ -4,8 +4,11 @@ import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.parser.PropertyMapping;
 import cn.crane4j.core.parser.handler.strategy.OverwriteNotNullMappingStrategy;
 import cn.crane4j.core.parser.handler.strategy.PropertyMappingStrategy;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.Singular;
+import lombok.experimental.SuperBuilder;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Set;
@@ -15,32 +18,17 @@ import java.util.Set;
  *
  * @author huangchengxing
  */
+@SuperBuilder
 @Getter
+@Setter
 public class SimpleAssembleOperation extends SimpleKeyTriggerOperation implements AssembleOperation {
 
+    @Singular
     private final Set<PropertyMapping> propertyMappings;
     private final String container;
     private final AssembleOperationHandler assembleOperationHandler;
-    @Setter
+    @Builder.Default
     private PropertyMappingStrategy propertyMappingStrategy = OverwriteNotNullMappingStrategy.INSTANCE;
-    @Setter
     @Nullable
     private Class<?> keyType;
-
-    public SimpleAssembleOperation(
-        String key, int sort,
-        Set<PropertyMapping> propertyMappings, String container,
-        AssembleOperationHandler assembleOperationHandler) {
-        super(key, sort);
-        this.propertyMappings = propertyMappings;
-        this.container = container;
-        this.assembleOperationHandler = assembleOperationHandler;
-    }
-
-    public SimpleAssembleOperation(
-        String key,
-        Set<PropertyMapping> propertyMappings, String container,
-        AssembleOperationHandler assembleOperationHandler) {
-        this(key, Integer.MAX_VALUE, propertyMappings, container, assembleOperationHandler);
-    }
 }

@@ -24,7 +24,7 @@ import java.util.Comparator;
 import java.util.Set;
 
 /**
- * An {@link AbstractAssembleAnnotationHandler} implementation for {@link AssembleEnum} annotation.
+ * An {@link AbstractStandardAssembleAnnotationHandler} implementation for {@link AssembleEnum} annotation.
  *
  * @author huangchengxing
  * @see AssembleEnum
@@ -37,7 +37,7 @@ public class AssembleEnumAnnotationHandler
     private final PropertyOperator propertyOperator;
 
     /**
-     * Create an {@link AbstractAssembleAnnotationHandler} instance.
+     * Create an {@link AbstractStandardAssembleAnnotationHandler} instance.
      *
      * @param annotationFinder    annotation finder
      * @param globalConfiguration globalConfiguration
@@ -52,7 +52,7 @@ public class AssembleEnumAnnotationHandler
     }
 
     /**
-     * Create an {@link AbstractAssembleAnnotationHandler} instance.
+     * Create an {@link AbstractStandardAssembleAnnotationHandler} instance.
      *
      * @param annotationFinder    annotation finder
      * @param operationComparator operation comparator
@@ -119,26 +119,33 @@ public class AssembleEnumAnnotationHandler
     }
 
     /**
-     * Get {@link StandardAnnotation}.
+     * Get {@link StandardAssembleAnnotation}.
      *
      * @param beanOperations bean operations
      * @param element        element
      * @param annotation     annotation
-     * @return {@link StandardAnnotation} instance
+     * @return {@link StandardAssembleAnnotation} instance
      */
     @Override
-    protected StandardAnnotation getStandardAnnotation(
+    protected StandardAssembleAnnotation getStandardAnnotation(
         BeanOperations beanOperations, AnnotatedElement element, AssembleEnum annotation) {
-        return new StandardAnnotationAdapter(
-            annotation, annotation.id(), annotation.key(), annotation.keyType(), annotation.sort(),
-            annotation.handler(), annotation.handlerType(),
-            annotation.propTemplates(), annotation.props(), annotation.groups(),
-            annotation.propertyMappingStrategy()
-        );
+        return StandardAssembleAnnotationAdapter.builder()
+            .annotation(annotation)
+            .id(annotation.id())
+            .key(annotation.key())
+            .sort(annotation.sort())
+            .groups(annotation.groups())
+            .keyType(annotation.keyType())
+            .handler(annotation.handler())
+            .handlerType(annotation.handlerType())
+            .mappingTemplates(annotation.propTemplates())
+            .props(annotation.props())
+            .propertyMappingStrategy(annotation.propertyMappingStrategy())
+            .build();
     }
 
     /**
-     * Get property mapping from given {@link StandardAnnotation}.
+     * Get property mapping from given {@link StandardAssembleAnnotation}.
      *
      * @param element            element
      * @param standardAnnotation standard annotation
@@ -146,9 +153,9 @@ public class AssembleEnumAnnotationHandler
      * @return assemble operation groups
      */
     @Override
-    protected Set<PropertyMapping> parsePropertyMappings(AnnotatedElement element, StandardAnnotation standardAnnotation, String key) {
+    protected Set<PropertyMapping> parsePropertyMappings(AnnotatedElement element, StandardAssembleAnnotation standardAnnotation, String key) {
         Set<PropertyMapping> propertyMappings = super.parsePropertyMappings(element, standardAnnotation, key);
-        AssembleEnum annotation = (AssembleEnum) ((StandardAnnotationAdapter) standardAnnotation).getAnnotation();
+        AssembleEnum annotation = (AssembleEnum) standardAnnotation.getAnnotation();
         if (StringUtils.isNotEmpty(annotation.ref())) {
             propertyMappings.add(new SimplePropertyMapping("", annotation.ref()));
         }

@@ -15,10 +15,11 @@ import java.math.BigDecimal;
 public class TypeFixedDisassembleOperationTest {
 
     private static final BeanOperations BEAN_OPERATIONS = new SimpleBeanOperations(Void.TYPE);
-    private final TypeFixedDisassembleOperation operation = new TypeFixedDisassembleOperation(
-        "key", Object.class, BEAN_OPERATIONS, null
-    );
-
+    private final TypeFixedDisassembleOperation operation = TypeFixedDisassembleOperation.builder()
+        .key("key")
+        .sourceType(Object.class)
+        .internalBeanOperations(BEAN_OPERATIONS)
+        .build();
 
     @Test
     public void getSourceType() {

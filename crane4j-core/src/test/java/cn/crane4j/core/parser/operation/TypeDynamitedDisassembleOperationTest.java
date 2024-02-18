@@ -22,11 +22,12 @@ public class TypeDynamitedDisassembleOperationTest {
 
     @Before
     public void init() {
-        operation = new TypeDynamitedDisassembleOperation(
-            "key",
-            Object.class, null,
-            PARSER, TYPE_RESOLVER
-        );
+        operation = TypeDynamitedDisassembleOperation.builder()
+            .key("key")
+            .sourceType(Object.class)
+            .beanOperationParser(PARSER)
+            .typeResolver(TYPE_RESOLVER)
+            .build();
     }
 
     @Test

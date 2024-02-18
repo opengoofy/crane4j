@@ -98,7 +98,7 @@ public class DynamicContainerOperatorProxyMethodFactoryTest {
 
         // do nothing when target is null
         invoker.invoke(null, null, container);
-        invoker.invoke(null, null);
+        invoker.invoke(null, (Object[])null);
     }
 
     @Test

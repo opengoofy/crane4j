@@ -1,11 +1,11 @@
 package cn.crane4j.core.parser.operation;
 
+import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.Singular;
+import lombok.experimental.SuperBuilder;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -16,32 +16,16 @@ import java.util.Set;
  * @see TypeFixedDisassembleOperation
  * @see TypeDynamitedDisassembleOperation
  */
+@SuperBuilder
 @Getter
-@RequiredArgsConstructor
 public class SimpleKeyTriggerOperation implements KeyTriggerOperation {
 
-    @Setter
     @Nullable
-    private String id;
+    @Builder.Default
+    private String id = null;
     private final String key;
-    private final Set<String> groups = new LinkedHashSet<>();
-    private final int sort;
-
-    /**
-     * Add group.
-     *
-     * @param group group
-     */
-    public void putGroup(String group) {
-        groups.add(group);
-    }
-
-    /**
-     * Add group.
-     *
-     * @param group group
-     */
-    public void removeGroup(String group) {
-        groups.remove(group);
-    }
+    @Singular
+    private final Set<String> groups;
+    @Builder.Default
+    private int sort = Integer.MAX_VALUE;
 }

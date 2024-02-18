@@ -6,6 +6,7 @@ import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.support.TypeResolver;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Objects;
@@ -18,6 +19,7 @@ import java.util.Objects;
  * @author huangchengxing
  * @see TypeResolver
  */
+@SuperBuilder
 @Slf4j
 public class TypeDynamitedDisassembleOperation extends SimpleKeyTriggerOperation implements DisassembleOperation {
 
@@ -27,24 +29,6 @@ public class TypeDynamitedDisassembleOperation extends SimpleKeyTriggerOperation
     private final DisassembleOperationHandler disassembleOperationHandler;
     private final BeanOperationParser beanOperationParser;
     private final TypeResolver typeResolver;
-
-    public TypeDynamitedDisassembleOperation(
-        String key, int sort, Class<?> sourceType,
-        DisassembleOperationHandler disassembleOperationHandler,
-        BeanOperationParser beanOperationParser, TypeResolver typeResolver) {
-        super(key, sort);
-        this.sourceType = sourceType;
-        this.disassembleOperationHandler = disassembleOperationHandler;
-        this.beanOperationParser = beanOperationParser;
-        this.typeResolver = typeResolver;
-    }
-
-    public TypeDynamitedDisassembleOperation(
-        String key, Class<?> sourceType,
-        DisassembleOperationHandler disassembleOperationHandler,
-        BeanOperationParser beanOperationParser, TypeResolver typeResolver) {
-        this(key, Integer.MAX_VALUE, sourceType, disassembleOperationHandler, beanOperationParser, typeResolver);
-    }
 
     /**
      * <p>Get the operation configuration of the nested object,
