@@ -4,7 +4,7 @@
 
 ## 1.使用
 
-### 1.1.配置条件注解
+### 1.1.配置
 
 你可以直接在原配置的基础上添加注解，为操作**指定触发条件**：
 
@@ -43,7 +43,7 @@ public interface OperatorInterface {
 }
 ~~~
 
-### 1.2.仅应用到指定操作
+### 1.2.绑定到操作
 
 当你在类、属性或方法上指定触发条件时，若该元素上同时声明了多个操作，那么条件**同时将应用到该元素上声明的所有操作**：
 
@@ -57,7 +57,7 @@ public class Foo {
 }
 ~~~
 
-如果你需要让操作条件仅对特定的操作生效，那么你需要让它们**通过 id 关联起来**：
+通过指定 `id`，你可以将条件绑定到指定的操作上，这样其他的操作就不会受到这个条件影响：
 
 ~~~java
 @ConditionOnExpression(
@@ -72,30 +72,23 @@ public class Foo {
 }
 ~~~
 
-### 1.3.注解的作用域
+### 1.3.取反
 
-操作条件的作用域总是仅限于该注解所在的元素本身。
-
-简单的来说，你在属性上添加了条件注解，那么这个条件注解**仅允许对同一个属性上声明的操作生效**，类或方法同理：
+你可以将注解的 `negation` 属性设置为 `true`，从而对条件取反：
 
 ~~~java
-@ConditionOnExpression( // 该条件不会生效，因为该注解下面两个操作配置没有被声明在同一个元素上
-    id = {"op1", "op2"},
-    value = "#target.name != 'user'"
-)
 public class Foo {
     
-    @Assemble(id = "op1", key = "id", container = "foo")
-    private String id;
-    
-    @Assemble(id = "op2", key = "key", container = "foo")
-    private String key;
+    // 下述条件等同于：code % 2 != 0
+    @ConditionOnExpression(value = "#target.code % 2 == 0", negation = true)
+    @Assemble(container = CONTAINER_NAME, sort = 2)
+    private Integer code;
 }
 ~~~
 
-### 1.4.组合条件
+### 1.4.组合
 
-你可以同时为操作应用多个条件，此时它们将会被合并为一个组合注解：
+你可以同时为操作应用多个条件，此时绑定到同一操作上的条件将会被合并为一个组合条件：
 
 ```java
 public class Foo {
@@ -107,9 +100,54 @@ public class Foo {
 }
 ```
 
-目前组合组件仅支持 “and” 语义，即所有的条件都满足时才允许应用该操作。
+你可以指定条件的类型为 `OR` 或 `AND`，并让它们以特定的顺序组合：
 
-## 2.可选条件
+~~~java
+public class Foo {
+    
+    // 下述条件等同于： (code % 3 == 0 && code % 3 == 0) || code == 0
+    
+    @ConditionOnExpression(
+        value = "#target.code % 3 == 0"
+        sort = 1
+    )
+    @ConditionOnExpression(
+        value = "#target.code % 2 == 0",
+        type = ConditionType.AND,
+        sort = 2
+    )
+    @ConditionOnExpression(
+        value = "#target.code == 0",
+        type = ConditionType.OR,
+        sort = 3
+    )
+    private Integer code;
+}
+~~~
+
+### 1.5.注解的作用域
+
+操作条件的作用域总是仅限于该注解所在的元素本身。
+
+简单的来说，你在属性上添加了条件注解，那么这个条件注解**仅允许对同一个属性上声明的操作生效**，类或方法同理：
+
+~~~java
+@ConditionOnExpression( // 该条件不会生效，因为该注解下面两个操作配置没有被声明在同一个元素上
+    id = {"op1", "op2"},
+    value = "#target.name != 'user'",
+    
+)
+public class Foo {
+    
+    @Assemble(id = "op1", key = "id", container = "foo")
+    private String id;
+    
+    @Assemble(id = "op2", key = "key", container = "foo")
+    private String key;
+}
+~~~
+
+## 2.内置注解
 
 ### 2.1.当表达式结果为真
 
@@ -205,22 +243,25 @@ public class Foo {
 
 **自定义注解**
 
-定义一个条件注解 `@ConditionOnTargetSerializable`：
+首先，定义一个条件注解 `@ConditionOnTargetSerializable`：
 
 ~~~java
 @Documented
 @Target({ElementType.ANNOTATION_TYPE, ElementType.FIELD, ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ConditionOnTargetSerializable {
-    
+    String[] id() default {};
+    ConditionType type() default ConditionType.AND;
+    boolean negation() default false;
+    int sort() default Integer.MAX_VALUE;
 }
 ~~~
 
 **实现注解解析器**
 
-你需要实现 `ConditionParser` 接口，定义一个用于解析 `@ConditionOnTargetSerializable` 注解的解析器.
+然后，你需要实现 `ConditionParser` 接口，定义一个用于解析 `@ConditionOnTargetSerializable` 注解的解析器。
 
-crane4j 默认提供了 `AbstractConditionParser` 模板类，它已经实现好了大部分逻辑：
+为了简化代码，crane4j 默认提供了 `AbstractConditionParser` 模板类，它已经实现好了大部分逻辑，你仅需要让自己的实现类继承它并实现关键的抽象方法即可：
 
 ~~~java
 public class TargetSerializableConditionParser
@@ -230,11 +271,27 @@ public class TargetSerializableConditionParser
         super(annotationFinder, ConditionOnTargetSerializable.class);
     }
     
+    @NonNull
+    @Override
+    protected ConditionDescriptor getConditionDescriptor(ConditionOnTargetSerializable annotation) {
+        return ConditionDescriptor.builder()
+            .operationIds(annotation.id()) // 条件要绑定到哪些操作上
+            .type(annotation.type()) // 当有多个条件时，该条件应该是 AND 还是 OR
+            .sort(annotation.sort()) // 当有多个条件时，该条件应该排在第几个
+            .negate(annotation.negation()) // 该条件是否需要取反
+            .build();
+    }
+    
     @Nullable
     @Override
     protected Condition createCondition(
         AnnotatedElement element, ConditionOnExpression annotation) {
-        return (t, op) -> t instanceof Serializable;
+        return new AbstractCondition() {
+            @Override
+            public boolean test(Object target, KeyTriggerOperation operation) {
+                return target instanceof Serializable;
+            }
+        }
     }
 }
 ~~~
@@ -245,7 +302,7 @@ public class TargetSerializableConditionParser
 
 在 Spring 环境，你只需要把自定义的注解解析器交给 Spring 管理即可，crane4j 会自行完成注册。
 
-而在非 Spring 环境中，你需要通过全局配置类获取该组件，并手动完成注册：
+而在非 Spring 环境中，你需要通过全局配置获取该组件，并手动完成注册：
 
 ~~~java
 Crane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create();

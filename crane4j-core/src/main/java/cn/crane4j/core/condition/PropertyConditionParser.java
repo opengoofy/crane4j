@@ -10,6 +10,7 @@ import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.ClassUtils;
 import cn.crane4j.core.util.StringUtils;
 import lombok.RequiredArgsConstructor;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.lang.reflect.AnnotatedElement;
@@ -37,18 +38,6 @@ public class PropertyConditionParser
     }
 
     /**
-     * Get id of operation which to bound.
-     *
-     * @param annotation annotation
-     * @return ids
-     */
-    @Nullable
-    @Override
-    protected String[] getOperationIds(ConditionOnProperty annotation) {
-        return annotation.id();
-    }
-
-    /**
      * create condition instance.
      *
      * @param element    element
@@ -57,12 +46,29 @@ public class PropertyConditionParser
      */
     @Nullable
     @Override
-    protected Condition createCondition(AnnotatedElement element, ConditionOnProperty annotation) {
+    protected AbstractCondition createCondition(AnnotatedElement element, ConditionOnProperty annotation) {
         String property = getPropertyName(element, annotation);
         boolean convertTypeWhenTest = ClassUtils.isObjectOrVoid(annotation.valueType());
         Object expectedValue = convertTypeWhenTest ?
             annotation.value() : converterManager.convert(annotation.value(), annotation.valueType());
         return new PropertyEqualsCondition(property, expectedValue, convertTypeWhenTest, annotation.enableNull());
+    }
+
+    /**
+     * Get condition properties.
+     *
+     * @param annotation annotation
+     * @return condition properties
+     */
+    @NonNull
+    @Override
+    protected ConditionDescriptor getConditionDescriptor(ConditionOnProperty annotation) {
+        return ConditionDescriptor.builder()
+            .operationIds(annotation.id())
+            .type(annotation.type())
+            .sort(annotation.sort())
+            .negate(annotation.negation())
+            .build();
     }
 
     private String getPropertyName(
@@ -74,13 +80,19 @@ public class PropertyConditionParser
         return property;
     }
 
+    /**
+     * Check whether the expected value equals to the actual value.
+     *
+     * @param expected expected
+     * @param actual actual
+     * @return true if equals, otherwise false
+     */
     protected boolean check(Object expected, Object actual) {
         return Objects.equals(expected, actual);
     }
 
-
     @RequiredArgsConstructor
-    private class PropertyEqualsCondition implements Condition {
+    private class PropertyEqualsCondition extends AbstractCondition {
         private final String property;
         private final Object expectedValue;
         private final boolean convertTypeWhenTest;

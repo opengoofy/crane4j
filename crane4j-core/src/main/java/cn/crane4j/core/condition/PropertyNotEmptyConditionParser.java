@@ -4,6 +4,7 @@ import cn.crane4j.annotation.condition.ConditionOnPropertyNotEmpty;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.util.ObjectUtils;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.lang.reflect.AnnotatedElement;
 
@@ -22,14 +23,20 @@ public class PropertyNotEmptyConditionParser
     }
 
     /**
-     * Get operation id.
+     * Get condition properties.
      *
      * @param annotation annotation
-     * @return ids
+     * @return condition properties
      */
+    @NonNull
     @Override
-    protected String[] getOperationIds(ConditionOnPropertyNotEmpty annotation) {
-        return annotation.id();
+    protected ConditionDescriptor getConditionDescriptor(ConditionOnPropertyNotEmpty annotation) {
+        return ConditionDescriptor.builder()
+            .operationIds(annotation.id())
+            .type(annotation.type())
+            .sort(annotation.sort())
+            .negate(annotation.negation())
+            .build();
     }
 
     /**

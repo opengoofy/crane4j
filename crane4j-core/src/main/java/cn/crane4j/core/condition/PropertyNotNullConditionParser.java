@@ -3,6 +3,7 @@ package cn.crane4j.core.condition;
 import cn.crane4j.annotation.condition.ConditionOnPropertyNotNull;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.reflect.PropertyOperator;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.lang.reflect.AnnotatedElement;
 import java.util.Objects;
@@ -22,16 +23,21 @@ public class PropertyNotNullConditionParser
     }
 
     /**
-     * Get operation id.
+     * Get condition properties.
      *
      * @param annotation annotation
-     * @return ids
+     * @return condition properties
      */
+    @NonNull
     @Override
-    protected String[] getOperationIds(ConditionOnPropertyNotNull annotation) {
-        return annotation.id();
+    protected ConditionDescriptor getConditionDescriptor(ConditionOnPropertyNotNull annotation) {
+        return ConditionDescriptor.builder()
+            .operationIds(annotation.id())
+            .type(annotation.type())
+            .sort(annotation.sort())
+            .negate(annotation.negation())
+            .build();
     }
-
     /**
      * Get property name.
      *

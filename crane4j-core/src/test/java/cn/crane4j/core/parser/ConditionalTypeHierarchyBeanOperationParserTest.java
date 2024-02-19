@@ -3,6 +3,7 @@ package cn.crane4j.core.parser;
 import cn.crane4j.annotation.Assemble;
 import cn.crane4j.annotation.condition.ConditionOnExpression;
 import cn.crane4j.annotation.condition.ConditionOnProperty;
+import cn.crane4j.annotation.condition.ConditionType;
 import cn.crane4j.core.condition.Condition;
 import cn.crane4j.core.condition.ExpressionConditionParser;
 import cn.crane4j.core.container.Container;
@@ -91,8 +92,8 @@ public class ConditionalTypeHierarchyBeanOperationParserTest {
         @Assemble(container = CONTAINER_NAME, sort = 2)
         private Integer key;
 
-        @ConditionOnExpression("#target.code % 3 == 0")
-        @ConditionOnExpression("#target.code % 2 == 0")
+        @ConditionOnExpression(value = "#target.code % 3 == 0", sort = 1)
+        @ConditionOnExpression(value = "#target.code % 2 == 0", sort = 2, type = ConditionType.AND)
         @Assemble(container = CONTAINER_NAME, sort = 3)
         private Integer code;
     }

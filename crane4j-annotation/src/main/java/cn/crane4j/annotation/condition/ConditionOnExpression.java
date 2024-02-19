@@ -8,7 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * An expression based condition what determine whether the operation should be executed.
+ * An expression-based condition what determine whether the operation should be executed.
  *
  * @author huangchengxing
  * @see cn.crane4j.core.condition.ExpressionConditionParser
@@ -21,20 +21,42 @@ import java.lang.annotation.Target;
 public @interface ConditionOnExpression {
 
     /**
-     * The id of operations which to bound.
+     * <p>The id of operations which to bound.<br/>
+     * If id is empty, the condition applies to all operations
+     * what declared on the same element as annotated by current annotation.
      *
      * @return operation id.
      */
     String[] id() default {};
 
     /**
-     * Expression
+     * The type of multi conditions.
+     *
+     * @return condition type
+     */
+    ConditionType type() default ConditionType.AND;
+
+    /**
+     * Whether the current condition to be negated.
+     *
+     * @return boolean
+     */
+    boolean negation() default false;
+
+    /**
+     * Get the order of the condition.
+     *
+     * @return sort
+     */
+    int sort() default Integer.MAX_VALUE;
+
+    /**
+     * The expression what evaluate to a boolean value or a boolean value string.
      *
      * @return expressions
      */
     String value() default "";
 
-    // TODO support choose "all-match" or "any-match" mode
     @Documented
     @Target({ElementType.ANNOTATION_TYPE, ElementType.FIELD, ElementType.TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
