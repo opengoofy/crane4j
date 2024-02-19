@@ -32,14 +32,13 @@ public abstract class AbstractPropertyConditionParser<A extends Annotation> exte
     /**
      * Create condition instance.
      *
-     * @param element    element
+     * @param element element
      * @param annotation annotation
      * @return condition instance
      */
     @Nullable
     @Override
-    protected Condition createCondition(AnnotatedElement element, A annotation) {
-        // determine property name
+    protected AbstractCondition createCondition(AnnotatedElement element, A annotation) {
         String property = getPropertyName(element, annotation);
         property = StringUtils.isEmpty(property) && element instanceof Field ?
             ((Field)element).getName() : property;
@@ -65,7 +64,7 @@ public abstract class AbstractPropertyConditionParser<A extends Annotation> exte
     protected abstract boolean checkPropertyValue(Object propertyValue);
 
     @RequiredArgsConstructor
-    private class PropertyValueCondition implements Condition {
+    private class PropertyValueCondition extends AbstractCondition {
         private final String property;
         @Override
         public boolean test(Object target, KeyTriggerOperation operation) {

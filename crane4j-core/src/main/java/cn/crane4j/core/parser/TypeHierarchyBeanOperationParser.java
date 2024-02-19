@@ -122,7 +122,7 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
         BeanOperations result = resolvedElements.get(element);
         if (Objects.isNull(result)) {
             synchronized (this) {
-                // target is parsed ?
+                // target is parsed?
                 result = resolvedElements.get(element);
                 if (Objects.isNull(result)) {
                     // target is in parsing?
@@ -174,7 +174,7 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
             childOperations = doParseForMethod((Method)source);
         }
         else {
-            // parse for other type
+            // parse for another type
             childOperations = doParseForElement(source);
         }
         mergeBeanOperationsToRootBeanOperations(root, childOperations);

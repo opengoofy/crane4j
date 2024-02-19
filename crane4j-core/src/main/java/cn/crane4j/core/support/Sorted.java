@@ -6,7 +6,7 @@ package cn.crane4j.core.support;
  * @author huangchengxing
  * @see Crane4jGlobalSorter
  */
-public interface Sorted {
+public interface Sorted extends Comparable<Sorted> {
 
     /**
      * <p>Gets the sorting value.<br />
@@ -16,5 +16,16 @@ public interface Sorted {
      */
     default int getSort() {
         return Integer.MAX_VALUE;
+    }
+
+    /**
+     * Compare the sorting value of the current object with the sorting value of the specified object.
+     *
+     * @param other the specified object
+     * @return the result of comparing the sorting value of the current object with the sorting value of the specified object
+     */
+    @Override
+    default int compareTo(Sorted other) {
+        return Integer.compare(this.getSort(), other.getSort());
     }
 }

@@ -8,6 +8,7 @@ import cn.crane4j.core.support.expression.ExpressionEvaluator;
 import cn.crane4j.core.util.Asserts;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.lang.reflect.AnnotatedElement;
@@ -37,18 +38,6 @@ public class ExpressionConditionParser
     }
 
     /**
-     * Get id of operation which to bound.
-     *
-     * @param annotation annotation
-     * @return ids
-     */
-    @Nullable
-    @Override
-    protected String[] getOperationIds(ConditionOnExpression annotation) {
-        return annotation.id();
-    }
-
-    /**
      * create condition instance.
      *
      * @param element    element
@@ -57,14 +46,31 @@ public class ExpressionConditionParser
      */
     @Nullable
     @Override
-    protected Condition createCondition(AnnotatedElement element, ConditionOnExpression annotation) {
+    protected AbstractCondition createCondition(AnnotatedElement element, ConditionOnExpression annotation) {
         String expression = annotation.value();
         Asserts.isNotEmpty(expression, "not specified expression to apply with annotation @{} on {}", annotationType.getSimpleName(), element);
         return new ExpressionCondition(expression);
     }
 
+    /**
+     * Get condition properties.
+     *
+     * @param annotation annotation
+     * @return condition properties
+     */
+    @NonNull
+    @Override
+    protected ConditionDescriptor getConditionDescriptor(ConditionOnExpression annotation) {
+        return ConditionDescriptor.builder()
+            .operationIds(annotation.id())
+            .type(annotation.type())
+            .sort(annotation.sort())
+            .negate(annotation.negation())
+            .build();
+    }
+
     @RequiredArgsConstructor
-    private class ExpressionCondition implements Condition {
+    private class ExpressionCondition extends AbstractCondition {
         private final String expression;
         @Override
         public boolean test(Object target, KeyTriggerOperation operation) {

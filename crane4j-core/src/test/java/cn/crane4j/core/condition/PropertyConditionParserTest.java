@@ -53,7 +53,7 @@ public class PropertyConditionParserTest {
         Assert.assertNotNull(condition2);
         Assert.assertTrue(condition2.test(new Foo(null, "success"), operation1));
         Assert.assertFalse(condition2.test(new Foo(null, "fail"), operation1));
-        Assert.assertFalse(condition2.test(new Foo(null, null), operation1));
+        Assert.assertTrue(condition2.test(new Foo(null, null), operation1));
     }
 
     @Getter
@@ -61,7 +61,7 @@ public class PropertyConditionParserTest {
     private static class Foo {
         @ConditionOnProperty(value = "success", valueType = String.class)
         private String field1;
-        @ConditionOnProperty(property = "field2", value = "success")
+        @ConditionOnProperty(property = "field2", value = "fail", negation = true)
         private String field2;
     }
 }
