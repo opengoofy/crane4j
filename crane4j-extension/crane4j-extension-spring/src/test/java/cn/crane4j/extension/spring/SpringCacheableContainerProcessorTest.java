@@ -5,11 +5,16 @@ import cn.crane4j.core.cache.CacheDefinition;
 import cn.crane4j.core.cache.CacheableContainer;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerDefinition;
-import cn.crane4j.core.support.SimpleCrane4jGlobalConfiguration;
+import cn.crane4j.core.container.ContainerManager;
+import cn.crane4j.core.container.Containers;
 import lombok.Getter;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -17,6 +22,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -25,15 +31,14 @@ import java.util.concurrent.TimeUnit;
  *
  * @author huangchengxing
  */
+@RunWith(SpringRunner.class)
+@ContextConfiguration(classes = {DefaultCrane4jSpringConfiguration.class, SpringCacheableContainerProcessorTest.TestConfig.class})
 public class SpringCacheableContainerProcessorTest {
 
+    @Autowired
+    private ContainerManager containerManager;
+    @Autowired
     private SpringCacheableContainerProcessor processor;
-
-    @Before
-    public void init() {
-        SimpleCrane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create();
-        processor = new SpringCacheableContainerProcessor(configuration);
-    }
 
     @Test
     public void testCacheDefinitionRetriever() {
@@ -78,6 +83,17 @@ public class SpringCacheableContainerProcessorTest {
         Assert.assertEquals(TimeUnit.SECONDS, definition.getTimeUnit());
     }
 
+    @Test
+    public void testWithAnnotationOnFactoryMethod() {
+        Container<String> container = containerManager.getContainer("testBean");
+        Assert.assertNotNull(container);
+        Assert.assertTrue(container instanceof CacheableContainer);
+        CacheDefinition definition = ((CacheableContainer<?>) container).getCacheDefinition();
+        Assert.assertEquals(container.getNamespace(), definition.getName());
+        Assert.assertEquals(1000L, definition.getExpireTime().longValue());
+        Assert.assertEquals(TimeUnit.SECONDS, definition.getTimeUnit());
+    }
+
     @Cached
     private static class TestContainerWithMetaAnnotation implements Container<Object> {
         @Getter
@@ -109,5 +125,16 @@ public class SpringCacheableContainerProcessorTest {
     @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD, ElementType.TYPE})
     @Retention(RetentionPolicy.RUNTIME)
     @interface Cached {
+    }
+
+    protected static class TestConfig {
+        @ContainerCache(
+            expirationTime = 1000L,
+            timeUnit = TimeUnit.SECONDS
+        )
+        @Bean("testBean")
+        public Container<String> container() {
+            return Containers.forMap("test", Collections.singletonMap("key", "value"));
+        }
     }
 }

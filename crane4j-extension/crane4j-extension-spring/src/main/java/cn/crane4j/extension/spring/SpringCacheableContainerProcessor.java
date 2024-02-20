@@ -4,8 +4,9 @@ import cn.crane4j.annotation.ContainerCache;
 import cn.crane4j.core.cache.CacheDefinition;
 import cn.crane4j.core.cache.CacheableContainerProcessor;
 import cn.crane4j.core.container.Container;
-import cn.crane4j.core.support.Crane4jGlobalConfiguration;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.aop.support.AopUtils;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 
 import java.util.Objects;
@@ -18,7 +19,7 @@ import java.util.Objects;
  */
 public class SpringCacheableContainerProcessor extends CacheableContainerProcessor {
 
-    public SpringCacheableContainerProcessor(Crane4jGlobalConfiguration configuration) {
+    public SpringCacheableContainerProcessor(Crane4jApplicationContext configuration) {
         super(configuration);
     }
 
@@ -34,11 +35,22 @@ public class SpringCacheableContainerProcessor extends CacheableContainerProcess
         if (Objects.nonNull(definition)) {
             return definition;
         }
-        Class<?> containerClass = AopUtils.getTargetClass(container);
-        ContainerCache annotation = AnnotatedElementUtils.findMergedAnnotation(containerClass, ContainerCache.class);
+        ContainerCache annotation = findAnnotation(container);
         return Objects.isNull(annotation) ? null : new CacheDefinition.Impl(
             container.getNamespace(), annotation.cacheManager(),
             annotation.expirationTime(), annotation.timeUnit()
         );
+    }
+
+    @Nullable
+    private ContainerCache findAnnotation(Container<Object> container) {
+        Crane4jApplicationContext context = (Crane4jApplicationContext)configuration;
+        String beanName = context.getBeanNameByNamespace(container.getNamespace());
+        if (Objects.nonNull(beanName)) {
+            ApplicationContext applicationContext = context.getApplicationContext();
+            return applicationContext.findAnnotationOnBean(beanName, ContainerCache.class);
+        }
+        Class<?> containerClass = AopUtils.getTargetClass(container);
+        return AnnotatedElementUtils.findMergedAnnotation(containerClass, ContainerCache.class);
     }
 }
