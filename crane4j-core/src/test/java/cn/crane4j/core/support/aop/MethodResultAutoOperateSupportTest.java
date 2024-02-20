@@ -10,7 +10,7 @@ import cn.crane4j.core.support.SimpleCrane4jGlobalConfiguration;
 import cn.crane4j.core.support.SimpleParameterNameFinder;
 import cn.crane4j.core.support.auto.AutoOperateAnnotatedElementResolver;
 import cn.crane4j.core.support.auto.MethodBasedAutoOperateAnnotatedElementResolver;
-import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
+import cn.crane4j.core.support.expression.MethodBasedExpressionEvaluator;
 import cn.crane4j.core.support.expression.OgnlExpressionContext;
 import cn.crane4j.core.support.expression.OgnlExpressionEvaluator;
 import cn.crane4j.core.util.ReflectUtils;
@@ -42,11 +42,11 @@ public class MethodResultAutoOperateSupportTest {
     public void init() {
         Crane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create();
         ParameterNameFinder parameterNameFinder = new SimpleParameterNameFinder();
-        MethodBaseExpressionExecuteDelegate expressionExecuteDelegate = new MethodBaseExpressionExecuteDelegate(
+        MethodBasedExpressionEvaluator expressionEvaluator = new MethodBasedExpressionEvaluator(
             parameterNameFinder, new OgnlExpressionEvaluator(), method -> new OgnlExpressionContext()
         );
         AutoOperateAnnotatedElementResolver resolver = new MethodBasedAutoOperateAnnotatedElementResolver(configuration, configuration.getTypeResolver());
-        support = new MethodResultAutoOperateSupport(resolver, expressionExecuteDelegate);
+        support = new MethodResultAutoOperateSupport(resolver, expressionEvaluator);
 
         configuration.registerContainer(LambdaContainer.<Integer>forLambda(
             "test", ids -> ids.stream().map(id -> new Foo(id, "name" + id))

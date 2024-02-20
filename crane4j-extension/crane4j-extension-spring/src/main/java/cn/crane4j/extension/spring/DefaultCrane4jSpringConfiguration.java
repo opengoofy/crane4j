@@ -47,7 +47,7 @@ import cn.crane4j.core.support.container.MethodContainerFactory;
 import cn.crane4j.core.support.container.MethodInvokerContainerCreator;
 import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
-import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
+import cn.crane4j.core.support.expression.MethodBasedExpressionEvaluator;
 import cn.crane4j.core.support.operator.ArgAutoOperateProxyMethodFactory;
 import cn.crane4j.core.support.operator.DynamicContainerOperatorProxyMethodFactory;
 import cn.crane4j.core.support.operator.OperationAnnotationProxyMethodFactory;
@@ -313,7 +313,7 @@ public class DefaultCrane4jSpringConfiguration implements SmartInitializingSingl
     @Order
     @Bean
     public ArgAutoOperateProxyMethodFactory argAutoOperateProxyMethodFactory(
-        AutoOperateAnnotatedElementResolver elementResolver, MethodBaseExpressionExecuteDelegate expressionExecuteDelegate,
+        AutoOperateAnnotatedElementResolver elementResolver, MethodBasedExpressionEvaluator expressionExecuteDelegate,
         ParameterNameFinder parameterNameFinder, AnnotationFinder annotationFinder) {
         return new ArgAutoOperateProxyMethodFactory(
             elementResolver, expressionExecuteDelegate, parameterNameFinder, annotationFinder
@@ -403,9 +403,9 @@ public class DefaultCrane4jSpringConfiguration implements SmartInitializingSingl
     }
 
     @Bean
-    public ResolvableExpressionEvaluator resolvableExpressionEvaluator(
+    public MethodBasedExpressionEvaluator methodBaseExpressionEvaluator(
         ExpressionEvaluator expressionEvaluator, ParameterNameFinder parameterNameFinder, BeanResolver beanResolver) {
-        return new ResolvableExpressionEvaluator(
+        return new MethodBasedExpressionEvaluator(
             parameterNameFinder, expressionEvaluator, method -> {
             SpelExpressionContext context = new SpelExpressionContext(method);
             context.setBeanResolver(beanResolver);
@@ -416,17 +416,16 @@ public class DefaultCrane4jSpringConfiguration implements SmartInitializingSingl
     @Bean
     public MethodResultAutoOperateAdvisor methodResultAutoOperateAdvisor(
         AutoOperateAnnotatedElementResolver autoOperateAnnotatedElementResolver,
-        ResolvableExpressionEvaluator resolvableExpressionEvaluator) {
-        return new MethodResultAutoOperateAdvisor(autoOperateAnnotatedElementResolver, resolvableExpressionEvaluator);
+        MethodBasedExpressionEvaluator methodBasedExpressionEvaluator) {
+        return new MethodResultAutoOperateAdvisor(autoOperateAnnotatedElementResolver, methodBasedExpressionEvaluator);
     }
 
     @Bean
     public MethodArgumentAutoOperateAdvisor methodArgumentAutoOperateAdvisor(
-        MethodBaseExpressionExecuteDelegate methodBaseExpressionExecuteDelegate,
+        MethodBasedExpressionEvaluator methodBasedExpressionEvaluator,
         AutoOperateAnnotatedElementResolver autoOperateAnnotatedElementResolver,
         ParameterNameFinder parameterNameDiscoverer, AnnotationFinder annotationFinder) {
-        return new MethodArgumentAutoOperateAdvisor(autoOperateAnnotatedElementResolver,
-            methodBaseExpressionExecuteDelegate,
+        return new MethodArgumentAutoOperateAdvisor(autoOperateAnnotatedElementResolver, methodBasedExpressionEvaluator,
             parameterNameDiscoverer, annotationFinder
         );
     }

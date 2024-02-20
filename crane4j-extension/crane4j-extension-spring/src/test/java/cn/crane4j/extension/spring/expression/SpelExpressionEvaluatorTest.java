@@ -4,6 +4,8 @@ import cn.crane4j.core.support.expression.ExpressionContext;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.config.EmbeddedValueResolver;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 
 /**
@@ -18,6 +20,7 @@ public class SpelExpressionEvaluatorTest {
     @Before
     public void init() {
         evaluator = new SpelExpressionEvaluator(new SpelExpressionParser());
+        evaluator.setEmbeddedValueResolver(new EmbeddedValueResolver(new DefaultListableBeanFactory()));
     }
 
     @Test

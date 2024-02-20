@@ -4,7 +4,7 @@ import cn.crane4j.annotation.ArgAutoOperate;
 import cn.crane4j.annotation.AutoOperate;
 import cn.crane4j.core.support.auto.AutoOperateAnnotatedElement;
 import cn.crane4j.core.support.auto.AutoOperateAnnotatedElementResolver;
-import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
+import cn.crane4j.core.support.expression.MethodBasedExpressionEvaluator;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,7 @@ import java.util.Objects;
  * will be used to complete the operation of data from the method result.
  *
  * <p>Support expression for {@link AutoOperate#condition()}, if the expression is not empty,
- * the expression will be evaluated by {@link MethodBaseExpressionExecuteDelegate},
+ * the expression will be evaluated by {@link MethodBasedExpressionEvaluator},
  * only when the expression returns true or "true", the operation will be applied.
  *
  * @author huangchengxing
@@ -33,18 +33,18 @@ public class MethodResultAutoOperateSupport {
 
     protected final Map<Method, AutoOperateAnnotatedElement> methodCaches = CollectionUtils.newWeakConcurrentMap();
     protected final AutoOperateAnnotatedElementResolver elementResolver;
-    protected final MethodBaseExpressionExecuteDelegate expressionExecuteDelegate;
+    protected final MethodBasedExpressionEvaluator expressionEvaluator;
 
     /**
      * Create a {@link MethodResultAutoOperateSupport} instance
      *
      * @param elementResolver element handler
-     * @param expressionExecuteDelegate method base expression evaluator delegate
+     * @param expressionEvaluator method base expression evaluator delegate
      */
     public MethodResultAutoOperateSupport(
-        AutoOperateAnnotatedElementResolver elementResolver, MethodBaseExpressionExecuteDelegate expressionExecuteDelegate) {
+        AutoOperateAnnotatedElementResolver elementResolver, MethodBasedExpressionEvaluator expressionEvaluator) {
         this.elementResolver = elementResolver;
-        this.expressionExecuteDelegate = expressionExecuteDelegate;
+        this.expressionEvaluator = expressionEvaluator;
     }
 
     /**
@@ -84,6 +84,6 @@ public class MethodResultAutoOperateSupport {
     }
 
     private boolean support(Method method, Object result, Object[] args, String condition) {
-        return StringUtils.isEmpty(condition) || Boolean.TRUE.equals(expressionExecuteDelegate.execute(condition, Boolean.class, method, args, result));
+        return StringUtils.isEmpty(condition) || Boolean.TRUE.equals(expressionEvaluator.execute(condition, Boolean.class, method, args, result));
     }
 }

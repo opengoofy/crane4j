@@ -15,7 +15,7 @@ import cn.crane4j.core.support.SimpleCrane4jGlobalConfiguration;
 import cn.crane4j.core.support.SimpleParameterNameFinder;
 import cn.crane4j.core.support.auto.MethodBasedAutoOperateAnnotatedElementResolver;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
-import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
+import cn.crane4j.core.support.expression.MethodBasedExpressionEvaluator;
 import cn.crane4j.core.support.expression.OgnlExpressionContext;
 import cn.crane4j.core.support.expression.OgnlExpressionEvaluator;
 import cn.crane4j.core.util.ReflectUtils;
@@ -48,7 +48,7 @@ public class ArgAutoOperateProxyMethodFactoryTest {
         ExpressionEvaluator expressionEvaluator = new OgnlExpressionEvaluator();
         ArgAutoOperateProxyMethodFactory proxyMethodFactory = new ArgAutoOperateProxyMethodFactory(
             new MethodBasedAutoOperateAnnotatedElementResolver(configuration, configuration.getTypeResolver()),
-            new MethodBaseExpressionExecuteDelegate(SimpleParameterNameFinder.INSTANCE, expressionEvaluator, OgnlExpressionContext::new),
+            new MethodBasedExpressionEvaluator(SimpleParameterNameFinder.INSTANCE, expressionEvaluator, OgnlExpressionContext::new),
             SimpleParameterNameFinder.INSTANCE, SimpleAnnotationFinder.INSTANCE
         );
 

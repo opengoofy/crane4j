@@ -9,7 +9,7 @@ import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.support.ParameterNameFinder;
 import cn.crane4j.core.support.aop.MethodArgumentAutoOperateSupport;
 import cn.crane4j.core.support.auto.AutoOperateAnnotatedElementResolver;
-import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
+import cn.crane4j.core.support.expression.MethodBasedExpressionEvaluator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -41,7 +41,7 @@ public class ArgAutoOperateProxyMethodFactory
      * @param annotationFinder          annotation finder
      */
     public ArgAutoOperateProxyMethodFactory(
-        AutoOperateAnnotatedElementResolver elementResolver, MethodBaseExpressionExecuteDelegate expressionExecuteDelegate,
+        AutoOperateAnnotatedElementResolver elementResolver, MethodBasedExpressionEvaluator expressionExecuteDelegate,
         ParameterNameFinder parameterNameFinder, AnnotationFinder annotationFinder) {
         super(elementResolver, expressionExecuteDelegate, parameterNameFinder, annotationFinder);
     }

@@ -1,5 +1,6 @@
 package cn.crane4j.extension.spring;
 
+import cn.crane4j.core.support.expression.MethodBasedExpressionEvaluator;
 import cn.crane4j.extension.spring.expression.SpelExpressionContext;
 import cn.crane4j.extension.spring.expression.SpelExpressionEvaluator;
 import org.junit.Assert;
@@ -13,25 +14,23 @@ import org.springframework.util.ReflectionUtils;
 import java.lang.reflect.Method;
 
 /**
- * test for {@link ResolvableExpressionEvaluator}
- *
  * @author huangchengxing
  */
 public class ResolvableExpressionEvaluatorTest {
 
     @Test
     public void testExecute() {
-        ResolvableExpressionEvaluator evaluator = new ResolvableExpressionEvaluator(
+        SpelExpressionEvaluator expressionEvaluator = new SpelExpressionEvaluator(new SpelExpressionParser());
+        expressionEvaluator.setEmbeddedValueResolver(new EmbeddedValueResolver(new DefaultListableBeanFactory()));
+        MethodBasedExpressionEvaluator evaluator = new MethodBasedExpressionEvaluator(
             new SpringParameterNameFinder(new DefaultParameterNameDiscoverer()),
-            new SpelExpressionEvaluator(new SpelExpressionParser()),
-            method -> new SpelExpressionContext()
+            expressionEvaluator, m -> new SpelExpressionContext()
         );
-        evaluator.setEmbeddedValueResolver(new EmbeddedValueResolver(new DefaultListableBeanFactory()));
 
         Method method = ReflectionUtils.findMethod(ResolvableExpressionEvaluatorTest.class, "compute", Integer.class, Integer.class);
         Assert.assertNotNull(method);
         String expression = "#a + #b + #result";
-        ResolvableExpressionEvaluator.MethodExecution execution = new ResolvableExpressionEvaluator.MethodExecution(
+        MethodBasedExpressionEvaluator.MethodExecution execution = new MethodBasedExpressionEvaluator.MethodExecution(
             new Object[]{2, 3}, method, 5
         );
         Integer result = evaluator.execute(expression, Integer.class, execution);
@@ -40,12 +39,15 @@ public class ResolvableExpressionEvaluatorTest {
         method = ReflectionUtils.findMethod(ResolvableExpressionEvaluatorTest.class, "compute");
         Assert.assertNotNull(method);
         expression = "#result == 0";
-        execution = new ResolvableExpressionEvaluator.MethodExecution(
+        execution = new MethodBasedExpressionEvaluator.MethodExecution(
             new Object[]{2, 3}, method, 0
         );
-        Assert.assertTrue(evaluator.execute(expression, Boolean.class, execution));
+        Assert.assertEquals(Boolean.TRUE, evaluator.execute(expression, Boolean.class, execution));
 
-        evaluator.setEmbeddedValueResolver(null);
+        evaluator = new MethodBasedExpressionEvaluator(
+            new SpringParameterNameFinder(new DefaultParameterNameDiscoverer()),
+            new SpelExpressionEvaluator(new SpelExpressionParser()), m -> new SpelExpressionContext()
+        );
         evaluator.execute(expression, Boolean.class, execution);
     }
 

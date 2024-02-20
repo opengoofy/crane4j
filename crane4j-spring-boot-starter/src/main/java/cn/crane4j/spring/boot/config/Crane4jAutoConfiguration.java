@@ -55,7 +55,7 @@ import cn.crane4j.core.support.container.MethodContainerFactory;
 import cn.crane4j.core.support.container.MethodInvokerContainerCreator;
 import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
-import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
+import cn.crane4j.core.support.expression.MethodBasedExpressionEvaluator;
 import cn.crane4j.core.support.operator.ArgAutoOperateProxyMethodFactory;
 import cn.crane4j.core.support.operator.DynamicContainerOperatorProxyMethodFactory;
 import cn.crane4j.core.support.operator.OperationAnnotationProxyMethodFactory;
@@ -74,7 +74,6 @@ import cn.crane4j.extension.spring.BeanAwareAssembleMethodAnnotationHandler;
 import cn.crane4j.extension.spring.BeanMethodContainerRegistrar;
 import cn.crane4j.extension.spring.Crane4jApplicationContext;
 import cn.crane4j.extension.spring.MergedAnnotationFinder;
-import cn.crane4j.extension.spring.ResolvableExpressionEvaluator;
 import cn.crane4j.extension.spring.SpringCacheableContainerProcessor;
 import cn.crane4j.extension.spring.SpringConverterManager;
 import cn.crane4j.extension.spring.SpringParameterNameFinder;
@@ -545,7 +544,7 @@ public class Crane4jAutoConfiguration {
     @Order
     @Bean
     public ArgAutoOperateProxyMethodFactory argAutoOperateProxyMethodFactory(
-        AutoOperateAnnotatedElementResolver elementResolver, MethodBaseExpressionExecuteDelegate expressionExecuteDelegate,
+        AutoOperateAnnotatedElementResolver elementResolver, MethodBasedExpressionEvaluator expressionExecuteDelegate,
         ParameterNameFinder parameterNameFinder, AnnotationFinder annotationFinder) {
         return new ArgAutoOperateProxyMethodFactory(
             elementResolver, expressionExecuteDelegate, parameterNameFinder, annotationFinder
@@ -558,15 +557,14 @@ public class Crane4jAutoConfiguration {
 
     @ConditionalOnMissingBean
     @Bean
-    public ResolvableExpressionEvaluator resolvableExpressionEvaluator(
+    public MethodBasedExpressionEvaluator methodBaseExpressionEvaluator(
         ExpressionEvaluator expressionEvaluator, ParameterNameFinder parameterNameFinder, BeanResolver beanResolver) {
-        return new ResolvableExpressionEvaluator(
+        return new MethodBasedExpressionEvaluator(
             parameterNameFinder, expressionEvaluator, method -> {
             SpelExpressionContext context = new SpelExpressionContext(method);
             context.setBeanResolver(beanResolver);
             return context;
-        }
-        );
+        });
     }
 
     @ConditionalOnMissingBean
@@ -578,8 +576,8 @@ public class Crane4jAutoConfiguration {
     @Bean
     public MethodResultAutoOperateAdvisor methodResultAutoOperateAdvisor(
         AutoOperateAnnotatedElementResolver autoOperateAnnotatedElementResolver,
-        ResolvableExpressionEvaluator resolvableExpressionEvaluator) {
-        return new MethodResultAutoOperateAdvisor(autoOperateAnnotatedElementResolver, resolvableExpressionEvaluator);
+        MethodBasedExpressionEvaluator methodBasedExpressionEvaluator) {
+        return new MethodResultAutoOperateAdvisor(autoOperateAnnotatedElementResolver, methodBasedExpressionEvaluator);
     }
 
     @ConditionalOnMissingBean
@@ -590,11 +588,10 @@ public class Crane4jAutoConfiguration {
     )
     @Bean
     public MethodArgumentAutoOperateAdvisor methodArgumentAutoOperateAdvisor(
-        MethodBaseExpressionExecuteDelegate methodBaseExpressionExecuteDelegate,
+        MethodBasedExpressionEvaluator methodBasedExpressionEvaluator,
         AutoOperateAnnotatedElementResolver autoOperateAnnotatedElementResolver,
         ParameterNameFinder parameterNameDiscoverer, AnnotationFinder annotationFinder) {
-        return new MethodArgumentAutoOperateAdvisor(autoOperateAnnotatedElementResolver,
-            methodBaseExpressionExecuteDelegate,
+        return new MethodArgumentAutoOperateAdvisor(autoOperateAnnotatedElementResolver, methodBasedExpressionEvaluator,
             parameterNameDiscoverer, annotationFinder
         );
     }

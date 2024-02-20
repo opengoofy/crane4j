@@ -7,7 +7,7 @@ import cn.crane4j.core.support.ParameterNameFinder;
 import cn.crane4j.core.support.aop.MethodArgumentAutoOperateSupport;
 import cn.crane4j.core.support.auto.AutoOperateAnnotatedElement;
 import cn.crane4j.core.support.auto.AutoOperateAnnotatedElementResolver;
-import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
+import cn.crane4j.core.support.expression.MethodBasedExpressionEvaluator;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.aop.Advice;
@@ -43,7 +43,7 @@ public class MethodArgumentAutoOperateAdvisor
 
     public MethodArgumentAutoOperateAdvisor(
         AutoOperateAnnotatedElementResolver elementResolver,
-        MethodBaseExpressionExecuteDelegate expressionExecuteDelegate,
+        MethodBasedExpressionEvaluator expressionExecuteDelegate,
         ParameterNameFinder parameterNameFinder, AnnotationFinder annotationFinder) {
         super(elementResolver, expressionExecuteDelegate, parameterNameFinder, annotationFinder);
         log.info("enable automatic filling of method argument");
