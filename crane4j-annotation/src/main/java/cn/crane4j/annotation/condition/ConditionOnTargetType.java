@@ -8,17 +8,18 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * A condition what apply the operation only when the specified property exists and its value matches the expected value.
+ * A condition what apply the operation only when
+ * the target which to be operated is assignable from the specified type.
  *
  * @author huangchengxing
- * @see cn.crane4j.core.condition.ConditionOnPropertyParser
+ * @see cn.crane4j.core.condition.ConditionOnTargetTypeParser
  * @since 2.6.0
  */
-@Repeatable(value = ConditionOnProperty.List.class)
+@Repeatable(value = ConditionOnTargetType.List.class)
 @Documented
 @Target({ElementType.ANNOTATION_TYPE, ElementType.FIELD, ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ConditionOnProperty {
+public @interface ConditionOnTargetType {
 
     /**
      * <p>The id of operations which to bound.<br/>
@@ -51,38 +52,23 @@ public @interface ConditionOnProperty {
     int sort() default Integer.MAX_VALUE;
 
     /**
-     * <p>The property name.<br/>
-     * When this annotation is used on a field, the property name is the field name by default.
+     * Type of the target.
      *
-     * @return property name
+     * @return namespace
      */
-    String property() default "";
+    Class<?>[] value() default {};
 
     /**
-     * The expected property value.
+     * Whether the target type should be strictly matched.
      *
-     * @return property value.
+     * @return true if the target type should be strictly matched, otherwise false
      */
-    String value() default "";
-
-    /**
-     * The type of expected property value.
-     *
-     * @return expected property value
-     */
-    Class<?> valueType() default Object.class;
-
-    /**
-     * Whether to enable apply operation when the property value is null.
-     *
-     * @return true if enabled, otherwise false.
-     */
-    boolean enableNull() default false;
+    boolean strict() default false;
 
     @Documented
     @Target({ElementType.ANNOTATION_TYPE, ElementType.FIELD, ElementType.TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
     @interface List {
-        ConditionOnProperty[] value();
+        ConditionOnTargetType[] value();
     }
 }

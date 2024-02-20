@@ -64,22 +64,22 @@ public class ConditionalTypeHierarchyBeanOperationParser
         return operations;
     }
 
-    protected void process(
+    private void process(
         AnnotatedElement element, Collection<KeyTriggerOperation> operations) {
-        MultiMap<String, Condition> conditions = MultiMap.arrayListMultimap();
-        operations.forEach(operation -> conditionParsers.stream()
-            .map(parser -> parser.parse(element, operation))
-            .filter(mm -> !mm.isEmpty())
-            .forEach(conditions::putAll)
-        );
-        operations.forEach(op -> {
-            Collection<Condition> cs = conditions.get(op.getId());
-            if (!cs.isEmpty()) {
-                bindConditionToOperation(cs, op);
-            }
-        });
+        for (KeyTriggerOperation operation : operations) {
+            conditionParsers.stream()
+                .map(parser -> parser.parse(element, operation))
+                .filter(CollectionUtils::isNotEmpty)
+                .forEach(conditions -> bindConditionToOperation(conditions, operation));
+        }
     }
 
+    /**
+     * Bind condition to operation.
+     *
+     * @param conditions conditions
+     * @param operation operation
+     */
     protected void bindConditionToOperation(
         Collection<Condition> conditions, KeyTriggerOperation operation) {
         Condition condition = conditions.size() > 1 ?

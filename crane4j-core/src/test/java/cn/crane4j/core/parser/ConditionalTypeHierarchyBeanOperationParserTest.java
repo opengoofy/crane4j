@@ -5,7 +5,7 @@ import cn.crane4j.annotation.condition.ConditionOnExpression;
 import cn.crane4j.annotation.condition.ConditionOnProperty;
 import cn.crane4j.annotation.condition.ConditionType;
 import cn.crane4j.core.condition.Condition;
-import cn.crane4j.core.condition.ExpressionConditionParser;
+import cn.crane4j.core.condition.ConditionOnExpressionParser;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.LambdaContainer;
 import cn.crane4j.core.parser.operation.AssembleOperation;
@@ -42,7 +42,7 @@ public class ConditionalTypeHierarchyBeanOperationParserTest {
         configuration.registerContainer(CONTAINER);
         parser = (ConditionalTypeHierarchyBeanOperationParser)configuration
             .getBeanOperationsParser(null, ConditionalTypeHierarchyBeanOperationParser.class);
-        parser.registerConditionParser(new ExpressionConditionParser(
+        parser.registerConditionParser(new ConditionOnExpressionParser(
             SimpleAnnotationFinder.INSTANCE, new OgnlExpressionEvaluator(), (t, op) -> new OgnlExpressionContext(t)
         ));
     }

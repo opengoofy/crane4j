@@ -3,9 +3,11 @@ package cn.crane4j.core.support;
 import cn.crane4j.core.cache.CacheManager;
 import cn.crane4j.core.cache.GuavaCacheManager;
 import cn.crane4j.core.cache.MapCacheManager;
-import cn.crane4j.core.condition.PropertyConditionParser;
-import cn.crane4j.core.condition.PropertyNotEmptyConditionParser;
-import cn.crane4j.core.condition.PropertyNotNullConditionParser;
+import cn.crane4j.core.condition.ConditionOnContainerParser;
+import cn.crane4j.core.condition.ConditionOnPropertyNotEmptyParser;
+import cn.crane4j.core.condition.ConditionOnPropertyNotNullParser;
+import cn.crane4j.core.condition.ConditionOnPropertyParser;
+import cn.crane4j.core.condition.ConditionOnTargetTypeParser;
 import cn.crane4j.core.container.ContainerProvider;
 import cn.crane4j.core.container.DefaultContainerManager;
 import cn.crane4j.core.container.lifecycle.ContainerRegisterLogger;
@@ -120,9 +122,11 @@ public class SimpleCrane4jGlobalConfiguration extends DefaultContainerManager
 
         // operation parser and condition parser
         ConditionalTypeHierarchyBeanOperationParser beanOperationParser = new ConditionalTypeHierarchyBeanOperationParser();
-        beanOperationParser.registerConditionParser(new PropertyConditionParser(annotationFinder, operator, converter));
-        beanOperationParser.registerConditionParser(new PropertyNotNullConditionParser(annotationFinder, operator));
-        beanOperationParser.registerConditionParser(new PropertyNotEmptyConditionParser(annotationFinder, operator));
+        beanOperationParser.registerConditionParser(new ConditionOnPropertyParser(annotationFinder, operator, converter));
+        beanOperationParser.registerConditionParser(new ConditionOnPropertyNotNullParser(annotationFinder, operator));
+        beanOperationParser.registerConditionParser(new ConditionOnPropertyNotEmptyParser(annotationFinder, operator));
+        beanOperationParser.registerConditionParser(new ConditionOnTargetTypeParser(annotationFinder));
+        beanOperationParser.registerConditionParser(new ConditionOnContainerParser(annotationFinder, configuration));
         configuration.getBeanOperationParserMap().put(BeanOperationParser.class.getSimpleName(), beanOperationParser);
         configuration.getBeanOperationParserMap().put(TypeHierarchyBeanOperationParser.class.getSimpleName(), beanOperationParser);
         configuration.getBeanOperationParserMap().put(beanOperationParser.getClass().getSimpleName(), beanOperationParser);

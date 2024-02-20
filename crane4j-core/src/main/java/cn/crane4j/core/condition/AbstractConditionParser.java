@@ -5,7 +5,6 @@ import cn.crane4j.core.parser.operation.KeyTriggerOperation;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.util.ArrayUtils;
 import cn.crane4j.core.util.CollectionUtils;
-import cn.crane4j.core.util.MultiMap;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,7 +18,9 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -41,34 +42,33 @@ public abstract class AbstractConditionParser<A extends Annotation> implements C
      *
      * @param element element
      * @param operation operation
-     * @return condition with id
+     * @return conditions
      */
     @NonNull
     @Override
-    public final MultiMap<String, Condition> parse(
+    public final List<Condition> parse(
         AnnotatedElement element, KeyTriggerOperation operation) {
         if (ignored.contains(element)) {
-            return MultiMap.emptyMultiMap();
+            return Collections.emptyList();
         }
-        MultiMap<String, Condition> results = doParse(element, operation);
+        List<Condition> results = doParse(element, operation);
         if (results.isEmpty()) {
             ignored.add(element);
-            return MultiMap.emptyMultiMap();
+            return Collections.emptyList();
         }
         return results;
     }
 
     @NonNull
-    private MultiMap<String, Condition> doParse(AnnotatedElement element, KeyTriggerOperation operation) {
+    private List<Condition> doParse(AnnotatedElement element, KeyTriggerOperation operation) {
         Set<A> annotations = annotationFinder.getAllAnnotations(element, annotationType);
         if (annotations.isEmpty()) {
-            return MultiMap.emptyMultiMap();
+            return Collections.emptyList();
         }
-        MultiMap<String, Condition> results = MultiMap.arrayListMultimap();
+        List<Condition> results = new ArrayList<>();
         annotations.forEach(annotation -> {
             ConditionDescriptor descriptor = getConditionDescriptor(annotation);
-            String[] ids = determineIds(descriptor.getOperationIds(), operation, annotation);
-            if (Objects.isNull(ids)) {
+            if (!canApply(descriptor.getOperationIds(), operation)) {
                 return;
             }
             Condition condition = createCondition(element, annotation);
@@ -79,20 +79,13 @@ public abstract class AbstractConditionParser<A extends Annotation> implements C
                 .setSort(descriptor.getSort())
                 .setType(descriptor.getType());
             condition = descriptor.isNegate() ? condition.negate() : condition;
-            for (String id : ids) {
-                results.put(id, condition);
-            }
+            results.add(condition);
         });
         return results;
     }
 
-    @Nullable
-    private String[] determineIds(String[] ids, KeyTriggerOperation operation, A annotation) {
-        if (ArrayUtils.isNotEmpty(ids)) {
-            // this condition should apply to the current operation?
-            return ArrayUtils.contains(ids, operation.getId()) ? null : ids;
-        }
-        return new String[] { operation.getId() };
+    private boolean canApply(String[] ids, KeyTriggerOperation operation) {
+        return ArrayUtils.isEmpty(ids) || ArrayUtils.contains(ids, operation.getId());
     }
 
     /**

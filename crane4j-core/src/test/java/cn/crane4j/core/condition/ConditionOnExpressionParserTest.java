@@ -18,11 +18,11 @@ import java.lang.reflect.Field;
 import java.util.Collection;
 
 /**
- * test for {@link ExpressionConditionParser}
+ * test for {@link ConditionOnExpressionParser}
  *
  * @author huangchengxing
  */
-public class ExpressionConditionParserTest {
+public class ConditionOnExpressionParserTest {
 
     @ConditionOnExpression(value = "#target.status == 'success'")
     private Object annotated;
@@ -31,24 +31,23 @@ public class ExpressionConditionParserTest {
     @SneakyThrows
     @Test
     public void test() {
-        ExpressionConditionParser parser = new ExpressionConditionParser(
+        ConditionOnExpressionParser parser = new ConditionOnExpressionParser(
             SimpleAnnotationFinder.INSTANCE, new OgnlExpressionEvaluator(), (t, op) -> new OgnlExpressionContext()
         );
 
-        Field annotatedField = ExpressionConditionParserTest.class.getDeclaredField("annotated");
+        Field annotatedField = ConditionOnExpressionParserTest.class.getDeclaredField("annotated");
         KeyTriggerOperation operationOfAnnotatedField = SimpleKeyTriggerOperation.builder()
             .source(annotatedField)
             .id(annotatedField.getName())
             .key(annotatedField.getName())
             .build();
-        Collection<Condition> conditions = parser.parse((AnnotatedElement)operationOfAnnotatedField.getSource(), operationOfAnnotatedField)
-            .get(operationOfAnnotatedField.getId());
+        Collection<Condition> conditions = parser.parse((AnnotatedElement)operationOfAnnotatedField.getSource(), operationOfAnnotatedField);
         Assert.assertEquals(1, conditions.size());
         Condition condition = CollectionUtils.getFirstNotNull(conditions);
         Assert.assertNotNull(condition);
         Assert.assertTrue(condition.test(new Foo("success"), operationOfAnnotatedField));
 
-        Field notAnnotatedField = ExpressionConditionParserTest.class.getDeclaredField("notAnnotated");
+        Field notAnnotatedField = ConditionOnExpressionParserTest.class.getDeclaredField("notAnnotated");
         KeyTriggerOperation operationOfNotAnnotatedField = SimpleKeyTriggerOperation.builder()
             .source(notAnnotatedField)
             .id(notAnnotatedField.getName())

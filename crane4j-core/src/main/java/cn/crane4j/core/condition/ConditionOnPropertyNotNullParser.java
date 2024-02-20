@@ -14,10 +14,10 @@ import java.util.Objects;
  * @author huangchengxing
  * @since 2.6.0
  */
-public class PropertyNotNullConditionParser
+public class ConditionOnPropertyNotNullParser
     extends AbstractPropertyConditionParser<ConditionOnPropertyNotNull> {
 
-    public PropertyNotNullConditionParser(
+    public ConditionOnPropertyNotNullParser(
         AnnotationFinder annotationFinder, PropertyOperator propertyOperator) {
         super(annotationFinder, ConditionOnPropertyNotNull.class, propertyOperator);
     }
