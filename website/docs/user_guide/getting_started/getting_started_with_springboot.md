@@ -63,16 +63,6 @@ public class Crane4jConfiguration {
 
 项目启动后，`crane4j` 相关组件将会注册到 Spring 上下文中。
 
-:::warning
-
-在 web 环境中，通过注解启用框架时有可能会出现 “No ServletContext set” 问题，关于该问题的解决方案参见：
-
-[在启动类添加 `@EnableCrane4j` 注解后，启动应用报错 “No ServletContext set”](https://github.com/opengoofy/crane4j/issues/126)
-
-当然，最推荐的还是直接升级 crane4j 版本。
-
-:::
-
 ## 3.配置数据源
 
 在开始填充对象之前，你需要提前准备好一些数据源，并将其注册到全局配置对象中。
