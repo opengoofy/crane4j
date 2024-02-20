@@ -16,6 +16,9 @@ import cn.crane4j.core.support.TypeResolver;
 import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.util.ConfigurationUtil;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -74,7 +77,13 @@ public class Crane4jApplicationContext extends DefaultContainerManager
     /**
      * application context
      */
+    @Getter
     private final ApplicationContext applicationContext;
+
+    /**
+     * bean name <-> container namespace
+     */
+    private final BiMap<String, String> beanNameNamespaceMapping = HashBiMap.create();
 
     /**
      * Get {@link ConverterManager}
@@ -132,9 +141,9 @@ public class Crane4jApplicationContext extends DefaultContainerManager
     @Nullable
     @Override
     public <K> Container<K> getContainer(String namespace) {
-        Container<K> container = super.getContainer(namespace);
-        return Objects.isNull(container) && applicationContext.containsBean(namespace) ?
-                applicationContext.getBean(namespace, Container.class) : container;
+        // if namespace is a bean name, convert it to namespace, otherwise use it directly
+        namespace = beanNameNamespaceMapping.getOrDefault(namespace, namespace);
+        return super.getContainer(namespace);
     }
 
     /**
@@ -226,6 +235,28 @@ public class Crane4jApplicationContext extends DefaultContainerManager
         return applicationContext.getBean(name, CacheManager.class);
     }
 
+    /**
+     * Get bean name by namespace.
+     *
+     * @param namespace namespace
+     * @return bean name
+     */
+    @Nullable
+    public String getBeanNameByNamespace(String namespace) {
+        return beanNameNamespaceMapping.inverse().get(namespace);
+    }
+
+    /**
+     * Get namespace by bean name.
+     *
+     * @param beanName namespace
+     * @return namespace
+     */
+    @Nullable
+    public String getNamespaceByBeanName(String beanName) {
+        return beanNameNamespaceMapping.get(beanName);
+    }
+
     // ============================ life cycle ============================
 
     /**
@@ -245,12 +276,21 @@ public class Crane4jApplicationContext extends DefaultContainerManager
      */
     @Override
     public void afterSingletonsInstantiated() {
-        applicationContext.getBeansOfType(ContainerDefinition.class)
-            .values().forEach(this::registerContainer);
-        applicationContext.getBeansOfType(Container.class)
-            .values().forEach(this::registerContainer);
+        applicationContext.getBeansOfType(ContainerDefinition.class).forEach((beanName, definition) -> {
+            beanNameNamespaceMapping.put(beanName, definition.getNamespace());
+            log.info("register container definition bean [{}] from spring context, actual namespace is [{}]", beanName, definition.getNamespace());
+            registerContainer(definition);
+        });
+        applicationContext.getBeansOfType(Container.class).forEach((beanName, container) -> {
+            beanNameNamespaceMapping.put(beanName, container.getNamespace());
+            log.info("register container bean [{}] bean from spring context, actual namespace is [{}]", beanName, container.getNamespace());
+            registerContainer(container);
+        });
         applicationContext.getBeansOfType(ContainerProvider.class)
-            .forEach(this::registerContainerProvider);
+            .forEach((beanName, provider) -> {
+                log.info("register container provider [{}] from spring context", beanName);
+                registerContainerProvider(beanName, provider);
+            });
     }
 
     /**

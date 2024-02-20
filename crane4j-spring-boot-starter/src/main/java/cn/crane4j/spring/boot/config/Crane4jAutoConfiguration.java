@@ -239,7 +239,7 @@ public class Crane4jAutoConfiguration {
     @ConditionalOnMissingBean
     @Bean
     public SpringCacheableContainerProcessor springCacheableContainerProcessor(
-        Crane4jGlobalConfiguration configuration, Properties properties) {
+        Crane4jApplicationContext configuration, Properties properties) {
         SpringCacheableContainerProcessor processor = new SpringCacheableContainerProcessor(configuration);
         Map<String, CacheDefinition> definitions = properties.getCaches().stream()
             .collect(Collectors.toMap(CacheDefinition::getName, Function.identity()));
