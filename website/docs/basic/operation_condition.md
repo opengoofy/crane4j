@@ -43,6 +43,13 @@ public interface OperatorInterface {
 }
 ~~~
 
+:::tip
+
+- 关于在属性和类上声明操作配置，请参见 [声明装配操作](./declare_assemble_operation.md) 与 [声明拆卸操作](./declare_disassemble_operation.md) 一节；
+- 关于操作者接口，请参见 [基于接口填充](./../advanced/operator_interface.md) 一节；
+
+:::
+
 ### 1.2.绑定到操作
 
 当你在类、属性或方法上指定触发条件时，若该元素上同时声明了多个操作，那么条件**同时将应用到该元素上声明的所有操作**：
@@ -105,8 +112,12 @@ public class Foo {
 ~~~java
 public class Foo {
     
-    // 下述条件等同于： (code % 3 == 0 && code % 3 == 0) || code == 0
+    // 下述条件等同于： code != null || ((code % 3 == 0 && code % 3 == 0) || code == 0)
     
+    @ConditionOnPropertyNotNull(
+        type = ConditionType.OR,
+        sort = 0
+    )
     @ConditionOnExpression(
         value = "#target.code % 3 == 0"
         sort = 1
@@ -124,6 +135,14 @@ public class Foo {
     private Integer code;
 }
 ~~~
+
+:::tip
+
+当条件你有较为复杂的判断逻辑时，你也可以选择令目标类实现 `OperationAwareBean` 接口或  `SmartOperationAwareBean` 接口，直接通过编码来进行判断。相比起注解式配置，会更加灵活而直观。
+
+具体内容可参见 [组件的回调接口](./../advanced/callback_of_component.md) 一节中的 “对象回调接口” 这一小节。 
+
+:::
 
 ### 1.5.注解的作用域
 
@@ -213,6 +232,14 @@ public class Foo {
     private Integer id;
 }
 ~~~
+
+:::tip
+
+注意，当 `enableNull` 设置为 `false` 时，实际上判断条件是 `property != null && expect.equals(property)`。
+
+如果此时你又指定 `negation` 属性为 `true` 进行取反，那么最终的判断条件就是 `property == null || !expect.equals(property)`，即 `!(property != null && expect.equals(property))`。
+
+:::
 
 ### 2.3.当指定属性值非空
 

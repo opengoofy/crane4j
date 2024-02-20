@@ -93,6 +93,9 @@ public class BeanMethodContainerRegistrar
         Object target, Class<?> targetType, @Nullable UnaryOperator<Container<Object>> customizer) {
         Asserts.isNotNull(applicationContext, "applicationContext must not be null");
         Collection<Container<Object>> containers = process(target, targetType);
+        if (containers.isEmpty()) {
+            return;
+        }
         log.debug("process [{}] annotated methods for bean [{}]", containers.size(), target);
         customizer = Objects.isNull(customizer) ? UnaryOperator.identity() : customizer;
         containers.stream()

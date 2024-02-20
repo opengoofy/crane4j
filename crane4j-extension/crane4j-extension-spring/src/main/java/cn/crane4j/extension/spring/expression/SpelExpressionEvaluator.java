@@ -4,13 +4,17 @@ import cn.crane4j.core.support.expression.ExpressionContext;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
 import cn.crane4j.core.util.CollectionUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.context.EmbeddedValueResolverAware;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
+import org.springframework.util.StringValueResolver;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * {@link ExpressionEvaluator} implementation based on spring SpEL.
@@ -18,10 +22,12 @@ import java.util.Map;
  * @author huangchengxing
  */
 @RequiredArgsConstructor
-public class SpelExpressionEvaluator implements ExpressionEvaluator, DisposableBean {
+public class SpelExpressionEvaluator implements ExpressionEvaluator, DisposableBean, EmbeddedValueResolverAware {
 
     private final Map<String, Expression> expressionCaches = CollectionUtils.newWeakConcurrentMap();
     private final ExpressionParser expressionParser;
+    @Setter
+    private StringValueResolver embeddedValueResolver;
 
     /**
      * Execute the expression in the specified above and return the execution result.
@@ -35,6 +41,8 @@ public class SpelExpressionEvaluator implements ExpressionEvaluator, DisposableB
     @Nullable
     @Override
     public <T> T execute(String expression, Class<T> resultType, ExpressionContext context) {
+        expression = Objects.isNull(embeddedValueResolver) ?
+            expression : embeddedValueResolver.resolveStringValue(expression);
         EvaluationContext evaluationContext = (context instanceof SpelExpressionContext) ?
             (EvaluationContext)context : new SpelExpressionContext(context);
         return parseExpression(expression).getValue(evaluationContext, resultType);

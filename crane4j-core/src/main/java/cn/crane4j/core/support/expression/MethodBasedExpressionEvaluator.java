@@ -19,7 +19,7 @@ import java.util.function.Function;
  * @author huangchengxing
  */
 @RequiredArgsConstructor
-public class MethodBaseExpressionExecuteDelegate {
+public class MethodBasedExpressionEvaluator {
 
     public static final String RESULT = "result";
     protected final ParameterNameFinder parameterNameDiscoverer;
@@ -52,7 +52,7 @@ public class MethodBaseExpressionExecuteDelegate {
      */
     @Nullable
     public <T> T execute(String expression, Class<T> resultType, Method method, Object[] args, Object result) {
-        return execute(expression, resultType, new MethodBaseExpressionExecuteDelegate.MethodExecution(args, method, result));
+        return execute(expression, resultType, new MethodBasedExpressionEvaluator.MethodExecution(args, method, result));
     }
 
     /**

@@ -11,8 +11,8 @@ import cn.crane4j.core.support.Crane4jGlobalSorter;
 import cn.crane4j.core.support.expression.ExpressionEvaluator;
 import cn.crane4j.core.util.StringUtils;
 import cn.crane4j.extension.spring.expression.SpelExpressionContext;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.context.EmbeddedValueResolverAware;
 import org.springframework.expression.BeanResolver;
@@ -33,7 +33,8 @@ public class ValueResolveAssembleAnnotationHandler
 
     private final ExpressionEvaluator evaluator;
     private final BeanResolver beanResolver;
-    private StringValueResolver stringValueResolver;
+    @Setter
+    private StringValueResolver embeddedValueResolver;
 
     /**
      * <p>Create an operation parser that supports annotation configuration.
@@ -73,8 +74,8 @@ public class ValueResolveAssembleAnnotationHandler
 
     @Nullable
     private String resolveNamespace(String expression) {
-        String namespace = Objects.isNull(stringValueResolver) ?
-                expression : stringValueResolver.resolveStringValue(expression);
+        String namespace = Objects.isNull(embeddedValueResolver) ?
+                expression : embeddedValueResolver.resolveStringValue(expression);
         try {
             SpelExpressionContext context = new SpelExpressionContext();
             context.setBeanResolver(beanResolver);
@@ -83,15 +84,5 @@ public class ValueResolveAssembleAnnotationHandler
             log.debug("cannot resolve container or namespace of container from expression [{}]", expression);
         }
         return namespace;
-    }
-
-    /**
-     * Set the StringValueResolver to use for resolving embedded definition values.
-     *
-     * @param resolver handler
-     */
-    @Override
-    public void setEmbeddedValueResolver(@NonNull StringValueResolver resolver) {
-        this.stringValueResolver = resolver;
     }
 }

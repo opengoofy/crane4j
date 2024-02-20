@@ -6,7 +6,7 @@ import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.ParameterNameFinder;
 import cn.crane4j.core.support.auto.AutoOperateAnnotatedElement;
 import cn.crane4j.core.support.auto.AutoOperateAnnotatedElementResolver;
-import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
+import cn.crane4j.core.support.expression.MethodBasedExpressionEvaluator;
 import cn.crane4j.core.util.ArrayUtils;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.ReflectUtils;
@@ -37,12 +37,12 @@ import java.util.stream.Stream;
  * will be used to complete the operation of data from the method parameters.
  *
  * <p>Support expression for {@link AutoOperate#condition()}, if the expression is not empty,
- * the expression will be evaluated by {@link MethodBaseExpressionExecuteDelegate},
+ * the expression will be evaluated by {@link MethodBasedExpressionEvaluator},
  * only when the expression returns true or "true", the operation will be applied.
  *
  * @author huangchengxing
  * @see AutoOperateAnnotatedElementResolver
- * @see MethodBaseExpressionExecuteDelegate
+ * @see MethodBasedExpressionEvaluator
  * @see AutoOperate
  * @see ArgAutoOperate
  */
@@ -54,24 +54,24 @@ public class MethodArgumentAutoOperateSupport {
     protected final Map<Method, AutoOperateAnnotatedElement[]> methodParameterCaches = CollectionUtils.newWeakConcurrentMap();
     protected final ParameterNameFinder parameterNameFinder;
     protected final AnnotationFinder annotationFinder;
-    protected final MethodBaseExpressionExecuteDelegate expressionExecuteDelegate;
+    protected final MethodBasedExpressionEvaluator expressionEvaluator;
     
     /**
      * Create a {@link MethodArgumentAutoOperateSupport} instance.
      *
      * @param elementResolver element handler
-     * @param expressionExecuteDelegate expression evaluator delegate
+     * @param expressionEvaluator expression evaluator delegate
      * @param parameterNameFinder parameter name finder
      * @param annotationFinder annotation finder
      */
     public MethodArgumentAutoOperateSupport(
         AutoOperateAnnotatedElementResolver elementResolver,
-        MethodBaseExpressionExecuteDelegate expressionExecuteDelegate,
+        MethodBasedExpressionEvaluator expressionEvaluator,
         ParameterNameFinder parameterNameFinder, AnnotationFinder annotationFinder) {
         this.elementResolver = elementResolver;
         this.annotationFinder = annotationFinder;
         this.parameterNameFinder = parameterNameFinder;
-        this.expressionExecuteDelegate = expressionExecuteDelegate;
+        this.expressionEvaluator = expressionEvaluator;
     }
 
     /**
@@ -155,6 +155,6 @@ public class MethodArgumentAutoOperateSupport {
 
     private boolean canApply(Method method, Object[] args, String condition) {
         return StringUtils.isEmpty(condition)
-            || Boolean.TRUE.equals(expressionExecuteDelegate.execute(condition, Boolean.class, method, args, null));
+            || Boolean.TRUE.equals(expressionEvaluator.execute(condition, Boolean.class, method, args, null));
     }
 }

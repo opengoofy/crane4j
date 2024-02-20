@@ -9,17 +9,17 @@ import org.junit.Test;
 import java.lang.reflect.Method;
 
 /**
- * test for {@link MethodBaseExpressionExecuteDelegate}.
+ * test for {@link MethodBasedExpressionEvaluator}.
  *
  * @author huangchengxing
  */
-public class MethodBaseExpressionExecuteDelegateTest {
+public class MethodBasedExpressionEvaluatorTest {
 
-    private MethodBaseExpressionExecuteDelegate expressionExecuteDelegate;
+    private MethodBasedExpressionEvaluator expressionEvaluator;
 
     @Before
     public void init() {
-        expressionExecuteDelegate = new MethodBaseExpressionExecuteDelegate(
+        expressionEvaluator = new MethodBasedExpressionEvaluator(
             new SimpleParameterNameFinder(), new OgnlExpressionEvaluator(), method -> new OgnlExpressionContext()
         );
     }
@@ -27,19 +27,19 @@ public class MethodBaseExpressionExecuteDelegateTest {
     @Test
     public void execute() {
         Method method = ReflectUtils.getMethod(
-            MethodBaseExpressionExecuteDelegateTest.class,
+            MethodBasedExpressionEvaluatorTest.class,
             "method", Integer.class, Integer.class
         );
         Assert.assertNotNull(method);
-        Integer result = expressionExecuteDelegate.execute(
+        Integer result = expressionEvaluator.execute(
             "#arg0 + #arg1 + #result", Integer.class,
             method, new Object[]{ 1, 2 }, 3
         );
         Assert.assertEquals((Integer)6, result);
 
-        method = ReflectUtils.getMethod(MethodBaseExpressionExecuteDelegateTest.class, "method2");
+        method = ReflectUtils.getMethod(MethodBasedExpressionEvaluatorTest.class, "method2");
         Assert.assertNotNull(method);
-        result = expressionExecuteDelegate.execute(
+        result = expressionEvaluator.execute(
             "#a0 + #a1 + #result", Integer.class,
             method, new Object[]{ 1, 2 }, 3
         );

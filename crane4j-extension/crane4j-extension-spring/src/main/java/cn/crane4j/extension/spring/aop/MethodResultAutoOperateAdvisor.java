@@ -3,7 +3,7 @@ package cn.crane4j.extension.spring.aop;
 import cn.crane4j.annotation.AutoOperate;
 import cn.crane4j.core.support.aop.MethodResultAutoOperateSupport;
 import cn.crane4j.core.support.auto.AutoOperateAnnotatedElementResolver;
-import cn.crane4j.core.support.expression.MethodBaseExpressionExecuteDelegate;
+import cn.crane4j.core.support.expression.MethodBasedExpressionEvaluator;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.aop.Advice;
@@ -43,7 +43,7 @@ public class MethodResultAutoOperateAdvisor
      */
     public MethodResultAutoOperateAdvisor(
         AutoOperateAnnotatedElementResolver elementResolver,
-        MethodBaseExpressionExecuteDelegate expressionExecuteDelegate) {
+        MethodBasedExpressionEvaluator expressionExecuteDelegate) {
         super(elementResolver, expressionExecuteDelegate);
         log.info("enable automatic filling of method result");
     }
