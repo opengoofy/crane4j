@@ -169,6 +169,12 @@ public class DefaultCrane4jSpringConfiguration implements SmartInitializingSingl
         return new ContainerRegisterLogger(logger::info);
     }
 
+    @Order(3)
+    @Bean
+    public SpringCacheableContainerProcessor springCacheableContainerProcessor(Crane4jApplicationContext configuration) {
+        return new SpringCacheableContainerProcessor(configuration);
+    }
+
     // ============== execute components ==============
 
     @Bean

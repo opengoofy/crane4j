@@ -50,6 +50,23 @@ public List<Foo> annotatedMethod(List<String> args) {
 
 :::
 
+此外，在 2.6.0 及以上版本，当你在 Spring 环境使用时，你也可以直接将注解加在配置类里的工厂方法上，它同样能够生效：
+
+~~~java
+@Configuration
+public class Configuration {
+    
+    @ContainerCache(
+        expirationTime = 1000L,
+        timeUnit = TimeUnit.SECONDS,
+    )
+    @Bean
+    public Container<String> customContainer() {
+        // create custom container
+    }
+}
+~~~
+
 ### 1.2.使用配置文件配置
 
 除注解外，你也可以通过配置文件配置要对哪些容器应用缓存：

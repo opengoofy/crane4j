@@ -53,6 +53,8 @@ public class Crane4jApplicationContextTest {
         Assert.assertNotNull(context.getDisassembleOperationHandler("reflectiveDisassembleOperationHandler"));
         Assert.assertNotNull(context.getContainer("test"));
         Assert.assertNotNull(context.getContainer("testBean"));
+        Assert.assertNotNull(context.getContainer("test2"));
+        Assert.assertNotNull(context.getContainer("testBean2"));
 
         int size = context.getContainerLifecycleProcessors().size();
         ContainerLifecycleProcessor processor = new ContainerLifecycleProcessor() {
@@ -65,12 +67,13 @@ public class Crane4jApplicationContextTest {
         Map<String, Container<?>> containerMap = ReflectUtils.getFieldValue(context, "containerMap");
         Assert.assertNotNull(containerMap);
         Assert.assertFalse(containerMap.isEmpty());
-        context.destroy();
-        Assert.assertTrue(containerMap.isEmpty());
 
         // get by bean name
         Assert.assertEquals(
             applicationContext.getBean("testBean"), context.getContainer("testBean")
+        );
+        Assert.assertEquals(
+            applicationContext.getBean("testBean"), context.getContainer("test")
         );
         Assert.assertEquals(
             applicationContext.getBean("testProvider"), context.getContainerProvider("testProvider")
@@ -78,6 +81,9 @@ public class Crane4jApplicationContextTest {
         Assert.assertEquals(
             applicationContext.getBean(ConverterManager.class), context.getConverterManager()
         );
+
+        context.destroy();
+        Assert.assertTrue(containerMap.isEmpty());
     }
 
     @Test
@@ -94,10 +100,28 @@ public class Crane4jApplicationContextTest {
         Assert.assertNotSame(container, context.getContainer("replaceContainer"));
     }
 
+    @Test
+    public void testBeanNameAndNamespace() {
+        String beanName = context.getBeanNameByNamespace("test");
+        Assert.assertEquals("testBean", beanName);
+        beanName = context.getBeanNameByNamespace("testBean");
+        Assert.assertNull(beanName);
+
+        String namespace = context.getNamespaceByBeanName("testBean");
+        Assert.assertEquals("test", namespace);
+        namespace = context.getNamespaceByBeanName("test");
+        Assert.assertNull(namespace);
+    }
+
     protected static class TestConfig {
         @Bean("testBean")
         public Container<String> container() {
             return Containers.forMap("test", Collections.singletonMap("key", "value"));
+        }
+
+        @Bean("testBean2")
+        public ContainerDefinition containerDefinition() {
+            return ContainerDefinition.create("test2", null, Container::empty);
         }
 
         @Bean("testProvider")

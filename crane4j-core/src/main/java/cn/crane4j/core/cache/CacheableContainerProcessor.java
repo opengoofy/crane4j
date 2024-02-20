@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class CacheableContainerProcessor implements ContainerLifecycleProcessor {
 
-    private final Crane4jGlobalConfiguration configuration;
+    protected final Crane4jGlobalConfiguration configuration;
 
     /**
      * <p>Cache Selector.<br/>
