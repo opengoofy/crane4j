@@ -8,10 +8,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * An expression-based condition what determine whether the operation should be executed.
+ * A condition what apply the operation only when the result of the expression evaluation is true.
  *
  * @author huangchengxing
- * @see cn.crane4j.core.condition.ExpressionConditionParser
+ * @see cn.crane4j.core.condition.ConditionOnExpressionParser
  * @since 2.6.0
  */
 @Repeatable(value = ConditionOnExpression.List.class)

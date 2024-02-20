@@ -7,11 +7,13 @@ import cn.crane4j.core.cache.CacheDefinition;
 import cn.crane4j.core.cache.CacheManager;
 import cn.crane4j.core.cache.GuavaCacheManager;
 import cn.crane4j.core.cache.MapCacheManager;
+import cn.crane4j.core.condition.ConditionOnContainerParser;
+import cn.crane4j.core.condition.ConditionOnExpressionParser;
+import cn.crane4j.core.condition.ConditionOnPropertyNotEmptyParser;
+import cn.crane4j.core.condition.ConditionOnPropertyNotNullParser;
+import cn.crane4j.core.condition.ConditionOnPropertyParser;
+import cn.crane4j.core.condition.ConditionOnTargetTypeParser;
 import cn.crane4j.core.condition.ConditionParser;
-import cn.crane4j.core.condition.ExpressionConditionParser;
-import cn.crane4j.core.condition.PropertyConditionParser;
-import cn.crane4j.core.condition.PropertyNotEmptyConditionParser;
-import cn.crane4j.core.condition.PropertyNotNullConditionParser;
 import cn.crane4j.core.container.ContainerManager;
 import cn.crane4j.core.container.Containers;
 import cn.crane4j.core.container.lifecycle.ContainerInstanceLifecycleProcessor;
@@ -389,35 +391,48 @@ public class Crane4jAutoConfiguration {
     @ConditionalOnBean(ExpressionEvaluator.class)
     @ConditionalOnMissingBean
     @Bean
-    public ExpressionConditionParser expressionConditionParser(
+    public ConditionOnExpressionParser conditionOnExpressionParser(
         AnnotationFinder annotationFinder, ExpressionEvaluator expressionEvaluator, BeanFactoryResolver beanFactoryResolver) {
-        ExpressionConditionParser.ContextFactory contextFactory = (t, op) -> {
+        ConditionOnExpressionParser.ContextFactory contextFactory = (t, op) -> {
             SpelExpressionContext context = new SpelExpressionContext();
             context.setBeanResolver(beanFactoryResolver);
             return context;
         };
-        return new ExpressionConditionParser(annotationFinder, expressionEvaluator, contextFactory);
+        return new ConditionOnExpressionParser(annotationFinder, expressionEvaluator, contextFactory);
     }
 
     @ConditionalOnMissingBean
     @Bean
-    public PropertyNotNullConditionParser propertyNotNullConditionParser(
+    public ConditionOnPropertyNotNullParser conditionOnPropertyNotNullParser(
         AnnotationFinder annotationFinder, PropertyOperator propertyOperator) {
-        return new PropertyNotNullConditionParser(annotationFinder, propertyOperator);
+        return new ConditionOnPropertyNotNullParser(annotationFinder, propertyOperator);
     }
 
     @ConditionalOnMissingBean
     @Bean
-    public PropertyNotEmptyConditionParser propertyNotEmptyConditionParser(
+    public ConditionOnPropertyNotEmptyParser conditionOnPropertyNotEmptyParser(
         AnnotationFinder annotationFinder, PropertyOperator propertyOperator) {
-        return new PropertyNotEmptyConditionParser(annotationFinder, propertyOperator);
+        return new ConditionOnPropertyNotEmptyParser(annotationFinder, propertyOperator);
     }
 
     @ConditionalOnMissingBean
     @Bean
-    public PropertyConditionParser propertyConditionParser(
+    public ConditionOnPropertyParser conditionOnPropertyParser(
         AnnotationFinder annotationFinder, PropertyOperator propertyOperator, ConverterManager converterManager) {
-        return new PropertyConditionParser(annotationFinder, propertyOperator, converterManager);
+        return new ConditionOnPropertyParser(annotationFinder, propertyOperator, converterManager);
+    }
+
+    @ConditionalOnMissingBean
+    @Bean
+    public ConditionOnContainerParser conditionOnContainerParser(
+        AnnotationFinder annotationFinder, ContainerManager containerManager) {
+        return new ConditionOnContainerParser(annotationFinder, containerManager);
+    }
+
+    @ConditionalOnMissingBean
+    @Bean
+    public ConditionOnTargetTypeParser conditionOnTargetTypeParser(AnnotationFinder annotationFinder) {
+        return new ConditionOnTargetTypeParser(annotationFinder);
     }
 
     @ConditionalOnMissingBean

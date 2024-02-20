@@ -262,6 +262,53 @@ public class Foo {
 
 其中，`@ConditionOnPropertyNotEmpty` 可以判断数组、集合或字符串是否为空，而 `@ConditionOnPropertyNotNull` 只能判断是否为 `null`。
 
+### 2.4.当填充对象为指定类型
+
+参见 `@ConditionOnTargetType` 注解。
+
+运行时，crane4j 将根据目标对象是否属于指定类型确认是否要应用对应的操作：
+
+~~~java
+@Operator
+public interface OperatorInterface {
+    
+    @ConditionOnTargetType(value = Foo.class) // 仅当填充对象类型为 Foo 及其子类时生效
+    @Assemble(container = "foo")
+    void fill(List<Object> targets)
+}
+~~~
+
+默认情况下，上述条件等同于 `target instanceof FooChild`，如果你希望严格的匹配类型，则可以将 `strict` 设置为 `true`：
+
+~~~java
+@Operator
+public interface OperatorInterface {
+    
+    @ConditionOnTargetType( // 仅当填充对象类型为 Foo 时才生效，Foo 及其子类不生效
+        value = Foo.class,
+        strict = true
+    )
+    @Assemble(container = "foo")
+    void fill(List<Object> targets)
+}
+~~~
+
+### 2.5.当存在指定数据源容器
+
+参见 `@ConditionOnContainer` 注解。
+
+运行时，crane4j 将当前是否有特定的数据源容器确认是否要应用对应的操作：
+
+~~~java
+@Operator
+public interface OperatorInterface {
+    
+    @ConditionOnContainer(value = "foo") // 仅当存在 namespace 为 foo 的数据源容器时才生效
+    @Assemble(container = "foo")
+    private Integer id;
+}
+~~~
+
 ## 3.自定义条件
 
 如果有必要，你也可以自定义一个条件注解，实现自己的条件逻辑。
@@ -291,7 +338,7 @@ public @interface ConditionOnTargetSerializable {
 为了简化代码，crane4j 默认提供了 `AbstractConditionParser` 模板类，它已经实现好了大部分逻辑，你仅需要让自己的实现类继承它并实现关键的抽象方法即可：
 
 ~~~java
-public class TargetSerializableConditionParser
+public class ConditionOnTargetSerializableParser
     extends AbstractConditionParser<ConditionOnTargetSerializable> {
     
     public TargetSerializableConditionParser(AnnotationFinder annotationFinder) {
@@ -311,8 +358,8 @@ public class TargetSerializableConditionParser
     
     @Nullable
     @Override
-    protected Condition createCondition(
-        AnnotatedElement element, ConditionOnExpression annotation) {
+    protected AbstractCondition createCondition(
+        AnnotatedElement element, ConditionOnTargetSerializable annotation) {
         return new AbstractCondition() {
             @Override
             public boolean test(Object target, KeyTriggerOperation operation) {

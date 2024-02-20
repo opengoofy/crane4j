@@ -17,18 +17,18 @@ import java.lang.reflect.Field;
 import java.util.Collection;
 
 /**
- * test for {@link PropertyNotNullConditionParser}
+ * test for {@link ConditionOnPropertyNotNullParser}
  *
  * @author huangchengxing
  */
-public class PropertyNotNullConditionParserTest {
+public class ConditionOnPropertyNotNullParserTest {
 
 
 
     @SneakyThrows
     @Test
     public void test() {
-        PropertyNotNullConditionParser parser = new PropertyNotNullConditionParser(
+        ConditionOnPropertyNotNullParser parser = new ConditionOnPropertyNotNullParser(
             SimpleAnnotationFinder.INSTANCE, ReflectivePropertyOperator.INSTANCE
         );
 
@@ -36,7 +36,7 @@ public class PropertyNotNullConditionParserTest {
         KeyTriggerOperation operation1 = SimpleKeyTriggerOperation.builder()
             .source(field).id(field.getName()).key(field.getName())
             .build();
-        Collection<Condition> conditions = parser.parse((AnnotatedElement)operation1.getSource(), operation1).get(operation1.getId());
+        Collection<Condition> conditions = parser.parse((AnnotatedElement)operation1.getSource(), operation1);
         Assert.assertEquals(1, conditions.size());
         Condition condition = CollectionUtils.getFirstNotNull(conditions);
         Assert.assertNotNull(condition);

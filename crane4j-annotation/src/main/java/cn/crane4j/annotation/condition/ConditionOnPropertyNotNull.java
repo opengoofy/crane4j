@@ -8,10 +8,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * A property-value-based condition what determine whether the operation should be executed.
+ * A condition what apply the operation only when the specified property exists and its value not null.
  *
  * @author huangchengxing
- * @see cn.crane4j.core.condition.PropertyNotNullConditionParser
+ * @see cn.crane4j.core.condition.ConditionOnPropertyNotNullParser
  * @since 2.6.0
  */
 @Repeatable(value = ConditionOnPropertyNotNull.List.class)

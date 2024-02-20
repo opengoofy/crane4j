@@ -14,10 +14,10 @@ import java.lang.reflect.AnnotatedElement;
  * @author huangchengxing
  * @since 2.6.0
  */
-public class PropertyNotEmptyConditionParser
+public class ConditionOnPropertyNotEmptyParser
     extends AbstractPropertyConditionParser<ConditionOnPropertyNotEmpty> {
 
-    public PropertyNotEmptyConditionParser(
+    public ConditionOnPropertyNotEmptyParser(
         AnnotationFinder annotationFinder, PropertyOperator propertyOperator) {
         super(annotationFinder, ConditionOnPropertyNotEmpty.class, propertyOperator);
     }

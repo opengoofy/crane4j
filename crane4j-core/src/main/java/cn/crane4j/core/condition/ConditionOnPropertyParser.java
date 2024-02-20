@@ -23,13 +23,13 @@ import java.util.Objects;
  * @author huangchengxing
  * @since 2.6.0
  */
-public class PropertyConditionParser
+public class ConditionOnPropertyParser
     extends AbstractConditionParser<ConditionOnProperty> {
 
     private final PropertyOperator propertyOperator;
     private final ConverterManager converterManager;
 
-    public PropertyConditionParser(
+    public ConditionOnPropertyParser(
         AnnotationFinder annotationFinder,
         PropertyOperator propertyOperator, ConverterManager converterManager) {
         super(annotationFinder, ConditionOnProperty.class);
@@ -76,7 +76,7 @@ public class PropertyConditionParser
         String property = annotation.property();
         property = StringUtils.isEmpty(property) && element instanceof Field ?
             ((Field)element).getName() : property;
-        Asserts.isNotEmpty(property, "@{} must specify a property to apply!", ConditionOnExpression.class.getSimpleName());
+        Asserts.isNotEmpty(property, "@{} must specify a property to apply: {}", ConditionOnExpression.class.getSimpleName(), element);
         return property;
     }
 

@@ -20,7 +20,7 @@ import java.lang.reflect.AnnotatedElement;
  * @since 2.6.0
  */
 @Slf4j
-public class ExpressionConditionParser
+public class ConditionOnExpressionParser
     extends AbstractConditionParser<ConditionOnExpression> {
 
     public static final String VAR_TARGET = "target";
@@ -29,7 +29,7 @@ public class ExpressionConditionParser
     private final ExpressionEvaluator expressionEvaluator;
     private final ContextFactory contextFactory;
 
-    public ExpressionConditionParser(
+    public ConditionOnExpressionParser(
         AnnotationFinder annotationFinder,
         ExpressionEvaluator expressionEvaluator, ContextFactory contextFactory) {
         super(annotationFinder, ConditionOnExpression.class);

@@ -19,16 +19,16 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * test for {@link PropertyNotEmptyConditionParser}
+ * test for {@link ConditionOnPropertyNotEmptyParser}
  *
  * @author huangchengxing
  */
-public class PropertyNotEmptyConditionParserTest {
+public class ConditionOnPropertyNotEmptyParserTest {
 
     @SneakyThrows
     @Test
     public void test() {
-        PropertyNotEmptyConditionParser parser = new PropertyNotEmptyConditionParser(
+        ConditionOnPropertyNotEmptyParser parser = new ConditionOnPropertyNotEmptyParser(
             SimpleAnnotationFinder.INSTANCE, ReflectivePropertyOperator.INSTANCE
         );
 
@@ -36,7 +36,7 @@ public class PropertyNotEmptyConditionParserTest {
         KeyTriggerOperation operation1 = SimpleKeyTriggerOperation.builder()
             .source(field1).id(field1.getName()).key(field1.getName())
             .build();
-        Collection<Condition> conditions1 = parser.parse((AnnotatedElement)operation1.getSource(), operation1).get(operation1.getId());
+        Collection<Condition> conditions1 = parser.parse((AnnotatedElement)operation1.getSource(), operation1);
         Assert.assertEquals(1, conditions1.size());
         Condition condition1 = CollectionUtils.getFirstNotNull(conditions1);
         Assert.assertNotNull(condition1);
@@ -48,7 +48,7 @@ public class PropertyNotEmptyConditionParserTest {
         KeyTriggerOperation operation2 = SimpleKeyTriggerOperation.builder()
             .source(field2).id(field2.getName()).key(field2.getName())
             .build();
-        Collection<Condition> conditions2 = parser.parse((AnnotatedElement)operation2.getSource(), operation2).get(operation2.getId());
+        Collection<Condition> conditions2 = parser.parse((AnnotatedElement)operation2.getSource(), operation2);
         Assert.assertEquals(1, conditions2.size());
         Condition condition2 = CollectionUtils.getFirstNotNull(conditions2);
         Assert.assertNotNull(condition2);

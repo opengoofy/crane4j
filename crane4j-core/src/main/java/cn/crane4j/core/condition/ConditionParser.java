@@ -1,10 +1,10 @@
 package cn.crane4j.core.condition;
 
 import cn.crane4j.core.parser.operation.KeyTriggerOperation;
-import cn.crane4j.core.util.MultiMap;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.lang.reflect.AnnotatedElement;
+import java.util.List;
 
 /**
  * Condition parser.
@@ -16,12 +16,12 @@ import java.lang.reflect.AnnotatedElement;
 public interface ConditionParser {
 
     /**
-     * Parse condition from give element
+     * Parse condition from a give element
      *
      * @param element element
      * @param operation operation
      * @return condition with id
      */
     @NonNull
-    MultiMap<String, Condition> parse(AnnotatedElement element, KeyTriggerOperation operation);
+    List<Condition> parse(AnnotatedElement element, KeyTriggerOperation operation);
 }

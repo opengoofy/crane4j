@@ -8,17 +8,17 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * A condition what apply the operation only when the specified property exists and its value matches the expected value.
+ * A condition what apply the operation only when the specified container exists.
  *
  * @author huangchengxing
- * @see cn.crane4j.core.condition.ConditionOnPropertyParser
+ * @see cn.crane4j.core.condition.ConditionOnContainerParser
  * @since 2.6.0
  */
-@Repeatable(value = ConditionOnProperty.List.class)
+@Repeatable(value = ConditionOnContainer.List.class)
 @Documented
 @Target({ElementType.ANNOTATION_TYPE, ElementType.FIELD, ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ConditionOnProperty {
+public @interface ConditionOnContainer {
 
     /**
      * <p>The id of operations which to bound.<br/>
@@ -51,38 +51,16 @@ public @interface ConditionOnProperty {
     int sort() default Integer.MAX_VALUE;
 
     /**
-     * <p>The property name.<br/>
-     * When this annotation is used on a field, the property name is the field name by default.
+     * Namespace of the container.
      *
-     * @return property name
+     * @return namespace
      */
-    String property() default "";
-
-    /**
-     * The expected property value.
-     *
-     * @return property value.
-     */
-    String value() default "";
-
-    /**
-     * The type of expected property value.
-     *
-     * @return expected property value
-     */
-    Class<?> valueType() default Object.class;
-
-    /**
-     * Whether to enable apply operation when the property value is null.
-     *
-     * @return true if enabled, otherwise false.
-     */
-    boolean enableNull() default false;
+    String[] value() default {};
 
     @Documented
     @Target({ElementType.ANNOTATION_TYPE, ElementType.FIELD, ElementType.TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
     @interface List {
-        ConditionOnProperty[] value();
+        ConditionOnContainer[] value();
     }
 }
