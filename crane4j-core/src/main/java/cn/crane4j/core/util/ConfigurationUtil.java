@@ -28,6 +28,10 @@ import lombok.NoArgsConstructor;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -44,6 +48,29 @@ import java.util.stream.Stream;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ConfigurationUtil {
+
+    /**
+     * Get element identifier.
+     *
+     * @param source source
+     * @param defaultValue default id
+     * @return name if source is field, method or parameter, otherwise return defaultValue
+     */
+    public static String getElementIdentifier(AnnotatedElement source, String defaultValue) {
+        if (StringUtils.isNotEmpty(defaultValue)) {
+            return defaultValue;
+        }
+        if (source instanceof Field) {
+            return ((Field)source).getName();
+        }
+        if (source instanceof Method) {
+            return ((Method)source).getName();
+        }
+        if (source instanceof Parameter) {
+            return ((Parameter)source).getName();
+        }
+        return defaultValue;
+    }
 
     /**
      * Create {@link OperatorProxyFactory} instance.

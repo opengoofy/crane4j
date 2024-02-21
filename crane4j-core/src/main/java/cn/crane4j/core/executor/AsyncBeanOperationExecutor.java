@@ -76,7 +76,7 @@ public class AsyncBeanOperationExecutor extends DisorderedBeanOperationExecutor 
 
     private void doExecuteOperations(AssembleExecution execution) {
         Container<?> container = execution.getContainer();
-        tryExecute(() -> execution.getHandler().process(container, Collections.singleton(execution)));
+        doExecute(execution.getHandler(), container, Collections.singletonList(execution));
     }
 
     /**

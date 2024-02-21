@@ -55,12 +55,8 @@ public class OrderedBeanOperationExecutor extends OperationAwareBeanOperationExe
      */
     @Override
     protected void executeOperations(List<AssembleExecution> executions, Options options) throws OperationExecuteException {
-        try {
-            executions.stream()
-                .sorted(Comparator.comparing(AssembleExecution::getOperation, comparator))
-                .forEach(e -> tryExecute(() -> e.getHandler().process(e.getContainer(), Collections.singletonList(e))));
-        } catch (Exception e) {
-            throw new OperationExecuteException(e);
-        }
+        executions.stream()
+            .sorted(Comparator.comparing(AssembleExecution::getOperation, comparator))
+            .forEach(e -> doExecute(e.getHandler(), e.getContainer(), Collections.singletonList(e)));
     }
 }

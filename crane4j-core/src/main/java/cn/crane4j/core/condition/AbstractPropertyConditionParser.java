@@ -4,13 +4,12 @@ import cn.crane4j.core.parser.operation.KeyTriggerOperation;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.util.Asserts;
-import cn.crane4j.core.util.StringUtils;
+import cn.crane4j.core.util.ConfigurationUtil;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Field;
 
 /**
  * A condition parser implementation to process annotation based condition with property.
@@ -40,9 +39,8 @@ public abstract class AbstractPropertyConditionParser<A extends Annotation> exte
     @Override
     protected AbstractCondition createCondition(AnnotatedElement element, A annotation) {
         String property = getPropertyName(element, annotation);
-        property = StringUtils.isEmpty(property) && element instanceof Field ?
-            ((Field)element).getName() : property;
-        Asserts.isNotEmpty(property, "@{} must specify a property to apply!", annotationType.getSimpleName());
+        property = ConfigurationUtil.getElementIdentifier(element, property);
+        Asserts.isNotEmpty(property, "The property to be checked is not specified in the @{} on {}", annotationType.getSimpleName());
         return new PropertyValueCondition(property);
     }
 

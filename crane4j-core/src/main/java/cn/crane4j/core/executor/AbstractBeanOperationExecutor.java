@@ -3,6 +3,7 @@ package cn.crane4j.core.executor;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerManager;
 import cn.crane4j.core.exception.OperationExecuteException;
+import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.operation.AssembleOperation;
@@ -202,7 +203,7 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
         targets = filterTargetsForSupportedOperation(targets, operation);
         String namespace = operation.getContainer();
         Container<?> container = options.getContainer(containerManager, namespace);
-        Asserts.isNotNull(container, "container of [{}] not found", namespace);
+        Asserts.isNotNull(container, "container [{}] not found", namespace);
         return AssembleExecution.create(beanOperations, operation, container, targets);
     }
     
@@ -314,14 +315,16 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
      * <p>Try to execute the operation.<br />
      * If necessary, output the log when throwing an exception.
      *
-     * @param execute execute
+     * @param handler handler
+     * @param executions executions
+     * @param container container
      */
-    protected static void tryExecute(Runnable execute) {
+    protected static void doExecute(
+        AssembleOperationHandler handler, Container<?> container, Collection<AssembleExecution> executions) {
         try {
-            execute.run();
-        } catch(Exception e) {
-            log.warn("execute operation fail: {}", e.getMessage());
-            e.printStackTrace();
+            handler.process(container, executions);
+        } catch(Exception ex) {
+            log.warn("execute operation fail: {}", ex.getMessage(), ex);
         }
     }
 }

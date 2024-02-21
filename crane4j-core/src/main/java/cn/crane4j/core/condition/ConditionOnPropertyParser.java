@@ -1,6 +1,5 @@
 package cn.crane4j.core.condition;
 
-import cn.crane4j.annotation.condition.ConditionOnExpression;
 import cn.crane4j.annotation.condition.ConditionOnProperty;
 import cn.crane4j.core.parser.operation.KeyTriggerOperation;
 import cn.crane4j.core.support.AnnotationFinder;
@@ -8,13 +7,12 @@ import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.ClassUtils;
-import cn.crane4j.core.util.StringUtils;
+import cn.crane4j.core.util.ConfigurationUtil;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Field;
 import java.util.Objects;
 
 /**
@@ -74,9 +72,8 @@ public class ConditionOnPropertyParser
     private String getPropertyName(
         AnnotatedElement element, ConditionOnProperty annotation) {
         String property = annotation.property();
-        property = StringUtils.isEmpty(property) && element instanceof Field ?
-            ((Field)element).getName() : property;
-        Asserts.isNotEmpty(property, "@{} must specify a property to apply: {}", ConditionOnExpression.class.getSimpleName(), element);
+        property = ConfigurationUtil.getElementIdentifier(element, property);
+        Asserts.isNotEmpty(property, "The property to be checked is not specified in the @{} on {}", annotationType.getSimpleName(), element);
         return property;
     }
 

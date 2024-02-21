@@ -51,7 +51,7 @@ public class ConditionOnTargetTypeParser extends AbstractConditionParser<Conditi
     @Nullable
     @Override
     protected AbstractCondition createCondition(AnnotatedElement element, ConditionOnTargetType annotation) {
-        Asserts.isNotEmpty(annotation.value(), "@{} must specify expected types to apply: {}", annotationType.getSimpleName(), element);
+        Asserts.isNotEmpty(annotation.value(), "The expected value is not specified in the @{} on {}", annotationType.getSimpleName(), element);
         return annotation.strict() ?
             new StrictlyTargetTypeCondition(annotation.value()) : new TargetTypeCondition(annotation.value());
     }

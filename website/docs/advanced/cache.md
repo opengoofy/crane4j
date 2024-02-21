@@ -168,3 +168,57 @@ cache.clear();
 
 **在默认情况下，你总是可以通过容器的 `namespace` 获取它所持有的缓存对象。**
 
+### 2.3.自定义缓存
+
+要接入自定义的缓存，你需要实现 `CacheManager` 接口，提供一个自定义的缓存管理器。
+
+基于已有的 `AbstractCacheManager` 模板类可以大大减少工作量，具体来说，假如希望我们想要实现一个基于 HashMap 的自定义缓存，那么需要两步：
+
+- 定义一个缓存实现类 `CustomCacheObject`，让它继承 `AbstractCacheManager.AbstractCacheObject`，并实现各种增删改查方法；
+- 定义一个缓存管理器实现类 `CustomCacheManager`，然后让它继承 `AbstractCacheManager`，并且实现 `doCreateCache` 方法，让它返回一个 `CustomCacheObject` 实例；
+
+具体代码如下：
+
+~~~java
+public class CustomCacheManager extends AbstractCacheManager {
+    
+    @Override
+    @NonNull
+    protected <K> MapCacheObject<K> doCreateCache(
+        String name, Long expireTime, TimeUnit timeUnit) {
+        // 实现抽象方法，返回一个自定义缓存对象
+        return new MapCacheObject<>(name, new HashMap<>());
+    }
+    
+    // 基于 AbstractCacheObject 实现自己的自定义缓存对象
+    protected static class CustomCacheObject<K> extends AbstractCacheObject<K> {
+        private final Map<K, Object> map;
+        public CustomCacheObject(String name, Map<K, Object> map) {
+            super(name);
+            this.map = map;
+        }
+        @Nullable
+        @Override
+        public Object get(K key) {
+            return map.get(key);
+        }
+        @Override
+        public void put(K key, Object value) {
+            map.put(key, value);
+        }
+        @Override
+        public void putIfAbsent(K key, Object value) {
+            map.putIfAbsent(key, value);
+        }
+        @Override
+        public void remove(K key) {
+            map.remove(key);
+        }
+        @Override
+        public void clear() {
+            map.clear();
+        }
+    }
+}
+~~~
+

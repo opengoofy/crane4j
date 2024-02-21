@@ -10,12 +10,14 @@ import cn.crane4j.core.parser.BeanOperations;
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +68,16 @@ public class DisorderedBeanOperationExecutorTest extends BaseExecutorTest {
         Assert.assertNull(bean2.getName());
     }
 
+    @Test
+    public void executeMethodBasedOperation() {
+        MethodBasedOperationBean bean1 = new MethodBasedOperationBean(1, 1);
+
+        BeanOperations beanOperations = parseOperations(MethodBasedOperationBean.class);
+        executor.execute(Collections.singleton(bean1), beanOperations);
+        Assert.assertEquals("one", bean1.getName1());
+        Assert.assertEquals("one", bean1.getName2());
+    }
+
     @Getter
     @RequiredArgsConstructor
     private static class Source {
@@ -98,5 +110,26 @@ public class DisorderedBeanOperationExecutorTest extends BaseExecutorTest {
         @Assemble(container = "test", props = @Mapping(ref = "name", src = "value"))
         private Integer id;
         private String name;
+    }
+
+
+    @Assemble(key = "getField1", container = "test", props = @Mapping(ref = "name1", src = "value"))
+    @RequiredArgsConstructor
+    private static class MethodBasedOperationBean {
+        @Getter
+        private final Integer field1;
+        @Getter
+        @Setter
+        private String name1;
+
+        private final Integer field2;
+        @Getter
+        @Setter
+        private String name2;
+
+        @Assemble(container = "test", props = @Mapping(ref = "name2", src = "value"))
+        public Integer getId() {
+            return field1;
+        }
     }
 }

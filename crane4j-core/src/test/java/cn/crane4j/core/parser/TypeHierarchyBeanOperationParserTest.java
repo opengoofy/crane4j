@@ -17,6 +17,7 @@ import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.SimpleCrane4jGlobalConfiguration;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.ReflectUtils;
+import lombok.RequiredArgsConstructor;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -227,4 +228,38 @@ public class TypeHierarchyBeanOperationParserTest {
      */
     @MappingTemplate(@Mapping(src = "name", ref = "name"))
     private static class MappingTemp {}
+
+    // =========== method based ===========
+
+    @Test
+    public void testParseMethodBasedOperation() {
+        BeanOperations beanOperations = parser.parse(MethodBasedOperationBean.class);
+        Collection<AssembleOperation> operations = beanOperations.getAssembleOperations();
+        Assert.assertEquals(2, operations.size());
+
+        AssembleOperation op1 = CollectionUtils.get(operations, 0);
+        Assert.assertNotNull(op1);
+        Assert.assertEquals("getId", op1.getId());
+        Assert.assertEquals("getId", op1.getKey());
+        Assert.assertEquals("test1", op1.getContainer());
+
+        AssembleOperation op2 = CollectionUtils.get(operations, 1);
+        Assert.assertNotNull(op2);
+        Assert.assertEquals("takeId", op2.getId());
+        Assert.assertEquals("takeId", op2.getKey());
+        Assert.assertEquals("test2", op2.getContainer());
+    }
+
+    @Assemble(key = "getId", container = "test1", sort = 0)
+    @RequiredArgsConstructor
+    private static class MethodBasedOperationBean {
+        private final Integer i;
+        public Integer getId() {
+            return i;
+        }
+        @Assemble(container = "test2", sort = 1)
+        public Integer takeId() {
+            return i;
+        }
+    }
 }
