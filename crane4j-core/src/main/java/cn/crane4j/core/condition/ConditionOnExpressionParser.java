@@ -48,7 +48,7 @@ public class ConditionOnExpressionParser
     @Override
     protected AbstractCondition createCondition(AnnotatedElement element, ConditionOnExpression annotation) {
         String expression = annotation.value();
-        Asserts.isNotEmpty(expression, "not specified expression to apply with annotation @{} on {}", annotationType.getSimpleName(), element);
+        Asserts.isNotEmpty(expression, "The property to be checked is not specified in the @{} on {}", annotationType.getSimpleName(), element);
         return new ExpressionCondition(expression);
     }
 

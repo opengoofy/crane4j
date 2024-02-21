@@ -43,9 +43,31 @@ public class Student {
 
 :::
 
-### 1.2.在类上声明
+### 1.2.在方法上声明
 
-不过，你也可以在类上声明，此时你需要显式的指定该操作要绑定的 key 字段。比如：
+在**有返回值的无参方法**上声明也是允许的，这种情况下 crane4j 会认为其为一个 fluent 风格的 getter 方法。比如：
+
+```java
+public class Student {
+    private String name;
+    
+    // 标准 getter 方法
+    @Assemble(container = "student", props = @Mapping(src = "studentName", ref = "name"))
+    public Integer getId() {
+        // return student id.
+    }
+    
+    // fluent 风格的 getter 方法
+    @Assemble(container = "student", props = @Mapping(src = "studentName", ref = "name"))
+    public Integer id() {
+        // return student id.
+    }
+}
+```
+
+### 1.3.在类上声明
+
+不过，你也可以在类上声明，此时你需要显式的指定该操作要绑定的 **key 字段**或**有返回值的无参方法**。比如：
 
 ```java
 // 直接声明
@@ -62,7 +84,7 @@ public class Student {
 
 在无法直接修改父类的情况下，可以在类上添加注解来声明装配操作。
 
-此外，在父类或父类属性中声明的操作，也会被子类所继承。
+此外，在父类或父类的属性上声明的操作，也会被子类所继承。
 
 :::tip
 
@@ -70,7 +92,7 @@ public class Student {
 
 :::
 
-### 1.3.重复声明
+### 1.4.重复声明
 
 你可以在同一个键上声明多次装配操作：
 

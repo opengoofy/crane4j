@@ -72,9 +72,8 @@ public class DisorderedBeanOperationExecutor extends OperationAwareBeanOperation
      * @param executionGroups grouped assembly operations
      */
     protected void doExecuteOperations(Map<Container<?>, Map<AssembleOperationHandler, List<AssembleExecution>>> executionGroups) {
-        executionGroups.forEach((c, he) ->
-            he.forEach((h, es) ->
-                tryExecute(() -> h.process(c, es))
-        ));
+        executionGroups.forEach((container, he) ->
+            he.forEach((handler, executions) -> doExecute(handler, container, executions))
+        );
     }
 }

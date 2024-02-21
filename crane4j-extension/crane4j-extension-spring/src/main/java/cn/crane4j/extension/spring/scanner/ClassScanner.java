@@ -103,8 +103,8 @@ public class ClassScanner {
                 .map(ClassMetadata::getClassName)
                 .map(ClassUtils::forName)
                 .collect(Collectors.toSet());
-        } catch (IOException e) {
-            log.error("scan path [{}] failed", packageSearchPath, e);
+        } catch (IOException ex) {
+            log.error("scan path [{}] failed", packageSearchPath, ex);
         }
         return Collections.emptySet();
     }

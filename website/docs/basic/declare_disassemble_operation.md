@@ -24,7 +24,21 @@ public class Department {
 
 在上面的示例中，对于填充 `Department` 对象之前，会先将 `Department` 中的所有 `Employee` 对象取出并展开。如果 `Employee` 对象中还存在需要拆卸的嵌套对象，也会一并取出并展开，一直递归下去，直到所有的对象都被展开为止。
 
-### 1.2.在类上声明
+### 1.2.在方法上声明
+
+在**有返回值的无参方法**上声明也是允许的，这种情况下 crane4j 会认为其为一个 fluent 风格的 getter 方法。比如：
+
+```java
+public class Department {
+    private Integer id;
+    @Disassemble(type = Employee.class)
+    public List<Employee> getEmployees() {
+        // return employee list
+    }
+}
+```
+
+### 1.3.在类上声明
 
 我们也可以将 `@Disassemble` 注解声明在类上，此时你需要使用 `key` 属性显式指定需要拆卸的字段：
 

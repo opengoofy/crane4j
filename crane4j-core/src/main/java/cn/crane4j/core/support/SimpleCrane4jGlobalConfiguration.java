@@ -280,7 +280,7 @@ public class SimpleCrane4jGlobalConfiguration extends DefaultContainerManager
     @Override
     public CacheManager getCacheManager(String name) {
         CacheManager factory = cacheManagerMap.get(name);
-        Asserts.isNotNull(factory, "cannot find cache factory [{}]", name);
+        Asserts.isNotNull(factory, "cannot find cache manager [{}]", name);
         return factory;
     }
 }

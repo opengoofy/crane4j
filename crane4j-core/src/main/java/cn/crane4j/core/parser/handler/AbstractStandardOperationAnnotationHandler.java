@@ -6,6 +6,7 @@ import cn.crane4j.core.parser.operation.KeyTriggerOperation;
 import cn.crane4j.core.parser.operation.SimpleKeyTriggerOperation;
 import cn.crane4j.core.support.AnnotationFinder;
 import cn.crane4j.core.support.Crane4jGlobalSorter;
+import cn.crane4j.core.util.ConfigurationUtil;
 import cn.crane4j.core.util.MultiMap;
 import cn.crane4j.core.util.ReflectUtils;
 import cn.crane4j.core.util.StringUtils;
@@ -18,7 +19,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -84,6 +85,7 @@ public abstract class AbstractStandardOperationAnnotationHandler<A extends Annot
             Class<?> beanType = (Class<?>)source;
             annotations.putAll(beanType, parseAnnotationForClass(beanType));
             annotations.putAll(parseAnnotationForFields(beanType));
+            annotations.putAll(parseAnnotationForMethods(beanType));
         } else {
             annotations.putAll(source, parseAnnotationForElement(source));
         }
@@ -117,6 +119,24 @@ public abstract class AbstractStandardOperationAnnotationHandler<A extends Annot
      */
     protected Set<A> parseAnnotationForClass(Class<?> beanType) {
         return parseAnnotationForElement(beanType);
+    }
+
+    /**
+     * Parse annotation for methods
+     *
+     * @param beanType bean type
+     * @return element and annotation map
+     * @since 2.6.0
+     */
+    protected MultiMap<AnnotatedElement, A> parseAnnotationForMethods(Class<?> beanType) {
+        MultiMap<AnnotatedElement, A> result = MultiMap.arrayListMultimap();
+        Method[] methods = Stream.of(ReflectUtils.getDeclaredMethods(beanType))
+            .filter(method -> method.getParameterCount() == 0)
+            .filter(method -> !Objects.equals(method.getReturnType(), Void.TYPE))
+            .toArray(Method[]::new);
+        ReflectUtils.scanAllAnnotationFromElements(
+            annotationFinder, annotationType, methods, result::put);
+        return result;
     }
 
     /**
@@ -165,11 +185,8 @@ public abstract class AbstractStandardOperationAnnotationHandler<A extends Annot
     protected String parseId(
         AnnotatedElement element, StandardAnnotation annotation) {
         String id = annotation.getId();
-        if (StringUtils.isNotEmpty(id)) {
-            return id;
-        }
-        return element instanceof Field ?
-            ((Field)element).getName() : annotation.getKey();
+        return StringUtils.isNotEmpty(id) ?
+            id : ConfigurationUtil.getElementIdentifier(element, annotation.getKey());
     }
 
     /**
@@ -180,10 +197,7 @@ public abstract class AbstractStandardOperationAnnotationHandler<A extends Annot
      * @return groups
      */
     protected String parseKey(AnnotatedElement element, StandardAnnotation standardAnnotation) {
-        // we should allow the key to be empty,
-        // where the key value is the targets themselves.
-        return (element instanceof Field) ?
-            ((Field) element).getName() : standardAnnotation.getKey();
+        return ConfigurationUtil.getElementIdentifier(element, standardAnnotation.getKey());
     }
 
     /**

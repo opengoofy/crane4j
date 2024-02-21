@@ -171,10 +171,10 @@ public class AssembleMethodAnnotationHandler
         @Nullable
         public Container<Object> resolve(AssembleMethod annotation) {
             Class<?> targetType = resolveTargetType(annotation);
-            Asserts.isNotNull(targetType, "cannot resolve target type for annotation {}", annotation);
+            Asserts.isNotNull(targetType, "cannot resolve target type from annotation {}", annotation);
             Method resolvedMethod = getContainerMethod(annotation, targetType);
             Asserts.isNotNull(
-                resolvedMethod, "cannot resolve method of class [{}] for annotation [{}]", targetType, annotation
+                resolvedMethod, "cannot resolve method of class [{}] from annotation [{}]", targetType, annotation
             );
             Object target = Modifier.isStatic(resolvedMethod.getModifiers()) ?
                 null : getTargetInstance(targetType, annotation);
