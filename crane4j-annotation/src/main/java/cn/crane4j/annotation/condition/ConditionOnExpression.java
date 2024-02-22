@@ -41,7 +41,7 @@ public @interface ConditionOnExpression {
      *
      * @return boolean
      */
-    boolean negation() default false;
+    boolean negate() default false;
 
     /**
      * Get the order of the condition.

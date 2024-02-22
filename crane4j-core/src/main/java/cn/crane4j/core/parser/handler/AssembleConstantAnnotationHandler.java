@@ -59,13 +59,15 @@ public class AssembleConstantAnnotationHandler extends InternalProviderAssembleA
     /**
      * Create container by given annotation and namespace.
      *
-     * @param annotation annotation
+     * @param standardAnnotation standard annotation
      * @param namespace  namespace
      * @return {@link Container} instant
      */
     @NonNull
     @Override
-    protected Container<Object> createContainer(AssembleConstant annotation, String namespace) {
+    protected Container<Object> createContainer(
+        StandardAssembleAnnotation<AssembleConstant> standardAnnotation, String namespace) {
+        AssembleConstant annotation = standardAnnotation.getAnnotation();
         Class<?> constantType = resolveConstantType(annotation);
         ConstantContainerBuilder builder = ConstantContainerBuilder.of(constantType)
             .namespace(namespace)
@@ -82,11 +84,12 @@ public class AssembleConstantAnnotationHandler extends InternalProviderAssembleA
     /**
      * Get the namespace from annotation.
      *
-     * @param annotation annotation
+     * @param standardAnnotation standard annotation
      * @return namespace
      */
     @Override
-    protected String determineNamespace(AssembleConstant annotation) {
+    protected String determineNamespace(StandardAssembleAnnotation<AssembleConstant> standardAnnotation) {
+        AssembleConstant annotation = standardAnnotation.getAnnotation();
         Class<?> constantType = resolveConstantType(annotation);
         String config = annotation.followTypeConfig() ? "FollowTypeConfig" : annotation.constant().toString();
         return StringUtils.md5DigestAsHex(StringUtils.join(
@@ -111,9 +114,10 @@ public class AssembleConstantAnnotationHandler extends InternalProviderAssembleA
      * @return {@link StandardAssembleAnnotation} instance
      */
     @Override
-    protected StandardAssembleAnnotation getStandardAnnotation(
+    protected StandardAssembleAnnotation<AssembleConstant> getStandardAnnotation(
         BeanOperations beanOperations, AnnotatedElement element, AssembleConstant annotation) {
-        return StandardAssembleAnnotationAdapter.builder()
+        return StandardAssembleAnnotationAdapter.<AssembleConstant>builder()
+            .annotatedElement(element)
             .annotation(annotation)
             .id(annotation.id())
             .key(annotation.key())
@@ -131,15 +135,15 @@ public class AssembleConstantAnnotationHandler extends InternalProviderAssembleA
     /**
      * Get property mapping from given {@link StandardAssembleAnnotation}.
      *
-     * @param element            element
      * @param standardAnnotation standard annotation
      * @param key                key
      * @return assemble operation groups
      */
     @Override
-    protected Set<PropertyMapping> parsePropertyMappings(AnnotatedElement element, StandardAssembleAnnotation standardAnnotation, String key) {
-        Set<PropertyMapping> propertyMappings = super.parsePropertyMappings(element, standardAnnotation, key);
-        AssembleConstant annotation = (AssembleConstant) standardAnnotation.getAnnotation();
+    protected Set<PropertyMapping> parsePropertyMappings(
+        StandardAssembleAnnotation<AssembleConstant> standardAnnotation, String key) {
+        Set<PropertyMapping> propertyMappings = super.parsePropertyMappings(standardAnnotation, key);
+        AssembleConstant annotation = standardAnnotation.getAnnotation();
         if (StringUtils.isNotEmpty(annotation.ref())) {
             propertyMappings.add(new SimplePropertyMapping("", annotation.ref()));
         }

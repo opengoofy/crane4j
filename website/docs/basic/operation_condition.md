@@ -81,13 +81,13 @@ public class Foo {
 
 ### 1.3.取反
 
-你可以将注解的 `negation` 属性设置为 `true`，从而对条件取反：
+你可以将注解的 `negate` 属性设置为 `true`，从而对条件取反：
 
 ~~~java
 public class Foo {
     
     // 下述条件等同于：code % 2 != 0
-    @ConditionOnExpression(value = "#target.code % 2 == 0", negation = true)
+    @ConditionOnExpression(value = "#target.code % 2 == 0", negate = true)
     @Assemble(container = CONTAINER_NAME, sort = 2)
     private Integer code;
 }
@@ -237,7 +237,7 @@ public class Foo {
 
 注意，当 `enableNull` 设置为 `false` 时，实际上判断条件是 `property != null && expect.equals(property)`。
 
-如果此时你又指定 `negation` 属性为 `true` 进行取反，那么最终的判断条件就是 `property == null || !expect.equals(property)`，即 `!(property != null && expect.equals(property))`。
+如果此时你又指定 `negate` 属性为 `true` 进行取反，那么最终的判断条件就是 `property == null || !expect.equals(property)`，即 `!(property != null && expect.equals(property))`。
 
 :::
 
@@ -326,7 +326,7 @@ public interface OperatorInterface {
 public @interface ConditionOnTargetSerializable {
     String[] id() default {};
     ConditionType type() default ConditionType.AND;
-    boolean negation() default false;
+    boolean negate() default false;
     int sort() default Integer.MAX_VALUE;
 }
 ~~~
@@ -349,10 +349,10 @@ public class ConditionOnTargetSerializableParser
     @Override
     protected ConditionDescriptor getConditionDescriptor(ConditionOnTargetSerializable annotation) {
         return ConditionDescriptor.builder()
-            .operationIds(annotation.id()) // 条件要绑定到哪些操作上
+            .boundOperationIds(annotation.id()) // 条件要绑定到哪些操作上
             .type(annotation.type()) // 当有多个条件时，该条件应该是 AND 还是 OR
             .sort(annotation.sort()) // 当有多个条件时，该条件应该排在第几个
-            .negate(annotation.negation()) // 该条件是否需要取反
+            .negate(annotation.negate()) // 该条件是否需要取反
             .build();
     }
     

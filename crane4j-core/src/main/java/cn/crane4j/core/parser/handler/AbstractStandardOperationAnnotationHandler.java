@@ -93,8 +93,8 @@ public abstract class AbstractStandardOperationAnnotationHandler<A extends Annot
             .map(e -> {
                 AnnotatedElement element = e.getKey();
                 A annotation = e.getValue();
-                StandardAnnotation standardAnnotation = getStandardAnnotation(beanOperations, element, annotation);
-                return createOperation(parser, beanOperations, element, standardAnnotation);
+                StandardAnnotation<A> standardAnnotation = getStandardAnnotation(beanOperations, element, annotation);
+                return createOperation(parser, beanOperations, standardAnnotation);
             })
             .filter(Objects::nonNull)
             .sorted(operationComparator)
@@ -159,17 +159,17 @@ public abstract class AbstractStandardOperationAnnotationHandler<A extends Annot
      *
      * @param parser bean operation parser
      * @param beanOperations bean operations to resolve
-     * @param element element
      * @param standardAnnotation standard annotation
      * @return {@link KeyTriggerOperation} instance if element and annotation is resolvable, null otherwise
      */
     protected KeyTriggerOperation createOperation(
-        BeanOperationParser parser, BeanOperations beanOperations, AnnotatedElement element, StandardAnnotation standardAnnotation) {
+        BeanOperationParser parser, BeanOperations beanOperations, StandardAnnotation<A> standardAnnotation) {
+        AnnotatedElement element = standardAnnotation.getAnnotatedElement();
         return SimpleKeyTriggerOperation.builder()
-            .id(parseId(element, standardAnnotation))
-            .key(parseKey(element, standardAnnotation))
-            .sort(parseSort(element, standardAnnotation))
-            .groups(parseGroups(element, standardAnnotation))
+            .id(parseId(standardAnnotation))
+            .key(parseKey(standardAnnotation))
+            .sort(parseSort(standardAnnotation))
+            .groups(parseGroups(standardAnnotation))
             .source(element)
             .build();
     }
@@ -177,49 +177,46 @@ public abstract class AbstractStandardOperationAnnotationHandler<A extends Annot
     /**
      * Parse id from given {@link StandardAnnotation}.
      *
-     * @param element element
-     * @param annotation standard annotation
+     * @param standardAnnotation standard annotation
      * @return id
      * @since 2.6.0
      */
-    protected String parseId(
-        AnnotatedElement element, StandardAnnotation annotation) {
-        String id = annotation.getId();
+    protected String parseId(StandardAnnotation<A> standardAnnotation) {
+        AnnotatedElement element = standardAnnotation.getAnnotatedElement();
+        String id = standardAnnotation.getId();
         return StringUtils.isNotEmpty(id) ?
-            id : ConfigurationUtil.getElementIdentifier(element, annotation.getKey());
+            id : ConfigurationUtil.getElementIdentifier(element, standardAnnotation.getKey());
     }
 
     /**
      * Get groups from given {@link StandardAnnotation}.
      *
-     * @param element element
      * @param standardAnnotation standard annotation
      * @return groups
      */
-    protected String parseKey(AnnotatedElement element, StandardAnnotation standardAnnotation) {
+    protected String parseKey(StandardAnnotation<A> standardAnnotation) {
+        AnnotatedElement element = standardAnnotation.getAnnotatedElement();
         return ConfigurationUtil.getElementIdentifier(element, standardAnnotation.getKey());
     }
 
     /**
      * Get sort value from given {@link StandardAnnotation}.
      *
-     * @param element element
      * @param standardAnnotation standard annotation
      * @return assemble operation groups
      */
-    protected int parseSort(AnnotatedElement element, StandardAnnotation standardAnnotation) {
+    protected int parseSort(StandardAnnotation<A> standardAnnotation) {
+        AnnotatedElement element = standardAnnotation.getAnnotatedElement();
         return Crane4jGlobalSorter.INSTANCE.getSortValue(element, standardAnnotation.getSort());
     }
 
     /**
      * Get groups from given {@link StandardAnnotation}.
      *
-     * @param element element
      * @param standardAnnotation standard assemble operation
      * @return groups
      */
-    @SuppressWarnings("unused")
-    protected Set<String> parseGroups(AnnotatedElement element, StandardAnnotation standardAnnotation) {
+    protected Set<String> parseGroups(StandardAnnotation<A> standardAnnotation) {
         return Stream.of(standardAnnotation.getGroups())
             .collect(Collectors.toSet());
     }
@@ -232,7 +229,7 @@ public abstract class AbstractStandardOperationAnnotationHandler<A extends Annot
      * @param annotation annotation
      * @return {@link StandardAnnotation} instance
      */
-    protected abstract StandardAnnotation getStandardAnnotation(
+    protected abstract StandardAnnotation<A> getStandardAnnotation(
         BeanOperations beanOperations, AnnotatedElement element, A annotation);
 
     /**
@@ -240,7 +237,14 @@ public abstract class AbstractStandardOperationAnnotationHandler<A extends Annot
      *
      * @author huangchengxing
      */
-    public interface StandardAnnotation {
+    public interface StandardAnnotation<A> {
+
+        /**
+         * Get the element which annotated by the annotation.
+         *
+         * @return element
+         */
+        AnnotatedElement getAnnotatedElement();
 
         /**
          * Get annotation.
@@ -248,7 +252,7 @@ public abstract class AbstractStandardOperationAnnotationHandler<A extends Annot
          * @return annotation
          * @since 2.6.0
          */
-        Annotation getAnnotation();
+        A getAnnotation();
 
         /**
          * The id of the current operation.
@@ -287,11 +291,17 @@ public abstract class AbstractStandardOperationAnnotationHandler<A extends Annot
      */
     @SuperBuilder
     @Getter
-    public static class StandardAnnotationAdapter implements StandardAnnotation {
-        private final Annotation annotation;
+    public static class StandardAnnotationAdapter<A extends Annotation> implements StandardAnnotation<A> {
+        @lombok.NonNull
+        private final AnnotatedElement annotatedElement;
+        @lombok.NonNull
+        private final A annotation;
+        @lombok.NonNull
         private final String id;
+        @lombok.NonNull
         private final String key;
         private final int sort;
+        @lombok.NonNull
         private final String[] groups;
     }
 }

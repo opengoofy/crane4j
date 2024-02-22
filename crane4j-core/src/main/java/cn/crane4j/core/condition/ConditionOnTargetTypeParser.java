@@ -34,10 +34,10 @@ public class ConditionOnTargetTypeParser extends AbstractConditionParser<Conditi
     @Override
     protected ConditionDescriptor getConditionDescriptor(ConditionOnTargetType annotation) {
         return ConditionDescriptor.builder()
-            .operationIds(annotation.id())
+            .boundOperationIds(annotation.id())
             .type(annotation.type())
             .sort(annotation.sort())
-            .negate(annotation.negation())
+            .negate(annotation.negate())
             .build();
     }
 

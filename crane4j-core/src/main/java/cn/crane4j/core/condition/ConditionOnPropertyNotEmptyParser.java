@@ -32,10 +32,10 @@ public class ConditionOnPropertyNotEmptyParser
     @Override
     protected ConditionDescriptor getConditionDescriptor(ConditionOnPropertyNotEmpty annotation) {
         return ConditionDescriptor.builder()
-            .operationIds(annotation.id())
+            .boundOperationIds(annotation.id())
             .type(annotation.type())
             .sort(annotation.sort())
-            .negate(annotation.negation())
+            .negate(annotation.negate())
             .build();
     }
 

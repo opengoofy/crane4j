@@ -99,7 +99,7 @@ public class AbstractConditionParserTest {
     private @interface TestConditionAnnotation2 {
         String[] id() default {};
         ConditionType type() default ConditionType.AND;
-        boolean negation() default false;
+        boolean negate() default false;
         int sort() default Integer.MAX_VALUE;
     }
 
@@ -112,10 +112,10 @@ public class AbstractConditionParserTest {
         @Override
         protected ConditionDescriptor getConditionDescriptor(TestConditionAnnotation2 annotation) {
             return ConditionDescriptor.builder()
-                .operationIds(annotation.id()) // 条件要绑定到哪些操作上
+                .boundOperationIds(annotation.id()) // 条件要绑定到哪些操作上
                 .type(annotation.type()) // 当有多个条件时，该条件应该是 AND 还是 OR
                 .sort(annotation.sort()) // 当有多个条件时，该条件应该排在第几个
-                .negate(annotation.negation()) // 该条件是否需要取反
+                .negate(annotation.negate()) // 该条件是否需要取反
                 .build();
         }
         @Nullable

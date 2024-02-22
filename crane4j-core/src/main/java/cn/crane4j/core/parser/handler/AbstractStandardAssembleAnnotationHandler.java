@@ -21,6 +21,7 @@ import cn.crane4j.core.util.ClassUtils;
 import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.ConfigurationUtil;
 import cn.crane4j.core.util.StringUtils;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
@@ -94,21 +95,19 @@ public abstract class AbstractStandardAssembleAnnotationHandler<A extends Annota
      *
      * @param parser         bean operation parser
      * @param beanOperations bean operations to resolve
-     * @param element        element
      * @param standardAnnotation standard annotation
      * @return {@link KeyTriggerOperation} instance if element and annotation is resolvable, null otherwise
      */
-    @SuppressWarnings("unchecked")
     @Nullable
     @Override
     protected AssembleOperation createOperation(
-        BeanOperationParser parser, BeanOperations beanOperations, AnnotatedElement element, StandardAnnotation standardAnnotation) {
-        StandardAssembleAnnotation standardAssembleAnnotation = (StandardAssembleAnnotation)standardAnnotation;
-        KeyTriggerOperation keyTriggerOperation = super.createOperation(parser, beanOperations, element, standardAnnotation);
+        BeanOperationParser parser, BeanOperations beanOperations, StandardAnnotation<A> standardAnnotation) {
+        StandardAssembleAnnotation<A> standardAssembleAnnotation = (StandardAssembleAnnotation<A>)standardAnnotation;
+        KeyTriggerOperation keyTriggerOperation = super.createOperation(parser, beanOperations, standardAnnotation);
 
         Class<?> keyType = parseKeyType(standardAssembleAnnotation);
-        AssembleOperationHandler assembleOperationHandler = parseAssembleOperationHandler(element, standardAssembleAnnotation);
-        Set<PropertyMapping> propertyMappings = parsePropertyMappings(element, standardAssembleAnnotation, keyTriggerOperation.getKey());
+        AssembleOperationHandler assembleOperationHandler = parseAssembleOperationHandler(standardAssembleAnnotation);
+        Set<PropertyMapping> propertyMappings = parsePropertyMappings(standardAssembleAnnotation, keyTriggerOperation.getKey());
         // fix https://github.com/opengoofy/crane4j/issues/190
         // if no property mapping is specified, the default property mapping is the key itself
         propertyMappings = propertyMappings.isEmpty() ?
@@ -116,8 +115,7 @@ public abstract class AbstractStandardAssembleAnnotationHandler<A extends Annota
         PropertyMappingStrategy propertyMappingStrategy = parserPropertyMappingStrategy(standardAssembleAnnotation);
 
         // create operation
-        A annotation = (A)standardAssembleAnnotation.getAnnotation();
-        String namespace = getContainerNamespace(annotation);
+        String namespace = getContainerNamespace(standardAssembleAnnotation);
         return SimpleAssembleOperation.builder()
             .id(keyTriggerOperation.getId())
             .key(keyTriggerOperation.getKey())
@@ -135,13 +133,13 @@ public abstract class AbstractStandardAssembleAnnotationHandler<A extends Annota
     /**
      * Get container from given {@code annotation}.
      *
-     * @param annotation annotation
+     * @param standardAnnotation standard annotation
      * @return namespace of {@link Container}
      * @implNote if the container needs to be obtained through a specific provider,
      * the name of the provider and the namespace of the container need to be concatenated through {@link ContainerManager#canonicalNamespace}
      * @see ContainerManager#canonicalNamespace
      */
-    protected abstract String getContainerNamespace(A annotation);
+    protected abstract String getContainerNamespace(StandardAssembleAnnotation<A> standardAnnotation);
 
     /**
      * Get {@link StandardAssembleAnnotation}.
@@ -152,7 +150,7 @@ public abstract class AbstractStandardAssembleAnnotationHandler<A extends Annota
      * @return {@link StandardAssembleAnnotation} instance
      */
     @Override
-    protected abstract StandardAssembleAnnotation getStandardAnnotation(
+    protected abstract StandardAssembleAnnotation<A> getStandardAnnotation(
         BeanOperations beanOperations, AnnotatedElement element, A annotation);
 
     // =============== process standard configuration ===============
@@ -160,13 +158,12 @@ public abstract class AbstractStandardAssembleAnnotationHandler<A extends Annota
     /**
      * Get assemble operation groups from given {@link StandardAssembleAnnotation}.
      *
-     * @param element element
      * @param standardAnnotation standard annotation
      * @return assemble operation groups
      */
     @SuppressWarnings("unused")
     protected AssembleOperationHandler parseAssembleOperationHandler(
-        AnnotatedElement element, StandardAssembleAnnotation standardAnnotation) {
+        StandardAssembleAnnotation<A> standardAnnotation) {
         return globalConfiguration.getAssembleOperationHandler(
             standardAnnotation.getHandler(), standardAnnotation.getHandlerType()
         );
@@ -175,13 +172,12 @@ public abstract class AbstractStandardAssembleAnnotationHandler<A extends Annota
     /**
      * Get property mapping from given {@link StandardAssembleAnnotation}.
      *
-     * @param element element
      * @param standardAnnotation standard annotation
      * @param key key
      * @return assemble operation groups
      */
     protected Set<PropertyMapping> parsePropertyMappings(
-        AnnotatedElement element, StandardAssembleAnnotation standardAnnotation, String key) {
+        StandardAssembleAnnotation<A> standardAnnotation, String key) {
         Mapping[] props = standardAnnotation.getProps();
         Set<PropertyMapping> propertyMappings = Stream.of(props)
             .map(m -> ConfigurationUtil.createPropertyMapping(m, key))
@@ -204,7 +200,7 @@ public abstract class AbstractStandardAssembleAnnotationHandler<A extends Annota
     @SuppressWarnings("unused")
     @NonNull
     protected PropertyMappingStrategy parserPropertyMappingStrategy(
-        StandardAssembleAnnotation standardAnnotation) {
+        StandardAssembleAnnotation<A> standardAnnotation) {
         String propertyMappingStrategyName = standardAnnotation.getPropertyMappingStrategy();
         // fix https://gitee.com/opengoofy/crane4j/issues/I7X36D
         if (StringUtils.isEmpty(propertyMappingStrategyName)) {
@@ -232,7 +228,7 @@ public abstract class AbstractStandardAssembleAnnotationHandler<A extends Annota
     @SuppressWarnings("unused")
     @Nullable
     protected Class<?> parseKeyType(
-        StandardAssembleAnnotation standardAnnotation) {
+        StandardAssembleAnnotation<A> standardAnnotation) {
         Class<?> keyType = standardAnnotation.getKeyType();
         return ClassUtils.isObjectOrVoid(keyType) ? null : keyType;
     }
@@ -243,7 +239,7 @@ public abstract class AbstractStandardAssembleAnnotationHandler<A extends Annota
      * @author huangchengxing
      * @see StandardAssembleAnnotationAdapter
      */
-    public interface StandardAssembleAnnotation extends StandardAnnotation {
+    public interface StandardAssembleAnnotation<A extends Annotation> extends StandardAnnotation<A> {
 
         /**
          * Get key property type.
@@ -296,15 +292,22 @@ public abstract class AbstractStandardAssembleAnnotationHandler<A extends Annota
      *
      * @author huangchengxing
      */
+    @SuppressWarnings("all")
     @SuperBuilder
     @Getter
-    public static class StandardAssembleAnnotationAdapter
-        extends StandardAnnotationAdapter implements StandardAssembleAnnotation {
-        private final Class<?> keyType;
-        private final String handler;
-        private final Class<?> handlerType;
-        private final Class<?>[] mappingTemplates;
-        private final Mapping[] props;
-        private final String propertyMappingStrategy;
+    public static class StandardAssembleAnnotationAdapter<A extends Annotation>
+        extends StandardAnnotationAdapter<A> implements StandardAssembleAnnotation<A> {
+        @Builder.Default
+        private final Class<?> keyType = Object.class;
+        @Builder.Default
+        private final String handler = "";
+        @Builder.Default
+        private final Class<?> handlerType = Object.class;
+        @Builder.Default
+        private final Class<?>[] mappingTemplates = new Class<?>[0];
+        @Builder.Default
+        private final Mapping[] props = new Mapping[0];
+        @Builder.Default
+        private final String propertyMappingStrategy = "";
     }
 }

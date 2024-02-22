@@ -63,11 +63,12 @@ public class AssembleAnnotationHandler extends AbstractStandardAssembleAnnotatio
     /**
      * Get container from given {@code annotation}.
      *
-     * @param annotation annotation
+     * @param standardAnnotation standard annotation
      * @return namespace of {@link Container}
      */
     @Override
-    protected String getContainerNamespace(Assemble annotation) {
+    protected String getContainerNamespace(StandardAssembleAnnotation<Assemble> standardAnnotation) {
+        Assemble annotation = standardAnnotation.getAnnotation();
         String namespace = annotation.container();
         if (StringUtils.isEmpty(namespace)) {
             return Container.EMPTY_CONTAINER_NAMESPACE;
@@ -84,9 +85,10 @@ public class AssembleAnnotationHandler extends AbstractStandardAssembleAnnotatio
      * @return {@link StandardAssembleAnnotation} instance
      */
     @Override
-    protected StandardAssembleAnnotation getStandardAnnotation(
+    protected StandardAssembleAnnotation<Assemble> getStandardAnnotation(
         BeanOperations beanOperations, AnnotatedElement element, Assemble annotation) {
-        return StandardAssembleAnnotationAdapter.builder()
+        return StandardAssembleAnnotationAdapter.<Assemble>builder()
+            .annotatedElement(element)
             .annotation(annotation)
             .id(annotation.id())
             .key(annotation.key())
