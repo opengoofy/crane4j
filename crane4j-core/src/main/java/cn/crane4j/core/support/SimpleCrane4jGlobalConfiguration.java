@@ -26,6 +26,7 @@ import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
 import cn.crane4j.core.parser.handler.AssembleAnnotationHandler;
 import cn.crane4j.core.parser.handler.AssembleConstantAnnotationHandler;
 import cn.crane4j.core.parser.handler.AssembleEnumAnnotationHandler;
+import cn.crane4j.core.parser.handler.AssembleKeyAnnotationHandler;
 import cn.crane4j.core.parser.handler.AssembleMethodAnnotationHandler;
 import cn.crane4j.core.parser.handler.DisassembleAnnotationHandler;
 import cn.crane4j.core.parser.handler.strategy.OverwriteMappingStrategy;
@@ -152,6 +153,11 @@ public class SimpleCrane4jGlobalConfiguration extends DefaultContainerManager
             annotationFinder, configuration, configuration
         );
         beanOperationParser.addOperationAnnotationHandler(assembleConstantAnnotationHandler);
+        AssembleKeyAnnotationHandler assembleKeyAnnotationHandler = new AssembleKeyAnnotationHandler(
+            annotationFinder, configuration, configuration
+        );
+        beanOperationParser.addOperationAnnotationHandler(assembleKeyAnnotationHandler);
+
 
         // operation executor
         DisorderedBeanOperationExecutor disorderedBeanOperationExecutor = new DisorderedBeanOperationExecutor(configuration);

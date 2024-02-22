@@ -53,6 +53,7 @@ public class TypeHierarchyBeanOperationParserTest {
         configuration.registerContainer(CONTAINER);
         parser = configuration.getBeanOperationsParser(null, BeanOperationParser.class);
         ((TypeHierarchyBeanOperationParser)parser).setEnableHierarchyCache(true);
+        Assert.assertFalse(((TypeHierarchyBeanOperationParser)parser).getOperationAnnotationHandlers().isEmpty());
     }
 
     @Test
@@ -111,6 +112,7 @@ public class TypeHierarchyBeanOperationParserTest {
         // disassemble: bean
         Collection<DisassembleOperation> disassembles = nestedBeanOperations.getDisassembleOperations();
         DisassembleOperation bean = CollectionUtils.get(disassembles, 0);
+        Assert.assertNotNull(bean);
         if (!(bean instanceof TypeFixedDisassembleOperation)) {
             System.out.println(bean);
             System.out.println(bean.getKey());
@@ -138,6 +140,7 @@ public class TypeHierarchyBeanOperationParserTest {
     }
 
     private void checkAssembleOperation(AssembleOperation assembleOperation, String key, int supSort) {
+        Assert.assertNotNull(assembleOperation);
         Assert.assertEquals(key, assembleOperation.getId());
         Assert.assertNotNull(assembleOperation);
         Assert.assertEquals(key, assembleOperation.getKey());
@@ -156,6 +159,7 @@ public class TypeHierarchyBeanOperationParserTest {
     private void checkPropertyMappings(Set<PropertyMapping> mappings, String ref, String src) {
         Assert.assertEquals(1, mappings.size());
         PropertyMapping mapping = CollectionUtils.get(mappings, 0);
+        Assert.assertNotNull(mapping);
         Assert.assertEquals(ref, mapping.getReference());
         Assert.assertEquals(src, mapping.getSource());
     }

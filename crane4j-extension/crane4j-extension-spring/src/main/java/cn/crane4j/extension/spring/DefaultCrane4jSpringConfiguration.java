@@ -24,6 +24,7 @@ import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.ConditionalTypeHierarchyBeanOperationParser;
 import cn.crane4j.core.parser.handler.AssembleConstantAnnotationHandler;
 import cn.crane4j.core.parser.handler.AssembleEnumAnnotationHandler;
+import cn.crane4j.core.parser.handler.AssembleKeyAnnotationHandler;
 import cn.crane4j.core.parser.handler.DisassembleAnnotationHandler;
 import cn.crane4j.core.parser.handler.OperationAnnotationHandler;
 import cn.crane4j.core.parser.handler.strategy.OverwriteMappingStrategy;
@@ -63,6 +64,7 @@ import cn.crane4j.core.support.reflect.MapAccessiblePropertyOperator;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.support.reflect.PropertyOperatorHolder;
 import cn.crane4j.core.support.reflect.ReflectivePropertyOperator;
+import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.extension.spring.aop.MethodArgumentAutoOperateAdvisor;
 import cn.crane4j.extension.spring.aop.MethodResultAutoOperateAdvisor;
 import cn.crane4j.extension.spring.expression.SpelExpressionContext;
@@ -86,10 +88,12 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.expression.BeanResolver;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.lang.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Map;
 
 /**
  * Default configuration class for crane4j.
@@ -241,6 +245,18 @@ public class DefaultCrane4jSpringConfiguration implements SmartInitializingSingl
     public AssembleConstantAnnotationHandler assembleConstantAnnotationHandler(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration, PropertyMappingStrategyManager propertyMappingStrategyManager) {
         return new AssembleConstantAnnotationHandler(annotationFinder, configuration, propertyMappingStrategyManager);
+    }
+
+    @Bean
+    public AssembleKeyAnnotationHandler assembleKeyAnnotationHandler(
+        AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration,
+        PropertyMappingStrategyManager propertyMappingStrategyManager,
+        @Nullable Map<String, AssembleKeyAnnotationHandler.HandlerProvider> strategies) {
+        AssembleKeyAnnotationHandler handler = new AssembleKeyAnnotationHandler(annotationFinder, configuration, propertyMappingStrategyManager);
+        if (CollectionUtils.isNotEmpty(strategies)) {
+            strategies.forEach(handler::registerHandlerProvider);
+        }
+        return handler;
     }
 
     @Bean
