@@ -68,24 +68,31 @@ public abstract class AbstractConditionParser<A extends Annotation> implements C
         List<Condition> results = new ArrayList<>();
         annotations.forEach(annotation -> {
             ConditionDescriptor descriptor = getConditionDescriptor(annotation);
-            if (!canApply(descriptor.getOperationIds(), operation)) {
+            if (!canApply(annotation, descriptor.getBoundOperationIds(), operation)) {
                 return;
             }
-            Condition condition = createCondition(element, annotation);
+            AbstractCondition condition = createCondition(element, annotation);
             if (Objects.isNull(condition)) {
                 return;
             }
-            ((AbstractCondition)condition)
-                .setSort(descriptor.getSort())
+            condition.setSort(descriptor.getSort())
                 .setType(descriptor.getType());
-            condition = descriptor.isNegate() ? condition.negate() : condition;
-            results.add(condition);
+            results.add(descriptor.isNegate() ? condition.negate() : condition);
         });
         return results;
     }
 
-    private boolean canApply(String[] ids, KeyTriggerOperation operation) {
-        return ArrayUtils.isEmpty(ids) || ArrayUtils.contains(ids, operation.getId());
+    /**
+     * Whether the condition can be applied to the operation.
+     *
+     * @param annotation annotation
+     * @param boundOperationIds operation ids
+     * @param operation operation
+     * @return true if it can apply, otherwise false
+     */
+    @SuppressWarnings("unused")
+    protected boolean canApply(A annotation, String[] boundOperationIds, KeyTriggerOperation operation) {
+        return ArrayUtils.isEmpty(boundOperationIds) || ArrayUtils.contains(boundOperationIds, operation.getId());
     }
 
     /**
@@ -133,7 +140,7 @@ public abstract class AbstractConditionParser<A extends Annotation> implements C
     protected static class ConditionDescriptor {
         private static final String[] EMPTY_ID_ARRAY = new String[0];
         @Builder.Default
-        private String[] operationIds = EMPTY_ID_ARRAY;
+        private String[] boundOperationIds = EMPTY_ID_ARRAY;
         @Builder.Default
         private ConditionType type = ConditionType.AND;
         @Builder.Default

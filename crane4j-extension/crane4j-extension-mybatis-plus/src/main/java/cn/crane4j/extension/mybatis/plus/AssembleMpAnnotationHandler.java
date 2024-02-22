@@ -73,11 +73,12 @@ public class AssembleMpAnnotationHandler extends AbstractStandardAssembleAnnotat
     /**
      * Get container from given {@code annotation}.
      *
-     * @param annotation annotation
+     * @param standardAnnotation standard annotation
      * @return namespace of {@link Container}
      */
     @Override
-    protected String getContainerNamespace(AssembleMp annotation) {
+    protected String getContainerNamespace(StandardAssembleAnnotation<AssembleMp> standardAnnotation) {
+        AssembleMp annotation = standardAnnotation.getAnnotation();
         String namespace = containerRegister.determineNamespace(
             annotation.mapper(), annotation.where(), Arrays.asList(annotation.selects())
         );
@@ -96,9 +97,10 @@ public class AssembleMpAnnotationHandler extends AbstractStandardAssembleAnnotat
      * @return {@link StandardAssembleAnnotation} instance
      */
     @Override
-    protected StandardAssembleAnnotation getStandardAnnotation(
+    protected StandardAssembleAnnotation<AssembleMp> getStandardAnnotation(
         BeanOperations beanOperations, AnnotatedElement element, AssembleMp annotation) {
-        return StandardAssembleAnnotationAdapter.builder()
+        return StandardAssembleAnnotationAdapter.<AssembleMp>builder()
+            .annotatedElement(element)
             .annotation(annotation)
             .id(annotation.id())
             .key(annotation.key())

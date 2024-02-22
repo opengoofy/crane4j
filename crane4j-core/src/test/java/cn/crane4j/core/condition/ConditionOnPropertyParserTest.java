@@ -61,7 +61,7 @@ public class ConditionOnPropertyParserTest {
     private static class Foo {
         @ConditionOnProperty(value = "success", valueType = String.class)
         private String field1;
-        @ConditionOnProperty(property = "field2", value = "fail", negation = true)
+        @ConditionOnProperty(property = "field2", value = "fail", negate = true)
         private String field2;
     }
 }

@@ -58,12 +58,13 @@ public class ValueResolveAssembleAnnotationHandler
     /**
      * Get container.
      *
-     * @param annotation annotation
+     * @param standardAnnotation standard annotation
      * @return namespace of container
      * @throws IllegalArgumentException thrown when the container is null
      */
     @Override
-    protected String getContainerNamespace(Assemble annotation) {
+    protected String getContainerNamespace(StandardAssembleAnnotation<Assemble> standardAnnotation) {
+        Assemble annotation = standardAnnotation.getAnnotation();
         String namespace = resolveNamespace(annotation.container());
         if (StringUtils.isEmpty(namespace)) {
             return Container.EMPTY_CONTAINER_NAMESPACE;

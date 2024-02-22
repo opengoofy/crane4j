@@ -68,12 +68,15 @@ public class AssembleMethodAnnotationHandler
     /**
      * Create container by given annotation and namespace.
      *
-     * @param annotation annotation
+     * @param standardAnnotation standard annotation
      * @param namespace  namespace
      * @return {@link Container} instant
      */
+    @NonNull
     @Override
-    protected @NonNull Container<Object> createContainer(AssembleMethod annotation, String namespace) {
+    protected Container<Object> createContainer(
+        StandardAssembleAnnotation<AssembleMethod> standardAnnotation, String namespace) {
+        AssembleMethod annotation = standardAnnotation.getAnnotation();
         Container<Object> container = containerMethodResolver.resolve(annotation);
         Asserts.isNotNull(container, "cannot resolve container for annotation {}", annotation);
         return new AssembleMethodContainer<>(namespace, container);
@@ -82,11 +85,12 @@ public class AssembleMethodAnnotationHandler
     /**
      * Determine namespace by given annotation.
      *
-     * @param annotation annotation
+     * @param standardAnnotation standard annotation
      * @return namespace
      */
     @Override
-    protected String determineNamespace(AssembleMethod annotation) {
+    protected String determineNamespace(StandardAssembleAnnotation<AssembleMethod> standardAnnotation) {
+        AssembleMethod annotation = standardAnnotation.getAnnotation();
         return StringUtils.md5DigestAsHex(StringUtils.join(
             String::valueOf, "#", annotation.method(), annotation.target(), annotation.targetType()
         ));
@@ -101,9 +105,10 @@ public class AssembleMethodAnnotationHandler
      * @return {@link StandardAssembleAnnotation} instance
      */
     @Override
-    protected StandardAssembleAnnotation getStandardAnnotation(
+    protected StandardAssembleAnnotation<AssembleMethod> getStandardAnnotation(
         BeanOperations beanOperations, AnnotatedElement element, AssembleMethod annotation) {
-        return StandardAssembleAnnotationAdapter.builder()
+        return StandardAssembleAnnotationAdapter.<AssembleMethod>builder()
+            .annotatedElement(element)
             .annotation(annotation)
             .id(annotation.id())
             .key(annotation.key())

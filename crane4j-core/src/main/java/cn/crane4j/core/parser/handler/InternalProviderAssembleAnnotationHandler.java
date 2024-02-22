@@ -33,8 +33,8 @@ import java.util.Comparator;
  * @see ConfigurableContainerProvider
  * @since 2.2.0
  */
-public abstract class InternalProviderAssembleAnnotationHandler<T extends Annotation>
-    extends AbstractStandardAssembleAnnotationHandler<T> {
+public abstract class InternalProviderAssembleAnnotationHandler<A extends Annotation>
+    extends AbstractStandardAssembleAnnotationHandler<A> {
 
     public static final String INTERNAL_PROVIDER_SUFFIX = ".InternalProvider";
 
@@ -53,7 +53,7 @@ public abstract class InternalProviderAssembleAnnotationHandler<T extends Annota
      * @param propertyMappingStrategyManager property mapping strategy manager
      */
     protected InternalProviderAssembleAnnotationHandler(
-        Class<T> annotationType, AnnotationFinder annotationFinder,
+        Class<A> annotationType, AnnotationFinder annotationFinder,
         @NonNull Comparator<KeyTriggerOperation> operationComparator,
         Crane4jGlobalConfiguration globalConfiguration,
         PropertyMappingStrategyManager propertyMappingStrategyManager) {
@@ -69,18 +69,19 @@ public abstract class InternalProviderAssembleAnnotationHandler<T extends Annota
     /**
      * Get container from given {@code annotation}.
      *
-     * @param annotation annotation
+     * @param standardAnnotation standard annotation
      * @return namespace of {@link Container}
      * @implNote if the container needs to be obtained through a specific provider,
      * the name of the provider and the namespace of the container need to be concatenated through {@link ContainerManager#canonicalNamespace}
      * @see ContainerManager#canonicalNamespace
      */
     @Override
-    protected String getContainerNamespace(T annotation) {
-        String namespace = determineNamespace(annotation);
+    protected String getContainerNamespace(StandardAssembleAnnotation<A> standardAnnotation) {
+        A annotation = standardAnnotation.getAnnotation();
+        String namespace = determineNamespace(standardAnnotation);
         // only create when the container not exist
         if (!internalContainerProvider.containsContainer(namespace)) {
-            Container<Object> container = createContainer(annotation, namespace);
+            Container<Object> container = createContainer(standardAnnotation, namespace);
             Asserts.isNotNull(
                 container, "cannot resolve container for annotation [{}]", annotation
             );
@@ -94,20 +95,21 @@ public abstract class InternalProviderAssembleAnnotationHandler<T extends Annota
     /**
      * Create container by given annotation and namespace.
      *
-     * @param annotation annotation
+     * @param standardAnnotation standard annotation
      * @param namespace namespace
      * @return {@link Container} instant
      */
     @NonNull
-    protected abstract Container<Object> createContainer(T annotation, String namespace);
+    protected abstract Container<Object> createContainer(
+        StandardAssembleAnnotation<A> standardAnnotation, String namespace);
 
     /**
      * Determine namespace by given annotation.
      *
-     * @param annotation annotation
+     * @param standardAnnotation standard annotation
      * @return namespace
      */
-    protected abstract String determineNamespace(T annotation);
+    protected abstract String determineNamespace(StandardAssembleAnnotation<A> standardAnnotation);
 
     /**
      * Create internal container provider.

@@ -66,16 +66,15 @@ public class DisassembleAnnotationHandler
      *
      * @param parser         bean operation parser
      * @param beanOperations bean operations to resolve
-     * @param element        element
      * @param standardAnnotation standard annotation
      * @return {@link KeyTriggerOperation} instance if element and annotation is resolvable, null otherwise
      */
     @Nullable
     @Override
     protected DisassembleOperation createOperation(
-        BeanOperationParser parser, BeanOperations beanOperations, AnnotatedElement element, StandardAnnotation standardAnnotation) {
-        KeyTriggerOperation keyTriggerOperation = super.createOperation(parser, beanOperations, element, standardAnnotation);
-        Disassemble annotation = (Disassemble)standardAnnotation.getAnnotation();
+        BeanOperationParser parser, BeanOperations beanOperations, StandardAnnotation<Disassemble> standardAnnotation) {
+        KeyTriggerOperation keyTriggerOperation = super.createOperation(parser, beanOperations, standardAnnotation);
+        Disassemble annotation = standardAnnotation.getAnnotation();
 
         Class<?> sourceType = (Class<?>)beanOperations.getSource();
         DisassembleOperationHandler disassembleOperationHandler = globalConfiguration.getDisassembleOperationHandler(
@@ -121,9 +120,10 @@ public class DisassembleAnnotationHandler
      * @return {@link StandardAnnotation} instance
      */
     @Override
-    protected StandardAnnotation getStandardAnnotation(
+    protected StandardAnnotation<Disassemble> getStandardAnnotation(
         BeanOperations beanOperations, AnnotatedElement element, Disassemble annotation) {
-        return StandardAnnotationAdapter.builder()
+        return StandardAnnotationAdapter.<Disassemble>builder()
+            .annotatedElement(element)
             .annotation(annotation)
             .groups(annotation.groups())
             .id(annotation.id())

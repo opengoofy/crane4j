@@ -62,10 +62,10 @@ public class ConditionOnExpressionParser
     @Override
     protected ConditionDescriptor getConditionDescriptor(ConditionOnExpression annotation) {
         return ConditionDescriptor.builder()
-            .operationIds(annotation.id())
+            .boundOperationIds(annotation.id())
             .type(annotation.type())
             .sort(annotation.sort())
-            .negate(annotation.negation())
+            .negate(annotation.negate())
             .build();
     }
 
