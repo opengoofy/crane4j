@@ -21,14 +21,17 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AssembleKey {
 
-    String IDENTITY_HANDLER_PROVIDER = "NONE_HANDLE_STRATEGY";
+    /**
+     * A name of value mapper which does nothing for the key value.
+     */
+    String IDENTITY_HANDLER_MAPPER = "IDENTITY_HANDLER_MAPPER";
 
     /**
      * The process strategy of the key value.
      *
      * @return strategy name
      */
-    String provider() default IDENTITY_HANDLER_PROVIDER;
+    String mapper() default IDENTITY_HANDLER_MAPPER;
 
     /**
      * <p>The name of property which to reference the handled key value.<br />

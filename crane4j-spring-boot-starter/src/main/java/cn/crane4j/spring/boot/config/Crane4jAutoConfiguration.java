@@ -389,10 +389,10 @@ public class Crane4jAutoConfiguration {
     public AssembleKeyAnnotationHandler assembleKeyAnnotationHandler(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration,
         PropertyMappingStrategyManager propertyMappingStrategyManager,
-        @Nullable Map<String, AssembleKeyAnnotationHandler.HandlerProvider> strategies) {
+        @Nullable Map<String, AssembleKeyAnnotationHandler.ValueMapperProvider> providers) {
         AssembleKeyAnnotationHandler handler = new AssembleKeyAnnotationHandler(annotationFinder, configuration, propertyMappingStrategyManager);
-        if (CollectionUtils.isNotEmpty(strategies)) {
-            strategies.forEach(handler::registerHandlerProvider);
+        if (CollectionUtils.isNotEmpty(providers)) {
+            providers.forEach(handler::registerValueMapperProvider);
         }
         return handler;
     }

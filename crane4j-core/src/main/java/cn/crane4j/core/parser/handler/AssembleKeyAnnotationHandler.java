@@ -33,15 +33,15 @@ import java.util.stream.Collectors;
 public class AssembleKeyAnnotationHandler extends InternalProviderAssembleAnnotationHandler<AssembleKey> {
 
     /**
-     * Handle strategies.
+     * Registered value mapper providers.
      */
-    private final Map<String, HandlerProvider> handlerProviders = new HashMap<>();
+    private final Map<String, ValueMapperProvider> valueMapperProviders = new HashMap<>();
 
     public AssembleKeyAnnotationHandler(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration,
         PropertyMappingStrategyManager propertyMappingStrategyManager) {
         super(AssembleKey.class, annotationFinder, Crane4jGlobalSorter.comparator(), configuration, propertyMappingStrategyManager);
-        handlerProviders.put(AssembleKey.IDENTITY_HANDLER_PROVIDER, k -> UnaryOperator.identity());
+        valueMapperProviders.put(AssembleKey.IDENTITY_HANDLER_MAPPER, k -> UnaryOperator.identity());
     }
 
     /**
@@ -50,8 +50,8 @@ public class AssembleKeyAnnotationHandler extends InternalProviderAssembleAnnota
      * @param name provider provider name
      * @param provider provider provider
      */
-    public void registerHandlerProvider(String name, HandlerProvider provider) {
-        handlerProviders.put(name, provider);
+    public void registerValueMapperProvider(String name, ValueMapperProvider provider) {
+        valueMapperProviders.put(name, provider);
     }
 
     /**
@@ -67,8 +67,8 @@ public class AssembleKeyAnnotationHandler extends InternalProviderAssembleAnnota
         StandardAssembleAnnotation<AssembleKey> standardAnnotation, String namespace) {
         AssembleKey annotation = standardAnnotation.getAnnotation();
         AnnotatedElement element = standardAnnotation.getAnnotatedElement();
-        HandlerProvider provider = handlerProviders.get(annotation.provider());
-        Asserts.isNotNull(provider, "No provider provider found for [{}]", annotation.provider());
+        ValueMapperProvider provider = valueMapperProviders.get(annotation.mapper());
+        Asserts.isNotNull(provider, "No value mapper found for [{}]", annotation.mapper());
         return new HandlerContainerAdapter(namespace, provider.get(element));
     }
 
@@ -80,7 +80,7 @@ public class AssembleKeyAnnotationHandler extends InternalProviderAssembleAnnota
      */
     @Override
     protected String determineNamespace(StandardAssembleAnnotation<AssembleKey> standardAnnotation) {
-        return standardAnnotation.getAnnotation().provider();
+        return standardAnnotation.getAnnotation().mapper();
     }
 
     /**
@@ -141,7 +141,7 @@ public class AssembleKeyAnnotationHandler extends InternalProviderAssembleAnnota
      * Handler provider.
      */
     @FunctionalInterface
-    public interface HandlerProvider {
+    public interface ValueMapperProvider {
 
         /**
          * Get provider

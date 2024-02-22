@@ -42,8 +42,8 @@ public class AssembleKeyAnnotationHandlerTest {
         this.annotationHandler = new AssembleKeyAnnotationHandler(
             SimpleAnnotationFinder.INSTANCE, configuration, propertyMappingStrategyManager
         );
-        this.annotationHandler.registerHandlerProvider("test1", e -> kv -> kv + "test1");
-        this.annotationHandler.registerHandlerProvider("test2", e -> kv -> kv + "test2");
+        this.annotationHandler.registerValueMapperProvider("test1", e -> kv -> kv + "test1");
+        this.annotationHandler.registerValueMapperProvider("test2", e -> kv -> kv + "test2");
     }
 
     @Test
@@ -85,11 +85,11 @@ public class AssembleKeyAnnotationHandlerTest {
         Assert.assertEquals("btest2", sources.get("b"));
     }
 
-    @AssembleKey(key = "k1", provider = "test2", sort = 2, ref = "k2")
+    @AssembleKey(key = "k1", mapper = "test2", sort = 2, ref = "k2")
     @AllArgsConstructor
     @Data
     private static class Foo {
-        @AssembleKey(provider = "test1", sort = 1)
+        @AssembleKey(mapper = "test1", sort = 1)
         private String k1;
         private String k2;
     }

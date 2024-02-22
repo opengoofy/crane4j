@@ -31,7 +31,7 @@ public class Foo {
 ~~~java
 // 从 spring 容器获取 AssembleKeyAnnotationHandler
 AssembleKeyAnnotationHandler handler = SpringUtil.getBean(AssembleKeyAnnotationHandler.class);
-handler.registerHandlerProvider("phone_number_desensitization", element -> 
+handler.registerValueMapperProvider("phone_number_desensitization", element -> 
 	key -> { // 将手机号中间四位替换为 *
         String phone = (String)key;
         return phone.substring(0, 3) + "****" + phone.substring(7)
@@ -39,24 +39,26 @@ handler.registerHandlerProvider("phone_number_desensitization", element ->
 );
 ~~~
 
+在 Spring 环境中，你也可以直接实现 `AssembleKeyAnnotationHandler.ValueMapperProvider` 接口，并将其交给 Spring 容器管理，crane4j 在启动后将会自动注册。
+
 ### 2.2.使用
 
 接着，在你要转换的字段——这里是手机号字段——上添加 `@AssembleKey` 注解即可：
 
 ```java
 private static class Foo {
-    @AssembleKey(provider = "phone_number_desensitization", sort = 1)
+    @AssembleKey(mapper = "phone_number_desensitization", sort = 1)
     private String phone;
 }
 ```
 
 ### 2.3.获取注解元素
 
-我们会注意到，`registerHandlerProvider` 方法的入参是一个函数式接口：
+我们会注意到，`registerValueMapperProvider` 方法的入参是一个函数式接口：
 
 ~~~java
 @FunctionalInterface
-public interface HandlerProvider {
+public interface ValueMapperProvider {
     @NonNull
     UnaryOperator<Object> get(AnnotatedElement element);
 }
@@ -69,12 +71,12 @@ public interface HandlerProvider {
 ~~~java
 private static class Foo {
     @Skip(5) // 跳过前四位国家编码
-    @AssembleKey(provider = "phone_number_desensitization", sort = 1)
+    @AssembleKey(mapper = "phone_number_desensitization", sort = 1)
     private String phone;
 }
 
 AssembleKeyAnnotationHandler handler = SpringUtil.getBean(AssembleKeyAnnotationHandler.class);
-handler.registerHandlerProvider("phone_number_desensitization", element -> {
+handler.registerValueMapperProvider("phone_number_desensitization", element -> {
     Skip skip = element.getAnnotation(Skip.class);
     return key -> { 
         String phone = (String)key;
