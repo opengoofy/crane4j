@@ -96,6 +96,15 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
     }
 
     /**
+     * Get all operation annotation handlers.
+     *
+     * @return handlers
+     */
+    public Collection<OperationAnnotationHandler> getOperationAnnotationHandlers() {
+        return operationAnnotationHandlers;
+    }
+
+    /**
      * <p>Parse the class and class attribute information,
      * and generate the corresponding {@link BeanOperations} instance.<br />
      * If there is a cache, it will be obtained from the cache first.
@@ -201,6 +210,7 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
      * @param root whether the element is root
      * @return {@link BeanOperations}
      */
+    @SuppressWarnings("unused")
     protected BeanOperations createBeanOperations(AnnotatedElement element, boolean root) {
         return new SimpleBeanOperations(element);
     }

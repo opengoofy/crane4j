@@ -328,3 +328,28 @@
 - [与 SpringBoot 项目集成后，启动出现 No ServletContext set 异常](https://gitee.com/opengoofy/crane4j/issues/I8XRVT)；
 - [声明装的配操作支持在实际执行时，根据情况动态决定是否应用](https://gitee.com/opengoofy/crane4j/issues/I8W0SN)；
 - [当 Bean 被代理后，类上的 `@ContainerCache` 注解无法被识别](https://github.com/opengoofy/crane4j/issues/199)；
+
+## 2.6.0 (2024-02-23)
+
+这是一个新特性版本，添加了对条件操作的支持，并额外支持了常量和键值两种数据源容器的选项式配置。
+
+具体内容参见：[Milestone](https://github.com/opengoofy/crane4j/milestone/10)。
+
+**Feature**
+
+- [支持 `@AssembleConstant` 注解，用于快速声明一个基于常量类的装配操作](https://github.com/opengoofy/crane4j/issues/135)；
+- [支持使用实体类中特定方法返回值作为key值](https://github.com/opengoofy/crane4j/issues/93)；
+- [`@ContainerCache` 注解支持在 Spring 配置类的工厂方法中使用](https://github.com/opengoofy/crane4j/issues/210)；
+- [声明装的配操作支持在实际执行时，根据情况动态决定是否应用](https://gitee.com/opengoofy/crane4j/issues/I8W0SN)；
+- [`@Assemble` 注解支持通过类似 Spring 的 `@Condition` 的方式动态决定是否要对特定对象应用操作](https://github.com/opengoofy/crane4j/issues/133)；
+- [支持为每个操作都添加一个id作为唯一标识](https://github.com/opengoofy/crane4j/issues/201)；
+- [支持根据策略回填指定字段值](https://github.com/opengoofy/crane4j/issues/130)；
+
+**Refactor**
+
+- [将 `KeyTriggerOperation` 下的实现类的创建方式改为通过 Builder 创建](https://github.com/opengoofy/crane4j/issues/206)；
+
+**Fix**
+
+- [`ContainerLifecycleProcessor` 无法处理被 Spring 管理的容器](https://github.com/opengoofy/crane4j/issues/211)；
+- [自动填充时，若目标类没有配置任何装配操作则执行会报错](https://github.com/opengoofy/crane4j/issues/204)；
