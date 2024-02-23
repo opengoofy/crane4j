@@ -197,6 +197,7 @@ public class CustomCacheManager extends AbstractCacheManager {
             super(name);
             this.map = map;
         }
+        // 实现自己的增删改查方法
         @Nullable
         @Override
         public Object get(K key) {

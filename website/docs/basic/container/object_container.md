@@ -30,6 +30,14 @@ Container<Foo> objectContainer = Containers.forLambda("foo_info", fooList -> {
 
 :::warning
 
-这里需要注意的是，`Container` 返回的数据必须按**入参的对象实例本身**分组，如果重写了 `equals` 或者 `hashCode` 需要格外注意。
+`Container` 返回的数据必须按**入参的对象实例本身**分组，如果重写了 `equals` 或者 `hashCode` 需要格外注意。
+
+:::
+
+:::tip
+
+如果你的目的仅仅是为了对目标对象做一些处理，而不是真的需要以目标对象本身为数据源进行填充，那么你可以直接让目标类实现 `OperationAwareBean` 或 `SmartOperationAwareBean` 接口，在回调方法中实现你想要的效果。
+
+具体可以参见 [组件的回调接口](./../../advanced/callback_of_component.md) 一节中的 “对象的回调接口” 这一小节。
 
 :::

@@ -1,6 +1,7 @@
 package cn.crane4j.core.cache;
 
 import cn.crane4j.core.container.Container;
+import cn.crane4j.core.container.ContainerDelegate;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,23 +26,12 @@ import java.util.stream.Collectors;
 @Slf4j
 @Getter
 @RequiredArgsConstructor
-public class CacheableContainer<K> implements Container<K>, Container.Lifecycle {
+public class CacheableContainer<K> implements ContainerDelegate<K> {
 
     private final Container<K> container;
     private final CacheDefinition cacheDefinition;
     private final CacheManager cacheManager;
     private volatile CacheObject<K> currentCache;
-
-    /**
-     * Gets the namespace of the data source container,
-     * always return the namespace of the wrapped original container.
-     *
-     * @return namespace
-     */
-    @Override
-    public String getNamespace() {
-        return container.getNamespace();
-    }
 
     /**
      * <p>Enter a batch of key values to return data source objects grouped by key values.
@@ -100,25 +90,5 @@ public class CacheableContainer<K> implements Container<K>, Container.Lifecycle 
             }
         }
         return currentCache;
-    }
-
-    /**
-     * Initialize the container
-     */
-    @Override
-    public void init() {
-        if (container instanceof Container.Lifecycle) {
-            ((Container.Lifecycle)container).init();
-        }
-    }
-
-    /**
-     * Destroy the container
-     */
-    @Override
-    public void destroy() {
-        if (container instanceof Container.Lifecycle) {
-            ((Container.Lifecycle)container).destroy();
-        }
     }
 }

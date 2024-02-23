@@ -40,6 +40,7 @@ public class Student {
 
 - 获取 `OneToOneAssembleOperationHandler` 后，调用 `setIgnoreNullKey` 方法设置过滤 null 值；
 - 在 springboot 环境，直接在配置文件里面添加 `crane4j.ignore-null-key-when-assembling`；
+- 在 2.6.0 及更高版本，使用 `@ConditionOnPropertyNotNull` 条件注解。具体可参见 [设置操作触发条件](./operation_condition.md) 一节。
 
 :::
 
@@ -72,7 +73,7 @@ public class Student {
 ```java
 // 直接声明
 @Assemble(
-    key = "id", // 手动指定绑定到 id 字段上
+    key = "id", // 手动指定绑定到 id 字段上，此外，你可以绑定到一个 getter 方法上
     container = "student", 
     props = @Mapping(src = "studentName", ref = "name")
 )
@@ -112,7 +113,7 @@ public class UserVO {
 }
 ```
 
-无需担心多次查询数据源的问题，一般情况下，crane4j 会自动帮你合并在同一次操作中对相同数据源容器的调用。
+一般情况下，crane4j 会自动帮你合并在同一次操作中对相同数据源容器的调用，所以不用担心重复查询数据库。
 
 :::tip
 

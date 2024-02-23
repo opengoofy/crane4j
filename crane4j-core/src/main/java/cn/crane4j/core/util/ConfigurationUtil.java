@@ -1,7 +1,11 @@
 package cn.crane4j.core.util;
 
+import cn.crane4j.annotation.ContainerCache;
 import cn.crane4j.annotation.Mapping;
 import cn.crane4j.annotation.MappingTemplate;
+import cn.crane4j.core.cache.CacheDefinition;
+import cn.crane4j.core.cache.CacheManager;
+import cn.crane4j.core.cache.CacheableContainer;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerDefinition;
 import cn.crane4j.core.container.lifecycle.ContainerLifecycleProcessor;
@@ -48,6 +52,29 @@ import java.util.stream.Stream;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ConfigurationUtil {
+
+    /**
+     * Wrap method container as cacheable container.
+     *
+     * @param annotation annotation
+     * @param configuration configuration
+     * @param container container
+     * @return cacheable container
+     */
+    public static <K> Container<K> wrapToCacheableContainer(
+        ContainerCache annotation, Crane4jGlobalConfiguration configuration, Container<K> container) {
+        // wrap method container as cacheable container
+        String managerName = StringUtils.emptyToDefault(
+            annotation.cacheManager(), CacheManager.DEFAULT_MAP_CACHE_MANAGER_NAME
+        );
+        CacheManager cacheManager = configuration.getCacheManager(managerName);
+        Asserts.isNotNull(cacheManager, "cacheManager [{}] not found", managerName);
+        CacheDefinition cacheDefinition = new CacheDefinition.Impl(
+            container.getNamespace(), managerName,
+            annotation.expirationTime(), annotation.timeUnit()
+        );
+        return new CacheableContainer<>(container, cacheDefinition, cacheManager);
+    }
 
     /**
      * Get element identifier.

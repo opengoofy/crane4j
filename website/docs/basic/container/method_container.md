@@ -1,8 +1,8 @@
 # 方法容器
 
-方法容器指以实例方法或静态方法作为数据源的容器。它是我们在日常中最经常使用的容器之一。
+方法容器指以实例方法或静态方法作为数据源的容器，它是我们在日常中最经常使用的容器之一。
 
-和其他的容器不同，方法容器通常不直接创建使用，而是通过在目标方法上添加注解的方式，将该方法 “声明” 为一个方法容器，它通常由 DI 容器自动扫描并注册——换而言之，**这个功能比较推荐在 Spring 环境中使用**。
+和其他的容器不同，方法容器通常不直接创建使用，而是通过在目标方法上添加注解的方式，将该方法 “声明” 为一个方法容器。你可以直接将带有容器方法的类交由 crane4j 进行解析，而在 Spring 环境中，crane4j 将会通过后处理器自动解析并注册。
 
 crane4j 在设计上参考了 Spring 处理监听器注解 `@EventListener` 的责任链机制，它基于注解处理器 `MethodContainerAnnotationProcessor` 和方法容器工厂链 `MethodContainerFactory` 实现了扫描和适配的功能，你可以通过添加自己的 `MethodContainerFactory` 实现从而扩展这部分功能。
 
@@ -51,9 +51,19 @@ public class ChildClass extends SuperClass {}
 + **声明类**：不限制，你可以将注解声明在接口或抽象类上，如果声明在类父类或者父接口上，那么子类/实现类同样会获得此方法；
 + **方法类型**：不限制，方法可以是实例方法（包括接口或抽象类中的抽象方法）或静态方法；
 + **返回值类型**：方法必须有返回值，且返回值类型必须为 `Collection` 集合或 `Map` 集合（取决于 `@ContainerMethod#type` 属性）；
-+ **参数类型**：可以是无参方法，若是有参方法，则首个参数必须为 `Collection` 类型；
++ **参数类型**：可以是无参方法，若是有参方法，则首个参数必须为 `Collection` 类型（这类方法在调用时其他参数都是 `null`）；
 
 常见的各种 `xxxByIds` 都是非常典型的方法。
+
+:::tip
+
+crane4j 将根据现有的条件自动查找最匹配的方法，因此 `bindMethodParamTypes` 并不总是必须的。
+
+当没有多个重载方法时，你可以只填写方法名，而当有多个重载方法时，你只需要填写足以区分出两个方法的前部分参数即可（比如 a, b, c 与 a, c, d，只需要 a, c 即可确认 a, c, d）。
+
+不过出于代码的可维护性考虑，还是推荐把参数类型写全。
+
+:::
 
 ## 2.可选配置项
 
@@ -200,10 +210,33 @@ private static class Foo {
 
 `@AssembleMethod` 注解提供了一些参数：
 
-| API          | 作用                                              | 类型                                                         | 默认值                         |
-| ------------ | ------------------------------------------------- | ------------------------------------------------------------ | ------------------------------ |
-| `targetType` | 指定调用类的类型                                  | 目标类                                                       | 无，与 `target` 二选一必填     |
-| `target`     | 指定调用类的类型全限定名，或者容器中的 `beanName` | 调用类的全限定名字符串，如果在 Spring 容器中，则可以是 `beanName` | 无，与 `targetType` 二选一必填 |
-| `method`     | 指定绑定方法                                      | `@ContainerMethod`                                           | 无，必填                       |
+| API           | 作用                                              | 类型                                                         | 默认值                         |
+| ------------- | ------------------------------------------------- | ------------------------------------------------------------ | ------------------------------ |
+| `targetType`  | 指定调用类的类型                                  | 目标类                                                       | 无，与 `target` 二选一必填     |
+| `target`      | 指定调用类的类型全限定名，或者容器中的 `beanName` | 调用类的全限定名字符串，如果在 Spring 容器中，则可以是 `beanName` | 无，与 `targetType` 二选一必填 |
+| `method`      | 指定绑定方法                                      | `@ContainerMethod`                                           | 无，必填                       |
+| `enableCache` | 是否启用缓存配置                                  | boolean                                                      | false                          |
+| `cache`       | 指定缓存配置                                      | `@ContainerCache`                                            | 无                             |
 
-此外，在选项式配置中，你同样可以通过在被 `@ContainerMethod` 注解绑定的方法上添加 `@ContainerCache` 注解的方式实现配置缓存。在后续版本迭代中，会考虑在 `@AssembleMethod` 注解中增加一些缓存相关的配置。
+此外，在选项式配置中，你同样可以通过在被 `@ContainerMethod` 注解绑定的方法上添加 `@ContainerCache` 注解的方式实现配置缓存。
+
+不过，在 2.6.0 及以上版本，缓存配置同样集成到了 `@AssembleMethod` 中：
+
+~~~java
+@RequiredArgsConstructor
+@Data
+private static class Foo {
+    @AssembleMethod(
+        targetType = FooService.class,
+        method = @ContainerMethod(bindMethod = "listByIds", resultType = Foo.class, resultKey = "id"),
+        props = { @Mapping("name"), @Mapping("type") },
+        enableCache = true,  // 启用缓存
+        cache = @ContainerCache(expirationTime = 1000L, timeUnit = TimeUnit.SECONDS) // 设置缓存
+    )
+    private id;
+    private String name;
+    private String type;
+}
+~~~
+
+需要注意的是，**如果目标方法上已经通过 `@ContainerCache` 或配置文件的方式配置缓存时，你在 `@AssembleMethod` 中的缓存配置将不会生效**，因为前者的优先级更高。
