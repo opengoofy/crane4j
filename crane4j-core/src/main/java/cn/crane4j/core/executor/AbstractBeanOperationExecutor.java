@@ -11,8 +11,9 @@ import cn.crane4j.core.parser.operation.DisassembleOperation;
 import cn.crane4j.core.parser.operation.KeyTriggerOperation;
 import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.CollectionUtils;
+import cn.crane4j.core.util.ExecutionTimeLogable;
 import cn.crane4j.core.util.MultiMap;
-import cn.crane4j.core.util.TimerUtil;
+import cn.crane4j.core.util.Timer;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -23,6 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -66,7 +68,7 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 @Slf4j
-public abstract class AbstractBeanOperationExecutor implements BeanOperationExecutor {
+public abstract class AbstractBeanOperationExecutor implements BeanOperationExecutor, ExecutionTimeLogable {
 
     /**
      * Container manager.
@@ -83,13 +85,19 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
      * we will try to solve this problem in the {@link cn.crane4j.core.parser.BeanOperationParser}.
      */
     @Setter
-    public long waitTimeoutMillisecondIfOperationNotActive = 50L;
+    private long waitTimeoutMillisecondIfOperationNotActive = 50L;
 
     /**
      * Whether to enable the execution of operations that are not active.
      */
     @Setter
-    public boolean enableExecuteNotActiveOperation = false;
+    private boolean enableExecuteNotActiveOperation = false;
+
+    /**
+     * Whether to log the execution time of the operation.
+     */
+    @Setter
+    private boolean logExecutionTime = false;
 
     /**
      * <p>process target num of each batch when executing an operation.<br />
@@ -134,11 +142,10 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
         MultiMap<BeanOperations, Object> targetWithOperations = MultiMap.linkedListMultimap();
         targetWithOperations.putAll(operations, targets);
         Predicate<? super KeyTriggerOperation> filter = options.getFilter();
-        TimerUtil.getExecutionTime(
-            log.isDebugEnabled(),
-            time -> log.debug("disassemble operations completed in {} ms", time),
-            () -> disassembleIfNecessary(targets, operations, filter, targetWithOperations)
-        );
+
+        Timer timer = Timer.startTimer(logExecutionTime);
+        disassembleIfNecessary(targets, operations, filter, targetWithOperations);
+        timer.stop(TimeUnit.MILLISECONDS, time -> log.debug("disassemble operations completed in {} ms", time));
 
         // flattened objects are grouped according to assembly operations, then encapsulated as execution objects
         beforeAssembleOperation(targetWithOperations);
@@ -151,11 +158,9 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
         });
 
         // complete assembly operation
-        TimerUtil.getExecutionTime(
-            log.isDebugEnabled(),
-            time -> log.debug("assemble operations completed in {} ms", time),
-            () -> executeOperations(executions, options)
-        );
+        timer.start();
+        executeOperations(executions, options);
+        timer.stop(TimeUnit.MILLISECONDS, time -> log.debug("execute operations completed in {} ms", time));
         afterOperationsCompletion(targetWithOperations);
     }
 

@@ -5,8 +5,9 @@ import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.parser.handler.OperationAnnotationHandler;
 import cn.crane4j.core.support.Crane4jGlobalSorter;
 import cn.crane4j.core.util.CollectionUtils;
+import cn.crane4j.core.util.ExecutionTimeLogable;
 import cn.crane4j.core.util.ReflectUtils;
-import cn.crane4j.core.util.TimerUtil;
+import cn.crane4j.core.util.Timer;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>General implementation of {@link BeanOperationParser}.
@@ -53,7 +55,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @since 1.2.0
  */
 @Slf4j
-public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
+public class TypeHierarchyBeanOperationParser implements BeanOperationParser, ExecutionTimeLogable {
 
     /**
      * temp cache for operations of element that currently in parsing
@@ -82,6 +84,12 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
      */
     @Setter
     protected boolean enableHierarchyCache = false;
+
+    /**
+     * Whether to log the execution time of the operation.
+     */
+    @Setter
+    private boolean logExecutionTime = false;
 
     /**
      * Add bean operations resolvers.
@@ -138,11 +146,9 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
                     result = currentlyInParsing.get(element);
                     // target need parse, do it!
                     if (Objects.isNull(result)) {
-                        result = TimerUtil.getExecutionTime(
-                            log.isDebugEnabled(),
-                            time -> log.debug("parsing of element [{}] completed in {} ms", element, time),
-                            () -> doParse(element)
-                        );
+                        Timer timer = Timer.startTimer(log.isDebugEnabled());
+                        doParse(element);
+                        timer.stop(TimeUnit.MILLISECONDS, time -> log.debug("parsing of element [{}] completed in {} ms", element, time));
                     } else {
                         log.debug("target [{}] is in parsing, get early cache", element);
                         // FIXME： If the current configuration is not yet activated,
