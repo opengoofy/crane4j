@@ -43,6 +43,26 @@ public @interface AssembleMethod {
      */
     ContainerMethod method();
 
+    /**
+     * <p>Whether to use the cache configuration of {@link #cache()}.<br />
+     * If target method is already specified the cache configuration,
+     * this configuration will be ignored.
+     *
+     * @return true if follow method cache config, otherwise false
+     * @since 2.6.0
+     */
+    boolean enableCache() default false;
+
+    /**
+     * Cache configuration,
+     * it will be used only when {@link #enableCache()} is {@code false}.
+     *
+     * @return cache
+     * @see #enableCache()
+     * @since 2.6.0
+     */
+    ContainerCache cache() default @ContainerCache;
+
     // ================= common =================
 
     /**

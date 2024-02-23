@@ -2,7 +2,9 @@ package cn.crane4j.core.parser.handler;
 
 import cn.crane4j.annotation.AssembleMethod;
 import cn.crane4j.annotation.ContainerMethod;
+import cn.crane4j.core.cache.CacheableContainer;
 import cn.crane4j.core.container.Container;
+import cn.crane4j.core.container.ContainerDelegate;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.handler.strategy.PropertyMappingStrategyManager;
 import cn.crane4j.core.support.AnnotationFinder;
@@ -13,6 +15,7 @@ import cn.crane4j.core.support.container.MethodContainerFactory;
 import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.ClassUtils;
 import cn.crane4j.core.util.CollectionUtils;
+import cn.crane4j.core.util.ConfigurationUtil;
 import cn.crane4j.core.util.ReflectUtils;
 import cn.crane4j.core.util.StringUtils;
 import lombok.Getter;
@@ -28,6 +31,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * <p>An {@link AbstractStandardAssembleAnnotationHandler} implementation for {@link AssembleMethod} annotation.
@@ -62,7 +66,19 @@ public class AssembleMethodAnnotationHandler
         Collection<MethodContainerFactory> methodContainerFactories,
         PropertyMappingStrategyManager propertyMappingStrategyManager) {
         super(AssembleMethod.class, annotationFinder, Crane4jGlobalSorter.comparator(), globalConfiguration, propertyMappingStrategyManager);
-        this.containerMethodResolver = new ContainerMethodResolver(methodContainerFactories);
+        this.containerMethodResolver = createContainerMethodResolver(methodContainerFactories);
+    }
+
+    /**
+     * Create container method resolver.
+     *
+     * @param methodContainerFactories method container factories
+     * @return {@link ContainerMethodResolver} instance
+     * @since 2.6.0
+     */
+    protected ContainerMethodResolver createContainerMethodResolver(
+        Collection<MethodContainerFactory> methodContainerFactories) {
+        return new CacheableContainerMethodResolver(methodContainerFactories);
     }
 
     /**
@@ -155,6 +171,52 @@ public class AssembleMethodAnnotationHandler
      * A resolve for {@link AssembleMethod}.
      *
      * @author huangchengxing
+     * @since 2.6.0
+     */
+    protected class CacheableContainerMethodResolver extends ContainerMethodResolver {
+
+        /**
+         * Create a {@link ContainerMethodSupport} instance.
+         *
+         * @param methodContainerFactories method container factories
+         */
+        protected CacheableContainerMethodResolver(
+            Collection<MethodContainerFactory> methodContainerFactories) {
+            super(methodContainerFactories);
+        }
+
+        /**
+         * Get container from given {@code type} and {@code annotation}.
+         *
+         * @param annotation annotation
+         * @return container instance if found, null otherwise
+         */
+        @Nullable
+        @Override
+        public Container<Object> resolve(AssembleMethod annotation) {
+            Container<Object> container = super.resolve(annotation);
+            return Optional.ofNullable(container)
+                .filter(c -> !isCached(c))
+                .filter(c -> annotation.enableCache())
+                .map(c -> ConfigurationUtil.wrapToCacheableContainer(annotation.cache(), globalConfiguration, c))
+                .orElse(container);
+        }
+
+        private boolean isCached(Container<?> container) {
+            while (container instanceof ContainerDelegate) {
+                if (container instanceof CacheableContainer) {
+                    return true;
+                }
+                container = ((ContainerDelegate<?>) container).getContainer();
+            }
+            return false;
+        }
+    }
+
+    /**
+     * A resolve for {@link AssembleMethod}.
+     *
+     * @author huangchengxing
      */
     protected class ContainerMethodResolver extends ContainerMethodSupport {
 
@@ -163,7 +225,8 @@ public class AssembleMethodAnnotationHandler
          *
          * @param methodContainerFactories method container factories
          */
-        protected ContainerMethodResolver(Collection<MethodContainerFactory> methodContainerFactories) {
+        protected ContainerMethodResolver(
+            Collection<MethodContainerFactory> methodContainerFactories) {
             super(methodContainerFactories);
         }
 
@@ -201,9 +264,10 @@ public class AssembleMethodAnnotationHandler
      * @author huangchengxing
      */
     @RequiredArgsConstructor
-    private static class AssembleMethodContainer<T> implements Container<T> {
+    private static class AssembleMethodContainer<T> implements ContainerDelegate<T> {
         @Getter
         private final String namespace;
+        @Getter
         private final Container<T> container;
         @Override
         public Map<T, ?> get(Collection<T> keys) {

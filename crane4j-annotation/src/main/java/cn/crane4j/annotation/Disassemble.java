@@ -97,7 +97,6 @@ public @interface Disassemble {
      *
      * @return type
      * @see cn.crane4j.core.executor.handler.DisassembleOperationHandler;
-     *
      */
     Class<?> handlerType() default Object.class;
 
