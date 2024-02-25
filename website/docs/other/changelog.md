@@ -318,6 +318,7 @@
 - [提供回调接口或组件，用于在具体的填充过程支持一些自定的操作](https://github.com/opengoofy/crane4j/issues/79)；
 - [当需要值到键的映射时，希望可以不需要在注解中指定 props 属性](https://github.com/opengoofy/crane4j/issues/190)；
 - [验证或者支持在更高的 LTS 版本运行](https://github.com/opengoofy/crane4j/issues/11)；
+- [支持直接在 @ContainerMethod 注解中指定缓存配置](https://github.com/opengoofy/crane4j/issues/220)；
 
 **Refactor**
 
