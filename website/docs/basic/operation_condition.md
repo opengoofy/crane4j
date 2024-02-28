@@ -381,6 +381,6 @@ public class ConditionOnTargetSerializableParser
 ~~~java
 Crane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create();
 ConditionalTypeHierarchyBeanOperationParser parser = configuration.getBeanOperationParser(ConditionalTypeHierarchyBeanOperationParser.class);
-parser.registerConditionParser(new ConditionalTypeHierarchyBeanOperationParser(......));
+parser.registerConditionParser(new ConditionOnTargetSerializableParser());
 ~~~
 

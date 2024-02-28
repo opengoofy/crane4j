@@ -212,8 +212,8 @@ private String customerType;
 
 |                  | 选项式                                                       | 组合式                         |
 | ---------------- | ------------------------------------------------------------ | ------------------------------ |
-| 支持的数据源类型 | 枚举 (`@AssembleEnum`)<br />常量 (`@AssembleConstant`)<br />方法（`@AssembleMethod`）<br />ORM 框架 (目前仅支持 `MybatisPlus`，对应注解为`@AssembleMp`) | 所有类型的数据源               |
-| 优点             | 配置方便，且配置集中                                         | 灵活度高，便于复用相同的数据源 |
+| 支持的数据源类型 | 枚举 (`@AssembleEnum`)<br />常量 (`@AssembleConstant`)<br />方法（`@AssembleMethod`）<br />键值映射（`@AssembleKey`）<br />ORM 框架 (目前仅支持 `MybatisPlus`，对应注解为`@AssembleMp`) | 所有类型的数据源               |
+| 优点             | 配置方便，且便于集中管理                                     | 灵活度高，便于复用相同的数据源 |
 | 缺点             | 即使数据源相同也需要重复配置                                 | 配置较为零散                   |
 
 选项式配置的注解基于注解解析器 `OperationAnnotationHandler` 实现，你也可以添加自己的注解处理器以便支持自定义注解。具体请参见后文 “[注解处理器](./../advanced/operation_annotation_handler.md)” 一节。

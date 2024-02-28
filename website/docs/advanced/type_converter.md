@@ -16,4 +16,6 @@
 | `HutoolConverterManager` | 基于 Hutool 的 `Convert` 实现，参见 Hutool 参考文档中的 [自定义类型转换-ConverterRegistry](https://hutool.cn/docs/#/core/类型转换/自定义类型转换-ConverterRegistry?id=自定义类型转换-converterregistry) 一节 | 在非 Spring 环境中使用 |
 | `SpringConverterManager` | 基于 Spring 的 `ConversionService` 实现，功能强大            | 在 Spring 环境下使用   |
 
-你也可以实现 `ConverterManager` 接口，
+基于此，如果你要添加新的类型转换器，那么在 Spring 环境，你只需要与 Spring 对接，而在非 Spring 环境，你只需要与 Hutool 对接。
+
+不过，你也可以实现 `ConverterManager` 接口，定义你的自己的类型转换器。
