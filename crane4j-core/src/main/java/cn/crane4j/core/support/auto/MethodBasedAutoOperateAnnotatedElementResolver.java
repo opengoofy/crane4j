@@ -83,6 +83,15 @@ public class MethodBasedAutoOperateAnnotatedElementResolver extends AbstractAuto
             return null;
         }
 
+        // resolve type for the element
+        if (annotation.resolveOperationsFromCurrentElement()) {
+            BeanOperations beanOperations = parser.parse(element);
+            return beanOperations.isEmpty() ?
+                null : DefaultAutoOperateAnnotatedElement.forStaticTypeOperation(
+                annotation, element, extractor, filter, beanOperations, executor
+            );
+        }
+
         // type is specified in annotation
         Class<?> annotationSpecifiedType = annotation.type();
         if (!ClassUtils.isObjectOrVoid(annotationSpecifiedType)) {

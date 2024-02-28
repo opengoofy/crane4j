@@ -204,3 +204,28 @@ public List<Foo> getFoo(Integer type) {
 
 :::
 
+### 2.7.从注解元素获取配置
+
+在 2.7.0 及以上版本，你可以不配置 `type` 或通过动态解析返回值类型来获取操作配置，而是直接从被 `@AutoOperate` 注解的方法或者参数上获取操作配置。
+
+比如：
+
+~~~java
+@Assemble(key = "id", container = "foo")
+@AutoOperate(resolveOperationsFromCurrentElement = true) // 从 listByIds 方法上解析操作配置
+public List<Foo> listByIds(Collection<Integer> ids);
+
+public void preocessFoo(
+  @Assemble(key = "id", container = "foo")
+	@AutoOperate(resolveOperationsFromCurrentElement = true) // 从 targets 方法参数上解析操作配置
+  Collection<Foo> targets
+);
+~~~
+
+在上面这个写法中，你可以不必在 `Foo` 类中配置任何注解，当执行时，crane4j 将根据你在方法上的操作配置对返回值进行填充，或根据你在参数上的操作配置对入参进行填充。
+
+:::tip
+
+如果你希望基于一个独立的方法进行填充，那么可以参考 [基于方法填充](./../advanced/operator_interface.md) 一节，它同样也可做到类似的效果，并且更加灵活。
+
+:::

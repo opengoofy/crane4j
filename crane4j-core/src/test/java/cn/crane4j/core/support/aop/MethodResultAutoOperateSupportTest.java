@@ -66,9 +66,43 @@ public class MethodResultAutoOperateSupportTest {
         support.afterMethodInvoke(null, method, foo, new Object[]{ Arrays.asList(1, 2) });
     }
 
+    @Test
+    public void beforeMethodInvokeWhenResolveOperationsFromCurrentElement() {
+        Method method = ReflectUtils.getMethod(this.getClass(), "methodWhenResolveOperationsFromCurrentElement", Collection.class);
+        Assert.assertNotNull(method);
+        AutoOperate annotation = method.getAnnotation(AutoOperate.class);
+        Assert.assertNotNull(annotation);
+        Result<Foo2> foo = new Result<>(new Foo2(1));
+        support.afterMethodInvoke(annotation, method, foo, new Object[]{ Arrays.asList(1, 2) });
+        Assert.assertEquals("name1", foo.getData().getName());
+        support.afterMethodInvoke(null, method, foo, new Object[]{ Arrays.asList(1, 2) });
+    }
+
+    @Test
+    public void beforeMethodInvokeWhenCannotResolveOperationsFromCurrentElement() {
+        Method method = ReflectUtils.getMethod(this.getClass(), "methodWhenCannotResolveOperationsFromCurrentElement", Collection.class);
+        Assert.assertNotNull(method);
+        AutoOperate annotation = method.getAnnotation(AutoOperate.class);
+        Assert.assertNotNull(annotation);
+        Result<Foo2> foo = new Result<>(new Foo2(1));
+        support.afterMethodInvoke(annotation, method, foo, new Object[]{ Arrays.asList(1, 2) });
+        Assert.assertNull(foo.getData().getName());
+    }
+
     @AutoOperate(on = "data", condition = "true")
     private Result<Collection<Foo>> method(Collection<Integer> ids) {
         return new Result<>(ids.stream().map(Foo::new).collect(Collectors.toList()));
+    }
+
+    @Assemble(key = "id", container = "test", props = @Mapping("name"))
+    @AutoOperate(on = "data", condition = "true", resolveOperationsFromCurrentElement = true)
+    private Result<Collection<Foo2>> methodWhenResolveOperationsFromCurrentElement(Collection<Integer> ids) {
+        return new Result<>(ids.stream().map(Foo2::new).collect(Collectors.toList()));
+    }
+
+    @AutoOperate(on = "data", condition = "true", resolveOperationsFromCurrentElement = true)
+    private Result<Collection<Foo2>> methodWhenCannotResolveOperationsFromCurrentElement(Collection<Integer> ids) {
+        return new Result<>(ids.stream().map(Foo2::new).collect(Collectors.toList()));
     }
 
     @Getter
@@ -82,6 +116,14 @@ public class MethodResultAutoOperateSupportTest {
     @Data
     private static class Foo {
         @Assemble(container = "test", props = @Mapping("name"))
+        private final Integer id;
+        private String name;
+    }
+
+    @AllArgsConstructor
+    @RequiredArgsConstructor
+    @Data
+    private static class Foo2 {
         private final Integer id;
         private String name;
     }
