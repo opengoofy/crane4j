@@ -48,6 +48,16 @@ public @interface AutoOperate {
     Class<?> type() default Object.class;
 
     /**
+     * <p>Whether to resolve the operations from the current element
+     * when annotated on method.<br/>
+     * When this option is true, {@link #type()} will be ignored.
+     *
+     * @return true if resolve from current element, otherwise false
+     * @since 2.7.0
+     */
+    boolean resolveOperationsFromCurrentElement() default false;
+
+    /**
      * <p>When the return value is a wrapper class,
      * we can specify to obtain the data set to be processed
      * from the specific field of the wrapper class, and then process it。<br />
