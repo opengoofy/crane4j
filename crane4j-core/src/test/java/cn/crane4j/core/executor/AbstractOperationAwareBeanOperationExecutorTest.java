@@ -24,11 +24,11 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
 /**
- * test for {@link OperationAwareBeanOperationExecutor}
+ * test for {@link AbstractOperationAwareBeanOperationExecutor}
  *
  * @author huangchengxing
  */
-public class OperationAwareBeanOperationExecutorTest extends BaseExecutorTest {
+public class AbstractOperationAwareBeanOperationExecutorTest extends BaseExecutorTest {
 
     private TestExecutor executor;
     private static Map<String, Integer> callbackCountOfBean;
@@ -104,7 +104,7 @@ public class OperationAwareBeanOperationExecutorTest extends BaseExecutorTest {
     }
 
     @Getter
-    private static class TestExecutor extends OperationAwareBeanOperationExecutor {
+    private static class TestExecutor extends AbstractOperationAwareBeanOperationExecutor {
         private List<AssembleExecution> executions;
         public TestExecutor(ContainerManager containerManager) {
             super(containerManager);
@@ -194,6 +194,7 @@ public class OperationAwareBeanOperationExecutorTest extends BaseExecutorTest {
     }
 
     private static class NoneCallbackBean implements SmartOperationAwareBean {
+        @SuppressWarnings("unused")
         @Assemble(groups = {"op", "id"})
         private Integer type;
     }

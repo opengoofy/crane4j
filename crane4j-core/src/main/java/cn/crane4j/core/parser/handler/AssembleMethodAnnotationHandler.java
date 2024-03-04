@@ -128,6 +128,8 @@ public class AssembleMethodAnnotationHandler
             .annotation(annotation)
             .id(annotation.id())
             .key(annotation.key())
+            .keyResolver(annotation.keyResolver())
+            .keyDescription(annotation.keyDescription())
             .sort(annotation.sort())
             .groups(annotation.groups())
             .keyType(annotation.keyType())
@@ -263,11 +265,10 @@ public class AssembleMethodAnnotationHandler
      *
      * @author huangchengxing
      */
+    @Getter
     @RequiredArgsConstructor
     private static class AssembleMethodContainer<T> implements ContainerDelegate<T> {
-        @Getter
         private final String namespace;
-        @Getter
         private final Container<T> container;
         @Override
         public Map<T, ?> get(Collection<T> keys) {

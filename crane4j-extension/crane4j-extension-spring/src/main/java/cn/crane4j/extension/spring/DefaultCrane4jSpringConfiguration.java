@@ -20,6 +20,9 @@ import cn.crane4j.core.executor.handler.ManyToManyAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.OneToManyAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.OneToOneAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.ReflectiveDisassembleOperationHandler;
+import cn.crane4j.core.executor.key.ReflectiveBeanKeyResolverProvider;
+import cn.crane4j.core.executor.key.ReflectivePropertyKeyResolverProvider;
+import cn.crane4j.core.executor.key.ReflectiveSeparablePropertyKeyResolverProvider;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.ConditionalTypeHierarchyBeanOperationParser;
 import cn.crane4j.core.parser.handler.AssembleConstantAnnotationHandler;
@@ -247,6 +250,7 @@ public class DefaultCrane4jSpringConfiguration implements SmartInitializingSingl
         return new AssembleConstantAnnotationHandler(annotationFinder, configuration, propertyMappingStrategyManager);
     }
 
+    @SuppressWarnings("all")
     @Bean
     public AssembleKeyAnnotationHandler assembleKeyAnnotationHandler(
         AnnotationFinder annotationFinder, Crane4jGlobalConfiguration configuration,
@@ -392,6 +396,23 @@ public class DefaultCrane4jSpringConfiguration implements SmartInitializingSingl
     @Bean
     public ReflectiveDisassembleOperationHandler reflectiveDisassembleOperationHandler(PropertyOperator propertyOperator) {
         return new ReflectiveDisassembleOperationHandler(propertyOperator);
+    }
+
+    @Bean
+    public ReflectiveSeparablePropertyKeyResolverProvider reflectiveSeparablePropertyKeyResolverProvider(
+        PropertyOperator propertyOperator, ConverterManager converterManager) {
+        return new ReflectiveSeparablePropertyKeyResolverProvider(propertyOperator, converterManager);
+    }
+
+    @Bean
+    public ReflectivePropertyKeyResolverProvider reflectivePropertyKeyResolverProvider(
+        PropertyOperator propertyOperator, ConverterManager converterManager) {
+        return new ReflectivePropertyKeyResolverProvider(propertyOperator, converterManager);
+    }
+
+    @Bean
+    public ReflectiveBeanKeyResolverProvider reflectiveBeanKeyResolverProvider(PropertyOperator propertyOperator) {
+        return new ReflectiveBeanKeyResolverProvider(propertyOperator);
     }
 
     // ============== operator interface components ==============

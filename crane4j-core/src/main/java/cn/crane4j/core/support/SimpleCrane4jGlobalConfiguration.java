@@ -20,6 +20,8 @@ import cn.crane4j.core.executor.handler.ManyToManyAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.OneToManyAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.OneToOneAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.ReflectiveDisassembleOperationHandler;
+import cn.crane4j.core.executor.key.DefaultKeyResolverProviderRegistry;
+import cn.crane4j.core.executor.key.KeyResolverRegistry;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.ConditionalTypeHierarchyBeanOperationParser;
 import cn.crane4j.core.parser.TypeHierarchyBeanOperationParser;
@@ -64,8 +66,8 @@ import java.util.Map;
  * @author huangchengxing
  */
 @Getter
-public class SimpleCrane4jGlobalConfiguration extends DefaultContainerManager
-    implements Crane4jGlobalConfiguration, PropertyMappingStrategyManager {
+public class SimpleCrane4jGlobalConfiguration
+    extends DefaultContainerManager implements Crane4jGlobalConfiguration {
 
     @Setter
     private TypeResolver typeResolver;
@@ -80,6 +82,8 @@ public class SimpleCrane4jGlobalConfiguration extends DefaultContainerManager
     private final Map<String, CacheManager> cacheManagerMap = new HashMap<>(4);
     @Delegate
     private final PropertyMappingStrategyManager propertyMappingStrategyManager = new SimplePropertyMappingStrategyManager();
+    @Delegate
+    private final KeyResolverRegistry keyResolverRegistry = new DefaultKeyResolverProviderRegistry();
 
     /**
      * Create a {@link SimpleCrane4jGlobalConfiguration} using the default configuration.
@@ -157,7 +161,6 @@ public class SimpleCrane4jGlobalConfiguration extends DefaultContainerManager
             annotationFinder, configuration, configuration
         );
         beanOperationParser.addOperationAnnotationHandler(assembleKeyAnnotationHandler);
-
 
         // operation executor
         DisorderedBeanOperationExecutor disorderedBeanOperationExecutor = new DisorderedBeanOperationExecutor(configuration);

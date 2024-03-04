@@ -23,9 +23,9 @@ import java.util.stream.Collectors;
  * @see SmartOperationAwareBean
  * @since 2.5.0
  */
-public abstract class OperationAwareBeanOperationExecutor extends AbstractBeanOperationExecutor {
+public abstract class AbstractOperationAwareBeanOperationExecutor extends AbstractBeanOperationExecutor {
 
-    protected OperationAwareBeanOperationExecutor(ContainerManager containerManager) {
+    protected AbstractOperationAwareBeanOperationExecutor(ContainerManager containerManager) {
         super(containerManager);
     }
 

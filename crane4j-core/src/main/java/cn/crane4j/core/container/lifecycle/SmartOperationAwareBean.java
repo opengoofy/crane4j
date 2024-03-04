@@ -1,7 +1,7 @@
 package cn.crane4j.core.container.lifecycle;
 
 import cn.crane4j.annotation.OperationAwareBean;
-import cn.crane4j.core.executor.OperationAwareBeanOperationExecutor;
+import cn.crane4j.core.executor.AbstractOperationAwareBeanOperationExecutor;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.operation.KeyTriggerOperation;
 
@@ -10,7 +10,7 @@ import cn.crane4j.core.parser.operation.KeyTriggerOperation;
  * It's enhanced on the basis of {@link OperationAwareBean} and supports awareness more arguments.
  *
  * @author huangchengxing
- * @see OperationAwareBeanOperationExecutor
+ * @see AbstractOperationAwareBeanOperationExecutor
  * @since 2.5.0
  */
 public interface SmartOperationAwareBean extends OperationAwareBean {

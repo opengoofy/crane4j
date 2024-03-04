@@ -9,7 +9,13 @@ import cn.crane4j.core.container.lifecycle.ContainerLifecycleProcessor;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
+import cn.crane4j.core.executor.key.DefaultKeyResolverProviderRegistry;
+import cn.crane4j.core.executor.key.KeyResolverProvider;
+import cn.crane4j.core.executor.key.KeyResolverRegistry;
 import cn.crane4j.core.parser.BeanOperationParser;
+import cn.crane4j.core.parser.handler.strategy.PropertyMappingStrategy;
+import cn.crane4j.core.parser.handler.strategy.PropertyMappingStrategyManager;
+import cn.crane4j.core.parser.handler.strategy.SimplePropertyMappingStrategyManager;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
 import cn.crane4j.core.support.Crane4jGlobalSorter;
 import cn.crane4j.core.support.TypeResolver;
@@ -20,6 +26,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -86,6 +93,18 @@ public class Crane4jApplicationContext extends DefaultContainerManager
     private final BiMap<String, String> beanNameNamespaceMapping = HashBiMap.create();
 
     /**
+     * key resolver provider registry
+     */
+    @Delegate
+    private final KeyResolverRegistry keyResolverRegistry = new DefaultKeyResolverProviderRegistry();
+
+    /**
+     * property mapping strategy manager
+     */
+    @Delegate
+    private final PropertyMappingStrategyManager propertyMappingStrategyManager = new SimplePropertyMappingStrategyManager();
+
+    /**
      * Get {@link ConverterManager}
      *
      * @return {@link ConverterManager}
@@ -137,7 +156,6 @@ public class Crane4jApplicationContext extends DefaultContainerManager
      * @return container instance
      * @see ContainerLifecycleProcessor#whenCreated
      */
-    @SuppressWarnings("unchecked")
     @Nullable
     @Override
     public <K> Container<K> getContainer(String namespace) {
@@ -291,6 +309,16 @@ public class Crane4jApplicationContext extends DefaultContainerManager
                 log.info("register container provider [{}] from spring context", beanName);
                 registerContainerProvider(beanName, provider);
             });
+        applicationContext.getBeansOfType(KeyResolverProvider.class)
+            .forEach((beanName, registry) -> {
+                log.info("register key resolver provider registry [{}] from spring context", beanName);
+                keyResolverRegistry.register(beanName, registry);
+            });
+        applicationContext.getBeansOfType(PropertyMappingStrategy.class)
+            .forEach((beanName, strategy) -> {
+                log.info("register property mapping strategy manager [{}]({}) from spring context", beanName, strategy);
+                propertyMappingStrategyManager.addPropertyMappingStrategy(strategy);
+            });
     }
 
     /**
@@ -300,5 +328,6 @@ public class Crane4jApplicationContext extends DefaultContainerManager
     public void destroy() {
         log.info("global configuration has been destroyed.");
         clear();
+        // TODO clear propertyMappingStrategyManager and keyResolverRegistry
     }
 }

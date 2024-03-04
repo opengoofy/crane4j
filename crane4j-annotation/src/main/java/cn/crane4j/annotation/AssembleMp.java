@@ -109,6 +109,23 @@ public @interface AssembleMp {
     Class<?> keyType() default Object.class;
 
     /**
+     * The name of key resolver to be used.
+     *
+     * @return namespace
+     * @since 2.7.0
+     */
+    String keyResolver() default "";
+
+    /**
+     * Some description of the key which
+     * helps {@link #keyResolver() resolver} to resolve the key.
+     *
+     * @return description
+     * @since 2.7.0
+     */
+    String keyDescription() default "";
+
+    /**
      * Sort values.
      * The lower the value, the higher the priority.
      *

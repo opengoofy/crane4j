@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
  * @author huangchengxing
  * @see DefaultSplitter
  */
+@Setter
 public class ManyToManyAssembleOperationHandler extends OneToManyAssembleOperationHandler {
 
     /**
@@ -37,7 +38,6 @@ public class ManyToManyAssembleOperationHandler extends OneToManyAssembleOperati
      *
      * @see ManyToManyAssembleOperationHandler.DefaultSplitter
      */
-    @Setter
     @NonNull
     private KeySplitter keySplitter;
 
@@ -76,6 +76,7 @@ public class ManyToManyAssembleOperationHandler extends OneToManyAssembleOperati
      */
     @Override
     protected Target createTarget(AssembleExecution execution, Object origin, Object keyValue) {
+        // TODO remove this override method in the future, the KeyResolver already split the key value
         return new Target(execution, origin, keySplitter.apply(keyValue));
     }
 

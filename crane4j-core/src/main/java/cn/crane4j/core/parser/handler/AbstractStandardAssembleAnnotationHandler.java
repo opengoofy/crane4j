@@ -5,6 +5,7 @@ import cn.crane4j.annotation.MappingTemplate;
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.container.ContainerManager;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
+import cn.crane4j.core.executor.key.KeyResolver;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.PropertyMapping;
@@ -35,6 +36,7 @@ import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -106,6 +108,8 @@ public abstract class AbstractStandardAssembleAnnotationHandler<A extends Annota
         KeyTriggerOperation keyTriggerOperation = super.createOperation(parser, beanOperations, standardAnnotation);
 
         Class<?> keyType = parseKeyType(standardAssembleAnnotation);
+        keyType = ClassUtils.isObjectOrVoid(keyType) ? null : keyType;
+
         AssembleOperationHandler assembleOperationHandler = parseAssembleOperationHandler(standardAssembleAnnotation);
         Set<PropertyMapping> propertyMappings = parsePropertyMappings(standardAssembleAnnotation, keyTriggerOperation.getKey());
         // fix https://github.com/opengoofy/crane4j/issues/190
@@ -116,18 +120,27 @@ public abstract class AbstractStandardAssembleAnnotationHandler<A extends Annota
 
         // create operation
         String namespace = getContainerNamespace(standardAssembleAnnotation);
-        return SimpleAssembleOperation.builder()
+        AssembleOperation operation = SimpleAssembleOperation.builder()
             .id(keyTriggerOperation.getId())
             .key(keyTriggerOperation.getKey())
             .sort(keyTriggerOperation.getSort())
             .groups(keyTriggerOperation.getGroups())
             .source(keyTriggerOperation.getSource())
+            .keyDescription(standardAssembleAnnotation.getKeyDescription())
             .propertyMappings(propertyMappings)
             .container(namespace)
             .assembleOperationHandler(assembleOperationHandler)
             .propertyMappingStrategy(propertyMappingStrategy)
             .keyType(keyType)
             .build();
+
+        // determine key resolver
+        Optional.ofNullable(standardAssembleAnnotation.getKeyResolver())
+            .filter(StringUtils::isNotEmpty)
+            .map(globalConfiguration::getKeyResolver)
+            .map(p -> p.getResolver(operation))
+            .ifPresent(operation::setKeyResolver);
+        return operation;
     }
 
     /**
@@ -285,6 +298,25 @@ public abstract class AbstractStandardAssembleAnnotationHandler<A extends Annota
          * @return strategy name
          */
         String getPropertyMappingStrategy();
+
+        /**
+         * The name of {@link KeyResolver} to be used.
+         *
+         * @return name
+         * @since 2.7.0
+         */
+        @Nullable
+        String getKeyResolver();
+
+        /**
+         * Some description of the key which
+         * helps {@link KeyResolver} to resolve the key.
+         *
+         * @return description
+         * @since 2.7.0
+         */
+        @Nullable
+        String getKeyDescription();
     }
 
     /**
@@ -309,5 +341,11 @@ public abstract class AbstractStandardAssembleAnnotationHandler<A extends Annota
         private final Mapping[] props = new Mapping[0];
         @Builder.Default
         private final String propertyMappingStrategy = "";
+        @Builder.Default
+        @Nullable
+        private final String keyResolver = null;
+        @Builder.Default
+        @Nullable
+        private final String keyDescription = null;
     }
 }

@@ -96,6 +96,23 @@ public @interface AssembleConstant {
     String key() default "";
 
     /**
+     * The name of key resolver to be used.
+     *
+     * @return namespace
+     * @since 2.7.0
+     */
+    String keyResolver() default "";
+
+    /**
+     * Some description of the key which
+     * helps {@link #keyResolver() resolver} to resolve the key.
+     *
+     * @return description
+     * @since 2.7.0
+     */
+    String keyDescription() default "";
+
+    /**
      * <p>The type to which the key value of target should be converted
      * when fetching the data source from the data source.
      *

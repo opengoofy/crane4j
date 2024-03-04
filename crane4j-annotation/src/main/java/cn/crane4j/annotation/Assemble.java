@@ -142,6 +142,23 @@ public @interface Assemble {
      * @since 2.2.0
      */
     Class<?> keyType() default Object.class;
+
+    /**
+     * The name of key resolver to be used.
+     *
+     * @return namespace
+     * @since 2.7.0
+     */
+    String keyResolver() default "";
+
+    /**
+     * Some description of the key which
+     * helps {@link #keyResolver() resolver} to resolve the key.
+     *
+     * @return description
+     * @since 2.7.0
+     */
+    String keyDescription() default "";
     
     /**
      * The namespace of the data source container to be used.

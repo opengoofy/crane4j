@@ -5,7 +5,9 @@ import cn.crane4j.core.container.ContainerManager;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.executor.handler.DisassembleOperationHandler;
+import cn.crane4j.core.executor.key.KeyResolverRegistry;
 import cn.crane4j.core.parser.BeanOperationParser;
+import cn.crane4j.core.parser.handler.strategy.PropertyMappingStrategyManager;
 import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -16,7 +18,8 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  *
  * @author huangchengxing
  */
-public interface Crane4jGlobalConfiguration extends ContainerManager {
+public interface Crane4jGlobalConfiguration
+    extends ContainerManager, PropertyMappingStrategyManager, KeyResolverRegistry {
 
     /**
      * Get {@link ConverterManager}
