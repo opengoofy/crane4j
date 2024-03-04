@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -120,12 +122,17 @@ public class ClassUtils {
      * @return new instance
      * @throws Crane4jException if create instance failed
      */
-    @SuppressWarnings("unchecked")
-    public static <T> T newInstance(@NonNull Class<?> type) {
+    @SuppressWarnings({"unchecked", "java:S3011"})
+    public static <T> T newInstance(@NonNull Class<?> type, Object... args) {
         Objects.requireNonNull(type, "type must not null");
         try {
-            return (T) type.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
+            Constructor<?> constructor = type.getDeclaredConstructor();
+            if (!constructor.isAccessible()) {
+                constructor.setAccessible(true);
+            }
+            return (T) constructor.newInstance(args);
+        } catch (InstantiationException | IllegalAccessException
+                 | InvocationTargetException | NoSuchMethodException e) {
             throw new Crane4jException(e);
         }
     }

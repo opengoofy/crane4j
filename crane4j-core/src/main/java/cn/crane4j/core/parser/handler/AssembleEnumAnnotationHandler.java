@@ -138,6 +138,8 @@ public class AssembleEnumAnnotationHandler
             .annotation(annotation)
             .id(annotation.id())
             .key(annotation.key())
+            .keyResolver(annotation.keyResolver())
+            .keyDescription(annotation.keyDescription())
             .sort(annotation.sort())
             .groups(annotation.groups())
             .keyType(annotation.keyType())

@@ -59,7 +59,7 @@ import java.util.stream.Collectors;
  * it is recommended to minimize the number of accesses to the {@link Container}.
  *
  * @author huangchengxing
- * @see OperationAwareBeanOperationExecutor
+ * @see AbstractOperationAwareBeanOperationExecutor
  * @see AsyncBeanOperationExecutor
  * @see DisorderedBeanOperationExecutor
  * @see OrderedBeanOperationExecutor
@@ -245,6 +245,7 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
      * @param options options for execution
      * @since 2.5.0
      */
+    @SuppressWarnings("unused")
     protected void beforeDisassembleOperation(
         Collection<?> targets, BeanOperations operations, Options options) {
         // do nothing

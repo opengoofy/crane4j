@@ -2,8 +2,10 @@ package cn.crane4j.core.executor.handler;
 
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.executor.AssembleExecution;
+import cn.crane4j.core.executor.key.KeyResolver;
 import cn.crane4j.core.parser.PropertyMapping;
 import cn.crane4j.core.parser.handler.strategy.PropertyMappingStrategy;
+import cn.crane4j.core.parser.operation.AssembleOperation;
 import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.util.StringUtils;
@@ -17,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 /**
@@ -57,9 +58,10 @@ public class OneToOneAssembleOperationHandler
     protected Collection<Target> collectToEntities(Collection<AssembleExecution> executions) {
         List<Target> targets = new ArrayList<>();
         for (AssembleExecution execution : executions) {
-            UnaryOperator<Object> keyExtractor = getKeyExtractor(execution);
+            AssembleOperation operation = execution.getOperation();
+            KeyResolver keyResolver = getKeyResolver(execution);
             execution.getTargets().stream()
-                .map(t -> createTarget(execution, t, keyExtractor.apply(t)))
+                .map(t -> createTarget(execution, t, keyResolver.resolve(t, operation)))
                 .filter(t -> !ignoreNullKey || Objects.nonNull(t.getKey()))
                 .forEach(targets::add);
         }
@@ -67,21 +69,26 @@ public class OneToOneAssembleOperationHandler
     }
 
     @NonNull
-    private UnaryOperator<Object> getKeyExtractor(AssembleExecution execution) {
+    private KeyResolver getKeyResolver(AssembleExecution execution) {
+        KeyResolver keyResolver = execution.getOperation().getKeyResolver();
+        if (Objects.nonNull(keyResolver)) {
+            return keyResolver;
+        }
+        // TODO remove this branch in the future, the KeyResolver will be required.
+        return getDefaultKeyPropertyResolver(execution);
+    }
+
+    private KeyResolver getDefaultKeyPropertyResolver(AssembleExecution execution) {
         String key = execution.getOperation().getKey();
-        // TODO perhaps we need to use the key extractor as a standalone component in the AssembleOperation?
         // if no key is specified, key value is the targets themselves.
-        UnaryOperator<Object> keyExtractor = StringUtils.isEmpty(key) ?
-            UnaryOperator.identity() : t -> propertyOperator.readProperty(t.getClass(), t, key);
+        KeyResolver keyResolver = StringUtils.isEmpty(key) ?
+            (t, op) -> t : (t, op) -> propertyOperator.readProperty(t.getClass(), t, key);
         // fix https://github.com/opengoofy/crane4j/issues/153
         Class<?> keyType = execution.getOperation().getKeyType();
-        if (Objects.nonNull(keyType)) {
-            return t -> {
-                Object k = keyExtractor.apply(t);
-                return converterManager.convert(k, keyType);
-            };
-        }
-        return keyExtractor;
+        return Objects.isNull(keyType) ? keyResolver : (op, t) -> {
+            Object k = keyResolver.resolve(op, t);
+            return converterManager.convert(k, keyType);
+        };
     }
 
     /**
@@ -140,7 +147,7 @@ public class OneToOneAssembleOperationHandler
         }
     }
 
-    private void mappingProperty(Target entity, Object source,PropertyMapping mapping) {
+    private void mappingProperty(Target entity, Object source, PropertyMapping mapping) {
         PropertyMappingStrategy propertyMappingStrategy = entity.getExecution().getOperation().getPropertyMappingStrategy();
         Object sourceValue = mapping.hasSource() ?
             propertyOperator.readProperty(source.getClass(), source, mapping.getSource()) : source;

@@ -25,6 +25,9 @@ import cn.crane4j.core.executor.handler.ManyToManyAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.OneToManyAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.OneToOneAssembleOperationHandler;
 import cn.crane4j.core.executor.handler.ReflectiveDisassembleOperationHandler;
+import cn.crane4j.core.executor.key.ReflectiveBeanKeyResolverProvider;
+import cn.crane4j.core.executor.key.ReflectivePropertyKeyResolverProvider;
+import cn.crane4j.core.executor.key.ReflectiveSeparablePropertyKeyResolverProvider;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.parser.ConditionalTypeHierarchyBeanOperationParser;
 import cn.crane4j.core.parser.handler.AssembleAnnotationHandler;
@@ -384,6 +387,7 @@ public class Crane4jAutoConfiguration {
         return new AssembleEnumAnnotationHandler(annotationFinder, globalConfiguration, propertyOperator, propertyMappingStrategyManager);
     }
 
+    @SuppressWarnings("all")
     @ConditionalOnMissingBean
     @Bean
     public AssembleKeyAnnotationHandler assembleKeyAnnotationHandler(
@@ -526,6 +530,26 @@ public class Crane4jAutoConfiguration {
     @Bean
     public ReflectiveDisassembleOperationHandler reflectiveDisassembleOperationHandler(PropertyOperator propertyOperator) {
         return new ReflectiveDisassembleOperationHandler(propertyOperator);
+    }
+
+    @ConditionalOnMissingBean
+    @Bean
+    public ReflectiveSeparablePropertyKeyResolverProvider reflectiveSeparablePropertyKeyResolverProvider(
+        PropertyOperator propertyOperator, ConverterManager converterManager) {
+        return new ReflectiveSeparablePropertyKeyResolverProvider(propertyOperator, converterManager);
+    }
+
+    @ConditionalOnMissingBean
+    @Bean
+    public ReflectivePropertyKeyResolverProvider reflectivePropertyKeyResolverProvider(
+        PropertyOperator propertyOperator, ConverterManager converterManager) {
+        return new ReflectivePropertyKeyResolverProvider(propertyOperator, converterManager);
+    }
+
+    @ConditionalOnMissingBean
+    @Bean
+    public ReflectiveBeanKeyResolverProvider reflectiveBeanKeyResolverProvider(PropertyOperator propertyOperator) {
+        return new ReflectiveBeanKeyResolverProvider(propertyOperator);
     }
 
     // endregion

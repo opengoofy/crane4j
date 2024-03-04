@@ -1,6 +1,7 @@
 package cn.crane4j.core.parser.operation;
 
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
+import cn.crane4j.core.executor.key.KeyResolver;
 import cn.crane4j.core.parser.PropertyMapping;
 import cn.crane4j.core.parser.handler.strategy.OverwriteNotNullMappingStrategy;
 import cn.crane4j.core.parser.handler.strategy.PropertyMappingStrategy;
@@ -31,4 +32,6 @@ public class SimpleAssembleOperation extends SimpleKeyTriggerOperation implement
     private PropertyMappingStrategy propertyMappingStrategy = OverwriteNotNullMappingStrategy.INSTANCE;
     @Nullable
     private Class<?> keyType;
+    private KeyResolver keyResolver;
+    private String keyDescription;
 }

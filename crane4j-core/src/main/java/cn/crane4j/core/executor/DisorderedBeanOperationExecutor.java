@@ -20,7 +20,7 @@ import java.util.Map;
  * @author huangchengxing
  */
 @Slf4j
-public class DisorderedBeanOperationExecutor extends OperationAwareBeanOperationExecutor {
+public class DisorderedBeanOperationExecutor extends AbstractOperationAwareBeanOperationExecutor {
 
     /**
      * Create an instance of {@link DisorderedBeanOperationExecutor}.
@@ -55,7 +55,7 @@ public class DisorderedBeanOperationExecutor extends OperationAwareBeanOperation
         Map<Container<?>, Map<AssembleOperationHandler, List<AssembleExecution>>> operations = new LinkedHashMap<>();
         executions.forEach(e -> {
             Container<?> container = e.getContainer();
-            Map<AssembleOperationHandler, List<AssembleExecution>> he = operations.computeIfAbsent(container, c -> new HashMap<>());
+            Map<AssembleOperationHandler, List<AssembleExecution>> he = operations.computeIfAbsent(container, c -> new HashMap<>(8));
             List<AssembleExecution> es = he.computeIfAbsent(e.getHandler(), h -> new ArrayList<>());
             es.add(e);
         });
