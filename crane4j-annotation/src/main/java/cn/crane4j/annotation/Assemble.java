@@ -158,7 +158,7 @@ public @interface Assemble {
      * @return description
      * @since 2.7.0
      */
-    String keyDescription() default "";
+    String keyDesc() default "";
     
     /**
      * The namespace of the data source container to be used.

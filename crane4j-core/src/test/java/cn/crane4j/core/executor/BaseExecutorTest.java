@@ -24,9 +24,6 @@ public class BaseExecutorTest {
     @Before
     public void initParser() {
         configuration = SimpleCrane4jGlobalConfiguration.create();
-        //TypeHierarchyBeanOperationParser typeHierarchyBeanOperationParser = new TypeHierarchyBeanOperationParser();
-        //typeHierarchyBeanOperationParser.addOperationAnnotationHandler(new AssembleAnnotationHandler(new SimpleAnnotationFinder(), configuration, new SimplePropertyMappingStrategyManager()));
-        //typeHierarchyBeanOperationParser.addOperationAnnotationHandler(new DisassembleAnnotationHandler(new SimpleAnnotationFinder(), configuration));
         parser = configuration.getBeanOperationsParser(null, ConditionalTypeHierarchyBeanOperationParser.class);
     }
 

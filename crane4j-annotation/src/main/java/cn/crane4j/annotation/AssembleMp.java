@@ -123,7 +123,7 @@ public @interface AssembleMp {
      * @return description
      * @since 2.7.0
      */
-    String keyDescription() default "";
+    String keyDesc() default "";
 
     /**
      * Sort values.

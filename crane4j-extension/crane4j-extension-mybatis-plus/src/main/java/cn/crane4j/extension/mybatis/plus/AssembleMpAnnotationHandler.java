@@ -105,7 +105,7 @@ public class AssembleMpAnnotationHandler extends AbstractStandardAssembleAnnotat
             .id(annotation.id())
             .key(annotation.key())
             .keyResolver(annotation.keyResolver())
-            .keyDescription(annotation.keyDescription())
+            .keyDesc(annotation.keyDesc())
             .sort(annotation.sort())
             .groups(annotation.groups())
             .keyType(annotation.keyType())

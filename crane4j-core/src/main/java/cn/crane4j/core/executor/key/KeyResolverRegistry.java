@@ -14,7 +14,7 @@ public interface KeyResolverRegistry {
      * @param name     name
      * @param resolverProvider resolver
      */
-    void register(String name, KeyResolverProvider resolverProvider);
+    void registerKeyResolverProvider(String name, KeyResolverProvider resolverProvider);
 
     /**
      * Get the resolver by the name.

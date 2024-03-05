@@ -1,8 +1,13 @@
 package cn.crane4j.core.parser;
 
+import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.StringUtils;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Simple implementation of {@link PropertyMapping}.
@@ -11,6 +16,9 @@ import lombok.Getter;
  */
 @EqualsAndHashCode
 public class SimplePropertyMapping implements PropertyMapping {
+
+    public static final String PROPERTY_NAME_SEPARATOR = ",";
+    public static final String PROPERTY_NAME_MAPPER = ":";
 
     @EqualsAndHashCode.Include
     @Getter
@@ -30,6 +38,33 @@ public class SimplePropertyMapping implements PropertyMapping {
         this.source = source;
         this.hasSource = StringUtils.isNotEmpty(source);
         this.reference = reference;
+    }
+
+    /**
+     * <p>Resolve the property mappings from string.<br/>
+     * the string format is "source1:reference1,source2:reference2,source3:reference3",
+     * also can be "reference1,reference2,reference3" if the source property is same as the reference property.
+     *
+     * @param propertyMappings property mappings string
+     * @return property mappings
+     */
+    public static Set<PropertyMapping> from(String propertyMappings) {
+        if (StringUtils.isEmpty(propertyMappings)) {
+            return Collections.emptySet();
+        }
+        String[] mappings = propertyMappings.split(PROPERTY_NAME_SEPARATOR);
+        Set<PropertyMapping> results= new LinkedHashSet<>(mappings.length);
+        for (String mapping : mappings) {
+            mapping = mapping.trim();
+            Asserts.isNotEmpty(mapping, "The property mappings is illegal: {}", propertyMappings);
+            String[] pair = mapping.split(PROPERTY_NAME_MAPPER);
+            Asserts.isFalse(pair.length > 2, "The property mappings is illegal: {}", mapping);
+            PropertyMapping propertyMapping = pair.length < 2 ?
+                new SimplePropertyMapping(pair[0].trim(), pair[0].trim()) :
+                new SimplePropertyMapping(pair[0].trim(), pair[1].trim());
+            results.add(propertyMapping);
+        }
+        return results;
     }
 
     /**

@@ -14,7 +14,7 @@ public class DefaultKeyResolverProviderRegistry implements KeyResolverRegistry {
     private final Map<String, KeyResolverProvider> providers = new HashMap<>();
 
     @Override
-    public void register(String name, KeyResolverProvider resolverProvider) {
+    public void registerKeyResolverProvider(String name, KeyResolverProvider resolverProvider) {
         providers.put(name, resolverProvider);
     }
 
