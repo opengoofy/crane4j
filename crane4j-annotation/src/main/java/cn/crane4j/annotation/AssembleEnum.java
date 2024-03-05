@@ -114,7 +114,7 @@ public @interface AssembleEnum {
      * @return description
      * @since 2.7.0
      */
-    String keyDescription() default "";
+    String keyDesc() default "";
 
     /**
      * <p>The type to which the key value of target should be converted

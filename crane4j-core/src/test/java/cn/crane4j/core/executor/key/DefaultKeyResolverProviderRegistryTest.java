@@ -14,7 +14,7 @@ public class DefaultKeyResolverProviderRegistryTest {
     public void test() {
         DefaultKeyResolverProviderRegistry registry = new DefaultKeyResolverProviderRegistry();
         KeyResolver resolver = (t, op) -> null;
-        registry.register("test", resolver);
+        registry.registerKeyResolverProvider("test", resolver);
         KeyResolverProvider provider = registry.getKeyResolver("test");
         Assert.assertSame(resolver, provider);
         Assert.assertSame(resolver, provider.getResolver(null));

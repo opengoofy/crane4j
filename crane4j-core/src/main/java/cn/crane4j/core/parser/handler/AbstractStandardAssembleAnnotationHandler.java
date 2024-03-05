@@ -126,7 +126,7 @@ public abstract class AbstractStandardAssembleAnnotationHandler<A extends Annota
             .sort(keyTriggerOperation.getSort())
             .groups(keyTriggerOperation.getGroups())
             .source(keyTriggerOperation.getSource())
-            .keyDescription(standardAssembleAnnotation.getKeyDescription())
+            .keyDescription(standardAssembleAnnotation.getKeyDesc())
             .propertyMappings(propertyMappings)
             .container(namespace)
             .assembleOperationHandler(assembleOperationHandler)
@@ -316,7 +316,7 @@ public abstract class AbstractStandardAssembleAnnotationHandler<A extends Annota
          * @since 2.7.0
          */
         @Nullable
-        String getKeyDescription();
+        String getKeyDesc();
     }
 
     /**
@@ -346,6 +346,6 @@ public abstract class AbstractStandardAssembleAnnotationHandler<A extends Annota
         private final String keyResolver = null;
         @Builder.Default
         @Nullable
-        private final String keyDescription = null;
+        private final String keyDesc = null;
     }
 }

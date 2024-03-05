@@ -312,7 +312,7 @@ public class Crane4jApplicationContext extends DefaultContainerManager
         applicationContext.getBeansOfType(KeyResolverProvider.class)
             .forEach((beanName, registry) -> {
                 log.info("register key resolver provider registry [{}] from spring context", beanName);
-                keyResolverRegistry.register(beanName, registry);
+                keyResolverRegistry.registerKeyResolverProvider(beanName, registry);
             });
         applicationContext.getBeansOfType(PropertyMappingStrategy.class)
             .forEach((beanName, strategy) -> {

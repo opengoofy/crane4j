@@ -1,6 +1,8 @@
 package cn.crane4j.core.executor.key;
 
 import cn.crane4j.core.exception.Crane4jException;
+import cn.crane4j.core.parser.PropertyMapping;
+import cn.crane4j.core.parser.SimplePropertyMapping;
 import cn.crane4j.core.parser.operation.AssembleOperation;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.util.Asserts;
@@ -10,7 +12,10 @@ import cn.crane4j.core.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * <p>Key resolver, which is used to resolve the key of the operation.
@@ -20,9 +25,6 @@ import java.lang.reflect.Field;
  */
 @RequiredArgsConstructor
 public class ReflectiveBeanKeyResolverProvider implements KeyResolverProvider {
-
-    public static final String PROPERTY_NAME_SEPARATOR = ",";
-    public static final String PROPERTY_NAME_MAPPER = ":";
 
     /**
      * Property operator
@@ -37,6 +39,7 @@ public class ReflectiveBeanKeyResolverProvider implements KeyResolverProvider {
      */
     @Override
     public KeyResolver getResolver(AssembleOperation operation) {
+        Asserts.isEmpty(operation.getKey(), "Cannot specify the key for the operation from {} when using the bean key resolver", operation.getSource());
         // check bean is instantiable
         Class<?> beanType = operation.getKeyType();
         Asserts.isNotNull(beanType, "The bean type must not be null");
@@ -48,9 +51,9 @@ public class ReflectiveBeanKeyResolverProvider implements KeyResolverProvider {
         }
         // resolve property mappings
         String keyDescription = operation.getKeyDescription();
-        String[][] propertyMappings = StringUtils.isEmpty(keyDescription) ?
+        Set<PropertyMapping> propertyMappings = StringUtils.isEmpty(keyDescription) ?
             resolvePropertyMappings(beanType) : resolvePropertyMappings(keyDescription);
-        return new ReflectiveBeanKeyResolver(propertyMappings);
+        return new ReflectiveBeanKeyResolver(propertyMappings.toArray(new PropertyMapping[0]));
     }
 
     /**
@@ -59,14 +62,10 @@ public class ReflectiveBeanKeyResolverProvider implements KeyResolverProvider {
      * @param targetType target type
      * @return property mappings
      */
-    protected String[][] resolvePropertyMappings(Class<?> targetType) {
-        Field[] fields = ReflectUtils.getFields(targetType);
-        String[][] results = new String[fields.length][];
-        for (int i = 0; i < fields.length; i++) {
-            Field field = fields[i];
-            results[i] = new String[]{field.getName(), field.getName()};
-        }
-        return results;
+    protected Set<PropertyMapping> resolvePropertyMappings(Class<?> targetType) {
+        return Arrays.stream(ReflectUtils.getFields(targetType))
+            .map(field -> new SimplePropertyMapping(field.getName(), field.getName()))
+            .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     /**
@@ -75,17 +74,13 @@ public class ReflectiveBeanKeyResolverProvider implements KeyResolverProvider {
      * @param keyDescription key description
      * @return property mappings
      */
-    protected String[][] resolvePropertyMappings(String keyDescription) {
-        String[] mappings = keyDescription.split(PROPERTY_NAME_SEPARATOR);
-        String[][] results = new String[mappings.length][];
-        for (int i = 0; i < mappings.length; i++) {
-            String[] mapping = mappings[i].trim()
-                .split(PROPERTY_NAME_MAPPER);
-            Asserts.isFalse(mapping.length > 2, "The key description is illegal: {}", keyDescription);
-            results[i] = mapping.length == 2 ?
-                mapping : new String[]{mapping[0].trim(), mapping[0].trim()};
-        }
-        return results;
+    protected Set<PropertyMapping> resolvePropertyMappings(String keyDescription) {
+        Set<PropertyMapping> mappings = SimplePropertyMapping.from(keyDescription);
+        mappings.forEach(m -> Asserts.isTrue(
+            m.hasSource() && StringUtils.isNotEmpty(m.getReference()),
+            "The property mappings is illegal: {} -> {}", m.getReference(), m.getSource()
+        ));
+        return mappings;
     }
 
     @NonNull
@@ -96,7 +91,7 @@ public class ReflectiveBeanKeyResolverProvider implements KeyResolverProvider {
     @RequiredArgsConstructor
     private class ReflectiveBeanKeyResolver implements KeyResolver {
 
-        private final String[][] propertyMappings;
+        private final PropertyMapping[] propertyMappings;
 
         /**
          * Resolve the key of the operation.
@@ -113,11 +108,9 @@ public class ReflectiveBeanKeyResolverProvider implements KeyResolverProvider {
             Object bean = newInstance(beanType);
             // copy property values from target to bean
             Class<?> targetType = target.getClass();
-            for (String[] mapping : propertyMappings) {
-                String source = mapping[0];
-                Object propertyValue = propertyOperator.readProperty(targetType, target, source);
-                String reference = mapping[1];
-                propertyOperator.writeProperty(beanType, bean, reference, propertyValue);
+            for (PropertyMapping mapping : propertyMappings) {
+                Object propertyValue = propertyOperator.readProperty(targetType, target, mapping.getSource());
+                propertyOperator.writeProperty(beanType, bean, mapping.getReference(), propertyValue);
             }
             return bean;
         }
