@@ -127,7 +127,44 @@ public String getUserNameById(Integer id);  // 查询结果集是 String 类型�
 public List<Integer> listUserAgeNameByIds(List<Integer> ids);
 ~~~
 
-## 4.缓存
+## 4.接受参数对象
+
+有时候，我们要声明为数据源容器的方法会将对象作为查询参数，在 2.7.0，你可以配合键值解析器 `KeyResolver` 来实现这样的效果：
+
+~~~java
+@Assemble(
+    container = "dict", props = @Mapping(src = "name", ref = "dictName"),
+    keyResolver = "reflectivePropertyKeyResolverProvider", // 指定使用属性键值解析器
+    keyType = DictItemQueryDTO.class, // 指定参数对象类型，该类必须有一个公开的无参构造方法
+    keyDesc = "dictId:id, dictType:type", // 指定如何将属性值映射到参数对象
+)
+@Data
+public class Foo {
+    private Integer dictId;
+  	private String dictType;
+    private String dictName;
+}
+
+// 查询方法
+@ContainerMethod(
+    namespace = "onoToOneMethod", resultType = DictItemQueryVO.class,
+  	type = MappingType.ORDER_OF_KEYS
+)
+public List<DictItemQueryDTO> listItemByIdsAndTypes(List<DictItemQueryDTO> args) {
+    // do something
+}
+
+// 参数对象
+@Data
+public class CustomerQueryDTO {
+  private String id;
+  private String type;
+}
+~~~
+
+具体可参见 [声明装配操作](./../declare_assemble_operation.md) 中 “键的解析策略” 一节。
+
+## 5.缓存
 
 在 2.0 及以上版本，你可以在方法上添加 `@ContainerCache` 注解，使其具备缓存功能：
 
@@ -149,7 +186,7 @@ public Set<Foo> onoToOneMethod(List<String> args) {
 
 具体可参见后文 [缓存](./../../advanced/cache.md) 一节。
 
-## 5.手动注册
+## 6.手动注册
 
 手动注册一般只在你的目标类未被 Spring 管理，或者干脆项目没有使用 Spring 的时候会使用。
 
@@ -180,7 +217,7 @@ Collection<Container<Object>> containers = processor.process(foo, Foo.getClass()
 containers.forEach(configuration::registerContainer);
 ~~~
 
-## 6.选项式配置
+## 7.选项式配置
 
 在 2.2 及以上版本，你可以使用 `@AssembleMethod` 注解进行选项式风格的配置。通过在类或属性上添加 `@AssembleMethod` 注解，并指定要绑定的目标类中的指定方法。
 

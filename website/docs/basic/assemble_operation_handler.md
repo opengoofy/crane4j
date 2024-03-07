@@ -1,6 +1,6 @@
-# 更换装配处理器
+# 装配处理器
 
-在一些场景中，一个 key 值会对应多个数据源对象，有时甚至会出现 key 本身就是一个数组或者集合的情况。此时，我们需要更换**装配处理器** `AssembleOperateHandler` 来完成这种**一对多/多对多装配**。
+在一些场景中，一个 key 值会对应多个数据源对象，有时甚至会出现 key 本身就是一个数组或者集合的情况。此时，我们需要更换**装配处理器** `AssembleOperateHandler` 并配合键值解析器 `KeyResolver` 来完成这种**一对多/多对多装配**。
 
 **装配处理器** `AssembleOperateHandler` 在整个装配过程中负责实际的属性读写操作，类似于 Jackson 中的序列化器（`Serializer`）和反序列化器（`Deserializer`）。与 Jackson 类似，如果我们需要处理特殊数据结构或具有特殊填充逻辑的 JavaBean，就需要更换不同的装配操作处理器。
 
@@ -41,6 +41,8 @@ Container<String> customerContainer = LambdaContainer.forLambda(
 );
 ```
 
+### 2.1.使用
+
 现在，我们可以借助一对多装配处理器，批量提取数据源对象的属性，并将其赋值给目标对象的指定属性：
 
 ```java
@@ -56,6 +58,36 @@ public class CustomerVO {
 ```
 
 在上面的示例中，我们根据 id 集合获取按客户组别ID分组的客户集合，并提取 `CustomerDO.name` 作为集合，然后赋值给 `CustomerVO.customerNames`。
+
+### 2.2.使用参数对象作为 Key 值
+
+在一对多的情况下，数据源容器（通常是接口中的查询方法）接受的参数有可能是一个参数对象，若在 2.7.0 及更高版本，你可以通过指定 key 解析器来指定如何生成参数对象：
+
+~~~java
+@Assemble(
+    container = "customer",
+    handler = "oneToManyAssembleOperationHandler",
+    props = @Mapping(src = "name", ref = "customerNames"),
+  
+    keyResolver = "reflectivePropertyKeyResolverProvider", // 指定使用属性键值解析器
+    keyType = CustomerQueryDTO.class, // 指定参数对象类型，该类必须有一个公开的无参构造方法
+    keyDesc = "id:prop1, type:prop2", // 指定如何将属性值映射到参数对象
+)
+@Data
+public class CustomerVO {
+    private Integer id;
+  	private String type;
+    private List<String> customerNames;
+}
+
+@Data
+public class CustomerQueryDTO {
+  private String prop1;
+  private String prop2;
+}
+~~~
+
+具体可参见 [声明装配操作](./declare_assemble_operation.md) 中 “键的解析策略” 一节。
 
 ## 3.多对多
 
@@ -74,6 +106,8 @@ private String idStr; // 键字段为按分隔符拼接的字符串，例如："
 private Set<Integer> idList; // 键字段为集合，例如：[a, b, c]
 private Integer[] idArray; // 键字段为数组，例如：[a, b, c]
 ```
+
+### 3.1.使用
 
 针对多个键字段映射，需要使用特定的装配操作处理器 `ManyToManyAssembleOperationHandler`：
 
@@ -107,7 +141,7 @@ public class StudentVO {
 
 在批量映射的情况下，返回的对象可以是数据源对象或数据源对象的属性集合。
 
-**更换分隔符**
+### 3.2.更换分隔符
 
 默认情况下，若返回值为字符串，`ManyToManyAssembleOperationHandler` 总是尝试将其根据`,`分割为字符串集合，但如果有必要，用户也可以通过 `ManyToManyAssembleOperationHandler.setKeySplitter` 方法设置自己需要的分隔符。
 
@@ -119,3 +153,24 @@ ManyToManyAssembleOperationHandler handler = SpringUtil.getBean(ManyToManyAssemb
 handler.setKeySplitter(k -> new ManyToManyAssembleOperationHandler.DefaultSplitter("|"));
 ~~~
 
+在 2.7.0 及更高版本，你也可以通过指定 key 解析器来更换分隔符：
+
+~~~java
+@Data
+public class Foo {
+  
+    @Assemble(
+        container = "foo",
+        keyResolver = "reflectiveSeparablePropertyKeyResolverProvider", // 指定使用属性键值解析器
+        keyDesc = "|", // 指定使用 “|” 作为分隔符
+        keyType = Integer.class, // 指定将分割出的每个 key 都转为 Integer 类型
+        props = @Mapping("name")
+    )
+    private String teacherIds;
+    private List<Teacher> teachers;
+}
+~~~
+
+当同时配置了分割符时，Crane4j 将会优先遵循 Key 解析器的配置。
+
+具体可参见 [声明装配操作](./declare_assemble_operation.md) 中 “键的解析策略” 一节。

@@ -152,11 +152,88 @@ public class Foo {
 
 :::
 
-## 3.属性映射策略
+## 3.键的解析策略
+
+在 2.7.0 及以上版本，你可以通过指定 `keyResolver` 来调整键值的解析策略，此时 crane4j 将不遵循操作处理器 `AssembleOperationHandler` 的逻辑，而依照你指定的逻辑从目标对象中提取 Key 值。
+
+此后，调用数据源容器的时候，将会输入由上述提取到的 Key 值组成的集合用于获取对应数据源。
+
+### 3.1.解析属性值
+
+~~~java
+@Data
+public class Foo {
+  
+  @Assemble(
+    container = "foo",
+  	keyResolver = "reflectiveBeanKeyResolverProvider", // 指定使用属性键值解析器
+    props = @Mapping("name")
+  )
+  private Integer id;
+  private String name;
+}
+~~~
+
+该解析器将从 `key` 指向的属性上提取属性值作为键值。
+
+### 3.2.解析批量属性值
+
+```java
+@Data
+public class Foo {
+  
+  @Assemble(
+    container = "foo",
+  	keyResolver = "reflectiveSeparablePropertyKeyResolverProvider", // 指定使用属性键值解析器
+    keyDesc = ",", // 指定使用 “，” 作为分隔符
+    keyType = Integer.class, // 指定将分割出的每个 key 都转为 Integer 类型
+    props = @Mapping("name")
+  )
+  private String ids;
+  private String name;
+}
+```
+
+该解析器将从 `key` 指向的属性上提取属性值作为键值，如果是字符串，则允许根据你在 `keyDesc` 属性上指定的分隔符将字符串分割为集合。
+
+此外，如果你指定了 `keyType`，则 crane4j 将会额外的把集合中的每个属性都进行类型转换。如果你的属性值是集合、数组，则会与分割后的字符串一样，针对每个元素进行类型转换。
+
+### 3.3.将属性值合成为参数对象
+
+~~~java
+@Assemble(
+    container = "foo",
+  	keyResolver = "reflectivePropertyKeyResolverProvider", // 指定使用属性键值解析器
+    keyType = FooQueryDTO.class, // 指定参数对象类型，该类必须有一个公开的无参构造方法
+    keyDesc = "id:prop1, name:prop2", // 指定如何将属性值映射到参数对象
+    props = @Mapping("name")
+  )
+@Data
+public class Foo {
+  private String id;
+  private String name;
+}
+
+@Data
+public class FooQueryDTO {
+  private String prop1;
+  private String prop2;
+}
+~~~
+
+当使用该解析器时，你且需要将操作声明在方法上，并且不指定 Key 值。然后，将 `keyType` 设置为你要生成的参数对象类型，接着在 `keyDesc` 中指定如何进行属性映射。当执行时， crane4j 将根据你的配置，尝试通过无参构造器创建一个参数对象，随后将目标对象的属性映射到参数对象中，然后将参数对象作为本次调用的 Key 值。
+
+其中：
+
+-   `keyDesc` 的格式为 “源属性名1:目标属性名1, 源属性名2:目标属性名2……”；
+-   如果你的源属性名与目标属性名一致，则也可以写为“属性名1, 属性名2……”；
+-   当如果你不填写 `keyDesc` ，那 crane4j 将尝试对所有的同名字段进行拷贝；
+
+## 4.属性映射策略
 
 在默认情况下，当我们指定要将数据源对象的 a 属性映射到目标对象的 b 属性时，仅当 a 的属性值不为 `null` 才会对 b 属性进行赋值。在 `2.1.0` 及以上版本， 该行为可以通过在指定属性映射策略改变。
 
-### 3.1.指定策略
+### 4.1.指定策略
 
 比如，如果我们希望仅当目标对象的 b 属性值为 `null` 时，才允许将数据源对象的 a 属性值映射过来：
 
@@ -181,7 +258,7 @@ public class Foo {
 
 + `ReferenceMappingStrategy`：空值引用策略，仅当 `ref` 对应的目标属性为 `null` 时，才获取 `src` 的属性值；
 
-### 3.2.自定义策略
+### 4.2.自定义策略
 
 你可以通过实现 `PropertyMappingStrategy` 接口创建自定义策略。
 
@@ -195,7 +272,7 @@ PropertyMappingStrategy customStrategy = CustomPropertyMappingStrategy();
 configuration.addPropertyMappingStrategy(customStrategy);
 ~~~
 
-## 4.表达式支持
+## 5.表达式支持
 
 在 Spring 环境中，你可以在 `@Assemble` 注解的 `container` 属性里引用一些配置文件属性：
 
