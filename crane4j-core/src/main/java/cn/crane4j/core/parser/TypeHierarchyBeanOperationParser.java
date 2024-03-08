@@ -76,6 +76,11 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
     protected List<OperationAnnotationHandler> operationAnnotationHandlers = new ArrayList<>(5);
 
     /**
+     * The thread that is currently parsing the configuration.
+     */
+    private volatile Thread currentParsingThread;
+
+    /**
      * Whether to cache hierarchy operation info of an element.
      *
      * @see #resolvedHierarchyElements
@@ -128,33 +133,31 @@ public class TypeHierarchyBeanOperationParser implements BeanOperationParser {
     }
 
     private BeanOperations parseIfNecessary(AnnotatedElement element) {
-        BeanOperations result = resolvedElements.get(element);
+        BeanOperations result = tryGetFromCache(element);
         if (Objects.isNull(result)) {
+            // If any thread attempts to obtain the configuration,
+            // it must block until the thread that performed the configuration parsing completes the parsing
             synchronized (this) {
-                // target is parsed?
-                result = resolvedElements.get(element);
+                result = tryGetFromCache(element);
                 if (Objects.isNull(result)) {
-                    // target is in parsing?
-                    result = currentlyInParsing.get(element);
-                    // target need parse, do it!
-                    if (Objects.isNull(result)) {
-                        result = TimerUtil.getExecutionTime(
-                            log.isDebugEnabled(),
-                            time -> log.debug("parsing of element [{}] completed in {} ms", element, time),
-                            () -> doParse(element)
-                        );
-                    } else {
-                        log.debug("target [{}] is in parsing, get early cache", element);
-                        // FIXME： If the current configuration is not yet activated,
-                        //  it may not be appropriate to directly return it to the caller.
-                        //  A better approach is to have the caller thread
-                        //  also assist in parsing the configuration,
-                        //  just like when expanding ConcurrentHashMap
-                    }
+                    currentParsingThread = Thread.currentThread();
+                    result = TimerUtil.getExecutionTime(
+                        log.isDebugEnabled(),
+                        time -> log.debug("parsing of element [{}] completed in {} ms", element, time),
+                        () -> doParse(element)
+                    );
+                    currentParsingThread = null;
                 }
             }
         }
         return result;
+    }
+
+    private BeanOperations tryGetFromCache(AnnotatedElement element) {
+        BeanOperations result = resolvedElements.get(element);
+        // ensure that only the current thread can obtain the unavailable operations
+        return Objects.isNull(result) && currentParsingThread == Thread.currentThread() ?
+            currentlyInParsing.get(element) : result;
     }
 
     private BeanOperations doParse(AnnotatedElement element) {

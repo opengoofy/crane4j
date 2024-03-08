@@ -54,7 +54,6 @@ public class AsyncBeanOperationExecutorTest extends BaseExecutorTest {
     public void execute() {
         // for not active bean
         BeanOperations notActiveBeanOperations = new SimpleBeanOperations(null);
-        operationExecutor.setWaitTimeoutMillisecondIfOperationNotActive(1000L);
         operationExecutor.setEnableExecuteNotActiveOperation(false);
         notActiveBeanOperations.setActive(false);
         operationExecutor.execute(Collections.singleton(new Bean()), notActiveBeanOperations);

@@ -74,18 +74,6 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
     private final ContainerManager containerManager;
 
     /**
-     * <p>Wait time in milliseconds if the operation is not active.<br/>
-     * In normal cases, this time is unnecessary set to a large value.
-     * The operation is usually active when the {@link #execute} method is called,
-     * Unless there is a circular dependency between the operation and the resolution of another object during the parsing process.
-     *
-     * <p>NOTE: This is not a good solution, so in future versions,
-     * we will try to solve this problem in the {@link cn.crane4j.core.parser.BeanOperationParser}.
-     */
-    @Setter
-    public long waitTimeoutMillisecondIfOperationNotActive = 50L;
-
-    /**
      * Whether to enable the execution of operations that are not active.
      */
     @Setter
@@ -122,9 +110,7 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
         // 1. The operation is not active;
         // 2. The operation is still not active after waiting for a period of time;
         // 3. The execution of non-active operations is not enabled.
-        if (!operations.isActive() &&
-            !waitForOperationActiveUntilTimeout(operations)
-            && !enableExecuteNotActiveOperation) {
+        if (!operations.isActive() && !enableExecuteNotActiveOperation) {
             log.warn("bean operation of [{}] is still not ready, abort execution of the operation", operations.getSource());
             return;
         }
@@ -299,17 +285,6 @@ public abstract class AbstractBeanOperationExecutor implements BeanOperationExec
         collector.putAll(internalOperations, internalTargets);
         // recurse process if still have nested objects
         disassembleIfNecessary(internalTargets, internalOperations, filter, collector);
-    }
-
-    private boolean waitForOperationActiveUntilTimeout(BeanOperations operations) {
-        // rotate training and wait within the specified timeout period
-        long start = System.currentTimeMillis();
-        while (!operations.isActive()) {
-            if (System.currentTimeMillis() - start > waitTimeoutMillisecondIfOperationNotActive) {
-                return false;
-            }
-        }
-        return true;
     }
 
     /**
