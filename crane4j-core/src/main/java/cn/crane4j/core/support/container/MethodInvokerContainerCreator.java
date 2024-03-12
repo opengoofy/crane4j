@@ -92,7 +92,11 @@ public class MethodInvokerContainerCreator {
         if (mappingType == MappingType.NO_MAPPING || mappingType == MappingType.MAPPED) {
             container = doCreateNoMappingContainer(target, methodInvoker, method, namespace);
         } else if (mappingType == MappingType.ORDER_OF_KEYS || mappingType == MappingType.NONE) {
-            container = doCreateOrderOfKeysContainer(target, methodInvoker, method, namespace);
+            Asserts.isNotNull(method, "method must not be null when mapping type is [{}]", mappingType);
+            // fix https://gitee.com/opengoofy/crane4j/issues/I97R7E
+            container = isSingleParameterMethod(method) ?
+                doCreateSingleKeyContainer(target, methodInvoker, namespace) :
+                doCreateOrderOfKeysContainer(target, methodInvoker, method, namespace);
         } else if (mappingType == MappingType.ONE_TO_ONE) {
             container = doCreateOneToOneContainer(
                 target, methodInvoker, method, namespace, resultType, resultKey, duplicateStrategy);
@@ -100,13 +104,13 @@ public class MethodInvokerContainerCreator {
             container = doCreateOneToManyContainer(
                 target, methodInvoker, method, namespace, resultType, resultKey, duplicateStrategy);
         } else {
-            throw new Crane4jException("Unsupported mapping type: " + mappingType);
+            throw new Crane4jException("unsupported mapping type: " + mappingType);
         }
 
         if (Objects.isNull(method)) {
-            log.info("create method invoker container [{}], mapping type is [{}]", container.getNamespace(), mappingType);
+            log.debug("create method invoker container [{}], mapping type is [{}]", container.getNamespace(), mappingType);
         } else {
-            log.info("create method invoker container [{}] for method [{}], mapping type is [{}]", container.getNamespace(), method, mappingType);
+            log.debug("create method invoker container [{}] for method [{}], mapping type is [{}]", container.getNamespace(), method, mappingType);
         }
         return container;
     }
@@ -116,13 +120,22 @@ public class MethodInvokerContainerCreator {
         if (Objects.nonNull(method)) {
             // if the method has only one parameter and the parameter is not a collection,
             // we will take the first element of the collection as the parameter to call the method
-            boolean isSingleParameterMethod = method.getParameterCount() == 1
-                && !Collection.class.isAssignableFrom(method.getParameterTypes()[0]);
+            boolean isSingleParameterMethod = isSingleParameterMethod(method);
             if (isSingleParameterMethod) {
                 methodInvoker = new SingleParameterMethodInvoker(methodInvoker);
             }
         }
         return methodInvoker;
+    }
+
+    private static boolean isSingleParameterMethod(@NonNull Method method) {
+        return method.getParameterCount() == 1
+            && !Collection.class.isAssignableFrom(method.getParameterTypes()[0]);
+    }
+
+    protected MethodInvokerContainer doCreateSingleKeyContainer(
+        @Nullable Object target, MethodInvoker methodInvoker, String namespace) {
+        return MethodInvokerContainer.singleKey(namespace, methodInvoker, target);
     }
 
     protected MethodInvokerContainer doCreateNoMappingContainer(
@@ -136,11 +149,13 @@ public class MethodInvokerContainerCreator {
         return MethodInvokerContainer.create(namespace, methodInvoker, target, true);
     }
 
+    @SuppressWarnings("unused")
     protected MethodInvokerContainer doCreateOrderOfKeysContainer(
         @Nullable Object target, MethodInvoker methodInvoker, @Nullable Method method, String namespace) {
         return MethodInvokerContainer.create(namespace, methodInvoker, target, false);
     }
 
+    @SuppressWarnings("unused")
     protected MethodInvokerContainer doCreateOneToOneContainer(
         @Nullable Object target, MethodInvoker methodInvoker, @Nullable Method method, String namespace,
         Class<?> resultType, String resultKey, DuplicateStrategy duplicateStrategy) {
@@ -148,6 +163,7 @@ public class MethodInvokerContainerCreator {
         return MethodInvokerContainer.oneToOne(namespace, methodInvoker, target, keyExtractor, duplicateStrategy);
     }
 
+    @SuppressWarnings("unused")
     protected MethodInvokerContainer doCreateOneToManyContainer(
         @Nullable Object target, MethodInvoker methodInvoker, @Nullable Method method, String namespace,
         Class<?> resultType, String resultKey, DuplicateStrategy duplicateStrategy) {
@@ -179,7 +195,7 @@ public class MethodInvokerContainerCreator {
      */
     protected MethodInvokerContainer.@Nullable KeyExtractor getKeyExtractor(
         Class<?> resultType, String resultKey) {
-        MethodInvokerContainer.KeyExtractor keyExtractor = null;
+        MethodInvokerContainer.KeyExtractor keyExtractor;
         // fix https://gitee.com/opengoofy/crane4j/issues/I8UZH4
         // if the result type is a primitive type(or wrapper type), the key extractor is not required
         if (canExtractKey(resultType, resultKey)) {
