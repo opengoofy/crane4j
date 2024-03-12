@@ -73,6 +73,20 @@ public class MethodInvokerContainer implements Container<Object> {
     }
 
     /**
+     * Create a method data source container with only one key value.
+     *
+     * @param namespace namespace
+     * @param methodInvoker method to call
+     * @param target object to be called, if the method is static, it can be null
+     * @return {@link MethodInvokerContainer}
+     * @since 2.4.0
+     */
+    public static MethodInvokerContainer singleKey(
+        String namespace, MethodInvoker methodInvoker, @Nullable Object target) {
+        return new SingleKey(namespace, methodInvoker, target);
+    }
+
+    /**
      * Create a method data source container with a key value extractor.
      *
      * @param namespace namespace
@@ -118,8 +132,7 @@ public class MethodInvokerContainer implements Container<Object> {
         if (Objects.isNull(result)) {
             return Collections.emptyMap();
         }
-        Collection<?> results = CollectionUtils.adaptObjectToCollection(result);
-        return resolveResult(keys, results);
+        return resolveResult(keys, result);
     }
 
     /**
@@ -136,10 +149,11 @@ public class MethodInvokerContainer implements Container<Object> {
      * Resolve result to map.
      *
      * @param keys    keys
-     * @param results result
+     * @param result result
      * @return map
      */
-    protected Map<Object, ?> resolveResult(Collection<Object> keys, Collection<?> results) {
+    protected Map<Object, ?> resolveResult(Collection<Object> keys, Object result) {
+        Collection<?> results = CollectionUtils.adaptObjectToCollection(result);
         Map<Object, Object> resultMap = new HashMap<>(keys.size());
         Iterator<?> valueIterator = results.iterator();
         for (Object key : keys) {
@@ -147,6 +161,25 @@ public class MethodInvokerContainer implements Container<Object> {
             resultMap.put(key, value);
         }
         return resultMap;
+    }
+
+    protected static class SingleKey extends MethodInvokerContainer {
+
+        public SingleKey(String namespace, MethodInvoker methodInvoker, @Nullable Object target) {
+            super(namespace, methodInvoker, target);
+        }
+
+        /**
+         * Resolve result to map.
+         *
+         * @param keys    keys
+         * @param result result
+         * @return map
+         */
+        @Override
+        protected Map<Object, ?> resolveResult(Collection<Object> keys, Object result) {
+            return Collections.singletonMap(CollectionUtils.getFirstNotNull(keys), result);
+        }
     }
 
     /**
@@ -164,13 +197,13 @@ public class MethodInvokerContainer implements Container<Object> {
          * Resolve result to map.
          *
          * @param keys    keys
-         * @param results result
+         * @param result result
          * @return map
          */
         @SuppressWarnings("unchecked")
         @Override
-        protected Map<Object, ?> resolveResult(Collection<Object> keys, Collection<?> results) {
-            return (Map<Object, ?>)CollectionUtils.getFirstNotNull(results);
+        protected Map<Object, ?> resolveResult(Collection<Object> keys, Object result) {
+            return (Map<Object, ?>)result;
         }
     }
 
@@ -196,11 +229,12 @@ public class MethodInvokerContainer implements Container<Object> {
          * Resolve result to map.
          *
          * @param keys    keys
-         * @param results result
+         * @param result result
          * @return map
          */
         @Override
-        protected Map<Object, ?> resolveResult(Collection<Object> keys, Collection<?> results) {
+        protected Map<Object, ?> resolveResult(Collection<Object> keys, Object result) {
+            Collection<?> results = CollectionUtils.adaptObjectToCollection(result);
             Map<Object, Object> resultMap = new HashMap<>(results.size());
             results.forEach(newVal -> {
                 Object k = keyExtractor.getKey(newVal);
@@ -230,11 +264,12 @@ public class MethodInvokerContainer implements Container<Object> {
          * Resolve result to map.
          *
          * @param keys    keys
-         * @param results result
+         * @param result result
          * @return map
          */
         @Override
-        protected Map<Object, ?> resolveResult(Collection<Object> keys, Collection<?> results) {
+        protected Map<Object, ?> resolveResult(Collection<Object> keys, Object result) {
+            Collection<?> results = CollectionUtils.adaptObjectToCollection(result);
             return results.stream()
                 .collect(Collectors.groupingBy(keyExtractor::getKey));
         }
