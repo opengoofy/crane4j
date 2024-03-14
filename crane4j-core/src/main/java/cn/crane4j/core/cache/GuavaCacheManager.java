@@ -18,14 +18,24 @@ import java.util.concurrent.TimeUnit;
  * @author huangchengxing
  * @since 2.4.0
  */
+@Setter
 @NoArgsConstructor
 public class GuavaCacheManager extends AbstractCacheManager {
+
+    /**
+     * Get the component name.
+     *
+     * @return String
+     */
+    @Override
+    public String getName() {
+        return CacheManager.DEFAULT_GUAVA_CACHE_MANAGER_NAME;
+    }
 
     /**
      * The cache factory.
      */
     @NonNull
-    @Setter
     private CacheFactory cacheFactory = DefaultCacheFactory.INSTANCE;
 
     /**

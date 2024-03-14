@@ -1,6 +1,5 @@
 package cn.crane4j.extension.spring;
 
-import cn.crane4j.core.cache.CacheManager;
 import cn.crane4j.core.cache.GuavaCacheManager;
 import cn.crane4j.core.cache.MapCacheManager;
 import cn.crane4j.core.condition.ConditionOnContainerParser;
@@ -110,6 +109,11 @@ public class DefaultCrane4jSpringConfiguration implements SmartInitializingSingl
     // ============== basic components ==============
 
     @Bean
+    public NamedComponentAliasProcessor namedComponentAliasProcessor() {
+        return new NamedComponentAliasProcessor();
+    }
+
+    @Bean
     public ClassScanner classScanner() {
         return ClassScanner.INSTANCE;
     }
@@ -155,12 +159,12 @@ public class DefaultCrane4jSpringConfiguration implements SmartInitializingSingl
     }
 
     @Primary
-    @Bean({"mapCacheManager", CacheManager.DEFAULT_MAP_CACHE_MANAGER_NAME})
+    @Bean
     public MapCacheManager mapCacheManager() {
         return MapCacheManager.newWeakConcurrentMapCacheManager();
     }
 
-    @Bean({"guavaCacheManager", CacheManager.DEFAULT_GUAVA_CACHE_MANAGER_NAME})
+    @Bean
     public GuavaCacheManager guavaCacheManager() {
         return new GuavaCacheManager();
     }
@@ -310,9 +314,9 @@ public class DefaultCrane4jSpringConfiguration implements SmartInitializingSingl
     }
 
     @Bean
-    public ConditionalTypeHierarchyBeanOperationParser typeHierarchyBeanOperationParser(
+    public ConditionalTypeHierarchyBeanOperationParser conditionalTypeHierarchyBeanOperationParser(
         Collection<OperationAnnotationHandler> handlers, Collection<ConditionParser> parsers) {
-        ConditionalTypeHierarchyBeanOperationParser parser =  new ConditionalTypeHierarchyBeanOperationParser();
+        ConditionalTypeHierarchyBeanOperationParser parser = new ConditionalTypeHierarchyBeanOperationParser();
         handlers.forEach(parser::addOperationAnnotationHandler);
         parsers.forEach(parser::registerConditionParser);
         return parser;

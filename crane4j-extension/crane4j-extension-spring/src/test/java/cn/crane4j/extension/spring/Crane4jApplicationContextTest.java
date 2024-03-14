@@ -44,7 +44,7 @@ public class Crane4jApplicationContextTest {
         Assert.assertNotNull(context.getTypeResolver());
         Assert.assertNotNull(context.getPropertyOperator());
         Assert.assertNotNull(context.getBeanOperationsParser(TypeHierarchyBeanOperationParser.class));
-        Assert.assertNotNull(context.getBeanOperationsParser("typeHierarchyBeanOperationParser"));
+        Assert.assertNotNull(context.getBeanOperationsParser("ConditionalTypeHierarchyBeanOperationParser"));
         Assert.assertNotNull(context.getBeanOperationExecutor(DisorderedBeanOperationExecutor.class));
         Assert.assertNotNull(context.getBeanOperationExecutor("disorderedBeanOperationExecutor"));
         Assert.assertNotNull(context.getAssembleOperationHandler(OneToOneAssembleOperationHandler.class));

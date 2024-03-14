@@ -5,6 +5,7 @@ import cn.crane4j.core.container.ContainerManager;
 import cn.crane4j.core.executor.handler.AssembleOperationHandler;
 import cn.crane4j.core.parser.BeanOperations;
 import cn.crane4j.core.parser.operation.KeyTriggerOperation;
+import cn.crane4j.core.support.NamedComponent;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -24,7 +25,7 @@ import java.util.function.Predicate;
  * @see OrderedBeanOperationExecutor
  * @see AssembleExecution
  */
-public interface BeanOperationExecutor {
+public interface BeanOperationExecutor extends NamedComponent {
 
     /**
      * Complete operations on all objects in {@code targets} according to the specified {@link BeanOperations} and {@link Options}.

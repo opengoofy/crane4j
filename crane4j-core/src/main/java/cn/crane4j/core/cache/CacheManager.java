@@ -1,5 +1,6 @@
 package cn.crane4j.core.cache;
 
+import cn.crane4j.core.support.NamedComponent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -15,9 +16,9 @@ import java.util.concurrent.TimeUnit;
  * @see MapCacheManager#newConcurrentHashMapCacheManager()
  * @since 2.4.0
  */
-public interface CacheManager {
+public interface CacheManager extends NamedComponent {
 
-    String DEFAULT_MAP_CACHE_MANAGER_NAME = "MapCacheFactory";
+    String DEFAULT_MAP_CACHE_MANAGER_NAME = "MapCacheManager";
     String DEFAULT_GUAVA_CACHE_MANAGER_NAME = "GuavaCacheManager";
 
     /**

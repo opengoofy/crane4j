@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.LockSupport;
 
 /**
  * test for {@link GuavaCacheManager}
@@ -18,14 +19,15 @@ public class GuavaCacheManagerTest extends BaseCacheManagerTest {
         ((GuavaCacheManager)cacheManager)
             .setCacheFactory(GuavaCacheManager.DefaultCacheFactory.INSTANCE);
         cache = cacheManager.createCache("test", -1L, null);
+        Assert.assertEquals(CacheManager.DEFAULT_GUAVA_CACHE_MANAGER_NAME, cacheManager.getName());
     }
 
     @Test
-    public void testExpire() throws InterruptedException {
+    public void testExpire() {
         CacheObject<Object> cacheObject = cacheManager.createCache("test", 200L, TimeUnit.MILLISECONDS);
         Assert.assertFalse(cacheObject.isInvalid());
         cache.put("test", "test");
-        Thread.sleep(400L);
+        LockSupport.parkNanos(Thread.currentThread(), 400L * 1000 * 1000);
         Assert.assertNull(cacheObject.get("test"));
     }
 }
