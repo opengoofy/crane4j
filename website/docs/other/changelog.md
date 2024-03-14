@@ -354,3 +354,11 @@
 
 - [`ContainerLifecycleProcessor` 无法处理被 Spring 管理的容器](https://github.com/opengoofy/crane4j/issues/211)；
 - [自动填充时，若目标类没有配置任何装配操作则执行会报错](https://github.com/opengoofy/crane4j/issues/204)；
+
+## 2.6.1 (2024-03-13)
+
+这是一个 Bug 修复版本，请尽快升级。
+
+**Fix**
+
+- [当作为数据源容器的方法接受单个参数并返回集合类型结果时，只会填充集合中的首个元素](https://gitee.com/opengoofy/crane4j/issues/I97R7E)；
