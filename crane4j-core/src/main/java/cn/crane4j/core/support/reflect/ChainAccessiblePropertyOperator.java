@@ -14,6 +14,7 @@ import java.util.function.Function;
  * adds support for nested bean chain operations to the original operator.
  *
  * @author huangchengxing
+ * @see CacheableChainAccessiblePropertyOperator
  * @since 1.1.0
  */
 @RequiredArgsConstructor
@@ -105,7 +106,13 @@ public class ChainAccessiblePropertyOperator implements PropertyOperator {
         return chainSetter(properties);
     }
 
-    private MethodInvoker chainGetter(String[] splitPropertyChain) {
+    /**
+     * Create a chain getter.
+     *
+     * @param splitPropertyChain split property chain
+     * @return chain getter
+     */
+    protected MethodInvoker chainGetter(String[] splitPropertyChain) {
         return (target, args) -> {
             for (String prop : splitPropertyChain) {
                 if (Objects.isNull(target)) {
@@ -117,7 +124,13 @@ public class ChainAccessiblePropertyOperator implements PropertyOperator {
         };
     }
 
-    private MethodInvoker chainSetter(String[] splitPropertyChain) {
+    /**
+     * Create a chain setter.
+     *
+     * @param splitPropertyChain split property chain
+     * @return chain setter
+     */
+    protected MethodInvoker chainSetter(String[] splitPropertyChain) {
         return (target, args) -> {
             int targetDeep = splitPropertyChain.length - 1;
             String targetProp;
