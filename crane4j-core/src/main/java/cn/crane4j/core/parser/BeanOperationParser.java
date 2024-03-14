@@ -2,6 +2,7 @@ package cn.crane4j.core.parser;
 
 import cn.crane4j.core.exception.OperationParseException;
 import cn.crane4j.core.executor.BeanOperationExecutor;
+import cn.crane4j.core.support.NamedComponent;
 
 import java.lang.reflect.AnnotatedElement;
 
@@ -14,7 +15,7 @@ import java.lang.reflect.AnnotatedElement;
  * @see TypeHierarchyBeanOperationParser
  * @see BeanOperationExecutor
  */
-public interface BeanOperationParser {
+public interface BeanOperationParser extends NamedComponent {
 
     /**
      * Parse the {@link AnnotatedElement} annotation information,

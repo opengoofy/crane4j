@@ -81,6 +81,7 @@ import cn.crane4j.extension.spring.BeanAwareAssembleMethodAnnotationHandler;
 import cn.crane4j.extension.spring.BeanMethodContainerRegistrar;
 import cn.crane4j.extension.spring.Crane4jApplicationContext;
 import cn.crane4j.extension.spring.MergedAnnotationFinder;
+import cn.crane4j.extension.spring.NamedComponentAliasProcessor;
 import cn.crane4j.extension.spring.SpringCacheableContainerProcessor;
 import cn.crane4j.extension.spring.SpringConverterManager;
 import cn.crane4j.extension.spring.SpringParameterNameFinder;
@@ -151,6 +152,11 @@ public class Crane4jAutoConfiguration {
 
     // region ======= basic =======
 
+    @Bean
+    public NamedComponentAliasProcessor namedComponentAliasProcessor() {
+        return new NamedComponentAliasProcessor();
+    }
+
     @ConditionalOnMissingBean(ClassScanner.class)
     @Bean
     public ClassScanner classScanner() {
@@ -219,13 +225,13 @@ public class Crane4jAutoConfiguration {
 
     @Primary
     @ConditionalOnMissingBean(MapCacheManager.class)
-    @Bean({"mapCacheManager", CacheManager.DEFAULT_MAP_CACHE_MANAGER_NAME})
+    @Bean
     public MapCacheManager mapCacheManager() {
         return MapCacheManager.newWeakConcurrentMapCacheManager();
     }
 
     @ConditionalOnMissingBean(GuavaCacheManager.class)
-    @Bean({"guavaCacheManager", CacheManager.DEFAULT_GUAVA_CACHE_MANAGER_NAME})
+    @Bean
     public GuavaCacheManager guavaCacheManager() {
         return new GuavaCacheManager();
     }
@@ -457,9 +463,9 @@ public class Crane4jAutoConfiguration {
 
     @ConditionalOnMissingBean
     @Bean
-    public ConditionalTypeHierarchyBeanOperationParser typeHierarchyBeanOperationParser(
+    public ConditionalTypeHierarchyBeanOperationParser conditionalTypeHierarchyBeanOperationParser(
         Collection<OperationAnnotationHandler> handlers, Collection<ConditionParser> parsers) {
-        ConditionalTypeHierarchyBeanOperationParser parser =  new ConditionalTypeHierarchyBeanOperationParser();
+        ConditionalTypeHierarchyBeanOperationParser parser = new ConditionalTypeHierarchyBeanOperationParser();
         handlers.forEach(parser::addOperationAnnotationHandler);
         parsers.forEach(parser::registerConditionParser);
         return parser;

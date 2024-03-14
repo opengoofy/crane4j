@@ -1,6 +1,7 @@
 package cn.crane4j.core.parser.handler.strategy;
 
 import cn.crane4j.core.parser.PropertyMapping;
+import cn.crane4j.core.support.NamedComponent;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.function.Consumer;
@@ -15,15 +16,8 @@ import java.util.function.Consumer;
  * @see PropertyMappingStrategy
  * @since 2.1.0
  */
-public interface PropertyMappingStrategy {
+public interface PropertyMappingStrategy extends NamedComponent {
 
-    /**
-     * Get strategy name.
-     *
-     * @return name
-     */
-    String getName();
-    
     /**
      * Map {@code sourceValue} to reference fields in target.
      *

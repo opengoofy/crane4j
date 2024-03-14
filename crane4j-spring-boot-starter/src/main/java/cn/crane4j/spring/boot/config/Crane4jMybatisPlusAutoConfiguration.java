@@ -76,7 +76,7 @@ public class Crane4jMybatisPlusAutoConfiguration {
         return new BaseMapperAutoRegistrar(applicationContext, crane4jMybatisPlusProperties);
     }
 
-    @Bean("Crane4jMybatisPlusAutoConfigurationInitializationLogger")
+    @Bean
     public InitializationLogger initializationLogger() {
         return new InitializationLogger();
     }

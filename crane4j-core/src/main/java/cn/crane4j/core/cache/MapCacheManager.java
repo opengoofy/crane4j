@@ -149,6 +149,17 @@ public abstract class MapCacheManager extends AbstractCacheManager {
      * @since 2.4.0
      */
     public static class WeakConcurrentMapCacheManager extends MapCacheManager {
+
+        /**
+         * Get the component name.
+         *
+         * @return String
+         */
+        @Override
+        public String getName() {
+            return CacheManager.DEFAULT_MAP_CACHE_MANAGER_NAME;
+        }
+
         @Override
         protected <K> Map<K, Object> createMap() {
             return CollectionUtils.newWeakConcurrentMap();

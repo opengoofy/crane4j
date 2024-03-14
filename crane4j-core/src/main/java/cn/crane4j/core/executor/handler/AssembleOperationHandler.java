@@ -2,6 +2,7 @@ package cn.crane4j.core.executor.handler;
 
 import cn.crane4j.core.container.Container;
 import cn.crane4j.core.executor.AssembleExecution;
+import cn.crane4j.core.support.NamedComponent;
 
 import java.util.Collection;
 
@@ -22,7 +23,7 @@ import java.util.Collection;
  * @see OneToManyAssembleOperationHandler
  * @see ManyToManyAssembleOperationHandler
  */
-public interface AssembleOperationHandler {
+public interface AssembleOperationHandler extends NamedComponent {
 
     /**
      * Perform assembly operation.

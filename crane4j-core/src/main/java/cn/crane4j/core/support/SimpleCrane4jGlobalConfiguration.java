@@ -109,8 +109,6 @@ public class SimpleCrane4jGlobalConfiguration
      * @param operator property operator
      * @return configuration
      */
-
-
     public static SimpleCrane4jGlobalConfiguration create(
         AnnotationFinder annotationFinder, ConverterManager converter, PropertyOperator operator) {
         SimpleCrane4jGlobalConfiguration configuration = new SimpleCrane4jGlobalConfiguration();
@@ -134,10 +132,12 @@ public class SimpleCrane4jGlobalConfiguration
         registerDefaultExecutorComponents(converter, operator, configuration);
 
         // cache manager
+        GuavaCacheManager guavaCacheManager = new GuavaCacheManager();
         configuration.getCacheManagerMap()
-            .put(CacheManager.DEFAULT_GUAVA_CACHE_MANAGER_NAME, new GuavaCacheManager());
+            .put(guavaCacheManager.getName(), guavaCacheManager);
+        MapCacheManager mapCacheManager = MapCacheManager.newWeakConcurrentMapCacheManager();
         configuration.getCacheManagerMap()
-            .put(CacheManager.DEFAULT_MAP_CACHE_MANAGER_NAME, MapCacheManager.newWeakConcurrentMapCacheManager());
+            .put(mapCacheManager.getName(), mapCacheManager);
 
         return configuration;
     }
@@ -152,7 +152,7 @@ public class SimpleCrane4jGlobalConfiguration
         beanOperationParser.registerConditionParser(new ConditionOnContainerParser(annotationFinder, configuration));
         configuration.getBeanOperationParserMap().put(BeanOperationParser.class.getSimpleName(), beanOperationParser);
         configuration.getBeanOperationParserMap().put(TypeHierarchyBeanOperationParser.class.getSimpleName(), beanOperationParser);
-        configuration.getBeanOperationParserMap().put(beanOperationParser.getClass().getSimpleName(), beanOperationParser);
+        configuration.getBeanOperationParserMap().put(beanOperationParser.getName(), beanOperationParser);
 
         // annotation handler
         AssembleAnnotationHandler assembleAnnotationHandler = new AssembleAnnotationHandler(annotationFinder, configuration, configuration);
@@ -181,9 +181,9 @@ public class SimpleCrane4jGlobalConfiguration
         // operation executor
         DisorderedBeanOperationExecutor disorderedBeanOperationExecutor = new DisorderedBeanOperationExecutor(configuration);
         configuration.getBeanOperationExecutorMap().put(BeanOperationExecutor.class.getSimpleName(), disorderedBeanOperationExecutor);
-        configuration.getBeanOperationExecutorMap().put(disorderedBeanOperationExecutor.getClass().getSimpleName(), disorderedBeanOperationExecutor);
+        configuration.getBeanOperationExecutorMap().put(disorderedBeanOperationExecutor.getName(), disorderedBeanOperationExecutor);
         OrderedBeanOperationExecutor orderedBeanOperationExecutor = new OrderedBeanOperationExecutor(configuration, Crane4jGlobalSorter.comparator());
-        configuration.getBeanOperationExecutorMap().put(orderedBeanOperationExecutor.getClass().getSimpleName(), orderedBeanOperationExecutor);
+        configuration.getBeanOperationExecutorMap().put(orderedBeanOperationExecutor.getName(), orderedBeanOperationExecutor);
 
         // property mapping strategy
         configuration.addPropertyMappingStrategy(OverwriteMappingStrategy.INSTANCE);
@@ -193,23 +193,23 @@ public class SimpleCrane4jGlobalConfiguration
         // key resolver
         ReflectivePropertyKeyResolverProvider reflectivePropertyKeyResolverProvider = new ReflectivePropertyKeyResolverProvider(operator, converter);
         configuration.registerKeyResolverProvider(KeyResolver.class.getSimpleName(), reflectivePropertyKeyResolverProvider);
-        configuration.registerKeyResolverProvider(reflectivePropertyKeyResolverProvider.getClass().getSimpleName(), reflectivePropertyKeyResolverProvider);
+        configuration.registerKeyResolverProvider(reflectivePropertyKeyResolverProvider.getName(), reflectivePropertyKeyResolverProvider);
         ReflectiveSeparablePropertyKeyResolverProvider reflectiveSeparablePropertyKeyResolverProvider = new ReflectiveSeparablePropertyKeyResolverProvider(operator, converter);
-        configuration.registerKeyResolverProvider(reflectiveSeparablePropertyKeyResolverProvider.getClass().getSimpleName(), reflectiveSeparablePropertyKeyResolverProvider);
+        configuration.registerKeyResolverProvider(reflectiveSeparablePropertyKeyResolverProvider.getName(), reflectiveSeparablePropertyKeyResolverProvider);
         ReflectiveBeanKeyResolverProvider reflectiveBeanKeyResolverProvider = new ReflectiveBeanKeyResolverProvider(operator);
-        configuration.registerKeyResolverProvider(reflectiveBeanKeyResolverProvider.getClass().getSimpleName(), reflectiveBeanKeyResolverProvider);
+        configuration.registerKeyResolverProvider(reflectiveBeanKeyResolverProvider.getName(), reflectiveBeanKeyResolverProvider);
 
         // operation handlers
         OneToOneAssembleOperationHandler oneToOneReflexAssembleOperationHandler = new OneToOneAssembleOperationHandler(operator, converter);
         configuration.getAssembleOperationHandlerMap().put(AssembleOperationHandler.class.getSimpleName(), oneToOneReflexAssembleOperationHandler);
-        configuration.getAssembleOperationHandlerMap().put(oneToOneReflexAssembleOperationHandler.getClass().getSimpleName(), oneToOneReflexAssembleOperationHandler);
+        configuration.getAssembleOperationHandlerMap().put(oneToOneReflexAssembleOperationHandler.getName(), oneToOneReflexAssembleOperationHandler);
         OneToManyAssembleOperationHandler oneToManyReflexAssembleOperationHandler = new OneToManyAssembleOperationHandler(operator, converter);
-        configuration.getAssembleOperationHandlerMap().put(oneToManyReflexAssembleOperationHandler.getClass().getSimpleName(), oneToManyReflexAssembleOperationHandler);
+        configuration.getAssembleOperationHandlerMap().put(oneToManyReflexAssembleOperationHandler.getName(), oneToManyReflexAssembleOperationHandler);
         ManyToManyAssembleOperationHandler manyToManyReflexAssembleOperationHandler = new ManyToManyAssembleOperationHandler(operator, converter);
-        configuration.getAssembleOperationHandlerMap().put(manyToManyReflexAssembleOperationHandler.getClass().getSimpleName(), manyToManyReflexAssembleOperationHandler);
+        configuration.getAssembleOperationHandlerMap().put(manyToManyReflexAssembleOperationHandler.getName(), manyToManyReflexAssembleOperationHandler);
         ReflectiveDisassembleOperationHandler reflectiveDisassembleOperationHandler = new ReflectiveDisassembleOperationHandler(operator);
         configuration.getDisassembleOperationHandlerMap().put(DisassembleOperationHandler.class.getSimpleName(), reflectiveDisassembleOperationHandler);
-        configuration.getDisassembleOperationHandlerMap().put(reflectiveDisassembleOperationHandler.getClass().getSimpleName(), reflectiveDisassembleOperationHandler);
+        configuration.getDisassembleOperationHandlerMap().put(reflectiveDisassembleOperationHandler.getName(), reflectiveDisassembleOperationHandler);
     }
 
     /**

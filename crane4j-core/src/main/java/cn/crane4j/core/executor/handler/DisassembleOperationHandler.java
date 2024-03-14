@@ -1,6 +1,7 @@
 package cn.crane4j.core.executor.handler;
 
 import cn.crane4j.core.parser.operation.DisassembleOperation;
+import cn.crane4j.core.support.NamedComponent;
 
 import java.util.Collection;
 
@@ -11,7 +12,7 @@ import java.util.Collection;
  * @author huangchengxing
  * @see ReflectiveDisassembleOperationHandler
  */
-public interface DisassembleOperationHandler {
+public interface DisassembleOperationHandler extends NamedComponent {
 
     /**
      * Extract nested objects in object attributes according to disassembly configuration.
