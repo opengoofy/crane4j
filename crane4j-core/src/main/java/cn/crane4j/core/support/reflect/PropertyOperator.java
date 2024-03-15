@@ -1,6 +1,7 @@
 package cn.crane4j.core.support.reflect;
 
 import cn.crane4j.core.support.MethodInvoker;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Objects;
@@ -9,10 +10,21 @@ import java.util.Objects;
  * Property operator, used to read and write object attributes.
  *
  * @author huangchengxing
+ * @see PropDesc
  * @see AsmReflectivePropertyOperator
  * @see ReflectivePropertyOperator
  */
 public interface PropertyOperator {
+
+    /**
+     * Get property descriptor.
+     *
+     * @param targetType target type
+     * @return property descriptor
+     * @since 2.7.0
+     */
+    @NonNull
+    PropDesc getPropertyDescriptor(Class<?> targetType);
 
     /**
      * Get the specified property value.
@@ -36,7 +48,9 @@ public interface PropertyOperator {
      * @return getter method
      */
     @Nullable
-    MethodInvoker findGetter(Class<?> targetType, String propertyName);
+    default MethodInvoker findGetter(Class<?> targetType, String propertyName) {
+        return getPropertyDescriptor(targetType).getGetter(propertyName);
+    }
 
     /**
      * Set the specified property value.
@@ -47,10 +61,7 @@ public interface PropertyOperator {
      * @param value        property value
      */
     default void writeProperty(Class<?> targetType, Object target, String propertyName, Object value) {
-        MethodInvoker setter = findSetter(targetType, propertyName);
-        if (Objects.nonNull(setter)) {
-            setter.invoke(target, value);
-        }
+        getPropertyDescriptor(targetType).writeProperty(target, propertyName, value);
     }
 
     /**
@@ -61,5 +72,7 @@ public interface PropertyOperator {
      * @return setter method
      */
     @Nullable
-    MethodInvoker findSetter(Class<?> targetType, String propertyName);
+    default MethodInvoker findSetter(Class<?> targetType, String propertyName) {
+        return getPropertyDescriptor(targetType).getSetter(propertyName);
+    }
 }

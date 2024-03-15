@@ -1,9 +1,11 @@
 package cn.crane4j.extension.jackson;
 
 import cn.crane4j.core.support.MethodInvoker;
+import cn.crane4j.core.support.reflect.PropDesc;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.databind.JsonNode;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -15,6 +17,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  */
 public class JsonNodePropertyOperator extends JsonNodeHandler implements PropertyOperator {
 
+    private final JsonNodePropDesc jsonNodePropDesc = new JsonNodePropDesc();
     private final PropertyOperator propertyOperator;
 
     /**
@@ -30,35 +33,56 @@ public class JsonNodePropertyOperator extends JsonNodeHandler implements Propert
     }
 
     /**
-     * Get getter method.
+     * Get property descriptor.
      *
-     * @param targetType   target type
-     * @param propertyName property name
-     * @return getter method
+     * @param targetType target type
+     * @return property descriptor
+     * @since 2.7.0
      */
-    @Nullable
     @Override
-    public MethodInvoker findGetter(Class<?> targetType, String propertyName) {
-        if (!(TreeNode.class.isAssignableFrom(targetType))) {
-            return propertyOperator.findGetter(targetType, propertyName);
-        }
-        return (t, args) -> read(t, propertyName);
+    public @NonNull PropDesc getPropertyDescriptor(Class<?> targetType) {
+        return TreeNode.class.isAssignableFrom(targetType) ?
+            jsonNodePropDesc : propertyOperator.getPropertyDescriptor(targetType);
     }
 
     /**
-     * Get setter method.
+     * The property descriptor that supports reading and writing properties of {@link JsonNode}.
      *
-     * @param targetType   target type
-     * @param propertyName property name
-     * @return setter method
+     * @author huangchengxing
+     * @since 2.7.0
      */
-    @Nullable
-    @Override
-    public MethodInvoker findSetter(Class<?> targetType, String propertyName) {
-        if (!(TreeNode.class.isAssignableFrom(targetType))) {
-            return propertyOperator.findSetter(targetType, propertyName);
+    private class JsonNodePropDesc implements PropDesc {
+
+        /**
+         * Get the bean type.
+         *
+         * @return bean type
+         */
+        @Override
+        public Class<?> getBeanType() {
+            return TreeNode.class;
         }
-        return JsonNode.class.isAssignableFrom(targetType) ?
-            (t, args) -> write(t, propertyName, args[0]) : null;
+
+        /**
+         * Get the getter method.
+         *
+         * @param propertyName property name
+         * @return property getter
+         */
+        @Override
+        public @Nullable MethodInvoker getGetter(String propertyName) {
+            return (t, args) -> read(t, propertyName);
+        }
+
+        /**
+         * Get the setter method.
+         *
+         * @param propertyName property name
+         * @return property setter
+         */
+        @Override
+        public @Nullable MethodInvoker getSetter(String propertyName) {
+            return (t, args) -> write(t, propertyName, args[0]);
+        }
     }
 }

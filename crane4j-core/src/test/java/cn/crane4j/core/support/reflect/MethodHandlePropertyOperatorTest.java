@@ -2,10 +2,12 @@ package cn.crane4j.core.support.reflect;
 
 import cn.crane4j.core.exception.Crane4jException;
 import cn.crane4j.core.support.MethodInvoker;
+import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.support.converter.HutoolConverterManager;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
@@ -138,19 +140,30 @@ public class MethodHandlePropertyOperatorTest {
         }
 
         @Override
-        protected @Nullable MethodInvoker createInvokerForMethod(Class<?> targetType, String propertyName, Method method) {
-            if (immutableFields.contains(propertyName)) {
-                return null;
-            }
-            return super.createInvokerForMethod(targetType, propertyName, method);
+        public @NonNull PropDesc getPropertyDescriptor(Class<?> targetType) {
+            return new CustomReflectivePropertyOperator.CustomReflectivePropDesc(targetType, converterManager, throwIfNoAnyMatched);
         }
 
-        @Override
-        protected MethodInvoker createSetterInvokerForField(Class<?> targetType, String propertyName, Field field) {
-            if (immutableFields.contains(propertyName)) {
-                return null;
+        private static class CustomReflectivePropDesc extends ReflectivePropDesc {
+            public CustomReflectivePropDesc(
+                Class<?> beanType, @Nullable ConverterManager converterManager, boolean throwIfNoAnyMatched) {
+                super(beanType, converterManager, throwIfNoAnyMatched);
             }
-            return super.createSetterInvokerForField(targetType, propertyName, field);
+            @Override
+            protected @Nullable MethodInvoker createInvokerForMethod(String propertyName, Method method) {
+                if (immutableFields.contains(propertyName)) {
+                    return null;
+                }
+                return super.createInvokerForMethod(propertyName, method);
+            }
+
+            @Override
+            protected MethodInvoker createSetterInvokerForField(String propertyName, Field field) {
+                if (immutableFields.contains(propertyName)) {
+                    return null;
+                }
+                return super.createSetterInvokerForField(propertyName, field);
+            }
         }
     }
 }

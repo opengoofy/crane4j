@@ -7,6 +7,7 @@ import cn.crane4j.core.parser.PropertyMapping;
 import cn.crane4j.core.parser.handler.strategy.PropertyMappingStrategy;
 import cn.crane4j.core.parser.operation.AssembleOperation;
 import cn.crane4j.core.support.converter.ConverterManager;
+import cn.crane4j.core.support.reflect.PropDesc;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.util.StringUtils;
 import lombok.NonNull;
@@ -141,20 +142,20 @@ public class OneToOneAssembleOperationHandler
     @Override
     protected void completeMapping(Object source, Target target) {
         AssembleExecution execution = target.getExecution();
+        PropDesc sourceDesc = propertyOperator.getPropertyDescriptor(source.getClass());
+        PropDesc targetDesc = propertyOperator.getPropertyDescriptor(target.getOrigin().getClass());
+
+        // mapping properties
+        PropertyMappingStrategy propertyMappingStrategy = execution.getOperation().getPropertyMappingStrategy();
         Set<PropertyMapping> mappings = execution.getOperation().getPropertyMappings();
         for (PropertyMapping mapping : mappings) {
-            mappingProperty(target, source, mapping);
+            Object sourceValue = mapping.hasSource() ?
+                sourceDesc.readProperty(source, mapping.getSource()) : source;
+            Object originTarget = target.getOrigin();
+            propertyMappingStrategy.doMapping(
+                originTarget, source, sourceValue, mapping,
+                sv -> targetDesc.writeProperty(originTarget, mapping.getReference(), sourceValue)
+            );
         }
-    }
-
-    private void mappingProperty(Target entity, Object source, PropertyMapping mapping) {
-        PropertyMappingStrategy propertyMappingStrategy = entity.getExecution().getOperation().getPropertyMappingStrategy();
-        Object sourceValue = mapping.hasSource() ?
-            propertyOperator.readProperty(source.getClass(), source, mapping.getSource()) : source;
-        Object target = entity.getOrigin();
-        propertyMappingStrategy.doMapping(
-            target, source, sourceValue, mapping,
-            sv -> propertyOperator.writeProperty(target.getClass(), target, mapping.getReference(), sourceValue)
-        );
     }
 }

@@ -26,7 +26,7 @@ public abstract class ReflectiveFieldAdapterMethodInvoker implements MethodInvok
      */
     public static ReflectiveFieldAdapterMethodInvoker createGetter(Field field) {
         ReflectUtils.setAccessible(field);
-        return new ReflectiveFieldGetterInvoker(field);
+        return new Getter(field);
     }
 
     /**
@@ -37,7 +37,7 @@ public abstract class ReflectiveFieldAdapterMethodInvoker implements MethodInvok
      */
     public static ReflectiveFieldAdapterMethodInvoker createSetter(Field field) {
         ReflectUtils.setAccessible(field);
-        return new ReflectiveFieldSetterInvoker(field);
+        return new Setter(field);
     }
 
     @Override
@@ -60,9 +60,9 @@ public abstract class ReflectiveFieldAdapterMethodInvoker implements MethodInvok
      *
      * @author tangcent
      */
-    private static class ReflectiveFieldGetterInvoker extends ReflectiveFieldAdapterMethodInvoker {
+    private static class Getter extends ReflectiveFieldAdapterMethodInvoker {
 
-        public ReflectiveFieldGetterInvoker(Field field) {
+        public Getter(Field field) {
             super(field);
         }
 
@@ -89,9 +89,9 @@ public abstract class ReflectiveFieldAdapterMethodInvoker implements MethodInvok
      *
      * @author tangcent
      */
-    private static class ReflectiveFieldSetterInvoker extends ReflectiveFieldAdapterMethodInvoker {
+    private static class Setter extends ReflectiveFieldAdapterMethodInvoker {
 
-        public ReflectiveFieldSetterInvoker(Field field) {
+        public Setter(Field field) {
             super(field);
         }
 

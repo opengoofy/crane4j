@@ -1,15 +1,10 @@
 package cn.crane4j.core.support.reflect;
 
-import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.util.CollectionUtils;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiFunction;
 
 /**
  * The wrapper class of {@link PropertyOperator} that adds support for invoker cache.
@@ -20,74 +15,19 @@ import java.util.function.BiFunction;
 @RequiredArgsConstructor
 public class CacheablePropertyOperator implements PropertyOperator {
 
-    /**
-     * Null cache object
-     */
-    private static final MethodInvoker NULL = (target, args) -> null;
-
-    /**
-     * getter cache
-     */
-    private final Map<Class<?>, Map<String, MethodInvoker>> getterCaches = CollectionUtils.newWeakConcurrentMap();
-
-    /**
-     * setter cache
-     */
-    private final Map<Class<?>, Map<String, MethodInvoker>> setterCaches = CollectionUtils.newWeakConcurrentMap();
-
-    /**
-     * Property operator
-     */
+    private final Map<Class<?>, PropDesc> getterCaches = CollectionUtils.newWeakConcurrentMap();
     private final PropertyOperator delegate;
 
     /**
-     * Get getter method.
+     * Get property descriptor.
      *
-     * @param targetType   target type
-     * @param propertyName property name
-     * @return getter method
+     * @param targetType target type
+     * @return property descriptor
+     * @since 2.7.0
      */
-    @Nullable
-    @Override
-    public MethodInvoker findGetter(Class<?> targetType, String propertyName) {
-        MethodInvoker invoker = findInvokerFromCache(
-                getterCaches, targetType, propertyName, delegate::findGetter
-        );
-        return resolve(invoker);
-    }
-
-    /**
-     * Get setter method.
-     *
-     * @param targetType   target type
-     * @param propertyName property name
-     * @return setter method
-     */
-    @Nullable
-    @Override
-    public MethodInvoker findSetter(Class<?> targetType, String propertyName) {
-        MethodInvoker invoker = findInvokerFromCache(
-                setterCaches, targetType, propertyName, delegate::findSetter
-        );
-        return resolve(invoker);
-    }
-
-    @Nullable
-    private MethodInvoker resolve(MethodInvoker invoker) {
-        return invoker == NULL ? null : invoker;
-    }
-
     @NonNull
-    private MethodInvoker findInvokerFromCache(
-            Map<Class<?>, Map<String, MethodInvoker>> caches,
-            Class<?> targetType, String propertyName,
-            BiFunction<Class<?>, String, MethodInvoker> invokerFactory) {
-        Map<String, MethodInvoker> invokers = CollectionUtils.computeIfAbsent(
-                caches, targetType, t -> new ConcurrentHashMap<>(8)
-        );
-        return CollectionUtils.computeIfAbsent(invokers, propertyName, t -> {
-            MethodInvoker target = invokerFactory.apply(targetType, propertyName);
-            return Objects.isNull(target) ? NULL : target;
-        });
+    @Override
+    public PropDesc getPropertyDescriptor(Class<?> targetType) {
+        return CollectionUtils.computeIfAbsent(getterCaches, targetType, delegate::getPropertyDescriptor);
     }
 }

@@ -2,6 +2,7 @@ package cn.crane4j.core.support.reflect;
 
 import cn.crane4j.core.support.MethodInvoker;
 import lombok.RequiredArgsConstructor;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Map;
@@ -15,83 +16,48 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class MapAccessiblePropertyOperator implements PropertyOperator {
 
+    private static final MapPropDesc MAP_PROP_DESC = new MapPropDesc();
+
     /**
      * original operator
      */
     private final PropertyOperator delegate;
 
     /**
-     * Get the specified property value.
+     * Get property descriptor.
      *
-     * @param targetType   target type
-     * @param target       target
-     * @param propertyName property name
-     * @return property value
+     * @param targetType target type
+     * @return property descriptor
+     * @since 2.7.0
      */
-    @Nullable
     @Override
-    public Object readProperty(Class<?> targetType, Object target, String propertyName) {
-        if (isMap(targetType)) {
-            return castMap(target).get(propertyName);
-        }
-        return delegate.readProperty(targetType, target, propertyName);
+    public @NonNull PropDesc getPropertyDescriptor(Class<?> targetType) {
+        return Map.class.isAssignableFrom(targetType) ?
+            MAP_PROP_DESC : delegate.getPropertyDescriptor(targetType);
     }
 
     /**
-     * Get getter method.
+     * A property descriptor for map.
      *
-     * @param targetType   target type
-     * @param propertyName property name
-     * @return getter method
+     * @author huangchengxing
+     * @since 2.7.0
      */
-    @Nullable
-    @Override
-    public MethodInvoker findGetter(Class<?> targetType, String propertyName) {
-        if (isMap(targetType)) {
+    private static class MapPropDesc implements PropDesc {
+        @Override
+        public Class<?> getBeanType() {
+            return Map.class;
+        }
+        @Override
+        public @Nullable MethodInvoker getGetter(String propertyName) {
             return (t, args) -> castMap(t).get(propertyName);
         }
-        return delegate.findGetter(targetType, propertyName);
-    }
-
-    /**
-     * Set the specified property value.
-     *
-     * @param targetType   target type
-     * @param target       target
-     * @param propertyName property name
-     * @param value        property value
-     */
-    @Override
-    public void writeProperty(Class<?> targetType, Object target, String propertyName, Object value) {
-        if (isMap(targetType)) {
-            castMap(target).put(propertyName, value);
-            return;
+        @Override
+        public @Nullable MethodInvoker getSetter(String propertyName) {
+            return (t, arg) -> castMap(t).put(propertyName, arg[0]);
         }
-        delegate.writeProperty(targetType, target, propertyName, value);
-    }
-
-    /**
-     * Get setter method.
-     *
-     * @param targetType   target type
-     * @param propertyName property name
-     * @return setter method
-     */
-    @Nullable
-    @Override
-    public MethodInvoker findSetter(Class<?> targetType, String propertyName) {
-        if (isMap(targetType)) {
-            return (t, args) -> castMap(t).put(propertyName, args[0]);
+        @SuppressWarnings("unchecked")
+        private static Map<String, Object> castMap(Object target) {
+            return (Map<String, Object>)target;
         }
-        return delegate.findSetter(targetType, propertyName);
-    }
-
-    @SuppressWarnings("unchecked")
-    private static Map<String, Object> castMap(Object target) {
-        return (Map<String, Object>)target;
-    }
-
-    private static boolean isMap(Class<?> type) {
-        return Map.class.isAssignableFrom(type);
     }
 }

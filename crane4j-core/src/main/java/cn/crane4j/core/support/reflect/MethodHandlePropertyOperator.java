@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.lang.invoke.MethodHandle;
@@ -35,54 +36,78 @@ public class MethodHandlePropertyOperator extends ReflectivePropertyOperator {
     }
 
     /**
-     * Creates a {@link MethodInvoker} for setting the value of the specified field.
+     * Get property descriptor.
      *
-     * @param targetType   target type
-     * @param propertyName property name
-     * @param field        field to be set.
-     * @return The {@link MethodInvoker} instance for setting the value of the specified field.
+     * @param targetType target type
+     * @return property descriptor
+     * @since 2.7.0
      */
-    @SneakyThrows
     @Override
-    protected MethodInvoker createSetterInvokerForField(Class<?> targetType, String propertyName, Field field) {
-        if (Modifier.isStatic(field.getModifiers())) {
-            return super.createSetterInvokerForField(targetType, propertyName, field);
-        }
-        try {
-            MethodHandles.Lookup lookup = MethodHandles.lookup();
-            if (!field.isAccessible()) {
-                field.setAccessible(true);
-            }
-            return new MethodHandleSetter(lookup.unreflectSetter(field));
-        } catch (Exception e) {
-            log.warn("cannot find method handle of setter for field: {}", field, e);
-        }
-        return super.createSetterInvokerForField(targetType, propertyName, field);
+    public @NonNull PropDesc getPropertyDescriptor(Class<?> targetType) {
+        return new MethodHandlePropDesc(targetType, converterManager, throwIfNoAnyMatched);
     }
 
     /**
-     * Creates a {@link MethodInvoker} for getting the value of the specified field.
+     * The method handle based property descriptor.
      *
-     * @param targetType   target type
-     * @param propertyName property name
-     * @param field        field to be got.
-     * @return The {@link MethodInvoker} instance for getting the value of the specified field.
+     * @author huangchengxing
+     * @since 2.7.0
      */
-    @Override
-    protected MethodInvoker createGetterInvokerForField(Class<?> targetType, String propertyName, Field field) {
-        if (Modifier.isStatic(field.getModifiers())) {
-            return super.createGetterInvokerForField(targetType, propertyName, field);
+    private static class MethodHandlePropDesc extends ReflectivePropDesc {
+
+        public MethodHandlePropDesc(
+            Class<?> beanType, @Nullable ConverterManager converterManager, boolean throwIfNoAnyMatched) {
+            super(beanType, converterManager, throwIfNoAnyMatched);
         }
-        try {
-            MethodHandles.Lookup lookup = MethodHandles.lookup();
-            if (!field.isAccessible()) {
-                field.setAccessible(true);
+
+        /**
+         * Creates a {@link MethodInvoker} for setting the value of the specified field.
+         *
+         * @param propertyName property name
+         * @param field        field to be set.
+         * @return The {@link MethodInvoker} instance for setting the value of the specified field.
+         */
+        @SneakyThrows
+        @Override
+        protected MethodInvoker createSetterInvokerForField(String propertyName, Field field) {
+            if (Modifier.isStatic(field.getModifiers())) {
+                return super.createSetterInvokerForField(propertyName, field);
             }
-            return new MethodHandleGetter(lookup.unreflectGetter(field));
-        } catch (Exception e) {
-            log.warn("cannot find method handle of getter for field: {}", field, e);
+            try {
+                MethodHandles.Lookup lookup = MethodHandles.lookup();
+                if (!field.isAccessible()) {
+                    field.setAccessible(true);
+                }
+                return new MethodHandleSetter(lookup.unreflectSetter(field));
+            } catch (Exception e) {
+                log.warn("cannot find method handle of setter for field: {}", field, e);
+            }
+            return super.createSetterInvokerForField(propertyName, field);
         }
-        return super.createGetterInvokerForField(targetType, propertyName, field);
+
+        /**
+         * Creates a {@link MethodInvoker} for getting the value of the specified field.
+         *
+         * @param propertyName property name
+         * @param field        field to be got.
+         * @return The {@link MethodInvoker} instance for getting the value of the specified field.
+         */
+        @Override
+        protected MethodInvoker createGetterInvokerForField(String propertyName, Field field) {
+            if (Modifier.isStatic(field.getModifiers())) {
+                return super.createGetterInvokerForField(propertyName, field);
+            }
+            try {
+                MethodHandles.Lookup lookup = MethodHandles.lookup();
+                if (!field.isAccessible()) {
+                    field.setAccessible(true);
+                }
+                return new MethodHandleGetter(lookup.unreflectGetter(field));
+            } catch (Exception e) {
+                log.warn("cannot find method handle of getter for field: {}", field, e);
+            }
+            return super.createGetterInvokerForField(propertyName, field);
+        }
     }
 
     /**
