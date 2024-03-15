@@ -3,6 +3,7 @@ package cn.crane4j.core.support.reflect;
 import cn.crane4j.core.support.MethodInvoker;
 import cn.crane4j.core.util.CollectionUtils;
 import lombok.RequiredArgsConstructor;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Map;
@@ -42,86 +43,16 @@ public class ChainAccessiblePropertyOperator implements PropertyOperator {
     }
 
     /**
-     * Get the specified property value.
+     * Get property descriptor.
      *
-     * @param targetType   target type
-     * @param target       target
-     * @param propertyName property name
-     * @return property value
-     */
-    @Nullable
-    @Override
-    public Object readProperty(Class<?> targetType, Object target, String propertyName) {
-        MethodInvoker invoker = findGetter(targetType, propertyName);
-        return Objects.isNull(invoker) ? null : invoker.invoke(target);
-    }
-
-    /**
-     * Get getter method.
-     *
-     * @param targetType   target type
-     * @param propertyName property name
-     * @return getter method
-     */
-    @Nullable
-    @Override
-    public MethodInvoker findGetter(Class<?> targetType, String propertyName) {
-        String[] properties = splitter.apply(propertyName);
-        if (properties.length <= 1) {
-            return delegate.findGetter(targetType, propertyName);
-        }
-        return chainGetter(properties);
-    }
-
-    /**
-     * Set the specified property value.
-     *
-     * @param targetType   target type
-     * @param target       target
-     * @param propertyName property name
-     * @param value        property value
+     * @param targetType target type
+     * @return property descriptor
+     * @since 2.7.0
      */
     @Override
-    public void writeProperty(Class<?> targetType, Object target, String propertyName, Object value) {
-        MethodInvoker invoker = findSetter(targetType, propertyName);
-        if (Objects.nonNull(invoker)) {
-            invoker.invoke(target, value);
-        }
-    }
-
-    /**
-     * Get setter method.
-     *
-     * @param targetType   target type
-     * @param propertyName property name
-     * @return setter method
-     */
-    @Nullable
-    @Override
-    public MethodInvoker findSetter(Class<?> targetType, String propertyName) {
-        String[] properties = splitter.apply(propertyName);
-        if (properties.length <= 1) {
-            return delegate.findSetter(targetType, propertyName);
-        }
-        return chainSetter(properties);
-    }
-
-    /**
-     * Create a chain getter.
-     *
-     * @param splitPropertyChain split property chain
-     * @return chain getter
-     */
-    protected MethodInvoker chainGetter(String[] splitPropertyChain) {
-        return (target, args) -> {
-            for (String prop : splitPropertyChain) {
-                if (Objects.isNull(target)) {
-                    return null;
-                }
-                target = delegate.readProperty(target.getClass(), target, prop);
-            }
-            return target;
-        };
+    public @NonNull PropDesc getPropertyDescriptor(Class<?> targetType) {
+        PropDesc delegateDesc = delegate.getPropertyDescriptor(targetType);
+        return new ChainAccessPropDesc(targetType, delegateDesc);
     }
 
     /**
@@ -151,6 +82,98 @@ public class ChainAccessiblePropertyOperator implements PropertyOperator {
             }
             return null;
         };
+    }
+
+    /**
+     * Create a chain getter.
+     *
+     * @param splitPropertyChain split property chain
+     * @return chain getter
+     */
+    protected MethodInvoker chainGetter(String[] splitPropertyChain) {
+        return (target, args) -> {
+            for (String prop : splitPropertyChain) {
+                if (Objects.isNull(target)) {
+                    return null;
+                }
+                target = delegate.readProperty(target.getClass(), target, prop);
+            }
+            return target;
+        };
+    }
+
+    /**
+     * The property descriptor that supports chain property access.
+     *
+     * @author huangchengxing
+     * @since 2.7.0
+     */
+    protected class ChainAccessPropDesc extends AbstractPropDesc {
+
+        private final PropDesc delegate;
+
+        public ChainAccessPropDesc(Class<?> beanType, PropDesc delegate) {
+            super(beanType);
+            this.delegate = delegate;
+        }
+
+        /**
+         * Get the getter method.
+         *
+         * @param propertyName property name
+         * @return property getter
+         */
+        @Override
+        public @Nullable MethodInvoker getGetter(String propertyName) {
+            String[] properties = splitter.apply(propertyName);
+            if (properties.length <= 1) {
+                return delegate.getGetter(propertyName);
+            }
+            // only chain property access will be processed
+            return super.getGetter(propertyName);
+        }
+
+        /**
+         * Get the setter method.
+         *
+         * @param propertyName property name
+         * @return property setter
+         */
+        @Override
+        public @Nullable MethodInvoker getSetter(String propertyName) {
+            String[] properties = splitter.apply(propertyName);
+            if (properties.length <= 1) {
+                return delegate.getSetter(propertyName);
+            }
+            // only chain property access will be processed
+            return super.getSetter(propertyName);
+        }
+
+        /**
+         * Get getter method.
+         *
+         * @param propertyName property name
+         * @return getter method
+         */
+        @Nullable
+        @Override
+        public MethodInvoker findGetter(String propertyName) {
+            String[] properties = splitter.apply(propertyName);
+            return chainGetter(properties);
+        }
+
+        /**
+         * Get setter method.
+         *
+         * @param propertyName property name
+         * @return setter method
+         */
+        @Nullable
+        @Override
+        protected MethodInvoker findSetter(String propertyName) {
+            String[] properties = splitter.apply(propertyName);
+            return chainSetter(properties);
+        }
     }
 
     /**

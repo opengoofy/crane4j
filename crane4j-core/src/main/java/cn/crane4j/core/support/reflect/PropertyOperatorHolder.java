@@ -21,16 +21,28 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * @author huangchengxing
  * @since 2.2.0
  */
+@Setter
+@Getter
 @AllArgsConstructor
 public class PropertyOperatorHolder implements DecoratedPropertyOperator {
 
     /**
      * delegate property operator
      */
-    @Getter
-    @Setter
     @NonNull
     private PropertyOperator propertyOperator;
+
+    /**
+     * Get property descriptor.
+     *
+     * @param targetType target type
+     * @return property descriptor
+     * @since 2.7.0
+     */
+    @Override
+    public @NonNull PropDesc getPropertyDescriptor(Class<?> targetType) {
+        return propertyOperator.getPropertyDescriptor(targetType);
+    }
 
     /**
      * Get the specified property value.
