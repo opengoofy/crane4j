@@ -40,8 +40,11 @@ const sidebarConfig = [
             {
                 title: '场景示例',
                 children: [
-                    { title: "字典值自动转换", path: "/use_case/example_auto_fill_controller.md" },
-                    { title: "填充一个复杂对象", path: "/use_case/example_multi_datasource.md" },
+                    { title: "示例：如何基于枚举进行填充", path: "/use_case/example_fill_enum.md" },
+                    { title: "示例：如何在填充后进行附加操作", path: "/use_case/example_additional_action.md" },
+                    { title: "示例：如何基于方法填充", path: "/use_case/example_fill_method.md" },
+                    { title: "示例：如何填充被包装的返回值", path: "/use_case/example_fill_wrapped_return_value.md" },
+                    { title: "示例: 如何填充一个复杂对象", path: "/use_case/example_multi_datasource.md" },
                 ]
             },
             { title: "常见问题", path: "/user_guide/faq.md" },

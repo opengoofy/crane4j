@@ -95,40 +95,57 @@ public List<T> getFooList() {
 
 ### 2.3.包装类提取
 
-有时候，在`Controller`中的方法返回值会使用通用响应体进行包装，例如：
+有时候，我们会在 `Controller` 中显式的使用通用响应体包装返回值，比如：
 
 ~~~java
+@PostMapping
+public Result<List<UserVO>> listUser(@RequestBody List<Integer> ids) {
+    // 返回值被通用响应体包装
+    return new Result<>(userService.listByIds(ids));
+}
+
+// 通用响应体
+@AllArgsConstructor
+@Data
 public class Result<T> {
-    private Integer code;
+    private String msg = "ok";
+    private Integer code = 200;
     private T data;
-}
-
-@AutoOperate(type = Foo.class)
-public Result<List<Foo>> getFooList() {
-    // do nothing
+    public Result(T data) {
+        this.data = data;
+    }
 }
 ~~~
 
-实际上，需要填充的对象并不是`Result`本身，而是`Result`中的`data`字段，此时我们可以直接通过`on`属性对被包装的返回值进行提取：
+此时，我们真正需要填充的数据其实是 `Result.data`，则可以在 `@AutoOperate` 注解中通过 `on` 属性指定：
 
 ~~~java
-@AutoOperate(type = Foo.class, on = "data")
-public Result<List<Foo>> getFooList() {
-    // do nothing
+@AutoOperate(type = UserVO.class, on = "data") // 声明自动填充
+@PostMapping
+public Result<List<UserVO>> listUser(@RequestBody List<Integer> ids) {
+    // 返回值被通用响应体包装
+    return new Result<>(userService.listByIds(ids));
 }
 ~~~
 
-`on`属性默认支持链式操作符，即通过`xx.xx.xx`的方式访问内部对象的属性，比如：
+![image-20231013231124968](./image-20231013231124968-0813973.png)
 
-对于常见的`Result<PageInfo<Foo>>` 结构，你可以使用这种方式来从被多层包装的对象中提取特定的属性值：
+**多级包装**
+
+在特定情况下，我们会存在多级包装的情况。比如通用响应体包装了分页对象，然后分页对象里面才是需要填充的数据。
+
+由于 `on` 属性默认支持链式操作符，即可以通过`xx.xx.xx`的方式访问内部对象的属性，因此你可以使用这种方式来从被多层包装的对象中提取特定的属性值：
 
 ~~~java
-Result.data -> PageInfo.list -> Foo
-@AutoOperate(type = Foo.class, on = "data.list")
-public Result<PageInfo<Foo>> getFooList() {
-    // do nothing
+@AutoOperate(type = UserVO.class, on = "data.list") // 声明自动填充
+@PostMapping
+public Result<Page<List<UserVO>>> listUser(@RequestBody List<Integer> ids, @RequestParam PageDTO pageDTO) {
+    // Result.data -> Page.list -> List<UserVo>
+    return new Result<>(userService.pageByIds(ids, pageDTO));
 }
 ~~~
+
+![image-20231013230948877](./image-20231013230948877-0813989.png)
 
 :::tip
 
