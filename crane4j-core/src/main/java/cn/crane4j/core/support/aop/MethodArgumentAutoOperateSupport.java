@@ -26,6 +26,18 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
+ * <p>一个用于在方法调用前，根据{@link AutoOperate}注解的配置，对方法参数进行填充的辅助类。
+ *
+ * <p>在方法调用前，其将会把方法参数解析为{@link AutoOperateAnnotatedElement 一个需要进行填充的元素}，
+ * 方法参数对应的{@link AutoOperateAnnotatedElement}数组将会被缓存，避免重复解析。<br/>
+ * 当方法被调用时，辅助类将根据配置对方法参数进行填充。
+ *
+ * <p>辅助类支持通过{@link AutoOperate#condition()}设置的条件表达式，
+ * 每次执行时都会通过{@link MethodBasedExpressionEvaluator}来进行求值，
+ * 只有当表达式返回true或者"true"时，才会执行填充。
+ *
+ * <hr/>
+ *
  * <p>Support class for completing the operation of data
  * from the method parameters which annotated by {@link AutoOperate}
  * before the method is called.

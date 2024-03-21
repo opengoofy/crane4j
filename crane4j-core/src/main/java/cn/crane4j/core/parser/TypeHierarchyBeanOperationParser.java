@@ -23,16 +23,44 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * <p>{@link BeanOperationParser 操作配置解析器}的通用实现。
+ *
+ * <p><strong>工作机制</strong>
+ * <p>在解析配置时，解析器将创建一个根{@link BeanOperations 配置对象}作为此次执行的上下文，
+ * 然后依次调用所有注册的 {@link OperationAnnotationHandler 注解处理器}，
+ * 将配置信息收集到上下文中的{@link BeanOperations 配置对象}中。<br/>
+ * 解析完成后，将缓存与{@link AnnotatedElement}对应的{@link BeanOperations}实例，
+ * 下次访问时将优先使用缓存。
+ *
+ * <p><strong>扫描范围</strong>
+ * <p>在解析元素时，如果是：
+ * <ul>
+ *     <li>{@link Class}：将检查其层次结构中的所有父类和接口；</li>
+ *     <li>{@link Method}：将检查其层次结构中具有相同方法签名的方法；</li>
+ *     <li>其他：只检查自身；</li>
+ * </ul>
+ *
+ * <p><strong>操作配置的顺序</strong>
+ * <p>解析器获取的操作顺序遵循：
+ * <ul>
+ *     <li>{@link OperationAnnotationHandler 注解处理器}的调用顺序；</li>
+ *     <li>它们在链中的顺序；</li>
+ * </ul>
+ * 需要注意的是，这个顺序并不代表最终操作将执行的顺序，最终操作的顺序由{@link BeanOperationExecutor 执行器}保证。
+ *
+ * <hr>
+ *
  * <p>General implementation of {@link BeanOperationParser}.
  *
+ * <p><strong>Working Mechanism</strong>
  * <p>When parsing the configuration, the parser will create a root {@link BeanOperations}
  * as the context for this execution, Then successively call all registered {@link OperationAnnotationHandler}
- * to collect the configuration information into the {@link BeanOperations} in context.
- *
- * <p>After the parsing is completed, the {@link BeanOperations} instance
+ * to collect the configuration information into the {@link BeanOperations} in context.<br/>
+ * After the parsing is completed, the {@link BeanOperations} instance
  * corresponding to the {@link AnnotatedElement} will be cached,
  * and the cache will be used preferentially for the next access.
  *
+ * <p><strong>Scanning Range</strong>
  * <p>When parsing element, if it is a:
  * <ul>
  *     <li>{@link Class}: it will check all parent classes and interfaces in its hierarchy;</li>
@@ -40,6 +68,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *     <li>other: only the itself will be checked;</li>
  * </ul>
  *
+ * <p><strong>Order of Operation Configuration</strong>
  * <p>The sequence of operations obtained through the parser follows:
  * <ul>
  *     <li>The calling order of {@link OperationAnnotationHandler};</li>

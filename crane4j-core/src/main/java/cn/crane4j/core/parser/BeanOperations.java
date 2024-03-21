@@ -12,6 +12,20 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * <p>用于描述如何对一个JavaBean进行操作的配置对象。
+ * 通常情况下，它由{@link BeanOperationParser 解析器}从类或方法上中解析得到，
+ * 并在{@link BeanOperationExecutor 执行器}中使用，以指示{@link BeanOperationExecutor 执行器}如何根据配置对输入对象进行操作。
+ *
+ * <p>通过{@link #getAssembleOperations}或{@link #getDisassembleOperations}获取到的操作配置一般是有序的，
+ * 且顺序遵循{@link Sorted#getSort}的定义。但实际执行顺序需要由{@link BeanOperationExecutor 执行器}来保证，
+ * 因此不同的执行器可能会导致不同的执行顺序。
+ *
+ * <p>由于配置可能是嵌套的，比如在一个对象中需要对一个某个属性进行拆解，而这个属性又对应另一个类型的对象，
+ * 因此在获取到的对象操作配置实例时，可能仍然处于递归解析中。
+ * 总而言之，在使用前，我们需要通过{@link #isActive}方法确保当前的配置对象已经彻底出于可用状态。
+ *
+ * <hr/>
+ *
  * <p>The configuration for a JavaBean operation.
  * Typically, it is parsed from a class by the {@link BeanOperationParser},
  * and used in the {@link BeanOperationExecutor} to indicate

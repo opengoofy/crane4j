@@ -16,6 +16,18 @@ import java.lang.annotation.Annotation;
 import java.util.Comparator;
 
 /**
+ * <p>一个基于{@link AbstractStandardAssembleAnnotationHandler}的扩展实现，
+ * 用于支持在处理操作注解时，一并为其创建并注册对应的容器。
+ *
+ * <p>该注解处理器在内部维护了一个{@link ContainerProvider}实例，
+ * 当从操作注解中解析出容器的命名空间时，会尝试根据规则创建一个容器实例，并存储在内部的提供者中。
+ *
+ * <p>该内部提供者在处理器实例创建时会注册到全局容器管理器中。
+ * 通常情况下，该提供者可以在{@link ContainerManager}根据名称{@code {处理器的简单类名}.InternalProvider}进行访问，
+ * 但<strong>不建议在处理器外部操作它</strong>。
+ *
+ * <hr/>
+ *
  * <p>An implementation of {@link AbstractStandardAssembleAnnotationHandler} that
  * creates corresponding containers while processing operation annotations.
  *

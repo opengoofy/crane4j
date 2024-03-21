@@ -24,11 +24,9 @@ public interface PropertyMapping {
     boolean hasSource();
 
     /**
-     * <p>The field in the target object to reference the field
-     * in the data source object will obtain the value of
-     * the data source field corresponding to {@link #getSource}
-     * in the data source after the operation is executed.<br />
-     * This field cannot be an empty string. If it is not specified, it should point to the key field.
+     * <p>The field what in the target object to reference from the data source object.<br />
+     * This field cannot be an empty string.
+     * If it is not specified, it should point to the key field.
      *
      * @return field name
      */

@@ -14,6 +14,18 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
+ * <p>一个用于在方法调用后，根据{@link AutoOperate}注解的配置，对方法返回结果进行填充的辅助类。
+ *
+ * <p>在方法调用后，其将会把方法返回结果解析为{@link AutoOperateAnnotatedElement 一个需要进行填充的元素}，
+ * 方法返回结果对应的{@link AutoOperateAnnotatedElement}将会被缓存，避免重复解析。<br/>
+ * 当方法被调用后，辅助类将根据配置对方法返回结果进行填充。
+ *
+ * <p>辅助类支持通过{@link AutoOperate#condition()}设置的条件表达式，
+ * 每次执行时都会通过{@link MethodBasedExpressionEvaluator}来进行求值，
+ * 只有当表达式返回true或者"true"时，才会执行填充。
+ *
+ * <hr/>
+ *
  * <p>Support class for completing the operation for the result of method which annotated by {@link AutoOperate}.
  *
  * <p>Before the method is called, the method return type will be resolved
