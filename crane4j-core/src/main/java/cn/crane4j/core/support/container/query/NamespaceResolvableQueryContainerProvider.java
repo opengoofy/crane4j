@@ -24,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author huangchengxing
  * @see AbstractQueryContainerProvider
+ * @deprecated This class is still used, but it will be refactored in the future.
  */
 @Slf4j
 public abstract class NamespaceResolvableQueryContainerProvider<T> extends AbstractQueryContainerProvider<T> {

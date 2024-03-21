@@ -50,7 +50,9 @@ import java.util.stream.Collectors;
  *
  * @param <T> The data type stored in the repository.
  * @author huangchengxing
+ * @deprecated This class is still used, but it will be refactored in the future.
  */
+@Deprecated
 @Slf4j
 @RequiredArgsConstructor
 public abstract class AbstractQueryContainerProvider<T> implements ContainerProvider {
