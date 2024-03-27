@@ -9,10 +9,8 @@ import cn.crane4j.core.support.converter.ConverterManager;
 import cn.crane4j.core.support.converter.ParameterConvertibleMethodInvoker;
 import cn.crane4j.core.support.reflect.PropertyOperator;
 import cn.crane4j.core.support.reflect.ReflectiveMethodInvoker;
-import cn.crane4j.core.util.ArrayUtils;
 import cn.crane4j.core.util.Asserts;
 import cn.crane4j.core.util.ClassUtils;
-import cn.crane4j.core.util.CollectionUtils;
 import cn.crane4j.core.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -86,7 +84,6 @@ public class MethodInvokerContainerCreator {
         @Nullable Object target, MethodInvoker methodInvoker, @Nullable Method method, MappingType mappingType,
         @Nullable String namespace, Class<?> resultType, String resultKey, DuplicateStrategy duplicateStrategy) {
 
-        methodInvoker = wrapInvokerIfNecessary(methodInvoker, method);
         namespace = getNamespace(method, namespace);
         MethodInvokerContainer container;
         if (mappingType == MappingType.NO_MAPPING || mappingType == MappingType.MAPPED) {
@@ -113,19 +110,6 @@ public class MethodInvokerContainerCreator {
             log.debug("create method invoker container [{}] for method [{}], mapping type is [{}]", container.getNamespace(), method, mappingType);
         }
         return container;
-    }
-
-    protected MethodInvoker wrapInvokerIfNecessary(
-        MethodInvoker methodInvoker, @Nullable Method method) {
-        if (Objects.nonNull(method)) {
-            // if the method has only one parameter and the parameter is not a collection,
-            // we will take the first element of the collection as the parameter to call the method
-            boolean isSingleParameterMethod = isSingleParameterMethod(method);
-            if (isSingleParameterMethod) {
-                methodInvoker = new SingleParameterMethodInvoker(methodInvoker);
-            }
-        }
-        return methodInvoker;
     }
 
     private static boolean isSingleParameterMethod(@NonNull Method method) {
@@ -244,15 +228,5 @@ public class MethodInvokerContainerCreator {
         MethodInvoker keyGetter = propertyOperator.findGetter(resultType, resultKey);
         Asserts.isNotNull(keyGetter, "cannot find getter method [{}] on [{}]", resultKey, resultType);
         return keyGetter;
-    }
-
-    @RequiredArgsConstructor
-    protected static class SingleParameterMethodInvoker implements MethodInvoker {
-        private final MethodInvoker delegate;
-        @Override
-        public Object invoke(Object target, Object... args) {
-            Collection<?> firstArg = CollectionUtils.adaptObjectToCollection(ArrayUtils.get(args, 0));
-            return delegate.invoke(target, CollectionUtils.getFirstNotNull(firstArg));
-        }
     }
 }

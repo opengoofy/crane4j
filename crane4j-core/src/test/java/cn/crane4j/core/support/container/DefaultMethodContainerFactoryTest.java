@@ -110,9 +110,9 @@ public class DefaultMethodContainerFactoryTest {
         Assert.assertEquals("noneMappedMethod", container.getNamespace());
 
         Map<Object, ?> values = container.get(Arrays.asList("1", "2"));
-        Assert.assertEquals(1, values.size());
+        Assert.assertEquals(2, values.size());
         Assert.assertEquals("1", values.get("1"));
-        Assert.assertNull(values.get("2"));
+        Assert.assertEquals("2", values.get("2"));
     }
 
     @Test

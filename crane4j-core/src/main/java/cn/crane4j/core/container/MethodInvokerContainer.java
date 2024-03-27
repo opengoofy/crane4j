@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  * @see MappingType
  */
 @RequiredArgsConstructor
-public class MethodInvokerContainer implements Container<Object> {
+public abstract class MethodInvokerContainer implements Container<Object> {
 
     /**
      * Namespace of method.
@@ -54,7 +54,7 @@ public class MethodInvokerContainer implements Container<Object> {
      * if method is static, this field can be null.
      */
     @Nullable
-    private final Object target;
+    protected final Object target;
 
     /**
      * Create a standard method data source container.
@@ -69,7 +69,7 @@ public class MethodInvokerContainer implements Container<Object> {
     public static MethodInvokerContainer create(
         String namespace, MethodInvoker methodInvoker, @Nullable Object target, boolean isMapped) {
         return isMapped ? new NoMapping(namespace, methodInvoker, target)
-            : new MethodInvokerContainer(namespace, methodInvoker, target);
+            : new StandardMethodInvokerContainer(namespace, methodInvoker, target);
     }
 
     /**
@@ -120,53 +120,68 @@ public class MethodInvokerContainer implements Container<Object> {
     }
 
     /**
-     * Enter a batch of key values to return data source objects grouped by key values.
+     * The container for method with single parameter.
      *
-     * @param keys keys
-     * @return data source objects grouped by key value
+     * @author huangchengxing
      */
-    @Override
-    public Map<Object, ?> get(Collection<Object> keys) {
-        Object[] arguments = resolveArguments(keys);
-        Object result = methodInvoker.invoke(target, arguments);
-        if (Objects.isNull(result)) {
-            return Collections.emptyMap();
-        }
-        return resolveResult(keys, result);
-    }
-
-    /**
-     * Resolve arguments.
-     *
-     * @param keys keys
-     * @return arguments
-     */
-    protected Object[] resolveArguments(Collection<Object> keys) {
-        return new Object[] {keys};
-    }
-
-    /**
-     * Resolve result to map.
-     *
-     * @param keys    keys
-     * @param result result
-     * @return map
-     */
-    protected Map<Object, ?> resolveResult(Collection<Object> keys, Object result) {
-        Collection<?> results = CollectionUtils.adaptObjectToCollection(result);
-        Map<Object, Object> resultMap = new HashMap<>(keys.size());
-        Iterator<?> valueIterator = results.iterator();
-        for (Object key : keys) {
-            Object value = valueIterator.hasNext() ? valueIterator.next() : null;
-            resultMap.put(key, value);
-        }
-        return resultMap;
-    }
-
     protected static class SingleKey extends MethodInvokerContainer {
 
         public SingleKey(String namespace, MethodInvoker methodInvoker, @Nullable Object target) {
             super(namespace, methodInvoker, target);
+        }
+
+        /**
+         * Enter a batch of key values to return data source objects grouped by key values.
+         *
+         * @param keys keys
+         * @return data source objects grouped by key value
+         */
+        @Override
+        public Map<Object, ?> get(Collection<Object> keys) {
+            Map<Object, Object> results = new HashMap<>(keys.size());
+            keys.forEach(key -> {
+                Object result = methodInvoker.invoke(target, key);
+                results.put(key, result);
+            });
+            return results;
+        }
+    }
+
+    /**
+     * Standard method data source container.
+     *
+     * @author huangchengxing
+     */
+    protected static class StandardMethodInvokerContainer extends MethodInvokerContainer {
+
+        public StandardMethodInvokerContainer(String namespace, MethodInvoker methodInvoker, @Nullable Object target) {
+            super(namespace, methodInvoker, target);
+        }
+
+        /**
+         * Enter a batch of key values to return data source objects grouped by key values.
+         *
+         * @param keys keys
+         * @return data source objects grouped by key value
+         */
+        @Override
+        public Map<Object, ?> get(Collection<Object> keys) {
+            Object[] arguments = resolveArguments(keys);
+            Object result = methodInvoker.invoke(target, arguments);
+            if (Objects.isNull(result)) {
+                return Collections.emptyMap();
+            }
+            return resolveResult(keys, result);
+        }
+
+        /**
+         * Resolve arguments.
+         *
+         * @param keys keys
+         * @return arguments
+         */
+        protected Object[] resolveArguments(Collection<Object> keys) {
+            return new Object[] {keys};
         }
 
         /**
@@ -176,9 +191,15 @@ public class MethodInvokerContainer implements Container<Object> {
          * @param result result
          * @return map
          */
-        @Override
         protected Map<Object, ?> resolveResult(Collection<Object> keys, Object result) {
-            return Collections.singletonMap(CollectionUtils.getFirstNotNull(keys), result);
+            Collection<?> results = CollectionUtils.adaptObjectToCollection(result);
+            Map<Object, Object> resultMap = new HashMap<>(keys.size());
+            Iterator<?> valueIterator = results.iterator();
+            for (Object key : keys) {
+                Object value = valueIterator.hasNext() ? valueIterator.next() : null;
+                resultMap.put(key, value);
+            }
+            return resultMap;
         }
     }
 
@@ -187,7 +208,7 @@ public class MethodInvokerContainer implements Container<Object> {
      *
      * @since 2.4.0
      */
-    protected static class NoMapping extends MethodInvokerContainer {
+    protected static class NoMapping extends StandardMethodInvokerContainer {
 
         public NoMapping(String namespace, MethodInvoker methodInvoker, @Nullable Object target) {
             super(namespace, methodInvoker, target);
@@ -212,7 +233,7 @@ public class MethodInvokerContainer implements Container<Object> {
      *
      * @since 2.4.0
      */
-    protected static class OneToOne extends MethodInvokerContainer {
+    protected static class OneToOne extends StandardMethodInvokerContainer {
 
         protected final KeyExtractor keyExtractor;
         private final DuplicateStrategy duplicateStrategy;
@@ -249,7 +270,7 @@ public class MethodInvokerContainer implements Container<Object> {
      *
      * @since 2.4.0
      */
-    protected static class OneToMany extends MethodInvokerContainer {
+    protected static class OneToMany extends StandardMethodInvokerContainer {
 
         private final KeyExtractor keyExtractor;
 

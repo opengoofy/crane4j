@@ -362,3 +362,11 @@
 **Fix**
 
 - [当作为数据源容器的方法接受单个参数并返回集合类型结果时，只会填充集合中的首个元素](https://gitee.com/opengoofy/crane4j/issues/I97R7E)；
+
+## 2.6.2 (2024-03-27)
+
+这是一个 Bug 修复版本，请尽快升级。
+
+**Fix**
+
+- [将接受单个参数并返回单个对象的方法作为数据源容器时，填充出现问题](https://gitee.com/opengoofy/crane4j/issues/I9C5GA)；
