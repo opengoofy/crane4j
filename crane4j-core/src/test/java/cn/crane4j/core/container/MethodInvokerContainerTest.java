@@ -80,6 +80,22 @@ public class MethodInvokerContainerTest {
     }
 
     @Test
+    public void getWhenSingle() {
+        MethodInvokerContainer container = MethodInvokerContainer.singleKey(
+            MethodInvokerContainer.class.getSimpleName(),
+            (t, arg) -> service.singleMethod((String) arg[0]),
+            service
+        );
+        Assert.assertEquals(MethodInvokerContainer.class.getSimpleName(), container.getNamespace());
+
+        Map<Object, Foo> data = (Map<Object, Foo>) container.get(Arrays.asList("1", "2", "3", "4"));
+        Assert.assertEquals("1", data.get("1").getKey());
+        Assert.assertEquals("2", data.get("2").getKey());
+        Assert.assertEquals("3", data.get("3").getKey());
+        Assert.assertEquals("4", data.get("4").getKey());
+    }
+
+    @Test
     @SuppressWarnings("unchecked")
     public void getWhenNotKeyExtractor() {
         MethodInvokerContainer container = MethodInvokerContainer.create(
@@ -102,6 +118,9 @@ public class MethodInvokerContainerTest {
     }
 
     private static class Service {
+        public Foo singleMethod(String key) {
+            return new Foo(key, key);
+        }
         public Map<String, Foo> mappedMethod(Collection<String> key) {
             return Objects.isNull(key) ? null : Stream.of(foo1, foo2).collect(Collectors.toMap(Foo::getKey, Function.identity()));
         }
