@@ -49,10 +49,14 @@ public class DefaultContainerManager implements ContainerManager {
      * Register {@link ContainerLifecycleProcessor}.
      *
      * @param lifecycle lifecycle
+     * @return whether the registration is successful
      */
     @Override
-    public void registerContainerLifecycleProcessor(ContainerLifecycleProcessor lifecycle) {
-        containerLifecycleProcessorList.add(lifecycle);
+    public boolean registerContainerLifecycleProcessor(ContainerLifecycleProcessor lifecycle) {
+        if (containerLifecycleProcessorList.contains(lifecycle)) {
+            return false;
+        }
+        return containerLifecycleProcessorList.add(lifecycle);
     }
 
     /**

@@ -46,10 +46,9 @@ public class SimpleCrane4jGlobalConfigurationTest {
     public void registerContainerLifecycleProcessor() {
         Collection<ContainerLifecycleProcessor> awareList = configuration.getContainerLifecycleProcessors();
         int size = awareList.size();
-        ContainerLifecycleProcessor processor = new ContainerLifecycleProcessor() { };
-        configuration.registerContainerLifecycleProcessor(processor);
+        configuration.registerContainerLifecycleProcessor(new ContainerLifecycleProcessor() { });
         Assert.assertEquals(size + 1, awareList.size());
-        configuration.registerContainerLifecycleProcessor(processor);
+        configuration.registerContainerLifecycleProcessor(new ContainerLifecycleProcessor() { });
         Assert.assertEquals(size + 2, awareList.size());
     }
 
