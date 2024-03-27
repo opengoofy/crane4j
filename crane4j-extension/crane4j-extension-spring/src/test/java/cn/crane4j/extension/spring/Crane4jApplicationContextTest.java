@@ -57,11 +57,9 @@ public class Crane4jApplicationContextTest {
         Assert.assertNotNull(context.getContainer("testBean2"));
 
         int size = context.getContainerLifecycleProcessors().size();
-        ContainerLifecycleProcessor processor = new ContainerLifecycleProcessor() {
-        };
-        context.registerContainerLifecycleProcessor(processor);
+        context.registerContainerLifecycleProcessor(new ContainerLifecycleProcessor() { });
         Assert.assertEquals(size + 1, context.getContainerLifecycleProcessors().size());
-        context.registerContainerLifecycleProcessor(processor);
+        context.registerContainerLifecycleProcessor(new ContainerLifecycleProcessor() { });
         Assert.assertEquals(size + 2, context.getContainerLifecycleProcessors().size());
 
         Map<String, Container<?>> containerMap = ReflectUtils.getFieldValue(context, "containerMap");

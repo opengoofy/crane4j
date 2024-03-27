@@ -52,8 +52,9 @@ public interface ContainerManager extends ConfigurableContainerProvider {
      * Register {@link ContainerLifecycleProcessor}.
      *
      * @param lifecycle lifecycle
+     * @return whether the registration is successful
      */
-    void registerContainerLifecycleProcessor(ContainerLifecycleProcessor lifecycle);
+    boolean registerContainerLifecycleProcessor(ContainerLifecycleProcessor lifecycle);
 
     /**
      * Get all registered {@link ContainerLifecycleProcessor}.

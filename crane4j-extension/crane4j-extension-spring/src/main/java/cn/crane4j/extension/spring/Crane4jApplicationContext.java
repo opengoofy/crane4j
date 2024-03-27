@@ -294,6 +294,11 @@ public class Crane4jApplicationContext extends DefaultContainerManager
      */
     @Override
     public void afterSingletonsInstantiated() {
+        applicationContext.getBeansOfType(ContainerLifecycleProcessor.class).forEach((name, processor) -> {
+            if (registerContainerLifecycleProcessor(processor)) {
+                log.info("install container lifecycle processor [{}]", name);
+            }
+        });
         applicationContext.getBeansOfType(ContainerDefinition.class).forEach((beanName, definition) -> {
             beanNameNamespaceMapping.put(beanName, definition.getNamespace());
             log.info("register container definition bean [{}] from spring context, actual namespace is [{}]", beanName, definition.getNamespace());
@@ -313,6 +318,11 @@ public class Crane4jApplicationContext extends DefaultContainerManager
             .forEach((beanName, registry) -> {
                 log.info("register key resolver provider registry [{}] from spring context", beanName);
                 keyResolverRegistry.registerKeyResolverProvider(beanName, registry);
+            });
+        applicationContext.getBeansOfType(PropertyMappingStrategy.class)
+            .forEach((beanName, strategy) -> {
+                log.info("register property mapping strategy manager [{}]({}) from spring context", beanName, strategy);
+                propertyMappingStrategyManager.addPropertyMappingStrategy(strategy);
             });
         applicationContext.getBeansOfType(PropertyMappingStrategy.class)
             .forEach((beanName, strategy) -> {
