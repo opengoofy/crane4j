@@ -49,7 +49,7 @@
         <java.version>1.8</java.version>
         <server.id>central.sonatype.com</server.id>
         <!--dependents-->
-        <hutool.version>5.8.26</hutool.version>
+        <hutool.version>5.8.37</hutool.version>
         <guava.version>33.0.0-jre</guava.version>
         <reflectasm.version>1.11.9</reflectasm.version>
         <ognl.version>3.1.19</ognl.version>
