@@ -93,7 +93,7 @@ public class ManyToManyAssembleOperationHandler extends AbstractAssembleOperatio
             Object origin = target.getOrigin();
             propertyMappingStrategy.doMapping(
                 operation, origin, source, sourceValues, mapping,
-                sv -> propertyOperator.writeProperty(origin.getClass(), origin, mapping.getReference(), sourceValues)
+                sv -> propertyOperator.writeProperty(origin.getClass(), origin, mapping.getReference(), sv)
             );
         }
     }
