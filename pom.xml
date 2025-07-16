@@ -81,14 +81,14 @@
             <dependency>
                 <groupId>cn.hutool</groupId>
                 <artifactId>hutool-core</artifactId>
-                <version>${hutool.version}</version>
+                <version>5.8.37</version>
                 <optional>true</optional>
             </dependency>
 
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>${guava.version}</version>
+                <version>33.0.0-jre</version>
                 <optional>true</optional>
                 <exclusions>
                     <exclusion>
@@ -101,32 +101,32 @@
             <dependency>
                 <groupId>com.esotericsoftware</groupId>
                 <artifactId>reflectasm</artifactId>
-                <version>${reflectasm.version}</version>
+                <version>1.11.9</version>
                 <optional>true</optional>
             </dependency>
 
             <dependency>
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus-boot-starter</artifactId>
-                <version>${mybatis-plus.version}</version>
+                <version>3.4.2</version>
             </dependency>
 
             <dependency>
                 <groupId>ognl</groupId>
                 <artifactId>ognl</artifactId>
-                <version>${ognl.version}</version>
+                <version>3.1.19</version>
             </dependency>
 
             <dependency>
                 <groupId>org.openjdk.jmh</groupId>
                 <artifactId>jmh-core</artifactId>
-                <version>${jmh.version}</version>
+                <version>1.32</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.openjdk.jmh</groupId>
                 <artifactId>jmh-generator-annprocess</artifactId>
-                <version>${jmh.version}</version>
+                <version>1.32</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>
@@ -144,7 +144,7 @@
         <dependency>
             <groupId>org.jacoco</groupId>
             <artifactId>jacoco-maven-plugin</artifactId>
-            <version>${jacoco-maven-plugin.version}</version>
+            <version>1.18.30</version>
             <optional>true</optional>
         </dependency>
     </dependencies>
