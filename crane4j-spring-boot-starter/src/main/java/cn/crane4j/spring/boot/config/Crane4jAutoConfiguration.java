@@ -172,7 +172,7 @@ public class Crane4jAutoConfiguration {
     // region ======= basic =======
 
     @Bean
-    public NamedComponentAliasProcessor namedComponentAliasProcessor() {
+    public static NamedComponentAliasProcessor namedComponentAliasProcessor() {
         return new NamedComponentAliasProcessor();
     }
 
