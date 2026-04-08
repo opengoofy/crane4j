@@ -11,6 +11,7 @@
     <artifactId>crane4j-extension-mybatis-plus</artifactId>
     <version>${revision}</version>
     <packaging>jar</packaging>
+    <name>crane4j-extension-mybatis-plus</name>
 
     <dependencies>
         <dependency>

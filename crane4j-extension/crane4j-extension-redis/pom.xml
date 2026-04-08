@@ -11,6 +11,7 @@
     <artifactId>crane4j-extension-redis</artifactId>
     <version>${revision}</version>
     <packaging>jar</packaging>
+    <name>crane4j-extension-redis</name>
 
     <dependencies>
         <dependency>
