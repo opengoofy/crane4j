@@ -44,7 +44,7 @@
 
     <properties>
         <!--revision-->
-        <revision>2.9.0</revision>
+        <revision>2.10.0</revision>
         <!--build-->
         <java.version>1.8</java.version>
         <server.id>central.sonatype.com</server.id>
@@ -57,13 +57,13 @@
         <mybatis-plus.version>3.5.3.2</mybatis-plus.version>
         <jmh.version>1.32</jmh.version>
         <!--plugins-->
-        <central-publishing-maven-plugin.version>0.5.0</central-publishing-maven-plugin.version>
+        <central-publishing-maven-plugin.version>0.9.0</central-publishing-maven-plugin.version>
         <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
         <maven-javadoc-plugin>3.2.0</maven-javadoc-plugin>
         <maven-source-plugin>3.2.1</maven-source-plugin>
         <maven-compiler-plugin>3.8.0</maven-compiler-plugin>
         <maven-gpg-plugin>1.6</maven-gpg-plugin>
-        <skip.maven.gpg.plugin>true</skip.maven.gpg.plugin>
+        <skip.maven.gpg.plugin>false</skip.maven.gpg.plugin>
         <skip.jacoco.plugin>true</skip.jacoco.plugin>
     </properties>
 
@@ -127,6 +127,25 @@
                 <groupId>org.openjdk.jmh</groupId>
                 <artifactId>jmh-generator-annprocess</artifactId>
                 <version>${jmh.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.data</groupId>
+                <artifactId>spring-data-redis</artifactId>
+                <version>2.7.18</version>
+            </dependency>
+
+            <dependency>
+                <groupId>redis.clients</groupId>
+                <artifactId>jedis</artifactId>
+                <version>3.9.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>4.11.0</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>
@@ -272,7 +291,7 @@
                 <version>1.1.0</version>
                 <configuration>
                     <updatePomFile>true</updatePomFile>
-                    <flattenMode>resolveCiFriendliesOnly</flattenMode>
+                    <flattenMode>ossrh</flattenMode>
                 </configuration>
                 <executions>
                     <execution>
