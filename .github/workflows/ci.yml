@@ -63,32 +63,36 @@ jobs:
             version: 17
           }
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ matrix.java.version }}
       - name: Build with Maven
-        run: echo y | mvn clean install -Dskip.gpg=true -Dspotless.apply.skip=true -Dmaven.javadoc.skip=true
+        run: mvn clean install -Dskip.maven.gpg.plugin=true -Dspotless.apply.skip=true -Dmaven.javadoc.skip=true
 
   test-coverage:
     if: github.repository == 'opengoofy/crane4j'
     name: Test coverage report
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Cache Maven Repos
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.m2/repository
           key: crane4j-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             crane4j-maven-third-party-
-      - uses: actions/setup-java@v3
+      - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: 8
       - name: Test with Maven
-        run: echo y | mvn -T1C clean install -Dskip.gpg=true -Dspotless.apply.skip=true -Dskip.jacoco.plugin=false
+        run: mvn -T1C clean install -Dskip.maven.gpg.plugin=true -Dspotless.apply.skip=true -Dskip.jacoco.plugin=false
       - name: Upload to Codecov
         run: bash <(curl -s https://codecov.io/bash)
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           token: ${{secrets.CODECOV_TOKEN}}
